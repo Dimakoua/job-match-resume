@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Resume Optimizer</title>
+    <!-- Materialize CSS -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/materialize-css@1.0.0/dist/css/materialize.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .input-field {
+            margin-bottom: 15px;
+        }
+
+        .btn {
+            width: 100%;
+        }
+
+        .file-path-wrapper {
+            margin-bottom: 20px;
+        }
+
+        #optimizedResume {
+            background-color: #f5f5f5;
+            padding: 10px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <h5 class="header">AI Resume Optimizer</h5>
+
+        <!-- AI Model Selection -->
+        <div class="input-field">
+            <select id="aiModel">
+                <option value="gpt" selected>GPT</option>
+                <option value="gemini">Gemini</option>
+                <option value="other">Other</option>
+            </select>
+            <label for="aiModel">Select AI Model</label>
+        </div>
+
+        <!-- User Token Input -->
+        <div class="input-field">
+            <input id="userToken" type="text" class="validate" placeholder="Enter AI token">
+        </div>
+
+        <!-- Capture Job Description Button -->
+        <button class="btn waves-effect waves-light" id="optimizeButton">
+            Capture Job Description
+        </button>
+
+        <!-- Resume Upload -->
+        <div class="input-field">
+            <input type="file" id="resumeUpload" class="file-path validate" />
+        </div>
+
+        <!-- Optimized Resume Display -->
+        <div>
+            <pre id="optimizedResume"></pre>
+        </div>
+    </div>
+
+    <!-- Materialize JS -->
+    <script src="https://cdn.jsdelivr.net/npm/materialize-css@1.0.0/dist/js/materialize.min.js"></script>
+    <script src="js/popup.js"></script>
+
+</body>
+
+</html>
