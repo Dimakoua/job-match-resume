@@ -34,4 +34,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === 'getJobDescription') {
     sendResponse({ jobDescription });
   }
+
+  return true;
 });
