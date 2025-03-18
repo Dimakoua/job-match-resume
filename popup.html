@@ -194,10 +194,15 @@
         </section>
 
         <section>
-            <!-- Resume Form -->
+            <!-- Resume Form with File Upload -->
             <div class="input-field">
-                <label for="resume">Paste your resume here</label>
-                <textarea id="resume" class="validate" placeholder="Enter your resume" rows="10"></textarea>
+                <label for="resumeFile">Upload your resume here</label>
+                <input type="file" id="resumeFile" accept=".pdf, .docx, .txt" />
+            </div>
+
+            <div class="input-field">
+                <label for="resume">Parsed Resume Content</label>
+                <textarea id="resume" class="validate" placeholder="Your resume content will appear here" rows="10" readonly></textarea>
             </div>
 
             <!-- Job Description Form -->
@@ -216,6 +221,8 @@
     </div>
 
     <script src="popup.js"></script>
+    <script src="libs/pdf.min.js"></script>
+    <script src="libs/mammoth.browser.min.js"></script>
 </body>
 
 </html>

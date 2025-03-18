@@ -92,7 +92,6 @@ async function optimizeResume() {
 
     const resumeInput = document.getElementById("resume");
     const jobDescriptionInput = document.getElementById("jobDescription");
-    const optimizedResumeDiv = document.getElementById("optimizedResume");
 
     const resumeText = resumeInput.value.trim();
     const jobDescriptionText = jobDescriptionInput.value.trim();
@@ -117,6 +116,90 @@ async function optimizeResume() {
 
     console.log("Optimized Resume 22:", res);
 }
+
+function handleFileUpload(event) {
+    const file = event.target.files[0];
+
+    if (!file) {
+        console.error("No file selected.");
+        return;
+    }
+
+    const fileType = file.type;
+
+    // For Text files
+    if (fileType === "text/plain") {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const fileContent = e.target.result;
+            parseResumeContent(fileContent);
+        };
+        reader.readAsText(file);
+    }
+    // For PDF files, use pdf.js to extract text
+    else if (fileType === "application/pdf") {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const pdfData = new Uint8Array(e.target.result);
+            parsePDF(pdfData);
+        };
+        reader.readAsArrayBuffer(file);
+    }
+    // For DOCX files, use Mammoth.js to extract text
+    else if (fileType === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const arrayBuffer = e.target.result;
+            parseDOCX(arrayBuffer);
+        };
+        reader.readAsArrayBuffer(file);
+    } else {
+        console.log("Unsupported file type");
+    }
+}
+
+// Parse Text file
+function parseResumeContent(content) {
+    document.getElementById('resume').value = content;
+}
+
+// Parse PDF using pdf.js
+function parsePDF(pdfData) {
+    pdfjsLib.getDocument(pdfData).promise.then(pdfDoc_ => {
+        let textContent = "";
+        const totalPages = pdfDoc_.numPages;
+
+        // Loop through each page of the PDF
+        for (let i = 1; i <= totalPages; i++) {
+            pdfDoc_.getPage(i).then(page => {
+                page.getTextContent().then(text => {
+                    text.items.forEach(item => {
+                        textContent += item.str + " ";
+                    });
+
+                    // When all pages are processed, display the parsed content
+                    if (i === totalPages) {
+                        document.getElementById('resume').value = textContent;
+                    }
+                });
+            });
+        }
+    }).catch(error => {
+        console.error("Error parsing PDF:", error);
+    });
+}
+
+// Parse DOCX using Mammoth.js
+function parseDOCX(arrayBuffer) {
+    mammoth.extractRawText({ arrayBuffer: arrayBuffer })
+        .then(result => {
+            document.getElementById('resume').value = result.value;
+        })
+        .catch(err => {
+            console.error("Error parsing DOCX file:", err);
+        });
+}
+
 // Event listener for Save button
 document.addEventListener('DOMContentLoaded', function () {
     // Load saved settings on page load
@@ -126,6 +209,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const saveAISettingsBtn = document.getElementById('saveAISettings');
     const showAISettingsForm = document.getElementById('showAISettingsForm');
     const optimizeResumeBtn = document.getElementById('optimizeResume');
+    const resumeFileInput = document.getElementById('resumeFile');
 
     // Save settings when the save button is clicked
     saveAISettingsBtn.addEventListener('click', function () {
@@ -138,7 +222,7 @@ document.addEventListener('DOMContentLoaded', function () {
         AISettingsForm.classList.toggle('hidden');
     });
 
-    optimizeResumeBtn.addEventListener('click', function () {
-        optimizeResume();
-    });
+    optimizeResumeBtn.addEventListener('click', optimizeResume);
+
+    resumeFileInput.addEventListener('change', handleFileUpload);
 });
