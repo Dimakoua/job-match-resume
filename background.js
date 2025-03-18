@@ -1,61 +1,111 @@
-chrome.runtime.onInstalled.addListener(() => {
-    console.log("AI Resume Optimizer Extension Installed.");
-});
-
-chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
-    console.log("Message received in background.js:", message);
-
-    if (message.action === "parseResume") {
-        const resumeContent = message.fileContent;
-        const jobDescription = message.jobDescription; // Assuming jobDescription is also sent in the message
-
-        try {
-            console.log("resumeContent", resumeContent);
-            console.log("jobDescription", jobDescription);
-
-            // Simulate the optimization process here (replace with real AI API)
-            const optimizedResume = await optimizeResumeWithAI(resumeContent, jobDescription);
-
-            console.log("optimizedResume", optimizedResume);
-
-            sendResponse({ optimizedText: optimizedResume });
-        } catch (error) {
-            console.error(error);
-            sendResponse({ optimizedText: "Error optimizing resume." });
-        }
-    }
-});
-
-async function optimizeResumeWithAI(resumeText, jobDescription) {
+async function optimizeResumeWithGemini(resumeText, jobDescription, APItoken) {
     try {
-        // Ask Gemini to retain the format of the resume while optimizing it for ATS
-        const response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyDoF3CYLcqU4xsxkk0iXXAk0ORz6EohkBg", {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${APItoken}`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 "contents": [{
-                    "parts": [{ "text": `Optimize this resume to match the given job description for ATS while keeping the same format, structure, and style of the original resume.\n\nResume:\n${resumeText}\n\nJob Description:\n${jobDescription}`, }]
+                    "parts": [{ "text": `Optimize this resume to match the given job description for ATS while keeping the same format, structure, and style of the original resume.\n\nResume:\n${resumeText}\n\nJob Description:\n${jobDescription}` }]
                 }]
             })
         });
 
-        console.log("response", response);
+        const data = await response.json();
+        console.log("Gemini API Response:", data?.candidates?.[0]?.content?.parts[0]?.text);
+        return { optimizedResume: data?.candidates?.[0]?.content?.parts[0]?.text || "Error optimizing resume with Gemini." };
+    } catch (error) {
+        console.error("Gemini API Error:", error);
+        return { optimizedResume: "Error with Gemini." };
+    }
+}
+async function optimizeResumeWithGPT(resumeText, jobDescription, APItoken) {
+    try {
+        const response = await fetch("https://api.openai.com/v1/chat/completions", {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${APItoken}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                model: "gpt-4-turbo",
+                messages: [
+                    { role: "system", content: "Optimize the resume for ATS compatibility based on the job description while retaining its original format." },
+                    { role: "user", content: `Resume:\n${resumeText}\n\nJob Description:\n${jobDescription}` }
+                ]
+            })
+        });
 
         const data = await response.json();
+        return { optimizedResume: data?.choices?.[0]?.message?.content || "Error optimizing resume with GPT." };
+    } catch (error) {
+        console.error("GPT API Error:", error);
+        return { optimizedResume: "Error with GPT." };
+    }
+}
+async function optimizeResumeWithClaude(resumeText, jobDescription, APItoken) {
+    try {
+        const response = await fetch("https://api.anthropic.com/v1/messages", {
+            method: "POST",
+            headers: {
+                "x-api-key": APItoken,
+                "anthropic-version": "2023-06-01",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                model: "claude-3",
+                max_tokens: 1024,
+                messages: [
+                    { role: "system", content: "Optimize the resume for ATS compatibility while keeping its format intact." },
+                    { role: "user", content: `Resume:\n${resumeText}\n\nJob Description:\n${jobDescription}` }
+                ]
+            })
+        });
 
-        console.log("data", data);
+        const data = await response.json();
+        return { optimizedResume: data?.completion || "Error optimizing resume with Claude." };
+    } catch (error) {
+        console.error("Claude API Error:", error);
+        return { optimizedResume: "Error with Claude." };
+    }
+}
 
-        if (data && data.candidates && data.candidates.length > 0) {
-            console.log("data.candidates[0].output", data.candidates[0].output);
+chrome.runtime.onInstalled.addListener(() => {
+    console.log("AI Resume Optimizer Extension Installed.");
+});
 
-            return data.candidates[0].output; // Optimized resume, same format
-        } else {
-            console.log("data", data);
+chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+    if (message.action === "optimizeResume") {
+        const resumeContent = message.resume;
+        const jobDescription = message.jobDescription;
+        const ai = message.ai;
 
-            throw new Error("Invalid AI response.");
+        // Call the function to optimize the resume with the selected AI model
+        optimizeResumeWithAI(resumeContent, jobDescription, ai)
+        .then((optimizedResume) => {
+            sendResponse({ optimizedText: optimizedResume });
+        }).catch(_error => {
+            sendResponse({ optimizedText: "Error optimizing resume." });
+        });
+    }
+
+    return true;
+});
+
+
+async function optimizeResumeWithAI(resumeText, jobDescription, ai) {
+    try {
+        switch (ai.model) {
+            case "gpt":
+                return await optimizeResumeWithGPT(resumeText, jobDescription, ai.token);
+            case "gemini":
+                return await optimizeResumeWithGemini(resumeText, jobDescription, ai.token);
+            case "claud":
+                return await optimizeResumeWithClaude(resumeText, jobDescription, ai.token);
+            default:
+                throw new Error("Invalid AI model selected.");
         }
     } catch (error) {
-        console.error("Error calling Gemini API:", error);
-        return "Error occurred while optimizing the resume.";
+        console.error("Error during resume optimization:", error);
+        return "Error optimizing resume with the selected AI model.";
     }
 }
