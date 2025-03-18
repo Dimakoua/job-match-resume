@@ -150,18 +150,27 @@
             margin-bottom: 20px;
             font-size: 14px;
         }
+
+        /* Error message */
+        .error-message {
+            background-color: #f44336;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
     </style>
 </head>
 
 <body>
     <div class="container">
         <div class="header-container">
-            <div class="header">AI Resume Optimizer</div>
             <img id="showAISettingsForm" width="25" height="25" src="https://img.icons8.com/ios/50/settings--v1.png" alt="settings--v1" />
         </div>
 
-        <!-- Success message -->
-        <div id="successMessage" class="success-message hidden">AI Settings Saved Successfully!</div>
+        <!-- Message Box -->
+        <div id="messageBox"></div>
 
         <section id="AISettingsForm" class="">
             <!-- AI Settings Form -->
@@ -170,7 +179,7 @@
                 <select id="aiModel">
                     <option value="gpt" selected>GPT</option>
                     <option value="gemini">Gemini</option>
-                    <option value="other">Claud</option>
+                    <option value="claud">Claud</option>
                 </select>
             </div>
 
@@ -198,7 +207,7 @@
             </div>
 
             <div class="input-field">
-                <button class="btn" id="optimizeResume">Optimize Resume</button>
+                <button class="btn btn-grey" id="optimizeResume">Optimize Resume</button>
             </div>
 
             <!-- Optimized resume area -->
