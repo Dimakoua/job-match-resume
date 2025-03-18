@@ -1,57 +1,82 @@
-let jobDescription = ''; // Initialize jobDescription variable
+// Function to load saved settings from localStorage
+function loadSettings() {
+    const aiModelSelect = document.getElementById('aiModel');
+    const userTokenInput = document.getElementById('userToken');
 
-// Capture job description from the current page
-document.getElementById("optimizeButton").addEventListener("click", function() {
-  chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
-    chrome.tabs.sendMessage(tabs[0].id, { action: "copyJobDescription" }, function(response) {
-      if (response && response.jobDescription) {
-        jobDescription = response.jobDescription; // Store the job description
-        document.getElementById("jobDescription").value = jobDescription;
-      } else {
-          console.log("Error extracting job description.");
-          console.log("VALUE", document.getElementById("jobDescription").value)
-      }
-    });
-  });
-});
+    const savedAiModel = localStorage.getItem('aiModel');
+    const savedUserToken = localStorage.getItem('userToken');
 
-// Handle file upload for resume
-document.getElementById("resumeUpload").addEventListener("change", handleFileUpload);
+    if (savedAiModel) {
+        aiModelSelect.value = savedAiModel;
+    }
+    if (savedUserToken) {
+        userTokenInput.value = savedUserToken;
+    }
 
-function handleFileUpload(event) {
-    console.log("file uploaded");
-    const file = event.target.files[0];
-    if (file && file.type === "text/plain") {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const fileContent = e.target.result;
-
-            // Ensure jobDescription is available before sending the request
-            if (!jobDescription) {
-                jobDescription = document.getElementById("jobDescription").value;
-                // alert("Please capture the job description first.");
-                // return;
-            }
-            if (!jobDescription) {
-                alert("Please capture the job description first.");
-                return;
-            }
-
-            // Send both the resume content and job description to the background script
-            chrome.runtime.sendMessage(
-                { action: "parseResume", fileContent, jobDescription },
-                (response) => {
-                    if (response.optimizedText) {
-                        document.getElementById("optimizedResume").innerText = response.optimizedText;
-                        console.log(response.optimizedText);
-                    } else {
-                        alert("Error optimizing resume.");
-                    }
-                }
-            );
-        };
-        reader.readAsText(file);
-    } else {
-        alert("Please upload a TXT file.");
+    if (savedAiModel && savedUserToken) {
+        // Hide the form if both settings are saved
+        const AISettingsForm = document.getElementById('AISettingsForm');
+        AISettingsForm.classList.add('hidden');
     }
 }
+
+// Function to save settings to localStorage
+function saveSettings() {
+    const aiModelSelect = document.getElementById('aiModel');
+    const userTokenInput = document.getElementById('userToken');
+    const successMessage = document.getElementById('successMessage');
+    const AISettingsForm = document.getElementById('AISettingsForm');
+
+    const aiModel = aiModelSelect.value;
+    const userToken = userTokenInput.value;
+
+    // Store settings in localStorage
+    localStorage.setItem('aiModel', aiModel);
+    localStorage.setItem('userToken', userToken);
+
+    // Show success message and hide the form
+    successMessage.classList.remove('hidden');
+    AISettingsForm.classList.add('hidden');
+
+    // Optionally hide success message after a few seconds
+    setTimeout(function () {
+        successMessage.classList.add('hidden');
+    }, 3000);
+}
+
+function tryParseJobDescription() {
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+        chrome.tabs.sendMessage(tabs[0].id, { action: 'getJobDescription' }, function (response) {
+            console.log(response)
+            if (response && response.jobDescription) {
+                // parsedJobDescription.textContent = response.jobDescription;
+            } else {
+                // parsedJobDescription.textContent = 'Could not find job description.';
+            }
+        });
+    });
+}
+
+
+
+
+// Event listener for Save button
+document.addEventListener('DOMContentLoaded', function () {
+    // Load saved settings on page load
+    loadSettings();
+    tryParseJobDescription();
+
+    const saveAISettingsBtn = document.getElementById('saveAISettings');
+    const showAISettingsForm = document.getElementById('showAISettingsForm');
+
+
+    // Save settings when the save button is clicked
+    saveAISettingsBtn.addEventListener('click', function () {
+        saveSettings();
+    });
+    // Save settings when the save button is clicked
+    showAISettingsForm.addEventListener('click', function () {
+        const AISettingsForm = document.getElementById('AISettingsForm');
+        AISettingsForm.classList.toggle('hidden');
+    });
+});
