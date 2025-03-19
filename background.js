@@ -5,7 +5,17 @@ async function optimizeResumeWithGemini(resumeText, jobDescription, APItoken) {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 "contents": [{
-                    "parts": [{ "text": `Optimize this resume to match the given job description for ATS while keeping the same format, structure, and style of the original resume.\n\nResume:\n${resumeText}\n\nJob Description:\n${jobDescription}` }]
+                    "parts": [{
+                        "text": `Please optimize the following resume to align with the provided job description while keeping the same format, structure, and style of the original document. The output should be tailored for Applicant Tracking Systems (ATS) while preserving readability and professionalism. Please provide the result in DOCX format. NOT DOCX file, just the text.
+
+                                Resume Content:
+                                ${resumeText}
+
+                                Job Description:
+                                ${jobDescription}
+
+                                Ensure that the resume is ATS-friendly by focusing on relevant skills, keywords, and job titles from the job description. Avoid making the resume look unnatural or overly keyword-stuffed, and keep the formatting consistent with the original resume's layout.`
+                    }]
                 }]
             })
         });
@@ -73,6 +83,8 @@ chrome.runtime.onInstalled.addListener(() => {
     console.log("AI Resume Optimizer Extension Installed.");
 });
 
+
+let savedJobDescription = "No job description available.";
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     if (message.action === "optimizeResume") {
         const resumeContent = message.resume;
@@ -81,11 +93,20 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
 
         // Call the function to optimize the resume with the selected AI model
         optimizeResumeWithAI(resumeContent, jobDescription, ai)
-        .then((optimizedResume) => {
-            sendResponse({ optimizedText: optimizedResume });
-        }).catch(_error => {
-            sendResponse({ optimizedText: "Error optimizing resume." });
-        });
+            .then((optimizedResume) => {
+                sendResponse({ optimizedText: optimizedResume });
+            }).catch(_error => {
+                sendResponse({ optimizedText: "Error optimizing resume." });
+            });
+    }
+
+    if (message.action === "saveJobDescription") {
+        console.log("Job Description Saved:", message);
+        savedJobDescription = message.jobDescription;
+    }
+
+    if (message.action === "getJobDescription") {
+        sendResponse({ jobDescription: savedJobDescription });
     }
 
     return true;

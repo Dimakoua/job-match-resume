@@ -29,18 +29,16 @@
             ]
         }
     ],
-"content_scripts": [
-    {
-        "matches": [
-            "https://www.linkedin.com/jobs/view/*",
-            "https://www.indeed.com/viewjob?*",
-            "https://www.glassdoor.com/job-listing/*"
-        ],
-        "js": ["content.js"],
-        "run_at": "document_end"
-    }
-],
-
+    "content_scripts": [
+        {
+            "matches": [
+                "*://*.mozilla.org/*"
+            ],
+            "js": [
+                "content.js"
+            ]
+        }
+    ],
     "icons": {
         "16": "icons/icons8-cv-16.png",
         "48": "icons/icons8-cv-48.png",

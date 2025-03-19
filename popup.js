@@ -45,23 +45,6 @@ function saveSettings() {
     showMessage('success', 'AI Settings Saved Successfully!', 3000);
 }
 
-function tryParseJobDescription() {
-    try {
-        chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-            chrome.tabs.sendMessage(tabs[0].id, { action: 'getJobDescription' }, function (response) {
-                console.log(response)
-                if (response && response.jobDescription) {
-                    // parsedJobDescription.textContent = response.jobDescription;
-                } else {
-                    // parsedJobDescription.textContent = 'Could not find job description.';
-                }
-            });
-        });
-    } catch (error) {
-        console.log("Error parsing job description:", error);
-    }
-}
-
 function showMessage(type, text, timeout = 3000) {
     let messageDiv = document.getElementById('messageBox');
 
@@ -200,15 +183,24 @@ function parseDOCX(arrayBuffer) {
         });
 }
 
+function loadJobDescription() {
+    chrome.runtime.sendMessage({ action: "getJobDescription" }, function (response) {
+        console.log("Job Description:", response.jobDescription);
+        const jobDescription = response.jobDescription;
+        document.getElementById('jobDescription').value = jobDescription;
+    });
+}
+
 // Event listener for Save button
 document.addEventListener('DOMContentLoaded', function () {
     // Load saved settings on page load
     loadSettings();
-    // tryParseJobDescription();
+    loadJobDescription();
 
     const saveAISettingsBtn = document.getElementById('saveAISettings');
     const showAISettingsForm = document.getElementById('showAISettingsForm');
     const optimizeResumeBtn = document.getElementById('optimizeResume');
+    const getJobDescriptionBtn = document.getElementById('getJobDescription');
     const resumeFileInput = document.getElementById('resumeFile');
 
     // Save settings when the save button is clicked
@@ -223,6 +215,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     optimizeResumeBtn.addEventListener('click', optimizeResume);
-
+    getJobDescriptionBtn.addEventListener('click', getJobDescription);
     resumeFileInput.addEventListener('change', handleFileUpload);
 });
