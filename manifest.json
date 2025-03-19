@@ -19,17 +19,28 @@
         "default_popup": "popup.html",
         "default_icon": "icons/icons8-cv-48.png"
     },
-    "content_scripts": [
+    "web_accessible_resources": [
         {
-            "matches": [
-                "http://*/*",
-                "https://*/*"
+            "resources": [
+                "libs/pdf.worker.min.js"
             ],
-            "js": [
-                "content.js"
+            "matches": [
+                "<all_urls>"
             ]
         }
     ],
+"content_scripts": [
+    {
+        "matches": [
+            "https://www.linkedin.com/jobs/view/*",
+            "https://www.indeed.com/viewjob?*",
+            "https://www.glassdoor.com/job-listing/*"
+        ],
+        "js": ["content.js"],
+        "run_at": "document_end"
+    }
+],
+
     "icons": {
         "16": "icons/icons8-cv-16.png",
         "48": "icons/icons8-cv-48.png",

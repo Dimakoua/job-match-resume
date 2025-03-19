@@ -1,39 +1,35 @@
-
 console.log("Content script loaded");
-// content.js
-function getJobDescriptionFromLinkedIn() {
-  const jobDescription = document.querySelector('.job-details-about-the-job-module__description');
-  console.log(jobDescription);
-  return jobDescription ? jobDescription.innerText : 'Job description not found.';
+
+// Function to extract job descriptions dynamically
+function getJobDescription() {
+    if (window.location.hostname.includes("linkedin")) {
+        const jobDescription = document.querySelector('*[data-test-job-description-text]') || 
+                               document.querySelector('.job-details-jobs-unified-top-card__job-description');
+        return jobDescription ? jobDescription.innerText.trim() : 'Job description not found.';
+    } 
+    if (window.location.hostname.includes("indeed")) {
+        const jobDescription = document.querySelector('.jobsearch-jobDescriptionText');
+        return jobDescription ? jobDescription.innerText.trim() : 'Job description not found.';
+    } 
+    if (window.location.hostname.includes("glassdoor")) {
+        const jobDescription = document.querySelector('.jdDescription');
+        return jobDescription ? jobDescription.innerText.trim() : 'Job description not found.';
+    }
+    return 'Job description not found.';
 }
 
-function getJobDescriptionFromIndeed() {
-  const jobDescription = document.querySelector('.jobsearch-jobDescriptionText');
-  return jobDescription ? jobDescription.innerText : 'Job description not found.';
-}
+// Use a MutationObserver to detect when job descriptions load dynamically
+const observer = new MutationObserver(() => {
+    console.log("Job description content updated");
+});
+observer.observe(document.body, { childList: true, subtree: true });
 
-function getJobDescriptionFromGlassdoor() {
-  const jobDescription = document.querySelector('.jdDescription');
-  return jobDescription ? jobDescription.innerText : 'Job description not found.';
-}
-
-// Check the current website and scrape job description accordingly
-let jobDescription = '';
-
-if (window.location.hostname.includes("linkedin")) {
-  jobDescription = getJobDescriptionFromLinkedIn();
-} else if (window.location.hostname.includes("indeed")) {
-  jobDescription = getJobDescriptionFromIndeed();
-} else if (window.location.hostname.includes("glassdoor")) {
-  jobDescription = getJobDescriptionFromGlassdoor();
-}
-
-// Send the job description to the background script
+// Listen for messages from popup.js
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  console.log("content.js: message received", message);
-  if (message.action === 'getJobDescription') {
-    sendResponse({ jobDescription });
-  }
-
-  return true;
+    console.log("content.js: message received", message);
+    if (message.action === 'getJobDescription') {
+        const jobDescription = getJobDescription();
+        sendResponse({ jobDescription });
+    }
+    return true; // Keep the message channel open
 });
