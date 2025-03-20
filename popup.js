@@ -171,30 +171,36 @@ function parseResumeContent(content) {
 }
 
 // Parse PDF using pdf.js
-function parsePDF(pdfData) {
-    pdfjsLib.getDocument(pdfData).promise.then(pdfDoc_ => {
+async function parsePDF(pdfData) {
+    try {
+        const pdfDoc = await pdfjsLib.getDocument(pdfData).promise;
+        const totalPages = pdfDoc.numPages;
+        console.log("Total Pages:", totalPages);
+
         let textContent = "";
-        const totalPages = pdfDoc_.numPages;
 
-        // Loop through each page of the PDF
+        // Create an array of promises for each page
+        const pagePromises = [];
+
         for (let i = 1; i <= totalPages; i++) {
-            pdfDoc_.getPage(i).then(page => {
-                page.getTextContent().then(text => {
-                    text.items.forEach(item => {
-                        textContent += item.str + " ";
-                    });
-
-                    // When all pages are processed, display the parsed content
-                    if (i === totalPages) {
-                        updateResumeContent(textContent);
-                    }
-                });
-            });
+            pagePromises.push(pdfDoc.getPage(i).then(async page => {
+                const text = await page.getTextContent();
+                return text.items.map(item => item.str).join(" "); // Convert items to text
+            }));
         }
-    }).catch(error => {
+
+        // Wait for all pages to be processed
+        const allText = await Promise.all(pagePromises);
+
+        // Combine all pages' text
+        textContent = allText.join("\n");
+
+        updateResumeContent(textContent);
+    } catch (error) {
         console.error("Error parsing PDF:", error);
-    });
+    }
 }
+
 
 // Parse DOCX using Mammoth.js
 function parseDOCX(arrayBuffer) {

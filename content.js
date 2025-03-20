@@ -1,26 +1,49 @@
-function getJobDescription() {
-    let jobDescription = 'Job description not found.';
+function waitForJobDescription() {
+  console.log("Content script running...");
+  console.log("Hostname:", window.location.hostname);
+  
+  let selector = null;
 
-    if (window.location.hostname.includes("linkedin")) {
-        jobDescription = document.querySelector('*[data-test-job-description-text]') || 
-                               document.querySelector('.job-details-jobs-unified-top-card__job-description');
-    } 
-    if (window.location.hostname.includes("indeed")) {
-        jobDescription = document.querySelector('.jobsearch-jobDescriptionText');
-    } 
-    if (window.location.hostname.includes("glassdoor")) {
-        jobDescription = document.querySelector('.jdDescription');
-    }
-    if (window.location.hostname.includes("mozilla")) {
-        jobDescription = document.querySelector('.section-content');
-    }
+  if (window.location.hostname.includes("linkedin")) {
+      selector = '*[data-test-job-description-text], .job-details-about-the-job-module__description';
+  } 
+  else if (window.location.hostname.includes("indeed")) {
+      selector = '.jobsearch-jobDescriptionText';
+  } 
+  else if (window.location.hostname.includes("glassdoor")) {
+      selector = '.jdDescription';
+  }
+  else if (window.location.hostname.includes("mozilla")) {
+      selector = '.section-content';
+  }
 
-    // Extract text content if element exists
-    jobDescription = jobDescription ? jobDescription.innerText.trim() : 'Job description not found.';
+  if (!selector) {
+      console.log("No valid job description selector found for this site.");
+      return;
+  }
 
-    // Send message to popup.js
-    chrome.runtime.sendMessage({ action: "saveJobDescription", jobDescription });
+  const observer = new MutationObserver((mutations, obs) => {
+      const jobElement = document.querySelector(selector);
+      if (jobElement && jobElement.innerText.trim().length > 0) {
+          console.log("Job description found!");
+          observer.disconnect(); // Stop observing once we have the job description
+          sendJobDescription(jobElement.innerText.trim());
+      }
+  });
+
+  observer.observe(document.body, { childList: true, subtree: true });
+
+  // If the job description is already available, send it immediately
+  const existingJobElement = document.querySelector(selector);
+  if (existingJobElement) {
+      console.log("Job description already available.");
+      sendJobDescription(existingJobElement.innerText.trim());
+  }
 }
 
-// Call the function to send job description when content script runs
-getJobDescription();
+function sendJobDescription(jobDescription) {
+  chrome.runtime.sendMessage({ action: "saveJobDescription", jobDescription });
+}
+
+// Call function to wait for the job description to load
+waitForJobDescription();
