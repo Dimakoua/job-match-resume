@@ -227,7 +227,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const saveAISettingsBtn = document.getElementById('saveAISettings');
     const showAISettingsForm = document.getElementById('showAISettingsForm');
     const optimizeResumeBtn = document.getElementById('optimizeResume');
-    const generateDocxBtn = document.getElementById('generateDocx');
+    const generateDocxBtn = document.getElementById('downloadDocx');
     const resumeFileInput = document.getElementById('resumeFile');
 
     // Save settings when the save button is clicked
@@ -250,15 +250,4 @@ document.addEventListener('DOMContentLoaded', function () {
     generateDocxBtn.addEventListener("click", () => {
         generateDocx();
     });
-
-
-    // Show loading
-    document.getElementById("loadingSpinner").style.display = "block";
-
-    // Simulate API call
-    setTimeout(() => {
-        document.getElementById("loadingSpinner").style.display = "none";
-        document.getElementById("optimizedResume").style.display = "block";
-        document.getElementById("optimizedResume").innerText = "✔️ Optimized resume content will appear here.";
-    }, 2000);
 });
