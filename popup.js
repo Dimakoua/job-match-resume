@@ -22,6 +22,30 @@ function loadSettings() {
     return { aiModel: savedAiModel, userToken: savedUserToken };
 }
 
+function loadJobDescription() {
+    chrome.runtime.sendMessage({ action: "getJobDescription" }, function (response) {
+        console.log("Job Description:", response.jobDescription);
+        const jobDescription = response.jobDescription;
+        document.getElementById('jobDescription').value = jobDescription;
+    });
+}
+
+function loadCV() {
+    const parsedResume = localStorage.getItem('parsedResume');
+
+    if (parsedResume) {
+        document.getElementById('resume').value = parsedResume;
+    }
+}
+
+function toggleAISettings() {
+    const AISettingsForm = document.getElementById('AISettingsForm');
+    const mainForm = document.getElementById('MainForm');
+
+    AISettingsForm.classList.toggle('hidden');
+    mainForm.classList.toggle('hidden');
+}
+
 // Function to save settings to localStorage
 function saveSettings() {
     const aiModelSelect = document.getElementById('aiModel');
@@ -143,7 +167,7 @@ function handleFileUpload(event) {
 
 // Parse Text file
 function parseResumeContent(content) {
-    document.getElementById('resume').value = content;
+    updateResumeContent(content);
 }
 
 // Parse PDF using pdf.js
@@ -162,7 +186,7 @@ function parsePDF(pdfData) {
 
                     // When all pages are processed, display the parsed content
                     if (i === totalPages) {
-                        document.getElementById('resume').value = textContent;
+                        updateResumeContent(textContent);
                     }
                 });
             });
@@ -176,22 +200,23 @@ function parsePDF(pdfData) {
 function parseDOCX(arrayBuffer) {
     mammoth.extractRawText({ arrayBuffer: arrayBuffer })
         .then(result => {
-            document.getElementById('resume').value = result.value;
+            updateResumeContent(result.value);
         })
         .catch(err => {
             console.error("Error parsing DOCX file:", err);
         });
 }
 
-function loadJobDescription() {
-    chrome.runtime.sendMessage({ action: "getJobDescription" }, function (response) {
-        console.log("Job Description:", response.jobDescription);
-        const jobDescription = response.jobDescription;
-        document.getElementById('jobDescription').value = jobDescription;
-    });
+function updateResumeContent(content) {
+    const resumeInput = document.getElementById('resume');
+    if (resumeInput) {
+        resumeInput.value = content;
+        localStorage.setItem('parsedResume', content);
+    }
 }
 
-function generateDocx(optimizedText) {
+function generateDocx() {
+    optimizedText = document.getElementById('optimizedResume').value;
     const { Document, Packer, Paragraph, TextRun } = window.docx;
 
     const doc = new Document({
@@ -223,6 +248,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Load saved settings on page load
     loadSettings();
     loadJobDescription();
+    loadCV();
 
     const saveAISettingsBtn = document.getElementById('saveAISettings');
     const showAISettingsForm = document.getElementById('showAISettingsForm');
@@ -230,24 +256,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const generateDocxBtn = document.getElementById('downloadDocx');
     const resumeFileInput = document.getElementById('resumeFile');
 
-    // Save settings when the save button is clicked
-    saveAISettingsBtn.addEventListener('click', function () {
-        saveSettings();
-    });
-
-    // Save settings when the save button is clicked
-    showAISettingsForm.addEventListener('click', function () {
-        const AISettingsForm = document.getElementById('AISettingsForm');
-        const mainForm = document.getElementById('MainForm');
-        AISettingsForm.classList.toggle('hidden');
-        mainForm.classList.toggle('hidden');
-
-    });
-
     optimizeResumeBtn.addEventListener('click', optimizeResume);
+    saveAISettingsBtn.addEventListener('click', saveSettings);
     resumeFileInput.addEventListener('change', handleFileUpload);
-
-    generateDocxBtn.addEventListener("click", () => {
-        generateDocx();
-    });
+    showAISettingsForm.addEventListener('click', toggleAISettings);
+    generateDocxBtn.addEventListener("click", generateDocx);
 });
