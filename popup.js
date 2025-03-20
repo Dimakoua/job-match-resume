@@ -201,6 +201,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const showAISettingsForm = document.getElementById('showAISettingsForm');
     const optimizeResumeBtn = document.getElementById('optimizeResume');
     const getJobDescriptionBtn = document.getElementById('getJobDescription');
+    const generateDocxBtn = document.getElementById('generateDocx');
     const resumeFileInput = document.getElementById('resumeFile');
 
     // Save settings when the save button is clicked
@@ -217,4 +218,8 @@ document.addEventListener('DOMContentLoaded', function () {
     optimizeResumeBtn.addEventListener('click', optimizeResume);
     getJobDescriptionBtn.addEventListener('click', getJobDescription);
     resumeFileInput.addEventListener('change', handleFileUpload);
+
+    generateDocxBtn.addEventListener("click", () => {
+        chrome.runtime.sendMessage({ action: "generateDocx" });
+    });
 });

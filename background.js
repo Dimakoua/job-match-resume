@@ -79,10 +79,60 @@ async function optimizeResumeWithClaude(resumeText, jobDescription, APItoken) {
     }
 }
 
+async function optimizeResumeWithAI(resumeText, jobDescription, ai) {
+    try {
+        switch (ai.model) {
+            case "gpt":
+                return await optimizeResumeWithGPT(resumeText, jobDescription, ai.token);
+            case "gemini":
+                return await optimizeResumeWithGemini(resumeText, jobDescription, ai.token);
+            case "claud":
+                return await optimizeResumeWithClaude(resumeText, jobDescription, ai.token);
+            default:
+                throw new Error("Invalid AI model selected.");
+        }
+    } catch (error) {
+        console.error("Error during resume optimization:", error);
+        return "Error optimizing resume with the selected AI model.";
+    }
+}
+
+function generateDocx() {
+    import("docx").then(({ Document, Packer, Paragraph, TextRun }) => {
+        // Create a new document
+        const doc = new Document({
+            sections: [
+                {
+                    properties: {},
+                    children: [
+                        new Paragraph({
+                            children: [
+                                new TextRun("Hello! This is a generated DOCX file."),
+                                new TextRun("\nCreated in a Chrome Extension 🚀").bold().break(),
+                            ],
+                        }),
+                    ],
+                },
+            ],
+        });
+
+        // Convert the document to a blob
+        Packer.toBlob(doc).then((blob) => {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "generated_document.docx";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+    });
+}
+
 chrome.runtime.onInstalled.addListener(() => {
     console.log("AI Resume Optimizer Extension Installed.");
 });
-
 
 let savedJobDescription = "No job description available.";
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
@@ -109,6 +159,10 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
         sendResponse({ jobDescription: savedJobDescription });
     }
 
+    if (request.action === "generateDocx") {
+        generateDocx();
+    }
+
     return true;
 });
 
@@ -120,23 +174,3 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
         });
     }
 });
-
-
-
-async function optimizeResumeWithAI(resumeText, jobDescription, ai) {
-    try {
-        switch (ai.model) {
-            case "gpt":
-                return await optimizeResumeWithGPT(resumeText, jobDescription, ai.token);
-            case "gemini":
-                return await optimizeResumeWithGemini(resumeText, jobDescription, ai.token);
-            case "claud":
-                return await optimizeResumeWithClaude(resumeText, jobDescription, ai.token);
-            default:
-                throw new Error("Invalid AI model selected.");
-        }
-    } catch (error) {
-        console.error("Error during resume optimization:", error);
-        return "Error optimizing resume with the selected AI model.";
-    }
-}

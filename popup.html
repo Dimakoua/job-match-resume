@@ -166,7 +166,8 @@
 <body>
     <div class="container">
         <div class="header-container">
-            <img id="showAISettingsForm" width="25" height="25" src="https://img.icons8.com/ios/50/settings--v1.png" alt="settings--v1" />
+            <img id="showAISettingsForm" width="25" height="25" src="https://img.icons8.com/ios/50/settings--v1.png"
+                alt="settings--v1" />
         </div>
 
         <!-- Message Box -->
@@ -202,19 +203,23 @@
 
             <div class="input-field">
                 <label for="resume">Parsed Resume Content</label>
-                <textarea id="resume" class="validate" placeholder="Your resume content will appear here" rows="10" readonly></textarea>
+                <textarea id="resume" class="validate" placeholder="Your resume content will appear here" rows="10"
+                    readonly></textarea>
             </div>
 
             <!-- Job Description Form -->
             <div class="input-field">
                 <label for="jobDescription">Paste your job description</label>
-                <textarea id="jobDescription" class="validate" placeholder="Enter your job description" rows="10"></textarea>
+                <textarea id="jobDescription" class="validate" placeholder="Enter your job description"
+                    rows="10"></textarea>
             </div>
 
             <div class="input-field">
                 <button class="btn btn-grey" id="optimizeResume">Optimize Resume</button>
                 <button class="btn btn-grey" id="getJobDescription">Job Description</button>
             </div>
+
+            <button id="generateDocx">Download DOCX</button>
 
             <!-- Optimized resume area -->
             <div id="optimizedResume" class="hidden"></div>
