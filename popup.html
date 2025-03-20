@@ -5,231 +5,60 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Resume Optimizer</title>
-    <style>
-        /* Global styles */
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            padding: 10px;
-        }
-
-        .container {
-            width: 300px;
-            margin: 0 auto;
-        }
-
-
-        /* Container for header and image */
-        .header-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .header {
-            font-size: 24px;
-            color: #333;
-        }
-
-        .header-container img {
-            cursor: pointer;
-        }
-
-        .input-field {
-            margin-bottom: 20px;
-            max-width: 300px;
-        }
-
-        .input-field label {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 5px;
-        }
-
-        .input-field input,
-        .input-field select,
-        .input-field button {
-            width: 100%;
-            padding: 10px;
-            border-radius: 4px;
-            border: 1px solid #ddd;
-            font-size: 16px;
-            outline: none;
-            background-color: #f9f9f9;
-        }
-
-        .input-field select {
-            background-color: #f9f9f9;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
-        }
-
-        .input-field input:focus,
-        .input-field select:focus,
-        .input-field button:focus {
-            border-color: #5c6bc0;
-            box-shadow: 0 0 5px rgba(92, 107, 192, 0.5);
-        }
-
-        .btn {
-            background-color: #5c6bc0;
-            color: #fff;
-            font-size: 16px;
-            border: none;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .btn:hover {
-            background-color: #3f51b5;
-        }
-
-        .btn.grey {
-            background-color: #e0e0e0;
-            color: #333;
-        }
-
-        .btn.grey:hover {
-            background-color: #bdbdbd;
-        }
-
-        .reset-btn {
-            margin-left: 10px;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        /* For collapsible body (if you want to hide and show the form) */
-        .collapsible-header {
-            background-color: #f1f1f1;
-            cursor: pointer;
-            font-weight: bold;
-            padding: 12px;
-            border-radius: 6px;
-            text-align: center;
-        }
-
-        .collapsible-body {
-            background-color: #fafafa;
-            padding: 15px;
-            border-radius: 6px;
-            display: none;
-        }
-
-        .collapsible-body.open {
-            display: block;
-        }
-
-        /* Optimized resume area */
-        #optimizedResume {
-            background-color: #f5f5f5;
-            padding: 10px;
-            max-height: 300px;
-            overflow-y: auto;
-            margin-top: 10px;
-            border-radius: 5px;
-            font-family: monospace;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-        }
-
-        /* Success message */
-        .success-message {
-            background-color: #4caf50;
-            color: white;
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            font-size: 14px;
-        }
-
-        /* Error message */
-        .error-message {
-            background-color: #f44336;
-            color: white;
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            font-size: 14px;
-        }
-    </style>
+    <link rel="stylesheet" href="popup.css">
 </head>
 
 <body>
     <div class="container">
         <div class="header-container">
-            <img id="showAISettingsForm" width="25" height="25" src="https://img.icons8.com/ios/50/settings--v1.png"
-                alt="settings--v1" />
+            <h2>AI Resume Optimizer</h2>
+            <img id="showAISettingsForm" width="25" height="25" src="https://img.icons8.com/ios/50/settings--v1.png" alt="Settings">
         </div>
 
-        <!-- Message Box -->
-        <div id="messageBox"></div>
-
-        <section id="AISettingsForm" class="">
-            <!-- AI Settings Form -->
+        <!-- AI Settings Form -->
+        <section id="AISettingsForm" class="hidden">
             <div class="input-field">
                 <label for="aiModel">Select AI Model</label>
                 <select id="aiModel">
-                    <option value="gpt" selected>GPT</option>
-                    <option value="gemini">Gemini</option>
-                    <option value="claud">Claud</option>
+                    <option value="gemini" selected>Gemini</option>
+                    <option value="gpt">GPT</option>
+                    <option value="claude">Claude</option>
                 </select>
             </div>
 
             <div class="input-field">
                 <label for="userToken">API Key</label>
-                <input id="userToken" type="password" class="validate" placeholder="Enter AI token">
+                <input id="userToken" type="password" placeholder="Enter AI token">
             </div>
 
-            <div class="input-field">
-                <button class="btn grey" id="saveAISettings">Save AI Settings</button>
-            </div>
+            <button class="btn grey" id="saveAISettings">Save</button>
         </section>
 
-        <section>
-            <!-- Resume Form with File Upload -->
+        <!-- Resume Upload Section -->
+        <section id="MainForm">
             <div class="input-field">
-                <label for="resumeFile">Upload your resume here</label>
+                <label for="resumeFile">Upload Resume</label>
                 <input type="file" id="resumeFile" accept=".pdf, .docx, .txt" />
             </div>
 
             <div class="input-field">
                 <label for="resume">Parsed Resume Content</label>
-                <textarea id="resume" class="validate" placeholder="Your resume content will appear here" rows="10"
-                    readonly></textarea>
-            </div>
-
-            <!-- Job Description Form -->
-            <div class="input-field">
-                <label for="jobDescription">Paste your job description</label>
-                <textarea id="jobDescription" class="validate" placeholder="Enter your job description"
-                    rows="10"></textarea>
+                <textarea id="resume" placeholder="Your resume content will appear here" rows="6" readonly></textarea>
             </div>
 
             <div class="input-field">
-                <button class="btn btn-grey" id="optimizeResume">Optimize Resume</button>
-                <button class="btn btn-grey" id="getJobDescription">Job Description</button>
+                <label for="jobDescription">Paste Job Description</label>
+                <textarea id="jobDescription" placeholder="Enter job description" rows="6"></textarea>
             </div>
 
-            <button id="generateDocx">Download DOCX</button>
+            <button class="btn" id="optimizeResume">Optimize Resume</button>
+            <button class="btn" id="downloadDocx">Download DOCX</button>
 
-            <!-- Optimized resume area -->
             <div id="optimizedResume" class="hidden"></div>
         </section>
     </div>
 
     <script src="popup.js"></script>
-    <script src="libs/pdf.min.js"></script>
-    <script src="libs/mammoth.browser.min.js"></script>
-    <script src="libs/docx.min.js"></script>
 </body>
 
 </html>

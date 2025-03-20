@@ -191,29 +191,16 @@ function loadJobDescription() {
     });
 }
 
-function generateDocx() {
-    const { Document, Packer, Paragraph, TextRun, Tab } = window.docx;
+function generateDocx(optimizedText) {
+    const { Document, Packer, Paragraph, TextRun } = window.docx;
 
     const doc = new Document({
         sections: [
             {
                 properties: {},
-                children: [
-                    new Paragraph({
-                        children: [
-                            new TextRun("Hello World"),
-                            new TextRun({
-                                text: "Foo Bar",
-                                bold: true,
-                                size: 40,
-                            }),
-                            new TextRun({
-                                children: [new Tab(), "Github is the best"],
-                                bold: true,
-                            }),
-                        ],
-                    }),
-                ],
+                children: optimizedText.split("\n").map(line => new Paragraph({
+                    children: [new TextRun(line)]
+                })),
             },
         ],
     });
@@ -223,7 +210,7 @@ function generateDocx() {
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = "generated_document.docx";
+        a.download = "optimized_resume.docx";
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -240,7 +227,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const saveAISettingsBtn = document.getElementById('saveAISettings');
     const showAISettingsForm = document.getElementById('showAISettingsForm');
     const optimizeResumeBtn = document.getElementById('optimizeResume');
-    const getJobDescriptionBtn = document.getElementById('getJobDescription');
     const generateDocxBtn = document.getElementById('generateDocx');
     const resumeFileInput = document.getElementById('resumeFile');
 
@@ -252,14 +238,27 @@ document.addEventListener('DOMContentLoaded', function () {
     // Save settings when the save button is clicked
     showAISettingsForm.addEventListener('click', function () {
         const AISettingsForm = document.getElementById('AISettingsForm');
+        const mainForm = document.getElementById('MainForm');
         AISettingsForm.classList.toggle('hidden');
+        mainForm.classList.toggle('hidden');
+
     });
 
     optimizeResumeBtn.addEventListener('click', optimizeResume);
-    getJobDescriptionBtn.addEventListener('click', getJobDescription);
     resumeFileInput.addEventListener('change', handleFileUpload);
 
     generateDocxBtn.addEventListener("click", () => {
         generateDocx();
     });
+
+
+    // Show loading
+    document.getElementById("loadingSpinner").style.display = "block";
+
+    // Simulate API call
+    setTimeout(() => {
+        document.getElementById("loadingSpinner").style.display = "none";
+        document.getElementById("optimizedResume").style.display = "block";
+        document.getElementById("optimizedResume").innerText = "✔️ Optimized resume content will appear here.";
+    }, 2000);
 });
