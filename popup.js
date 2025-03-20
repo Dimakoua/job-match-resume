@@ -113,7 +113,7 @@ function handleFileUpload(event) {
     // For Text files
     if (fileType === "text/plain") {
         const reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = function (e) {
             const fileContent = e.target.result;
             parseResumeContent(fileContent);
         };
@@ -122,7 +122,7 @@ function handleFileUpload(event) {
     // For PDF files, use pdf.js to extract text
     else if (fileType === "application/pdf") {
         const reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = function (e) {
             const pdfData = new Uint8Array(e.target.result);
             parsePDF(pdfData);
         };
@@ -131,7 +131,7 @@ function handleFileUpload(event) {
     // For DOCX files, use Mammoth.js to extract text
     else if (fileType === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
         const reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = function (e) {
             const arrayBuffer = e.target.result;
             parseDOCX(arrayBuffer);
         };
@@ -191,6 +191,46 @@ function loadJobDescription() {
     });
 }
 
+function generateDocx() {
+    const { Document, Packer, Paragraph, TextRun, Tab } = window.docx;
+
+    const doc = new Document({
+        sections: [
+            {
+                properties: {},
+                children: [
+                    new Paragraph({
+                        children: [
+                            new TextRun("Hello World"),
+                            new TextRun({
+                                text: "Foo Bar",
+                                bold: true,
+                                size: 40,
+                            }),
+                            new TextRun({
+                                children: [new Tab(), "Github is the best"],
+                                bold: true,
+                            }),
+                        ],
+                    }),
+                ],
+            },
+        ],
+    });
+
+    // Convert the document to a blob
+    Packer.toBlob(doc).then((blob) => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "generated_document.docx";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    });
+}
+
 // Event listener for Save button
 document.addEventListener('DOMContentLoaded', function () {
     // Load saved settings on page load
@@ -220,6 +260,6 @@ document.addEventListener('DOMContentLoaded', function () {
     resumeFileInput.addEventListener('change', handleFileUpload);
 
     generateDocxBtn.addEventListener("click", () => {
-        chrome.runtime.sendMessage({ action: "generateDocx" });
+        generateDocx();
     });
 });

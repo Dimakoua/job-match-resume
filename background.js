@@ -97,39 +97,6 @@ async function optimizeResumeWithAI(resumeText, jobDescription, ai) {
     }
 }
 
-function generateDocx() {
-    import("docx").then(({ Document, Packer, Paragraph, TextRun }) => {
-        // Create a new document
-        const doc = new Document({
-            sections: [
-                {
-                    properties: {},
-                    children: [
-                        new Paragraph({
-                            children: [
-                                new TextRun("Hello! This is a generated DOCX file."),
-                                new TextRun("\nCreated in a Chrome Extension 🚀").bold().break(),
-                            ],
-                        }),
-                    ],
-                },
-            ],
-        });
-
-        // Convert the document to a blob
-        Packer.toBlob(doc).then((blob) => {
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = "generated_document.docx";
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        });
-    });
-}
-
 chrome.runtime.onInstalled.addListener(() => {
     console.log("AI Resume Optimizer Extension Installed.");
 });
@@ -157,10 +124,6 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
 
     if (message.action === "getJobDescription") {
         sendResponse({ jobDescription: savedJobDescription });
-    }
-
-    if (request.action === "generateDocx") {
-        generateDocx();
     }
 
     return true;
