@@ -285,7 +285,6 @@ function displayATSScore(atsScore) {
 document.addEventListener('DOMContentLoaded', function () {
     // Load saved settings on page load
     loadSettings();
-    loadJobDescription();
     loadCV();
 
     const saveAISettingsBtn = document.getElementById('saveAISettings');
@@ -298,3 +297,5 @@ document.addEventListener('DOMContentLoaded', function () {
     resumeFileInput.addEventListener('change', handleFileUpload);
     showAISettingsForm.addEventListener('click', toggleAISettings);
 });
+
+loadJobDescription();

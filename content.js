@@ -1,20 +1,14 @@
 function waitForJobDescription() {
-  console.log("Content script running...");
-  console.log("Hostname:", window.location.hostname);
-  
   let selector = null;
 
   if (window.location.hostname.includes("linkedin")) {
       selector = '*[data-test-job-description-text], .job-details-about-the-job-module__description';
   } 
   else if (window.location.hostname.includes("indeed")) {
-      selector = '.jobsearch-jobDescriptionText';
+      selector = '#jobDescriptionText';
   } 
   else if (window.location.hostname.includes("glassdoor")) {
-      selector = '.jdDescription';
-  }
-  else if (window.location.hostname.includes("mozilla")) {
-      selector = '.section-content';
+      selector = "[class*='JobDetails_jobDescription']";
   }
 
   if (!selector) {
@@ -44,6 +38,15 @@ function waitForJobDescription() {
 function sendJobDescription(jobDescription) {
   chrome.runtime.sendMessage({ action: "saveJobDescription", jobDescription });
 }
+
+chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+  console.log("Message received:", message);
+  if (message.action === "getJobDescription") {
+      waitForJobDescription();
+      sendResponse({ jobDescription: savedJobDescription });
+  }
+  return true;
+});
 
 // Call function to wait for the job description to load
 waitForJobDescription();
