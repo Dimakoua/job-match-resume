@@ -12,7 +12,11 @@
     <div class="container">
         <div class="header-container">
             <h2>AI Resume Optimizer</h2>
-            <img id="showAISettingsForm" width="25" height="25" src="https://img.icons8.com/ios/50/settings--v1.png" alt="Settings">
+            <div class="ats-container">
+                <img id="showAISettingsForm" class="settings-icon" src="https://img.icons8.com/ios/50/settings--v1.png"
+                    alt="Settings">
+                <span id="atsScore" class="ats-score-circle hidden"></span>
+            </div>
         </div>
 
         <!-- AI Settings Form -->
@@ -52,13 +56,13 @@
             </div>
 
             <button class="btn" id="optimizeResume">Optimize Resume</button>
-            <button class="btn" id="downloadDocx">Download DOCX</button>
         </section>
     </div>
 
     <script src="popup.js"></script>
     <script src="./libs/pdf.min.js"></script>
     <script src="./libs/mammoth.browser.min.js"></script>
+    <script src="./libs/docx.min.js"></script>
 </body>
 
 </html>

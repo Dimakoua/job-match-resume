@@ -55,6 +55,39 @@ body {
     background-color: #3f51b5;
 }
 
+.settings-icon {
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+}
+
+.ats-container {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Adds space between the icon and ATS score */
+}
+
+.ats-score-circle {
+    display: inline-block;
+    width: 25px;
+    height: 25px;
+    line-height: 25px;
+    border-radius: 50%;
+    font-size: 0.5em;
+    text-align: center;
+    font-weight: bold;
+    color: white;
+    background-color: #4CAF50; /* Default green for high score */
+}
+
+.ats-score-circle.low {
+    background-color: #f44336; /* Red for low score */
+}
+
+.ats-score-circle.medium {
+    background-color: #ff9800; /* Orange for medium score */
+}
+
 .hidden {
     display: none;
 }

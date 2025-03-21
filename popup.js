@@ -109,7 +109,7 @@ async function optimizeResume() {
     }
 
     // Send message to background.js
-    const res = await chrome.runtime.sendMessage(
+    const result = await chrome.runtime.sendMessage(
         {
             action: "optimizeResume",
             resume: resumeText,
@@ -121,7 +121,11 @@ async function optimizeResume() {
         }
     );
 
-    console.log("Optimized Resume 22:", res);
+    console.log("Optimized Resume 22:", result);
+
+    // displayATSResults(result.ATSCompatibilityScore, result.explanation);
+    displayATSScore(result.ATSCompatibilityScore,);
+    generateDocx(result.optimizedResume);
 }
 
 function handleFileUpload(event) {
@@ -221,8 +225,7 @@ function updateResumeContent(content) {
     }
 }
 
-function generateDocx() {
-    optimizedText = document.getElementById('optimizedResume').value;
+function generateDocx(optimizedText) {
     const { Document, Packer, Paragraph, TextRun } = window.docx;
 
     const doc = new Document({
@@ -249,6 +252,36 @@ function generateDocx() {
     });
 }
 
+// Function to display ATS results
+function displayATSResults(atsScore, explanation) {
+    // Get the ATS result section and show it
+    const atsResultSection = document.getElementById("ATSResultSection");
+    atsResultSection.classList.remove("hidden");
+
+    // Update the ATS Score and Explanation
+    document.getElementById("atsScore").textContent = `${atsScore}%`;
+    document.getElementById("atsExplanation").textContent = explanation;
+}
+
+function displayATSScore(atsScore) {
+    const atsScoreElement = document.getElementById("atsScore");
+
+    // Remove any previous color classes
+    atsScoreElement.classList.remove("hidden", "low", "medium");
+
+    // Set the ATS score text
+    atsScoreElement.textContent = `${atsScore}%`;
+
+    // Determine the background color based on the score
+    if (atsScore >= 80) {
+        atsScoreElement.classList.add("high");
+    } else if (atsScore >= 50) {
+        atsScoreElement.classList.add("medium");
+    } else {
+        atsScoreElement.classList.add("low");
+    }
+}
+
 // Event listener for Save button
 document.addEventListener('DOMContentLoaded', function () {
     // Load saved settings on page load
@@ -259,12 +292,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const saveAISettingsBtn = document.getElementById('saveAISettings');
     const showAISettingsForm = document.getElementById('showAISettingsForm');
     const optimizeResumeBtn = document.getElementById('optimizeResume');
-    const generateDocxBtn = document.getElementById('downloadDocx');
     const resumeFileInput = document.getElementById('resumeFile');
 
     optimizeResumeBtn.addEventListener('click', optimizeResume);
     saveAISettingsBtn.addEventListener('click', saveSettings);
     resumeFileInput.addEventListener('change', handleFileUpload);
     showAISettingsForm.addEventListener('click', toggleAISettings);
-    generateDocxBtn.addEventListener("click", generateDocx);
 });
