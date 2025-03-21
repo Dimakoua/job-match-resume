@@ -19,7 +19,6 @@ function waitForJobDescription() {
   const observer = new MutationObserver((mutations, obs) => {
       const jobElement = document.querySelector(selector);
       if (jobElement && jobElement.innerText.trim().length > 0) {
-          console.log("Job description found!");
           observer.disconnect(); // Stop observing once we have the job description
           sendJobDescription(jobElement.innerText.trim());
       }
@@ -30,7 +29,6 @@ function waitForJobDescription() {
   // If the job description is already available, send it immediately
   const existingJobElement = document.querySelector(selector);
   if (existingJobElement) {
-      console.log("Job description already available.");
       sendJobDescription(existingJobElement.innerText.trim());
   }
 }
@@ -40,7 +38,6 @@ function sendJobDescription(jobDescription) {
 }
 
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
-  console.log("Message received:", message);
   if (message.action === "getJobDescription") {
       waitForJobDescription();
       sendResponse({ jobDescription: savedJobDescription });

@@ -68,8 +68,6 @@ async function optimizeResumeWithGemini(resumeText, jobDescription, APItoken) {
         });
 
         const data = await response.json();
-        console.log("Gemini API Response:", data);
-
         // Extracting the JSON text from the response
         const rawResponseText = data?.candidates?.[0]?.content?.parts[0]?.text;
 
@@ -110,8 +108,6 @@ async function optimizeResumeWithGPT(resumeText, jobDescription, APItoken) {
         });
 
         const data = await response.json();
-        console.log("GPT API Response:", data);
-
         // Extract the raw response text from the GPT API response
         const rawResponseText = data?.choices?.[0]?.message?.content;
 
@@ -155,8 +151,6 @@ async function optimizeResumeWithClaude(resumeText, jobDescription, APItoken) {
         });
 
         const data = await response.json();
-        console.log("Claude API Response:", data);
-
         // Assuming the response structure is similar to other models, extract the raw response text
         const rawResponseText = data?.completion;
 
@@ -219,7 +213,6 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     }
 
     if (message.action === "saveJobDescription") {
-        console.log("Job Description Saved:", message);
         savedJobDescription = message.jobDescription;
     }
 

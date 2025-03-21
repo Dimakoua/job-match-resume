@@ -24,7 +24,6 @@ function loadSettings() {
 
 function loadJobDescription() {
     chrome.runtime.sendMessage({ action: "getJobDescription" }, function (response) {
-        console.log("Job Description:", response.jobDescription);
         const jobDescription = response.jobDescription;
         document.getElementById('jobDescription').value = jobDescription;
     });
@@ -107,24 +106,27 @@ async function optimizeResume() {
         return;
     }
 
-    // Send message to background.js
-    const result = await chrome.runtime.sendMessage(
-        {
-            action: "optimizeResume",
-            resume: resumeText,
-            jobDescription: jobDescriptionText,
-            ai: {
-                model: settings.aiModel,
-                token: settings.userToken,
+    try {
+        toggleLoader(true);
+
+        // Send message to background.js
+        const result = await chrome.runtime.sendMessage(
+            {
+                action: "optimizeResume",
+                resume: resumeText,
+                jobDescription: jobDescriptionText,
+                ai: {
+                    model: settings.aiModel,
+                    token: settings.userToken,
+                }
             }
-        }
-    );
+        );
 
-    console.log("Optimized Resume 22:", result);
-
-    // displayATSResults(result.ATSCompatibilityScore, result.explanation);
-    displayATSScore(result.ATSCompatibilityScore,);
-    generateDocx(result.optimizedResume);
+        displayATSScore(result.ATSCompatibilityScore,);
+        generateDocx(result.optimizedResume);
+    } finally {
+        toggleLoader(false);
+    }
 }
 
 function handleFileUpload(event) {
@@ -178,7 +180,6 @@ async function parsePDF(pdfData) {
     try {
         const pdfDoc = await pdfjsLib.getDocument(pdfData).promise;
         const totalPages = pdfDoc.numPages;
-        console.log("Total Pages:", totalPages);
 
         let textContent = "";
 
@@ -279,6 +280,14 @@ function displayATSScore(atsScore) {
     } else {
         atsScoreElement.classList.add("low");
     }
+}
+
+function toggleLoader() {
+    const loader = document.getElementById("loader");
+    const optimizeResumeBtn = document.getElementById("optimizeResume");
+
+    loader.classList.toggle("hidden");
+    optimizeResumeBtn.classList.toggle("hidden");
 }
 
 // Event listener for Save button
