@@ -50,7 +50,6 @@ function toggleAISettings() {
 function saveSettings() {
     const aiModelSelect = document.getElementById('aiModel');
     const userTokenInput = document.getElementById('userToken');
-    const AISettingsForm = document.getElementById('AISettingsForm');
 
     const aiModel = aiModelSelect.value;
     const userToken = userTokenInput.value;
@@ -65,8 +64,8 @@ function saveSettings() {
     localStorage.setItem('userToken', userToken);
 
     // Show success message and hide the form
-    AISettingsForm.classList.add('hidden');
     showMessage('success', 'AI Settings Saved Successfully!', 3000);
+    toggleAISettings();
 }
 
 function showMessage(type, text, timeout = 3000) {
