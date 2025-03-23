@@ -11,6 +11,7 @@ const prompt = `
     5. **ATS Optimization Score:** Provide an estimated ATS compatibility score (0-100%) based on keyword relevance, formatting compliance, and overall alignment with the job description.
     6. **explanation**: should describe why the score was assigned.
     7. Ensure that the response adheres to this structure exactly.
+    8. If any fields are missing, please add them as empty strings or as a placeholder.
 
     ### **Resume Content:**
     {{resumeText}}
@@ -271,8 +272,8 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
 
     if (message.action === "getJobDescription") {
         chrome.storage.session.get(["savedJobDescription"], (result) => {
-            console.log(result.savedJobDescription);
-            sendResponse({ jobDescription: result.savedJobDescription });
+            const savedJobDescription = result.savedJobDescription ?? "Job description not found.";
+            sendResponse({ jobDescription: savedJobDescription });
         });
     }
 
