@@ -1,12 +1,16 @@
 const prompt = `
-    Please optimize the following resume to align with the provided job description while preserving its original format, structure, and professional style. Ensure that the revised resume is ATS-friendly and tailored for maximum compatibility with Applicant Tracking Systems (ATS) while maintaining readability and a natural flow.
+    Please optimize the following resume to align with the provided job description while preserving its original format, structure, and professional style. 
+    Ensure that the revised resume is ATS-friendly and tailored for maximum compatibility with Applicant Tracking Systems (ATS) while maintaining readability and a natural flow.
+    You may refer to the candidate's GitHub, LinkedIn profile, or personal website listed in the resume to gather additional information about their skills, projects, and professional background.
+
     ### **Resume Optimization Requirements:**
     1. **Keyword Optimization:** Extract and incorporate relevant keywords, skills, and job titles from the job description naturally without overstuffing.
     2. **Experience Alignment:** Adjust bullet points and descriptions to better reflect the key responsibilities and qualifications required in the job description.
     3. **Action-Oriented Language:** Improve phrasing by using strong action verbs and concise language to emphasize achievements and impact.
-    4. **Formatting Consistency:** Maintain the original layout and structure while ensuring ATS readability (e.g., avoid tables, graphics, and complex formatting that ATS may struggle with).
-    5. **Quantifiable Impact:** Where applicable, enhance bullet points with measurable results to showcase accomplishments effectively.
-    6. **ATS Optimization Score:** Provide an estimated ATS compatibility score (0-100%) based on keyword relevance, formatting compliance, and overall alignment with the job description.
+    4. **Quantifiable Impact:** Where applicable, enhance bullet points with measurable results to showcase accomplishments effectively.
+    5. **ATS Optimization Score:** Provide an estimated ATS compatibility score (0-100%) based on keyword relevance, formatting compliance, and overall alignment with the job description.
+    6. **explanation**: should describe why the score was assigned.
+    7. Ensure that the response adheres to this structure exactly.
 
     ### **Resume Content:**
     {{resumeText}}
@@ -15,9 +19,54 @@ const prompt = `
     {{jobDescription}}
 
     ### **Output Format:**
-    - Provide answer in json format with the key "optimizedText" containing the optimized resume and the key "ATSCompatibilityScore" with the calculated score.
-    - Provide the optimized resume **as plain text** while keeping the structure and formatting as close to the original as possible.
-    - At the end of the response, include an **ATS Compatibility Score** (0-100%) with a brief explanation of the score.
+    Provide the optimized resume in JSON format strictly following this structure:
+    
+    \`\`\`json
+    {
+        "optimizedResume": {
+            "personal_info": {
+                "name": "string",
+                "email": "string",
+                "phone": "string",
+                "location": "string",
+                "linkedin": "string",
+                "github": "string"
+            },
+            "objective": "string",
+            "experience": [
+                {
+                    "position": "string",
+                    "company": "string",
+                    "duration": "string",
+                    "location": "string",
+                    "achievements": ["string"]
+                }
+            ],
+            "projects": [
+                {
+                    "name": "string",
+                    "date": "string",
+                    "link": "string",
+                    "description": ["string"]
+                }
+            ],
+            "education": [
+                {
+                    "degree": "string",
+                    "university": "string",
+                    "years": "string"
+                }
+            ],
+            "skills": {
+                "technical": ["string"],
+                "non_technical": ["string"]
+            }
+        },
+        "ATSCompatibilityScore": 0-100,
+        "explanation": "string"
+        "recomendedFileName": "string.docx"
+    }
+    \`\`\`
 `;
 
 function getPrompt(resumeText, jobDescription) {
@@ -33,22 +82,27 @@ function parseResponse(responseText) {
         // Parse the raw response text as JSON
         const parsedData = JSON.parse(cleanedResponse);
 
+        console.log(parsedData);
+
         // Extract the relevant fields (assuming they are present in all responses)
-        const optimizedText = parsedData.optimizedText || "Optimized text not found.";
+        const optimizedText = parsedData.optimizedResume || {};
         const atsScore = parsedData.ATSCompatibilityScore || "N/A";
         const explanation = parsedData.explanation || "Explanation not available.";
+        const recomendedFileName = parsedData.recomendedFileName || "optimized_resume.docx";
 
         return {
             optimizedResume: optimizedText,
             ATSCompatibilityScore: atsScore,
-            explanation: explanation
+            explanation: explanation,
+            recomendedFileName: recomendedFileName
         };
     } catch (error) {
         console.error("Error parsing response text as JSON:", error);
         return {
-            optimizedResume: "Error parsing the response.",
+            optimizedResume: {},
             ATSCompatibilityScore: "N/A",
-            explanation: "Error in explanation parsing."
+            explanation: "Error in explanation parsing.",
+            recomendedFileName: "optimized_resume.docx",
         };
     }
 }

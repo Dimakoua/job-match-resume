@@ -123,7 +123,7 @@ async function optimizeResume() {
         );
 
         displayATSScore(result.ATSCompatibilityScore,);
-        generateDocx(result.optimizedResume);
+        generateDocx(result);
     } finally {
         toggleLoader(false);
     }
@@ -225,26 +225,15 @@ function updateResumeContent(content) {
     }
 }
 
-function generateDocx(optimizedText) {
-    const { Document, Packer, Paragraph, TextRun } = window.docx;
-
-    const doc = new Document({
-        sections: [
-            {
-                properties: {},
-                children: optimizedText.split("\n").map(line => new Paragraph({
-                    children: [new TextRun(line)]
-                })),
-            },
-        ],
-    });
+function generateDocx(jsonData) {
+    const doc = generateResume(jsonData.optimizedResume)
 
     // Convert the document to a blob
     Packer.toBlob(doc).then((blob) => {
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = "optimized_resume.docx";
+        a.download = jsonData.recomendedFileName;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
