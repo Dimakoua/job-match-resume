@@ -250,7 +250,6 @@ chrome.runtime.onInstalled.addListener(() => {
     console.log("AI Resume Optimizer Extension Installed.");
 });
 
-let savedJobDescription = "No job description available.";
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     if (message.action === "optimizeResume") {
         const resumeContent = message.resume;
@@ -267,11 +266,14 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     }
 
     if (message.action === "saveJobDescription") {
-        savedJobDescription = message.jobDescription;
+        chrome.storage.session.set({ savedJobDescription: message.jobDescription });
     }
 
     if (message.action === "getJobDescription") {
-        sendResponse({ jobDescription: savedJobDescription });
+        chrome.storage.session.get(["savedJobDescription"], (result) => {
+            console.log(result.savedJobDescription);
+            sendResponse({ jobDescription: result.savedJobDescription });
+        });
     }
 
     return true;
