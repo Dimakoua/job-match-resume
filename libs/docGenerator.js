@@ -98,7 +98,7 @@ function createObjective(jsonData) {
 }
 
 function createExperience(jsonData) {
-    if(!jsonData.experience && jsonData.experience.length === 0) {
+    if(!jsonData.experience || jsonData.experience.length === 0) {
         return [];
     }
     return [
@@ -154,7 +154,7 @@ function createExperienceItem(experience) {
 }
 
 function createProjects(jsonData) {
-    if(!jsonData.projects && jsonData.projects.length === 0) {
+    if(!jsonData.projects || jsonData.projects.length === 0) {
         return [];
     }
     return [
@@ -205,7 +205,7 @@ function createProjectItem(projects) {
 }
 
 function createEducation(jsonData) {
-    if(!jsonData.education && jsonData.education.length === 0) {
+    if(!jsonData.education || jsonData.education.length === 0) {
         return [];
     }
     return [
