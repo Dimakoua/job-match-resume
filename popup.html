@@ -10,12 +10,13 @@
 
 <body>
     <div class="container">
-        <div class="header-container">
+        <img id="history" class="back-icon hidden" src="https://img.icons8.com/ios-filled/50/left.png" alt="Back">
+
+        <div id="header" class="header-container">
             <h2>AI Resume Optimizer</h2>
             <div class="ats-container">
                 <img id="showAISettingsForm" class="settings-icon" src="https://img.icons8.com/ios/50/settings--v1.png"
                     alt="Settings">
-                <span id="atsScore" class="ats-score-circle hidden"></span>
             </div>
         </div>
 
@@ -61,10 +62,20 @@
             </div>
 
         </section>
+
+        <section id="atsScore" class="ats-score-container hidden">
+            <div class="progress-container">
+                <svg class="progress-ring" width="120" height="120">
+                    <circle class="progress-background" cx="60" cy="60" r="50" />
+                    <circle class="progress-circle" cx="60" cy="60" r="50" />
+                </svg>
+                <div class="progress-text">0/100</div>
+            </div>
+        </section>
     </div>
 
-     <!-- Message Box Container -->
-     <div id="messageBox"></div>
+    <!-- Message Box Container -->
+    <div id="messageBox"></div>
 
     <script src="./libs/pdf.min.js"></script>
     <script src="./libs/mammoth.browser.min.js"></script>

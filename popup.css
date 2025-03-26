@@ -21,6 +21,12 @@ body {
     align-items: center;
 }
 
+.ats-score-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .input-field {
     margin-bottom: 15px;
 }
@@ -61,11 +67,18 @@ body {
     cursor: pointer;
 }
 
+.back-icon {
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+}
+
 .ats-container {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px; /* Adds space between the icon and ATS score */
+    gap: 10px;
+    /* Adds space between the icon and ATS score */
 }
 
 .ats-score-circle {
@@ -78,15 +91,18 @@ body {
     text-align: center;
     font-weight: bold;
     color: white;
-    background-color: #4CAF50; /* Default green for high score */
+    background-color: #4CAF50;
+    /* Default green for high score */
 }
 
 .ats-score-circle.low {
-    background-color: #f44336; /* Red for low score */
+    background-color: #f44336;
+    /* Red for low score */
 }
 
 .ats-score-circle.medium {
-    background-color: #ff9800; /* Orange for medium score */
+    background-color: #ff9800;
+    /* Orange for medium score */
 }
 
 .hidden {
@@ -108,7 +124,8 @@ body {
 
 /* Success message styling */
 .success-message {
-    background-color: #4CAF50; /* Green */
+    background-color: #4CAF50;
+    /* Green */
     color: white;
     padding: 10px;
     border-radius: 5px;
@@ -120,7 +137,8 @@ body {
 
 /* Error message styling */
 .error-message {
-    background-color: #f44336; /* Red */
+    background-color: #f44336;
+    /* Red */
     color: white;
     padding: 10px;
     border-radius: 5px;
@@ -135,6 +153,7 @@ body {
     0% {
         opacity: 1;
     }
+
     100% {
         opacity: 0;
     }
@@ -150,6 +169,7 @@ body {
         transform: translateX(100%);
         opacity: 0;
     }
+
     100% {
         transform: translateX(0);
         opacity: 1;
@@ -164,8 +184,9 @@ body {
     color: #514b82;
     border: 2px solid;
     position: relative;
-  }
-  .loader::before {
+}
+
+.loader::before {
     content: "";
     position: absolute;
     margin: 2px;
@@ -176,7 +197,46 @@ body {
     border-radius: inherit;
     background: currentColor;
     animation: l3 1s infinite linear;
-  }
-  @keyframes l3 {
-      50% {left:100%;transform: translateX(calc(-100% - 4px))}
-  }
+}
+
+@keyframes l3 {
+    50% {
+        left: 100%;
+        transform: translateX(calc(-100% - 4px))
+    }
+}
+.progress-container {
+    position: relative;
+    width: 120px;
+    height: 120px;
+}
+
+.progress-ring {
+    transform: rotate(-90deg);
+}
+
+.progress-background {
+    fill: none;
+    stroke: #ddd;
+    stroke-width: 8;
+}
+
+.progress-circle {
+    fill: none;
+    stroke: #3f51b5; /* Purple color */
+    stroke-width: 8;
+    stroke-linecap: round;
+    stroke-dasharray: 314; /* 2 * PI * r (where r = 50) */
+    stroke-dashoffset: 314;
+    transition: stroke-dashoffset 1s ease-in-out;
+}
+
+.progress-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 18px;
+    font-weight: bold;
+    color: #888;
+}

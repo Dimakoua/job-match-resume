@@ -40,9 +40,23 @@ function loadCV() {
 function toggleAISettings() {
     const AISettingsForm = document.getElementById('AISettingsForm');
     const mainForm = document.getElementById('MainForm');
+    const atsScore = document.getElementById('atsScore');
 
     AISettingsForm.classList.toggle('hidden');
     mainForm.classList.toggle('hidden');
+    atsScore.classList.add('hidden');
+}
+
+function toggleATSResul() {
+    const mainForm = document.getElementById('MainForm');
+    const atsScore = document.getElementById('atsScore');
+    const header = document.getElementById('header');
+    const history = document.getElementById('history');
+
+    mainForm.classList.toggle('hidden');
+    atsScore.classList.toggle('hidden');
+    header.classList.toggle('hidden');
+    history.classList.toggle('hidden');
 }
 
 // Function to save settings to localStorage
@@ -241,34 +255,21 @@ function generateDocx(jsonData) {
     });
 }
 
-// Function to display ATS results
-function displayATSResults(atsScore, explanation) {
-    // Get the ATS result section and show it
-    const atsResultSection = document.getElementById("ATSResultSection");
-    atsResultSection.classList.remove("hidden");
+function setATSScore(percent) {
+    const circle = document.querySelector(".progress-circle");
+    const text = document.querySelector(".progress-text");
+    const radius = 50;
+    const circumference = 2 * Math.PI * radius;
+    const offset = circumference - (percent / 100) * circumference;
 
-    // Update the ATS Score and Explanation
-    document.getElementById("atsScore").textContent = `${atsScore}%`;
-    document.getElementById("atsExplanation").textContent = explanation;
+    circle.style.strokeDashoffset = offset;
+    text.textContent = `${percent}/100`;
 }
 
 function displayATSScore(atsScore) {
-    const atsScoreElement = document.getElementById("atsScore");
-
-    // Remove any previous color classes
-    atsScoreElement.classList.remove("hidden", "low", "medium");
-
+    toggleATSResul();
     // Set the ATS score text
-    atsScoreElement.textContent = `${atsScore}%`;
-
-    // Determine the background color based on the score
-    if (atsScore >= 80) {
-        atsScoreElement.classList.add("high");
-    } else if (atsScore >= 50) {
-        atsScoreElement.classList.add("medium");
-    } else {
-        atsScoreElement.classList.add("low");
-    }
+    setATSScore(atsScore);
 }
 
 function toggleLoader() {
@@ -289,11 +290,13 @@ document.addEventListener('DOMContentLoaded', function () {
     const showAISettingsForm = document.getElementById('showAISettingsForm');
     const optimizeResumeBtn = document.getElementById('optimizeResume');
     const resumeFileInput = document.getElementById('resumeFile');
+    const history = document.getElementById('history');
 
     optimizeResumeBtn.addEventListener('click', optimizeResume);
     saveAISettingsBtn.addEventListener('click', saveSettings);
     resumeFileInput.addEventListener('change', handleFileUpload);
     showAISettingsForm.addEventListener('click', toggleAISettings);
+    history.addEventListener('click', toggleATSResul);
 });
 
 loadJobDescription();
