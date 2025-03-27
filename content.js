@@ -12,7 +12,6 @@ function waitForJobDescription() {
   }
 
   if (!selector) {
-      console.log("No valid job description selector found for this site.");
       return;
   }
 
