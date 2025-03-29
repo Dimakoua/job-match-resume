@@ -76,156 +76,118 @@ function getPrompt(resumeText, jobDescription) {
 
 // Generic function to parse AI response
 function parseResponse(responseText) {
-    try {
-        // Remove any leading or trailing backticks or markdown formatting (like ```json {...} ```).
-        const cleanedResponse = responseText.replace(/```json|\n```/g, '').trim();
-        
-        // Parse the raw response text as JSON
-        const parsedData = JSON.parse(cleanedResponse);
+    // Remove any leading or trailing backticks or markdown formatting (like ```json {...} ```).
+    const cleanedResponse = responseText.replace(/```json|\n```/g, '').trim();
 
-        console.log(parsedData);
+    // Parse the raw response text as JSON
+    const parsedData = JSON.parse(cleanedResponse);
 
-        // Extract the relevant fields (assuming they are present in all responses)
-        const optimizedText = parsedData.optimizedResume || {};
-        const atsScore = parsedData.ATSCompatibilityScore || "N/A";
-        const explanation = parsedData.explanation || "Explanation not available.";
-        const recomendedFileName = parsedData.recomendedFileName || "optimized_resume.docx";
+    // Extract the relevant fields (assuming they are present in all responses)
+    const optimizedText = parsedData.optimizedResume || {};
+    const atsScore = parsedData.ATSCompatibilityScore || "N/A";
+    const explanation = parsedData.explanation || "Explanation not available.";
+    const recomendedFileName = parsedData.recomendedFileName || "optimized_resume.docx";
 
-        return {
-            optimizedResume: optimizedText,
-            ATSCompatibilityScore: atsScore,
-            explanation: explanation,
-            recomendedFileName: recomendedFileName
-        };
-    } catch (error) {
-        console.error("Error parsing response text as JSON:", error);
-        return {
-            optimizedResume: {},
-            ATSCompatibilityScore: "N/A",
-            explanation: "Error in explanation parsing.",
-            recomendedFileName: "optimized_resume.docx",
-        };
-    }
+    return {
+        optimizedResume: optimizedText,
+        ATSCompatibilityScore: atsScore,
+        explanation: explanation,
+        recomendedFileName: recomendedFileName
+    };
 }
 
 async function optimizeResumeWithGemini(resumeText, jobDescription, APItoken) {
-    try {
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${APItoken}`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                "contents": [{
-                    "parts": [{
-                        "text": getPrompt(resumeText, jobDescription)
-                    }]
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${APItoken}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            "contents": [{
+                "parts": [{
+                    "text": getPrompt(resumeText, jobDescription)
                 }]
-            })
-        });
+            }]
+        })
+    });
 
-        const data = await response.json();
-        // Extracting the JSON text from the response
-        const rawResponseText = data?.candidates?.[0]?.content?.parts[0]?.text;
+    const data = await response.json();
+    // Extracting the JSON text from the response
+    const rawResponseText = data?.candidates?.[0]?.content?.parts[0]?.text;
 
-        if (rawResponseText) {
-            return parseResponse(rawResponseText);
-        }
-
-        return {
-            optimizedResume: "Error: No response text found.",
-            ATSCompatibilityScore: "N/A",
-            explanation: "No explanation available."
-        };
-    } catch (error) {
-        console.error("Gemini API Error:", error);
-        return {
-            optimizedResume: "Error with Gemini.",
-            ATSCompatibilityScore: "N/A",
-            explanation: "An error occurred while fetching the optimized resume."
-        };
+    if (rawResponseText) {
+        return parseResponse(rawResponseText);
     }
+
+    return {
+        optimizedResume: "Error: No response text found.",
+        ATSCompatibilityScore: "N/A",
+        explanation: "No explanation available."
+    };
+
 }
 
 async function optimizeResumeWithGPT(resumeText, jobDescription, APItoken) {
-    try {
-        const response = await fetch("https://api.openai.com/v1/chat/completions", {
-            method: "POST",
-            headers: {
-                "Authorization": `Bearer ${APItoken}`,
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                model: "gpt-4-turbo",
-                messages: [
-                    { role: "system", content: "Optimize the resume for ATS compatibility based on the job description while retaining its original format." },
-                    { role: "user", content: getPrompt(resumeText, jobDescription) }
-                ]
-            })
-        });
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer ${APItoken}`,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            model: "gpt-4-turbo",
+            messages: [
+                { role: "system", content: "Optimize the resume for ATS compatibility based on the job description while retaining its original format." },
+                { role: "user", content: getPrompt(resumeText, jobDescription) }
+            ]
+        })
+    });
 
-        const data = await response.json();
-        // Extract the raw response text from the GPT API response
-        const rawResponseText = data?.choices?.[0]?.message?.content;
+    const data = await response.json();
+    // Extract the raw response text from the GPT API response
+    const rawResponseText = data?.choices?.[0]?.message?.content;
 
-        if (rawResponseText) {
-            return parseResponse(rawResponseText);
-        }
-
-        return {
-            optimizedResume: "Error: No response text found.",
-            ATSCompatibilityScore: "N/A",
-            explanation: "No explanation available."
-        };
-    } catch (error) {
-        console.error("GPT API Error:", error);
-        return {
-            optimizedResume: "Error with GPT.",
-            ATSCompatibilityScore: "N/A",
-            explanation: "An error occurred while fetching the optimized resume."
-        };
+    if (rawResponseText) {
+        return parseResponse(rawResponseText);
     }
+
+    return {
+        optimizedResume: "Error: No response text found.",
+        ATSCompatibilityScore: "N/A",
+        explanation: "No explanation available."
+    };
 }
 
 // Function to optimize resume with Claude
 async function optimizeResumeWithClaude(resumeText, jobDescription, APItoken) {
-    try {
-        const response = await fetch("https://api.anthropic.com/v1/messages", {
-            method: "POST",
-            headers: {
-                "x-api-key": APItoken,
-                "anthropic-version": "2023-06-01",
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                model: "claude-3",
-                max_tokens: 1024,
-                messages: [
-                    { role: "system", content: "Optimize the resume for ATS compatibility while keeping its format intact." },
-                    { role: "user", content: getPrompt(resumeText, jobDescription) }
-                ]
-            })
-        });
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {
+            "x-api-key": APItoken,
+            "anthropic-version": "2023-06-01",
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            model: "claude-3",
+            max_tokens: 1024,
+            messages: [
+                { role: "system", content: "Optimize the resume for ATS compatibility while keeping its format intact." },
+                { role: "user", content: getPrompt(resumeText, jobDescription) }
+            ]
+        })
+    });
 
-        const data = await response.json();
-        // Assuming the response structure is similar to other models, extract the raw response text
-        const rawResponseText = data?.completion;
+    const data = await response.json();
+    // Assuming the response structure is similar to other models, extract the raw response text
+    const rawResponseText = data?.completion;
 
-        if (rawResponseText) {
-            // Parse the response using the generic parser
-            return parseResponse(rawResponseText);
-        }
-        return {
-            optimizedResume: "Error: No response text found.",
-            ATSCompatibilityScore: "N/A",
-            explanation: "No explanation available."
-        };
-    } catch (error) {
-        console.error("Claude API Error:", error);
-        return {
-            optimizedResume: "Error with Claude.",
-            ATSCompatibilityScore: "N/A",
-            explanation: "An error occurred while fetching the optimized resume."
-        };
+    if (rawResponseText) {
+        // Parse the response using the generic parser
+        return parseResponse(rawResponseText);
     }
+    return {
+        optimizedResume: "Error: No response text found.",
+        ATSCompatibilityScore: "N/A",
+        explanation: "No explanation available."
+    };
 }
 
 
@@ -248,7 +210,6 @@ async function optimizeResumeWithAI(resumeText, jobDescription, ai) {
 }
 
 chrome.runtime.onInstalled.addListener(() => {
-    console.log("AI Resume Optimizer Extension Installed.");
 });
 
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {

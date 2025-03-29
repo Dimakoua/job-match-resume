@@ -22,6 +22,12 @@ function loadSettings() {
     return { aiModel: savedAiModel, userToken: savedUserToken };
 }
 
+function setupView({ aiModel, userToken }) {
+    if(!aiModel || !userToken) {
+        toggleAISettings();
+    }
+}
+
 function loadJobDescription() {
     chrome.runtime.sendMessage({ action: "getJobDescription" }, function (response) {
         const jobDescription = response.jobDescription;
@@ -136,8 +142,10 @@ async function optimizeResume() {
             }
         );
 
-        displayATSScore(result.ATSCompatibilityScore,);
         generateDocx(result);
+        displayATSScore(result.ATSCompatibilityScore,);
+    } catch (error) {
+        showMessage('error', 'An error occurred while optimizing the resume.', 3000);
     } finally {
         toggleLoader(false);
     }
@@ -283,7 +291,8 @@ function toggleLoader() {
 // Event listener for Save button
 document.addEventListener('DOMContentLoaded', function () {
     // Load saved settings on page load
-    loadSettings();
+    const settings = loadSettings();
+    setupView(settings);
     loadCV();
 
     const saveAISettingsBtn = document.getElementById('saveAISettings');
