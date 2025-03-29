@@ -2,6 +2,8 @@
 
 This Chrome extension empowers you to effortlessly evaluate the alignment between your resume and job descriptions directly within your browser. By leveraging natural language processing (NLP), it provides a clear, data-driven analysis, helping you tailor your applications for maximum impact.
 
+![Showcase](./showcase.jpg)
+
 ## ✨ Key Features
 
 * **📄 Direct Browser Integration:** Analyze resumes and job descriptions directly from web pages or local files.
