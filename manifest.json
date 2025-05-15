@@ -9,8 +9,9 @@
         "scripting"
     ],
     "host_permissions": [
-        "http://*/*",
-        "https://*/*"
+        "https://generativelanguage.googleapis.com/*",
+        "https://api.openai.com/*",
+        "https://api.anthropic.com/*"
     ],
     "background": {
         "service_worker": "background.js"
@@ -32,7 +33,10 @@
     "content_scripts": [
         {
             "matches": [
-                "*://*.mozilla.org/*"
+                "*://*.linkedin.com/jobs/view/*",
+                "*://*.indeed.com/viewjob*",
+                "*://*.indeed.com/company/*/jobs/*",
+                "*://*.glassdoor.com/Job/*"
             ],
             "js": [
                 "content.js"

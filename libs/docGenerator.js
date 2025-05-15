@@ -268,7 +268,6 @@ function createSkills(jsonData) {
 }
 
 function generateResume(jsonData) {
-    console.log('generateResume', jsonData);
     return new Document({
         sections: [
             {
