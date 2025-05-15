@@ -18,7 +18,10 @@ The Extension is designed to help you optimize your resume to match job descript
 
 **b) Information Collected Automatically:**
 
-*   **Job Description Data from Web Pages:** With your explicit action (e.g., clicking a button provided by the Extension on a job posting page), the Extension may use the `scripting` and `activeTab` permissions to access and extract the text content of job descriptions from websites you are currently viewing. The `host_permissions` for `http://*/*` and `https://*/*` are requested to enable this functionality across various job board websites and to communicate with AI service APIs. We only intend to access job description content on pages you actively choose to process.
+*   **Job Description Data from Web Pages:**
+    *   For specific job board websites (currently LinkedIn, Indeed, and Glassdoor, as defined in our extension's manifest), our `content_script` may automatically attempt to identify and make available the job description text when you visit a relevant job posting page.
+    *   For other websites, or if you prefer to manually trigger the extraction, the Extension uses the `activeTab` and `scripting` permissions. This allows the Extension to access and extract job description text from the web page you are currently viewing *only when you explicitly initiate this action* (e.g., by clicking the extension icon and a relevant button).
+    *   Specific `host_permissions` (e.g., for `https://generativelanguage.googleapis.com/*`, `https://api.openai.com/*`, `https://api.anthropic.com/*`) are requested *only* to communicate with the third-party AI service APIs you configure. These permissions do not grant us broad access to other websites.
 *   **Usage Data:** We may collect information about how you interact with the Extension, such as the features you use or the AI models you select. This data is primarily used for improving the Extension and is processed locally or in an aggregated, anonymous form if sent for analytics.
 *   **Locally Stored Data:** The Extension uses your browser's local storage (`chrome.storage` or `localStorage`) to store your API keys, user preferences (like selected AI model), and potentially temporarily store processed resume or job description content for the duration of your session or as configured.
 
@@ -33,11 +36,10 @@ We use the collected information for the following purposes:
 *   **To Personalize Your Experience:**
     *   To save your preferences, such as your chosen AI model and API keys, for future use.
 *   **To Enable Core Functionality:**
-    *   The `activeTab` and `scripting` permissions are used to allow the Extension to interact with the web page you are currently viewing, specifically to extract job description text when you initiate this action.
+    *   `content_scripts` are used to enable functionality for extracting job descriptions on supported job board websites (LinkedIn, Indeed, Glassdoor).
+    *   The `activeTab` and `scripting` permissions are used to allow the Extension to interact with other web pages to extract job description text when you explicitly initiate this action.
     *   The `storage` permission is used to save your API keys and settings locally on your device.
-    *   The `host_permissions` (`http://*/*`, `https://*/*`) are required to:
-        *   Allow content scripts (via programmatic injection using the `scripting` permission) to function on various job board websites to extract job descriptions.
-        *   Enable communication from your browser directly to the APIs of the AI services you choose to use (e.g., Google, OpenAI, Anthropic).
+    *   Specific `host_permissions` (e.g., for `https://generativelanguage.googleapis.com/*`, `https://api.openai.com/*`, `https://api.anthropic.com/*`) are required to enable communication from your browser directly to the APIs of the AI services you choose to use.
 *   **Client-Side PDF Processing:**
     *   The Extension includes `libs/pdf.worker.min.js` (part of PDF.js) as a web-accessible resource. This library is used locally within your browser to parse PDF files (your resume) if you upload one. This processing happens entirely on your computer.
 
@@ -49,6 +51,11 @@ Your privacy is important to us. We do not sell your personal information. We sh
     *   When you use the Extension's core functionality, your resume content and the job description content are sent to the third-party AI service (e.g., Google Gemini, OpenAI, Anthropic) that you have selected and for which you have provided an API key.
     *   This data transmission is initiated by you and is necessary for the AI to process the information and provide the optimized resume.
     *   Your use of these third-party AI services is subject to their respective privacy policies and terms of service.
+    *   Your use of these third-party AI services is subject to their respective privacy policies and terms of service. We encourage you to review them:
+        *   Google: [Link to Google's Privacy Policy - e.g., https://policies.google.com/privacy]
+        *   OpenAI: [Link to OpenAI's Privacy Policy - e.g., https://openai.com/policies/privacy-policy]
+        *   Anthropic: [Link to Anthropic's Privacy Policy - e.g., https://www.anthropic.com/privacy]
+        *   [Remember to add links for any other AI services you might support]
     *   Your API keys for these services are stored locally in your browser and are used to authenticate your requests directly from your browser to the AI service. We do not have access to the actual AI processing beyond initiating the request on your behalf using your key.
 *   **Legal Requirements:**
     *   We may disclose your information if required to do so by law or in response to valid requests by public authorities (e.g., a court or a government agency).
