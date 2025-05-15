@@ -33,9 +33,9 @@
     "content_scripts": [
         {
             "matches": [
-                "*://*.linkedin.com/jobs/view/*",
-                "*://*.indeed.com/viewjob*",
-                "*://*.indeed.com/company/*/jobs/*",
+                "*://*.linkedin.com/jobs/*",
+                "*://*.indeed.com/vjk*",
+                "*://*.indeed.com/cmp/*/jobs/*",
                 "*://*.glassdoor.com/Job/*"
             ],
             "js": [
