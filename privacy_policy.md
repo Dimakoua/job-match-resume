@@ -48,11 +48,7 @@ Your privacy is important to us. We do not sell your personal information. We sh
 *   **With Third-Party AI Services:**
     *   When you use the Extension's core functionality, your resume content and the job description content are sent to the third-party AI service (e.g., Google Gemini, OpenAI, Anthropic) that you have selected and for which you have provided an API key.
     *   This data transmission is initiated by you and is necessary for the AI to process the information and provide the optimized resume.
-    *   Your use of these third-party AI services is subject to their respective privacy policies and terms of service. We encourage you to review them:
-        *   Google: [Link to Google's Privacy Policy]
-        *   OpenAI: [Link to OpenAI's Privacy Policy]
-        *   Anthropic: [Link to Anthropic's Privacy Policy]
-        *   [Add links for any other AI services you might support]
+    *   Your use of these third-party AI services is subject to their respective privacy policies and terms of service.
     *   Your API keys for these services are stored locally in your browser and are used to authenticate your requests directly from your browser to the AI service. We do not have access to the actual AI processing beyond initiating the request on your behalf using your key.
 *   **Legal Requirements:**
     *   We may disclose your information if required to do so by law or in response to valid requests by public authorities (e.g., a court or a government agency).
