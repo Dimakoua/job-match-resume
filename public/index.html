@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Resume Optimizer</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <div class="app-shell">
+    <header class="app-header">
+      <div>
+        <h1>AI Resume Optimizer</h1>
+        <p>Align every resume with the job description and get a confident ATS score.</p>
+      </div>
+      <button id="showAISettingsForm" class="settings-button">AI Settings</button>
+    </header>
+
+    <section id="AISettingsForm" class="settings-panel hidden">
+      <h2>AI Configuration</h2>
+      <div class="input-field">
+        <label for="aiModel">AI Model</label>
+        <select id="aiModel">
+          <option value="gemini">Gemini</option>
+          <option value="gpt">GPT</option>
+          <option value="claude">Claude</option>
+        </select>
+      </div>
+
+      <div class="input-field">
+        <label for="userToken">API Key</label>
+        <input id="userToken" type="password" placeholder="Paste your API token">
+      </div>
+
+      <button class="btn save-btn" id="saveAISettings">Save & Close</button>
+    </section>
+
+    <section id="MainForm" class="main-panel">
+      <div class="input-field">
+        <label for="resumeFile">Upload Resume</label>
+        <input type="file" id="resumeFile" accept=".pdf, .docx, .txt">
+        <small>PDF, DOCX or plain text</small>
+      </div>
+
+      <div class="input-field">
+        <label for="resume">Resume Content</label>
+        <textarea id="resume" placeholder="The parsed resume content will appear here" rows="6"></textarea>
+      </div>
+
+      <div class="input-field">
+        <label for="jobDescription">Job Description</label>
+        <textarea id="jobDescription" placeholder="Paste the job description" rows="6"></textarea>
+      </div>
+
+      <div class="actions">
+        <button class="btn primary" id="optimizeResume">Optimize Resume</button>
+        <div class="loader hidden" id="loader" aria-label="Optimizing"></div>
+      </div>
+    </section>
+
+    <section id="atsScore" class="ats-score hidden">
+      <div class="progress-container">
+        <svg class="progress-ring" width="120" height="120">
+          <circle class="progress-background" cx="60" cy="60" r="50"></circle>
+          <circle class="progress-circle" cx="60" cy="60" r="50"></circle>
+        </svg>
+        <div class="progress-text">0/100</div>
+      </div>
+      <p class="score-label">ATS Compatibility</p>
+    </section>
+
+    <section id="resultExplanation" class="result-panel hidden">
+      <h2>Why this score?</h2>
+      <p id="explanation">The explanation will appear here after optimization.</p>
+    </section>
+  </div>
+
+  <div id="messageBox" aria-live="polite"></div>
+
+  <script src="/libs/pdf.min.js"></script>
+  <script src="/libs/mammoth.browser.min.js"></script>
+  <script src="/libs/docx.min.js"></script>
+  <script src="/libs/docGenerator.js"></script>
+  <script src="/app.js"></script>
+</body>
+
+</html>

@@ -1,69 +1,74 @@
-# 💼 Job Match Resume Analyzer (Chrome Extension) 🎯
+# 💼 Job Match Resume Analyzer (SaaS)
 
-This Chrome extension empowers you to effortlessly evaluate the alignment between your resume and job descriptions directly within your browser. By leveraging natural language processing (NLP), it provides a clear, data-driven analysis, helping you tailor your applications for maximum impact.
+This project started as a Chrome extension but now ships as a standalone web application that lets candidates upload a resume, paste any job description, and receive an AI-optimized resume plus an ATS compatibility score.
 
-![Showcase](./showcase.jpg)
+![New SaaS UI](./showcase.jpg)
 
-## ✨ Key Features
+## ✨ Key Capabilities
 
-* **📄 Direct Browser Integration:** Analyze resumes and job descriptions directly from web pages or local files.
-* **🔍 Intelligent Keyword Extraction:** Pinpoints crucial skills and qualifications from both documents.
-* **📊 Quantitative Similarity Scoring:** Generates a numerical score reflecting the match quality.
-* **⚙️ Customizable Matching Logic:** Fine-tune the algorithm to suit your specific needs and industry nuances.
-* **💻 User-Friendly Interface:** Easy-to-use popup and options page for seamless analysis.
+* **Unified web experience:** Upload resumes, paste job descriptions, and run optimization from any browser.
+* **Multi-provider AI:** Support for Gemini, GPT, and Claude (either via environment tokens or your personal API keys).
+* **Document parsing + export:** PDF, DOCX, and text parsing are powered by the existing browser-side libraries, and optimized resumes are exported directly as DOCX files.
+* **Live ATS score + explanation:** A circular progress indicator and narrative explain why the resume matches the job description.
+* **Settings persistence:** AI model selection and API keys are stored in the browser via `localStorage`.
 
-## 🚀 Getting Started
+## 🚀 Quick Start
 
-1.  **Clone the Repository:**
+1. **Install dependencies.**
 
-    ```bash
-    git clone [https://github.com/Dimakoua/job-match-resume.git](https://github.com/Dimakoua/job-match-resume.git)
-    cd job-match-resume
-    ```
+   ```bash
+   npm install
+   ```
 
-2.  **Load the Extension:**
-    * Open Chrome and navigate to `chrome://extensions/`.
-    * Enable "Developer mode" in the top right corner.
-    * Click "Load unpacked" and select the cloned repository directory.
+2. **Configure your AI tokens.**
+   * Optionally create a `.env` file from `.env.example` if you want the server to reuse static tokens.
+   * You can also paste your keys directly inside the "AI Settings" modal at runtime.
 
-3.  **Usage:**
-    * Navigate to a webpage containing a job description or open a local resume file in your browser.
-    * Click the Job Match Resume Analyzer extension icon in your toolbar.
-    * Use the extension's popup to select the resume and job description text or file.
-    * Click "Optimize Resume" to view the results.
+3. **Run the application.**
 
-## 🛠️ Usage
+   ```bash
+   npm start
+   ```
 
-The Chrome Extension provides an easy to use interface.
+   Open [http://localhost:4000](http://localhost:4000) in your browser.
 
-## 📦 Supported File Formats
+4. **Optional:** use `npm run dev` during development to restart the server on save (requires `nodemon`).
 
-* PDF (.pdf)
-* Microsoft Word (.docx)
-* Plain Text (.txt)
-* Text copied from webpages.
+## 🔐 Environment Variables
 
-## 🔮 Future Enhancements
+ | Variable | Description |
+ | --- | --- |
+ | `PORT` | Port the Express server listens on (default: `4000`). |
+ | `GEMINI_API_KEY` | Optional default key for the Gemini model. |
+ | `OPENAI_API_KEY` | Optional default key for OpenAI/GPT. |
+ | `ANTHROPIC_API_KEY` | Optional default key for Claude. |
 
-* 🌐 Improved UI/UX
-* 💾 Cloud Storage Integration (e.g., Google Drive, Dropbox)
-* 🤖 AI-Driven Resume Recommendations
-* 📈 Enhanced Scoring Algorithm
-* 🐳 Cross Browser compatability.
+If a key is provided in the UI, it overrides the matching environment variable for that request.
+
+## 💻 How to Use
+
+1. Upload your resume (PDF, DOCX, or plain text).
+2. Paste the job description you are targeting.
+3. Open "AI Settings" to choose a model and provide an API token (or rely on the server-provided keys).
+4. Click **Optimize Resume**.
+5. Download the optimized DOCX file and review the generated ATS score/explanation.
+
+## 📦 Supported Files
+
+* PDF (.pdf) via `pdf.js`
+* Microsoft Word (.docx) via Mammoth.js
+* Plain text (.txt)
+
+## 🔁 Legacy Extension Assets
+
+The repository still contains the original Chrome extension files (`manifest.json`, `popup.html`, etc.) for reference, but the main entry point is now `server.js` + the `public/` UI.
 
 ## 🤝 Contributing
 
-We welcome your contributions! Please submit a pull request or open an issue for suggestions or bug reports.
-
-1.  Create a feature branch.
-2.  Commit your changes.
-3.  Push to your branch.
-4.  Submit a pull request.
+1. Fork the repo and create a feature branch.
+2. Run tests or `npm run lint` if available.
+3. Submit a pull request and describe the new web experience you built.
 
 ## 📜 License
 
-This project is licensed under the [MIT License](LICENSE).
-
-## 🧑‍💻 Author
-
-* Dmytro Kozin - [Dimakoua](https://github.com/Dimakoua)
+This project remains under the [MIT License](LICENSE).
