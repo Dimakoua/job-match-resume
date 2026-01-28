@@ -1,5 +1,5 @@
 import { AuthController } from '../adapters/controllers/auth/auth_controller.js';
-import { createController } from '../utils/routeHelpers.js';
+import { createController } from '../utils/route_helpers.js';
 
 export function setupAuthRoutes(router) {
   // Sign up a new user
