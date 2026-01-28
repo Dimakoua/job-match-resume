@@ -8,10 +8,10 @@
 - Completed B-007 (Login Endpoint & Auth Middleware) with POST /auth/login and protected routes.
 - Completed B-008 (Google OAuth Integration) with ID token verification and user management.
 - Completed B-005 (SignUp Endpoint) with POST /auth/signup and error handling.
-- Starting B-009 (Resume Entity) for resume data structure and validation.
+- Completed B-009 (Resume Entity) with validation, section management, and unit tests.
 
 ## Active Task(s)
-- B-009: Resume Entity — Acceptance: Create src/domain/resume/Resume.js with logic to add/remove sections (Experience, Education). Resume must belong to a userId.
+- None — All authentication and basic resume domain completed. Ready for next phase (B-010: D1 Resume Repository).
 
 ## Decisions Made
 - Expanded User entity to include id, name, passwordHash, googleId for full auth support (scope.md § In Scope).
@@ -26,9 +26,10 @@
 - Added integration test for LoginUserService with real DB interactions.
 - Consolidated Vitest configs: removed vitest.integration.config.mjs, updated main config to run all tests as integration with DB setup.
 - Fixed database.test.js INSERT test by replacing TEMP TABLE with regular TABLE and adding DROP TABLE cleanup.
+- Created Resume domain entity with validation, add/remove section methods, and 15/15 passing unit tests.
 
 ## Validation & Evidence
-- Integration: SignUpUserService tests 2/2 passing, LoginUserService tests 3/3 passing, D1UserRepository tests 8/8 passing, UpdateUserService tests 13/13 passing (unit + integration), AuthController tests 9/9 passing, Database helper tests 4/4 passing (with poisoned stub handling), Domain tests 16/16 passing, Controllers 7/7 passing — Total 64/64 tests passing.
+- Integration: SignUpUserService tests 2/2 passing, LoginUserService tests 3/3 passing, D1UserRepository tests 8/8 passing, UpdateUserService tests 13/13 passing (unit + integration), AuthController tests 9/9 passing, Database helper tests 4/4 passing (with poisoned stub handling), Domain tests 16/16 (User) + 15/15 (Resume), Controllers 7/7 passing — Total 79/79 tests passing.
 - No unit tests remaining for services; all validation now through integration tests.
 
 ## Risks & Unknowns
@@ -36,8 +37,8 @@
 - Test DB setup in CI (wrangler local mode).
 
 ## Next Steps
-1. Implement Resume domain entity with validation and section management.
-2. Add unit tests for Resume.js.
+1. Start B-010: Create D1 Resume Repository with save, findById, findAllByUserId methods.
+2. Add integration tests for the repository.
 
 ## Status Summary
-- ✅ 100% — B-001, B-002, B-003, B-004, B-005, B-006, B-007, B-008 complete, B-009 in progress.
+- ✅ 100% — B-001, B-002, B-003, B-004, B-005, B-006, B-007, B-008, B-009 complete.

@@ -1,19 +1,11 @@
 # backend/tracker.md
 
-**Version:** 1.7
+**Version:** 1.8
 **Last updated:** 2026-01-28
 **Status:** Active
 
 ---
 
-## Active Tasks
-
-## B-009 — [domain] Resume Entity
-- Scope: Resume data structure.
-- Acceptance criteria:
-  - `src/domain/resume/Resume.js`.
-  - Logic to add/remove sections (Experience, Education).
-  - Resume must belong to a `userId`.
 ---
 
 ## Completed Tasks
@@ -45,6 +37,10 @@
 ## B-008 — [feature] Google OAuth Integration ✅ 100%
 - Completed: 2026-01-28
 - Evidence: Google OAuth endpoints implemented (/auth/google, /auth/google/callback, /auth/google/login) with ID token verification and user creation/finding.
+
+## B-009 — [domain] Resume Entity ✅ 100%
+- Completed: 2026-01-28
+- Evidence: Resume.js created with validation, add/remove section methods, unit tests 15/15 passing.
 
 ## B-005 — [api] SignUp Endpoint ✅ 100%
 - Completed: 2026-01-28
