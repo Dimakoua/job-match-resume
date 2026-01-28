@@ -1,14 +1,27 @@
 # backend/tracker.md
 
 **Version:** 1.2
-**Last updated:** 2026-01-27
+**Last updated:** 2026-01-28
 **Status:** Active
 
 ---
 
 ## Active Tasks
 
-*None.*
+## B-002 — [domain] User Entity & Validation
+- Scope: Core User logic.
+- Acceptance criteria:
+  - Create `src/domain/user/User.js`.
+  - Validate email format and password length in constructor.
+  - Unit tests for valid/invalid Users.
+
+---
+
+## Completed Tasks
+
+## B-001 — [infra] Project Skeleton & Hono Setup ✅ 100%
+- Completed: 2026-01-28
+- Evidence: npm install succeeded, npm test passed (1/1), wrangler dev started server on localhost.
 
 ---
 
