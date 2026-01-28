@@ -59,17 +59,17 @@ At the start of every session, you must determine if we are working on **Backend
 Read the specific documents for the active context to understand the current state.
 
 **Option A: Backend Context (`backend/` folder)**
-1. **`backend/handoff.md`** → What happened last session?
-2. **`backend/scope.md`** → Boundaries and success metrics.
-3. **`backend/design.md`** → Architecture and patterns.
-4. **`backend/tracker.md`** → Active tasks and acceptance criteria.
+1. **`backend/doc/handoff.md`** → What happened last session?
+2. **`backend/doc/scope.md`** → Boundaries and success metrics.
+3. **`backend/doc/design.md`** → Architecture and patterns.
+4. **`backend/doc/tracker.md`** → Active tasks and acceptance criteria.
 
 **Option B: Frontend Context (`frontend/` folder)**
-1. **`frontend/handoff.md`** → What happened last session?
-2. **`frontend/scope.md`** → Boundaries and functional requirements.
-3. **`frontend/technical_design.md`** → Implementation details, state management, API integration.
-4. **`frontend/ui_design.md`** → UX flows, component hierarchy, visual constraints.
-5. **`frontend/tracker.md`** → Active tasks and acceptance criteria.
+1. **`frontend/doc/handoff.md`** → What happened last session?
+2. **`frontend/doc/scope.md`** → Boundaries and functional requirements.
+3. **`frontend/doc/technical_design.md`** → Implementation details, state management, API integration.
+4. **`frontend/doc/ui_design.md`** → UX flows, component hierarchy, visual constraints.
+5. **`frontend/doc/tracker.md`** → Active tasks and acceptance criteria.
 
 **As you read, actively look for:**
 - ❌ **Conflicts** between documents (e.g., UI design contradicts technical design)
