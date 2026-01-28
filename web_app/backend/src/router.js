@@ -4,7 +4,7 @@
 
 import { AutoRouter } from 'itty-router';
 import { HealthController } from './adapters/controllers/health/health_controller.js';
-import { setupAuthRoutes } from './routes/authRoutes.js';
+import { setupAuthRoutes } from './routes/auth_routes.js';
 
 // ==================== CORS HEADERS ====================
 
