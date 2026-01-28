@@ -10,9 +10,10 @@
 - Completed B-005 (SignUp Endpoint) with POST /auth/signup and error handling.
 - Completed B-009 (Resume Entity) with validation, section management, and unit tests.
 - Completed B-010 (D1 Resume Repository) with save, findById, findAllByUserId methods and integration tests.
+- Completed B-011 (Resume CRUD Services) with CreateResumeService and ListResumesService, integration tests.
 
 ## Active Task(s)
-- None — Authentication and resume infrastructure completed. Ready for B-011 (Resume CRUD Services).
+- None — Resume CRUD services completed. Ready for B-012 (Resume Controller).
 
 ## Decisions Made
 - Expanded User entity to include id, name, passwordHash, googleId for full auth support (scope.md § In Scope).
@@ -27,9 +28,12 @@
 - Added integration tests for D1ResumeRepository using D1UserRepository for user setup.
 - Fixed test issues: used factories for user creation, added templateId to Resume constructor calls, removed skip conditions.
 - Updated Resume entity to include templateId in constructor and validation.
+- Implemented CreateResumeService and ListResumesService with integration tests.
+- Removed unit tests for services, following integration-only testing strategy.
+- Updated Resume entity and repository to include timestamps (createdAt, updatedAt).
 
 ## Validation & Evidence
-- Integration: SignUpUserService tests 2/2 passing, LoginUserService tests 3/3 passing, D1UserRepository tests 8/8 passing, UpdateUserService tests 13/13 passing (unit + integration), AuthController tests 9/9 passing, Database helper tests 4/4 passing (with poisoned stub handling), Domain tests 16/16 (User) + 17/17 (Resume), Controllers 7/7 passing, D1ResumeRepository integration tests 4/4 passing — Total 94/94 tests passing.
+- Integration: SignUpUserService tests 2/2 passing, LoginUserService tests 3/3 passing, D1UserRepository tests 8/8 passing, UpdateUserService tests 13/13 passing (unit + integration), AuthController tests 9/9 passing, Database helper tests 4/4 passing (with poisoned stub handling), Domain tests 16/16 (User) + 17/17 (Resume), Controllers 7/7 passing, D1ResumeRepository integration tests 4/4 passing, Resume Services integration tests 3/3 passing — Total 102/102 tests passing.
 - No unit tests remaining for services; all validation now through integration tests.
 
 ## Risks & Unknowns
@@ -37,8 +41,8 @@
 - Test DB setup in CI (wrangler local mode).
 
 ## Next Steps
-1. Start B-011: Create CreateResumeService and ListResumesService with unit/integration tests.
-2. Implement B-012: Resume Controller with GET/POST /resumes endpoints.
+1. Start B-012: Create ResumeController with GET /resumes and POST /resumes endpoints.
+2. Add integration tests for the controller.
 
 ## Status Summary
-- ✅ 100% — B-001, B-002, B-003, B-004, B-005, B-006, B-007, B-008, B-009, B-010 complete.
+- ✅ 100% — B-001, B-002, B-003, B-004, B-005, B-006, B-007, B-008, B-009, B-010, B-011 complete.

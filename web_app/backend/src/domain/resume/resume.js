@@ -1,5 +1,5 @@
 export class Resume {
-  constructor(id, userId, title, sections = [], templateId = null) {
+  constructor(id, userId, title, sections = [], templateId = null, createdAt = null, updatedAt = null) {
     this.validateId(id);
     this.validateUserId(userId);
     this.validateTitle(title);
@@ -11,6 +11,8 @@ export class Resume {
     this.title = title.trim();
     this.sections = [...sections]; // Deep copy if needed, but for now shallow
     this.templateId = templateId;
+    this.createdAt = createdAt || new Date();
+    this.updatedAt = updatedAt || new Date();
   }
 
   validateId(id) {

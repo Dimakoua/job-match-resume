@@ -48,7 +48,11 @@
 
 ---
 
-## Backlog (Not Started)
+## Active Tasks
+
+## B-011 — [app] Resume CRUD Services ✅ 100%
+- Completed: 2026-01-28
+- Evidence: CreateResumeService and ListResumesService implemented with integration tests 3/3 passing. Services handle resume creation and listing headers.
 
 ### Phase 3: Resume Management (M2)
 
