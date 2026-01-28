@@ -58,13 +58,13 @@ At the start of every session, you must determine if we are working on **Backend
 **Step 2: Load Context (based on selection)**
 Read the specific documents for the active context to understand the current state.
 
-**Option A: Backend Context (`backend/` folder)**
+**Option A: Backend Context (`web_app/backend/` folder)**
 1. **`backend/doc/handoff.md`** → What happened last session?
 2. **`backend/doc/scope.md`** → Boundaries and success metrics.
 3. **`backend/doc/design.md`** → Architecture and patterns.
 4. **`backend/doc/tracker.md`** → Active tasks and acceptance criteria.
 
-**Option B: Frontend Context (`frontend/` folder)**
+**Option B: Frontend Context (`web_app/frontend/` folder)**
 1. **`frontend/doc/handoff.md`** → What happened last session?
 2. **`frontend/doc/scope.md`** → Boundaries and functional requirements.
 3. **`frontend/doc/technical_design.md`** → Implementation details, state management, API integration.

@@ -1,0 +1,21 @@
+{
+  "name": "resume-builder-backend",
+  "version": "1.0.0",
+  "description": "AI-driven resume builder backend",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "wrangler dev",
+    "test": "vitest",
+    "deploy": "wrangler deploy"
+  },
+  "dependencies": {
+    "hono": "^3.12.0"
+  },
+  "devDependencies": {
+    "vitest": "^1.0.0",
+    "wrangler": "^3.0.0"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
