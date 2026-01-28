@@ -1,6 +1,6 @@
 # backend/tracker.md
 
-**Version:** 1.2
+**Version:** 1.6
 **Last updated:** 2026-01-28
 **Status:** Active
 
@@ -8,9 +8,12 @@
 
 ## Active Tasks
 
-## B-003 — [infra] D1 User Table & Repository ✅ 100%
-- Completed: 2026-01-28
-- Evidence: D1 migration exists, D1UserRepository implemented with save and findByEmail, integration tests 8/8 passing.
+## B-005 — [api] SignUp Endpoint
+- Scope: HTTP layer.
+- Acceptance criteria:
+  - Create `src/adapters/controllers/AuthController.js`.
+  - POST `/auth/signup` route in Hono.
+  - Returns 201 on success, 400 on validation error, 409 on duplicate.
 
 ---
 
@@ -24,9 +27,25 @@
 - Completed: 2026-01-28
 - Evidence: User.js with full validation, User.test.js passing all tests.
 
+## B-003 — [infra] D1 User Table & Repository ✅ 100%
+- Completed: 2026-01-28
+- Evidence: D1 migration exists, D1UserRepository implemented with save and findByEmail, integration tests 8/8 passing.
+
 ## B-004 — [app] SignUp Service ✅ 100%
 - Completed: 2026-01-28
 - Evidence: SignUpService implemented with email uniqueness check, bcrypt password hashing, and user creation. Unit tests 2/2 passing.
+
+## B-006 — [app] Login Service & JWT ✅ 100%
+- Completed: 2026-01-28
+- Evidence: LoginService implemented with JWT token generation and password verification. Integration tests 3/3 passing.
+
+## B-007 — [api] Login Endpoint & Auth Middleware ✅ 100%
+- Completed: 2026-01-28
+- Evidence: POST /auth/login endpoint implemented in AuthController, returns JWT token. Hono middleware created to protect /api/* routes.
+
+## B-008 — [feature] Google OAuth Integration ✅ 100%
+- Completed: 2026-01-28
+- Evidence: Google OAuth endpoints implemented (/auth/google, /auth/google/callback, /auth/google/login) with ID token verification and user creation/finding.
 
 ---
 
@@ -58,34 +77,6 @@
   - Create `src/adapters/repositories/D1UserRepository.js`.
   - Implement `save(user)` and `findByEmail(email)`.
   - Integration test using Miniflare D1.
-
-## B-005 — [api] SignUp Endpoint
-- Scope: HTTP layer.
-- Acceptance criteria:
-  - Create `src/adapters/controllers/AuthController.js`.
-  - POST `/auth/signup` route in Hono.
-  - Returns 201 on success, 400 on validation error, 409 on duplicate.
-
-## B-006 — [app] Login Service & JWT
-- Scope: Token generation.
-- Acceptance criteria:
-  - Create `src/application/auth/LoginService.js`.
-  - Logic: Find user -> Compare password -> Generate JWT.
-  - Use `hono/jwt` or standard library.
-
-## B-007 — [api] Login Endpoint & Auth Middleware
-- Scope: HTTP layer & Security.
-- Acceptance criteria:
-  - POST `/auth/login` returns `{ token: "..." }`.
-  - Create Hono middleware to protect `/api/*` routes.
-
-## B-008 — [feature] Google OAuth Integration
-- Scope: scope.md § In Scope (Google OAuth).
-- Acceptance criteria:
-  - `POST /auth/google` endpoint.
-  - Verifies Google ID Token (sent from frontend) with Google API.
-  - Finds or Creates user based on email.
-  - Returns App JWT (same format as B-007).
 
 ### Phase 3: Resume Management (M2)
 

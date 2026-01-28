@@ -4,6 +4,9 @@
 - Project structure includes layered directories; Hono app and Vitest tests configured.
 - Implemented D1UserRepository with save and findByEmail methods, added integration test setup.
 - Completed B-004 (SignUp Service) with email uniqueness check, password hashing, and integration tests.
+- Completed B-006 (Login Service) with JWT token generation and password verification.
+- Completed B-007 (Login Endpoint & Auth Middleware) with POST /auth/login and protected routes.
+- Completed B-008 (Google OAuth Integration) with ID token verification and user management.
 - Shifted to integration-only testing strategy for services, removing unit tests in favor of real DB testing.
 
 ## Active Task(s)
@@ -21,9 +24,10 @@
 - Removed unit test files for SignUpUserService and LoginUserService.
 - Added integration test for LoginUserService with real DB interactions.
 - Consolidated Vitest configs: removed vitest.integration.config.mjs, updated main config to run all tests as integration with DB setup.
+- Fixed database.test.js INSERT test by replacing TEMP TABLE with regular TABLE and adding DROP TABLE cleanup.
 
 ## Validation & Evidence
-- Integration: SignUpUserService tests 2/2 passing, LoginUserService tests 3/3 passing, D1UserRepository tests 8/8 passing, UpdateUserService tests 13/13 passing (unit + integration), AuthController tests 9/9 passing, Database helper tests 3/3 passing (with poisoned stub handling), Domain tests 16/16 passing, Controllers 7/7 passing — Total 63/63 tests passing.
+- Integration: SignUpUserService tests 2/2 passing, LoginUserService tests 3/3 passing, D1UserRepository tests 8/8 passing, UpdateUserService tests 13/13 passing (unit + integration), AuthController tests 9/9 passing, Database helper tests 4/4 passing (with poisoned stub handling), Domain tests 16/16 passing, Controllers 7/7 passing — Total 64/64 tests passing.
 - No unit tests remaining for services; all validation now through integration tests.
 
 ## Risks & Unknowns
@@ -35,4 +39,4 @@
 2. Add integration test for signup endpoint with D1.
 
 ## Status Summary
-- ✅ 100% — B-001, B-002, B-003, B-004 complete, B-005 in progress.
+- ✅ 100% — B-001, B-002, B-003, B-004, B-006, B-007, B-008 complete, B-005 in progress.
