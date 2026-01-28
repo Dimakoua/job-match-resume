@@ -8,12 +8,13 @@
 
 ## Active Tasks
 
-## B-002 — [domain] User Entity & Validation
-- Scope: Core User logic.
+## B-003 — [infra] D1 User Table & Repository
+- Scope: Database persistence.
 - Acceptance criteria:
-  - Create `src/domain/user/User.js`.
-  - Validate email format and password length in constructor.
-  - Unit tests for valid/invalid Users.
+  - Create D1 migration SQL: `CREATE TABLE users...`.
+  - Create `src/adapters/repositories/D1UserRepository.js`.
+  - Implement `save(user)` and `findByEmail(email)`.
+  - Integration test using Miniflare D1.
 
 ---
 
@@ -21,7 +22,11 @@
 
 ## B-001 — [infra] Project Skeleton & Hono Setup ✅ 100%
 - Completed: 2026-01-28
-- Evidence: npm install succeeded, npm test passed (1/1), wrangler dev started server on localhost.
+- Evidence: npm install succeeded, npm test passed, wrangler dev started.
+
+## B-002 — [domain] User Entity & Validation ✅ 100%
+- Completed: 2026-01-28
+- Evidence: User.js with full validation, User.test.js passing all tests.
 
 ---
 

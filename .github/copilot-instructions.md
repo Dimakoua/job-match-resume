@@ -59,17 +59,17 @@ At the start of every session, you must determine if we are working on **Backend
 Read the specific documents for the active context to understand the current state.
 
 **Option A: Backend Context (`web_app/backend/` folder)**
-1. **`backend/doc/handoff.md`** → What happened last session?
-2. **`backend/doc/scope.md`** → Boundaries and success metrics.
-3. **`backend/doc/design.md`** → Architecture and patterns.
-4. **`backend/doc/tracker.md`** → Active tasks and acceptance criteria.
+1. **`web_app/backend/doc/handoff.md`** → What happened last session?
+2. **`web_app/backend/doc/scope.md`** → Boundaries and success metrics.
+3. **`web_app/backend/doc/design.md`** → Architecture and patterns.
+4. **`web_app/backend/doc/tracker.md`** → Active tasks and acceptance criteria.
 
 **Option B: Frontend Context (`web_app/frontend/` folder)**
-1. **`frontend/doc/handoff.md`** → What happened last session?
-2. **`frontend/doc/scope.md`** → Boundaries and functional requirements.
-3. **`frontend/doc/technical_design.md`** → Implementation details, state management, API integration.
-4. **`frontend/doc/ui_design.md`** → UX flows, component hierarchy, visual constraints.
-5. **`frontend/doc/tracker.md`** → Active tasks and acceptance criteria.
+1. **`web_app/frontend/doc/handoff.md`** → What happened last session?
+2. **`web_app/frontend/doc/scope.md`** → Boundaries and functional requirements.
+3. **`web_app/frontend/doc/technical_design.md`** → Implementation details, state management, API integration.
+4. **`web_app/frontend/doc/ui_design.md`** → UX flows, component hierarchy, visual constraints.
+5. **`web_app/frontend/doc/tracker.md`** → Active tasks and acceptance criteria.
 
 **As you read, actively look for:**
 - ❌ **Conflicts** between documents (e.g., UI design contradicts technical design)
