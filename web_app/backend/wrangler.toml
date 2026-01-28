@@ -1,3 +1,32 @@
 name = "resume-builder-backend"
 main = "src/index.js"
 compatibility_date = "2024-01-01"
+
+[env.development]
+vars = { JWT_SECRET = "dev-secret-key-change-in-production" }
+
+[[env.development.d1_databases]]
+binding = "DB"
+database_name = "resume-builder-dev"
+database_id = "local-resume-builder"
+preview_database_id = "local-resume-builder" # Use same for preview
+
+[env.test]
+vars = { JWT_SECRET = "test-secret-key" }
+
+[[env.test.d1_databases]]
+binding = "DB"
+database_name = "resume-builder-test"
+database_id = "local-test-resume-builder"
+
+# --- Environment: Production ---
+# Configuration for `wrangler deploy`.
+
+[env.production]
+vars = { JWT_SECRET = "your-production-secret-key" }
+
+# IMPORTANT: Replace with your actual production database ID.
+[[env.production.d1_databases]]
+binding = "DB"
+database_name = "resume-builder-prod"
+database_id = "your-production-database-id"

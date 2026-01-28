@@ -1,5 +1,7 @@
 // factory.js
 import { fakeUser } from './domain/user/user_factory.js';
+import { UserRepository } from './domain/user/user_repository.js';
+import { D1UserRepository } from './adapters/repositories/user/d1_user_repository.js';
 
 const words = [
   'apple', 'banana', 'cherry', 'dog', 'elephant', 'flower', 'garden', 'house',

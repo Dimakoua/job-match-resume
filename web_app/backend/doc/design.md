@@ -163,8 +163,9 @@ src/
 │   │   ├── gemini_adapter.js
 │   │   └── pdf_generator_adapter.js
 │   ├── repositories/        # D1 Implementations
-│   |   ├── d1_user_repository.js
-│   |   └── d1_resume_repository.js
+|   |   ├──user
+│   |       ├── d1_user_repository.js
+│   |       └── d1_resume_repository.js
 |   ├── router
 |       ├── auth_routes.js
 |       ├── resume_routes.js

@@ -1,21 +1,26 @@
 {
-  "name": "resume-builder-backend",
-  "version": "1.0.0",
-  "description": "AI-driven resume builder backend",
-  "main": "src/index.js",
-  "scripts": {
-    "dev": "wrangler dev",
-    "test": "vitest",
-    "deploy": "wrangler deploy"
-  },
-  "dependencies": {
-    "hono": "^3.12.0"
-  },
-  "devDependencies": {
-    "vitest": "^1.0.0",
-    "wrangler": "^3.0.0"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+    "name": "resume-builder-backend",
+    "version": "1.0.0",
+    "description": "AI-driven resume builder backend",
+    "main": "src/index.js",
+    "scripts": {
+        "predev": "npm run migrate:local",
+        "dev": "wrangler dev",
+        "test": "npm run migrate:test  && vitest",
+        "test:integration": "npm run migrate:test  && vitest --config vitest.integration.config.mjs",
+        "deploy": "wrangler deploy",
+        "migrate:local": "wrangler d1 migrations apply resume-builder-dev --local --env development",
+        "migrate:test": "wrangler d1 migrations apply resume-builder-test --local --env test",
+        "migrate:remote": "wrangler d1 migrations apply resume-builder --remote"
+    },
+    "dependencies": {
+        "hono": "^3.12.0"
+    },
+    "devDependencies": {
+        "vitest": "^1.0.0",
+        "wrangler": "^3.0.0"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC"
 }

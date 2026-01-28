@@ -8,13 +8,9 @@
 
 ## Active Tasks
 
-## B-003 — [infra] D1 User Table & Repository
-- Scope: Database persistence.
-- Acceptance criteria:
-  - Create D1 migration SQL: `CREATE TABLE users...`.
-  - Create `src/adapters/repositories/D1UserRepository.js`.
-  - Implement `save(user)` and `findByEmail(email)`.
-  - Integration test using Miniflare D1.
+## B-003 — [infra] D1 User Table & Repository ✅ 100%
+- Completed: 2026-01-28
+- Evidence: D1 migration exists, D1UserRepository implemented with save and findByEmail, integration tests 8/8 passing.
 
 ---
 
