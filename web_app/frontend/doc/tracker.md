@@ -9,23 +9,17 @@
 
 ## Active Tasks
 
-## F-002 — [infra] Tailwind CSS Setup
-- Scope: Set up Tailwind CSS and configure with custom color palette.
+## F-003 — [infra] Pinia Store Setup
+- Scope: Add Pinia store and basic state for auth and resume.
 - Acceptance criteria:
-	- Tailwind classes work in components.
-	- Custom colors from ui_design.md §2.1 available.
+	- Pinia store is available in app.
+	- State for user and resume is reactive.
 
 ---
 
 ## Backlog (Not Started)
 
 ### Phase 1: Skeleton & Setup (M1)
-
-## F-003 — [infra] Pinia Store Setup
-- Scope: Add Pinia store and basic state for auth and resume.
-- Acceptance criteria:
-	- Pinia store is available in app.
-	- State for user and resume is reactive.
 
 ## F-004 — [infra] Router Setup
 - Scope: Implement basic router with routes for login, dashboard, builder, and generator.

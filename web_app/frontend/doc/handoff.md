@@ -1,36 +1,35 @@
 # handoff.md
 ## Context Snapshot
-- F-002 completed, Tailwind CSS configured with custom colors; Vue app now styled with Tailwind classes.
-- Project infrastructure progressing through Phase 1.
+- F-003 completed, Pinia stores for auth and resume set up; app state is now reactive.
+- Infrastructure setup nearing completion for Phase 1.
 ## Active Task(s)
-- F-002: [infra] Tailwind CSS Setup — Acceptance: Tailwind classes work in components. Custom colors from ui_design.md §2.1 available.
+- F-003: [infra] Pinia Store Setup — Acceptance: Pinia store is available in app. State for user and resume is reactive.
 ## Decisions Made
-- Tailwind setup decision: Used Vite-compatible config with ES modules and @tailwindcss/postcss (link: ui_design.md §2.1).
+- Pinia setup decision: Created separate stores for auth and resume with basic actions (link: technical_design.md §3.1).
 ## Changes Since Last Session
-- web_app/frontend/package.json (+3): Added tailwindcss, postcss, autoprefixer, @tailwindcss/postcss.
-- web_app/frontend/tailwind.config.js (+20): Config with content paths, dark mode, custom colors.
-- web_app/frontend/postcss.config.js (+5): PostCSS plugins for Tailwind and autoprefixer.
-- web_app/frontend/src/style.css (+3): Tailwind directives.
-- web_app/frontend/src/main.js (+1): Import style.css.
-- web_app/frontend/src/App.vue (+15/-10): Applied Tailwind classes and custom colors.
+- web_app/frontend/package.json (+1): Added pinia.
+- web_app/frontend/src/ui/stores/useAuthStore.js (+15): Auth store with user state and login/logout.
+- web_app/frontend/src/ui/stores/useResumeStore.js (+18): Resume store with personal info and update actions.
+- web_app/frontend/src/main.js (+3): Integrated Pinia plugin.
+- web_app/frontend/src/App.vue (+25/-5): Added store usage for reactivity demo.
 ## Validation & Evidence
 - Unit: N/A (infrastructure task).
-- Integration: npm run build succeeds, generates 12.10 kB CSS with Tailwind.
+- Integration: npm run build succeeds, includes Pinia in bundle.
 - Coverage: N/A.
-- Logs: Build completed in 831ms with no errors.
+- Logs: Build completed in 488ms with no errors.
 ## Risks & Unknowns
 - None.
 ## Next Steps
-1. Activate F-003: Pinia Store Setup.
-2. Install Pinia and configure basic state for auth and resume.
-3. Test state reactivity.
+1. Activate F-004: Router Setup.
+2. Install Vue Router and configure routes for login, dashboard, builder, generator.
+3. Implement basic navigation.
 ## Status Summary
-- ✅ 100% — F-002 complete, Tailwind ready.
+- ✅ 100% — F-003 complete, Pinia reactive.
 
 ## Closing Report
-- **What Changed:** Installed Tailwind CSS and dependencies (+95 packages); created `tailwind.config.js` (+20 lines), `postcss.config.js` (+5 lines), `src/style.css` (+3 lines); updated `main.js` (+1 line) to import styles; configured custom colors in config; updated `App.vue` (+15/-10 lines) with Tailwind classes and custom colors.
-- **Validation & Evidence:** `npm run build` completed successfully (dist/assets/index-CSaTEp9G.css 12.10 kB generated); no PostCSS or Tailwind errors; App.vue uses classes like `bg-primary`, `text-primary`, `bg-background-light` matching ui_design.md §2.1.
-- **Status Update:** F-002 is ✅ 100% — Tailwind CSS set up with custom colors.
-- **Decisions Made:** Used ES module syntax for config files due to package.json "type": "module"; installed @tailwindcss/postcss for PostCSS compatibility.
-- **Risks & Unknowns:** None identified; build passes cleanly.
-- **Next Steps:** 1. Proceed to F-003: Pinia Store Setup. 2. Install Pinia and set up basic state. 3. Verify state reactivity in components.
+- **What Changed:** Installed Pinia (+13 packages); created `src/ui/stores/` directory; added `useAuthStore.js` (+15 lines) and `useResumeStore.js` (+18 lines); updated `main.js` (+3 lines) to use Pinia; updated `App.vue` (+25/-5 lines) to demonstrate store reactivity with login/logout and resume updates.
+- **Validation & Evidence:** `npm run build` succeeds (dist/assets/index-oSnSnq_R.js 65.91 kB includes Pinia); App.vue imports and uses stores without errors; state updates (login/logout, update name) are reactive via template bindings.
+- **Status Update:** F-003 is ✅ 100% — Pinia stores set up and reactive.
+- **Decisions Made:** Basic store structure per technical_design.md §3.1; auth store for user state, resume store for resume data.
+- **Risks & Unknowns:** None; build passes cleanly.
+- **Next Steps:** 1. Proceed to F-004: Router Setup. 2. Install Vue Router and define routes. 3. Test navigation between views.
