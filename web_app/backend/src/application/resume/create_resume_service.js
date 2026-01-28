@@ -1,8 +1,9 @@
 import { Resume } from '../../domain/resume/resume.js';
 
 export class CreateResumeService {
-  constructor(resumeRepository) {
+  constructor(resumeRepository, templateRepository) {
     this.resumeRepository = resumeRepository;
+    this.templateRepository = templateRepository;
   }
 
   async execute(command) {
@@ -20,9 +21,8 @@ export class CreateResumeService {
     // Initialize sections based on template or empty
     let sections = [];
     if (command.templateId) {
-      // For now, start with empty sections even with template
-      // TODO: Load template sections when template system is implemented
-      sections = [];
+      // Load predefined template sections
+      sections = await this.templateRepository.getSections(command.templateId);
     }
 
     // Create resume

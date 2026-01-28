@@ -1,8 +1,10 @@
 // factory.js
 import { fakeUser } from './domain/user/user_factory.js';
 import { fakeResume } from './domain/resume/resume_factory.js';
+import { fakeTemplate } from './domain/template/template_factory.js';
 import { UserRepository } from './domain/user/user_repository.js';
 import { ResumeRepository } from './domain/resume/resume_repository.js';
+import { TemplateRepository } from './domain/template/template_repository.js';
 import { D1UserRepository } from './adapters/repositories/user/d1_user_repository.js';
 import { D1ResumeRepository } from './adapters/repositories/resume/d1_resume_repository.js';
 
@@ -34,6 +36,7 @@ export class Factory {
     this.db = db;
     this.userRepo = new UserRepository(new D1UserRepository(db));
     this.resumeRepo = new ResumeRepository(new D1ResumeRepository(db));
+    this.templateRepo = new TemplateRepository();
   }
 
   async build(factoryName, opts = {}) {
@@ -56,5 +59,9 @@ export class Factory {
 
   async fakeResume(opts = {}) {
     return await fakeResume(this.resumeRepo, opts);
+  }
+
+  async fakeTemplate(opts = {}) {
+    return await fakeTemplate(this.templateRepo, opts);
   }
 }
