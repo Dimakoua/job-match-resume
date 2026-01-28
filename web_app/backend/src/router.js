@@ -40,7 +40,7 @@ router.get('/api/health', async () => {
 router.get('/', () => new Response('Hello World from Resume Builder Backend!'));
 
 // Setup feature routes
-// setupAuthRoutes(router);
+setupAuthRoutes(router);
 
 // Export the router, scheduled handler, and queue handlers
 export default router;
