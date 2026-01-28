@@ -24,6 +24,10 @@
 - Completed: 2026-01-28
 - Evidence: User.js with full validation, User.test.js passing all tests.
 
+## B-004 — [app] SignUp Service ✅ 100%
+- Completed: 2026-01-28
+- Evidence: SignUpService implemented with email uniqueness check, bcrypt password hashing, and user creation. Unit tests 2/2 passing.
+
 ---
 
 ## Backlog (Not Started)
@@ -54,13 +58,6 @@
   - Create `src/adapters/repositories/D1UserRepository.js`.
   - Implement `save(user)` and `findByEmail(email)`.
   - Integration test using Miniflare D1.
-
-## B-004 — [app] SignUp Service
-- Scope: Orchestration of registration.
-- Acceptance criteria:
-  - Create `src/application/auth/SignUpService.js`.
-  - Logic: Check if email exists -> Hash password (bcryptjs) -> Save User.
-  - Unit tests mocking the Repository.
 
 ## B-005 — [api] SignUp Endpoint
 - Scope: HTTP layer.
