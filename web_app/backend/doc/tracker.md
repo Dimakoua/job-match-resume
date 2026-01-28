@@ -56,12 +56,6 @@
 
 ### Phase 3: Resume Management (M2)
 
-## B-011 — [app] Resume CRUD Services
-- Scope: Create and List logic.
-- Acceptance criteria:
-  - `CreateResumeService`: Initializes empty/template resume.
-  - `ListResumesService`: Returns headers (id, title, updated_at) for dashboard.
-
 ## B-012 — [api] Resume Controller
 - Scope: Connect REST to Services.
 - Acceptance criteria:

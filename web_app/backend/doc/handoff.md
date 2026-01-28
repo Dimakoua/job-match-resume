@@ -11,9 +11,11 @@
 - Completed B-009 (Resume Entity) with validation, section management, and unit tests.
 - Completed B-010 (D1 Resume Repository) with save, findById, findAllByUserId methods and integration tests.
 - Completed B-011 (Resume CRUD Services) with CreateResumeService and ListResumesService, integration tests.
+- Template system fully implemented with 7 static templates (basic, modern, professional, creative, technical, minimal, academic) using repository pattern without database dependencies.
+- Added comprehensive unit tests for Template entity with full validation coverage.
 
 ## Active Task(s)
-- None — Resume CRUD services completed. Ready for B-012 (Resume Controller).
+- None — Template system and tests completed. Ready for B-012 (Resume Controller).
 
 ## Decisions Made
 - Expanded User entity to include id, name, passwordHash, googleId for full auth support (scope.md § In Scope).
@@ -22,6 +24,8 @@
 - Implemented D1UserRepository using database abstraction layer for consistency.
 - Used PBKDF2 for password hashing with 100k iterations for security.
 - Adopted integration-only testing for application services to ensure end-to-end reliability.
+- Implemented template system with static hardcoded data in domain repository, eliminating unnecessary database abstraction for immutable template data.
+- Maintained repository pattern interface while using static data for templates to keep clean separation of concerns.
 
 ## Changes Since Last Session
 - Created D1ResumeRepository with save, findById, findAllByUserId methods.
@@ -31,10 +35,14 @@
 - Implemented CreateResumeService and ListResumesService with integration tests.
 - Removed unit tests for services, following integration-only testing strategy.
 - Updated Resume entity and repository to include timestamps (createdAt, updatedAt).
+- Implemented TemplateRepository with 7 static templates using repository pattern.
+- Added comprehensive unit tests for Template entity (10/10 passing) covering all validation scenarios.
+- Updated Factory class to include templateRepo and fakeTemplate method for testing.
 
 ## Validation & Evidence
-- Integration: SignUpUserService tests 2/2 passing, LoginUserService tests 3/3 passing, D1UserRepository tests 8/8 passing, UpdateUserService tests 13/13 passing (unit + integration), AuthController tests 9/9 passing, Database helper tests 4/4 passing (with poisoned stub handling), Domain tests 16/16 (User) + 17/17 (Resume), Controllers 7/7 passing, D1ResumeRepository integration tests 4/4 passing, Resume Services integration tests 3/3 passing — Total 102/102 tests passing.
-- No unit tests remaining for services; all validation now through integration tests.
+- Integration: SignUpUserService tests 2/2 passing, LoginUserService tests 3/3 passing, D1UserRepository tests 8/8 passing, UpdateUserService tests 13/13 passing (unit + integration), AuthController tests 9/9 passing, Database helper tests 4/4 passing (with poisoned stub handling), Domain tests 16/16 (User) + 17/17 (Resume) + 10/10 (Template), Controllers 7/7 passing, D1ResumeRepository integration tests 4/4 passing, Resume Services integration tests 6/6 passing — Total 108/108 tests passing.
+- Template functionality validated through resume creation integration tests including professional template sections.
+- All template domain tests passing (14/14 total including factory tests).
 
 ## Risks & Unknowns
 - D1 foreign key support in production (SQLite-based, should be fine).
@@ -45,4 +53,4 @@
 2. Add integration tests for the controller.
 
 ## Status Summary
-- ✅ 100% — B-001, B-002, B-003, B-004, B-005, B-006, B-007, B-008, B-009, B-010, B-011 complete.
+- ✅ 100% — B-001, B-002, B-003, B-004, B-005, B-006, B-007, B-008, B-009, B-010, B-011 complete. Template system fully implemented and tested.
