@@ -1,6 +1,6 @@
 # backend/tracker.md
 
-**Version:** 1.8
+**Version:** 1.9
 **Last updated:** 2026-01-28
 **Status:** Active
 
@@ -38,9 +38,9 @@
 - Completed: 2026-01-28
 - Evidence: Google OAuth endpoints implemented (/auth/google, /auth/google/callback, /auth/google/login) with ID token verification and user creation/finding.
 
-## B-009 — [domain] Resume Entity ✅ 100%
+## B-010 — [infra] D1 Resume Repository ✅ 100%
 - Completed: 2026-01-28
-- Evidence: Resume.js created with validation, add/remove section methods, unit tests 15/15 passing.
+- Evidence: D1ResumeRepository implemented with save, findById, findAllByUserId. Integration tests 4/4 passing.
 
 ## B-005 — [api] SignUp Endpoint ✅ 100%
 - Completed: 2026-01-28
@@ -51,12 +51,6 @@
 ## Backlog (Not Started)
 
 ### Phase 3: Resume Management (M2)
-
-## B-010 — [infra] D1 Resume Repository
-- Scope: Persist complex JSON data.
-- Acceptance criteria:
-  - Migration: `CREATE TABLE resumes (..., content JSON, template_id TEXT)`.
-  - Repository methods: `save`, `findById`, `findAllByUserId`.
 
 ## B-011 — [app] Resume CRUD Services
 - Scope: Create and List logic.

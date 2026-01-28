@@ -13,6 +13,7 @@ describe("Resume Entity", () => {
       expect(resume.userId).toBe(validUserId);
       expect(resume.title).toBe(validTitle);
       expect(resume.sections).toEqual([]);
+      expect(resume.templateId).toBeNull();
     });
 
     it("should create a resume with initial sections", () => {
@@ -22,6 +23,11 @@ describe("Resume Entity", () => {
       ];
       const resume = new Resume(validId, validUserId, validTitle, sections);
       expect(resume.sections).toEqual(sections);
+    });
+
+    it("should create a resume with templateId", () => {
+      const resume = new Resume(validId, validUserId, validTitle, [], "template-123");
+      expect(resume.templateId).toBe("template-123");
     });
 
     it("should trim title", () => {
@@ -50,6 +56,10 @@ describe("Resume Entity", () => {
     it("should throw error for invalid sections", () => {
       expect(() => new Resume(validId, validUserId, validTitle, "not array")).toThrow("Sections must be an array");
       expect(() => new Resume(validId, validUserId, validTitle, null)).toThrow("Sections must be an array");
+    });
+
+    it("should throw error for invalid templateId", () => {
+      expect(() => new Resume(validId, validUserId, validTitle, [], 123)).toThrow("Template ID must be a string or null");
     });
   });
 

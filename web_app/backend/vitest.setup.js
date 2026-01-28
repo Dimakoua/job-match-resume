@@ -20,6 +20,7 @@ beforeEach(async () => {
   // Clear all tables before each test in correct order (reverse dependencies)
   if (global.DB) {
     try {
+      await global.DB.prepare('DELETE FROM Resumes').run();
       await global.DB.prepare('DELETE FROM Users').run();
     } catch (error) {
       // Silently ignore errors during cleanup

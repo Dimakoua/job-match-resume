@@ -140,9 +140,9 @@ src/
 │   ├── user/
 │   ├── resume/
 │   │   ├── resume.js
-│   │   ├── resume_section.js
-│   │   ├── resume_repository.js  (Interface)
-│   │   └── ai_service.js         (Interface)
+│   │   ├── resume.test.js
+│   │   ├── resume_factory.js
+│   │   └── resume_repository.js
 │   └── template/
 ├── application/             # Coordinators
 │   ├── auth/

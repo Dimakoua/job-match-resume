@@ -1,14 +1,16 @@
 export class Resume {
-  constructor(id, userId, title, sections = []) {
+  constructor(id, userId, title, sections = [], templateId = null) {
     this.validateId(id);
     this.validateUserId(userId);
     this.validateTitle(title);
     this.validateSections(sections);
+    this.validateTemplateId(templateId);
 
     this.id = id;
     this.userId = userId;
     this.title = title.trim();
     this.sections = [...sections]; // Deep copy if needed, but for now shallow
+    this.templateId = templateId;
   }
 
   validateId(id) {
@@ -41,6 +43,12 @@ export class Resume {
       throw new Error('Sections must be an array');
     }
     // Additional validation can be added here
+  }
+
+  validateTemplateId(templateId) {
+    if (templateId != null && typeof templateId !== 'string') {
+      throw new Error('Template ID must be a string or null');
+    }
   }
 
   addSection(section) {
