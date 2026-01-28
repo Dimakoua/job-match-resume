@@ -6,7 +6,6 @@ import { LoginUserService } from '../../../application/login_user/login_user_ser
 import { UpdateUserService } from '../../../application/update_user/update_user_service.js';
 import { GetUserProfileService } from '../../../application/get_user_profile/get_user_profile_service.js';
 import { D1UserRepository } from '../../../adapters/repositories/user/d1_user_repository.js';
-import { D1OrderRepository } from '../../../adapters/repositories/order/d1_order_repository.js';
 
 describe('AuthController Integration Tests', () => {
   let controller;

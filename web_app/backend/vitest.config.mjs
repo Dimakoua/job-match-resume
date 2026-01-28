@@ -7,8 +7,9 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export default defineConfig({
   test: {
     globals: true,
-    include: ['src/**/*.test.js'],
-    exclude: ['**/*.integration.test.js', '**/node_modules/**', '**/dist/**'],
+    include: ['src/**/*.{test,integration.test}.js'],
+    exclude: ['**/node_modules/**', '**/dist/**'],
+    setupFiles: ['./vitest.setup.js'],
     pool: 'threads',
     poolOptions: {
       threads: {
