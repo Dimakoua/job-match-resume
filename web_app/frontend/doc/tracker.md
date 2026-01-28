@@ -9,19 +9,17 @@
 
 ## Active Tasks
 
-*None.*
+## F-001 — [infra] Vue 3 + Vite Project Skeleton
+- Scope: Initialize Vue 3 + Vite project structure (src/, public/, main.js, App.vue).
+- Acceptance criteria:
+	- Project builds and runs with `npm run dev`.
+	- Directory structure matches technical_design.md §3.1.
 
 ---
 
 ## Backlog (Not Started)
 
 ### Phase 1: Skeleton & Setup (M1)
-
-## F-001 — [infra] Vue 3 + Vite Project Skeleton
-- Scope: Initialize Vue 3 + Vite project structure (src/, public/, main.js, App.vue).
-- Acceptance criteria:
-	- Project builds and runs with `npm run dev`.
-	- Directory structure matches technical_design.md §3.1.
 
 ## F-002 — [infra] Tailwind CSS Setup
 - Scope: Set up Tailwind CSS and configure with custom color palette.
