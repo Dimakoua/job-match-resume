@@ -59,7 +59,7 @@ The "AI Resume Builder" aims to democratize professional career advancement by c
 - REST API deployed on Cloudflare Workers.
 - Database schema and migrations for Cloudflare D1.
 - Unit and Integration test suites.
-- Integration with an AI Provider (e.g., OpenAI/Anthropic) via Adapters.
+- Integration with an AI Provider (e.g., Google Gemini/OpenAI/Anthropic) via Adapters.
 
 ---
 

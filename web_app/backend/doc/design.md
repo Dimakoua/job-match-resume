@@ -57,7 +57,7 @@ This document defines the technical architecture, design patterns, and implement
 - **Adapters:**
   - Controllers: Handle HTTP requests (e.g., POST /resume/generate).
   - Repositories: Implement D1 SQL logic.
-  - AI Adapter: Communicates with external LLMs (OpenAI/Anthropic).
+- AI Adapter: Communicates with external LLMs (Google Gemini/OpenAI/Anthropic).
   - Document Adapter: Handles PDF/DOCX/etc binary generation.
 - **Application:** Orchestrates use cases (e.g., "Take user input, call AI adapter, create Domain Entity, save to Repo").
 - **Domain:** Pure JavaScript classes containing business logic (e.g., Resume completeness checks, formatting rules).
@@ -70,7 +70,7 @@ This document defines the technical architecture, design patterns, and implement
 | Framework | Hono | 3.x+ | Lightweight routing for Workers. |
 | Database | Cloudflare D1 | Beta/Ga | Native SQL database for Workers. |
 | Testing | Vitest | Latest | Fast unit testing. |
-| AI/LLM | OpenAI / Anthropic | API | For content analysis and generation. |
+| AI/LLM | Google Gemini / OpenAI / Anthropic | API | For content analysis and generation. |
 | PDF/Doc | pdf-lib / docx | npm | Pure JS libs compatible with Edge. |
 
 **Constraints:**
@@ -160,7 +160,7 @@ src/
 │   │   ├── resume_controller.js
 │   │   └── ai_controller.js
 │   ├── infrastructure/      # External Integrations
-│   │   ├── openai_adapter.js
+│   │   ├── gemini_adapter.js
 │   │   └── pdf_generator_adapter.js
 │   ├── repositories/        # D1 Implementations
 │   |   ├── d1_user_repository.js
@@ -227,12 +227,12 @@ export class GenerateFromJDService {
 **Code pattern:**
 
 ```javascript
-// openai_adapter.js
-export class OpenAIAdapter {
+// gemini_adapter.js
+export class GeminiAdapter {
   constructor(apiKey) { this.apiKey = apiKey; }
   
-  async generateResumeContent(jd) {
-    // Call OpenAI API...
+  async generateJSON(systemPrompt, userPrompt) {
+    // Call Gemini API...
     // Map response to Domain Object structure
     return mappedSections;
   }
@@ -378,7 +378,7 @@ export class AuthController extends BaseController {
 
 ### 4.2 Data Protection
 
-**Secrets:** API Keys (OpenAI, Google Client Secret) stored in wrangler secret.
+**Secrets:** API Keys (Gemini, Google Client Secret) stored in wrangler secret.
 
 **Sanitization:** All user inputs (especially for the Resume) must be sanitized before being rendered into HTML/PDF to prevent XSS (even in PDF generation).
 
@@ -425,7 +425,7 @@ export class AuthController extends BaseController {
 
 ### 7.2 ADR-002: AI Interface
 
-**Context:** We might switch from OpenAI to Anthropic or Llama.
+**Context:** We might switch from Gemini to OpenAI or Anthropic or Llama.
 
 **Decision:** Create a generic AIService interface in Domain layer.
 
