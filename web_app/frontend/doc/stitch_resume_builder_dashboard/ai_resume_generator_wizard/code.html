@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AI Resume Generator Wizard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2463eb",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#111621",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .ai-glow {
+            box-shadow: 0 0 15px rgba(36, 99, 235, 0.4);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display min-h-screen">
+<div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<!-- Navigation Header -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-slate-800 bg-white dark:bg-background-dark px-10 py-3">
+<div class="flex items-center gap-4 text-slate-900 dark:text-white">
+<div class="size-6 text-primary">
+<svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M42.1739 20.1739L27.8261 5.82609C29.1366 7.13663 28.3989 10.1876 26.2002 13.7654C24.8538 15.9564 22.9595 18.3449 20.6522 20.6522C18.3449 22.9595 15.9564 24.8538 13.7654 26.2002C10.1876 28.3989 7.13663 29.1366 5.82609 27.8261L20.1739 42.1739C21.4845 43.4845 24.5355 42.7467 28.1133 40.548C30.3042 39.2016 32.6927 37.3073 35 35C37.3073 32.6927 39.2016 30.3042 40.548 28.1133C42.7467 24.5355 43.4845 21.4845 42.1739 20.1739Z" fill="currentColor"></path>
+</svg>
+</div>
+<h2 class="text-lg font-bold leading-tight tracking-tight">ResumeAI</h2>
+</div>
+<div class="flex flex-1 justify-end gap-8">
+<div class="flex items-center gap-9">
+<a class="text-slate-600 dark:text-slate-300 text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Dashboard</a>
+<a class="text-slate-600 dark:text-slate-300 text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Templates</a>
+</div>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10" data-alt="User profile avatar placeholder" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB5fkPUrt5FobcSac8W0efnNjkZr7QTCDCjsiYiT9irMFTQQx8GyhtrfYotChuuTKUpFcxGjb-_gXql2WI4ULQuHwsLHGoWAXW0OW_M6Q9BbTEd8pnCiiZBKGSDnSaT-VhvaFlYsOzfeP8oERJGvf64ZGHjt2AC_Ef6Bd2vK5-rSmLOqmSZLCFabqqQOYwENCcC-pZloHlu0LWCfX5547fpqxVcY5cq0o7MuV9vvNnFfUKn-ffiiWtG_SErMlt4-RHVvP4vwvzHlfc");'></div>
+</div>
+</header>
+<!-- Main Wizard Area -->
+<main class="flex flex-1 items-center justify-center p-6 md:p-12">
+<div class="bg-white dark:bg-slate-900 w-full max-w-[720px] rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col">
+<!-- Progress Bar Component -->
+<div class="flex flex-col gap-3 p-8 pb-4">
+<div class="flex gap-6 justify-between items-center">
+<p class="text-slate-900 dark:text-white text-base font-semibold leading-normal">Step 1 of 3</p>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium leading-normal">33% Complete</p>
+</div>
+<div class="rounded-full bg-slate-100 dark:bg-slate-800 h-2 w-full overflow-hidden">
+<div class="h-full rounded-full bg-primary" style="width: 33%;"></div>
+</div>
+<div class="flex justify-between">
+<p class="text-primary text-xs font-bold uppercase tracking-wider">Job Description</p>
+<p class="text-slate-400 dark:text-slate-600 text-xs font-bold uppercase tracking-wider">Experience</p>
+<p class="text-slate-400 dark:text-slate-600 text-xs font-bold uppercase tracking-wider">Finalize</p>
+</div>
+</div>
+<!-- Step Header -->
+<div class="px-8 pt-6 text-center">
+<h1 class="text-slate-900 dark:text-white text-3xl font-bold tracking-tight">Paste Job Description</h1>
+<p class="text-slate-500 dark:text-slate-400 text-base font-normal mt-2">Our AI will analyze the requirements to tailor your resume for maximum impact.</p>
+</div>
+<!-- Form Content -->
+<div class="p-8 space-y-8">
+<!-- Textarea Component -->
+<div class="flex flex-col gap-2">
+<label class="text-slate-900 dark:text-white text-sm font-semibold uppercase tracking-wide">Detailed Job Requirements</label>
+<textarea class="form-input flex w-full min-w-0 flex-1 resize-none rounded-lg text-slate-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/20 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 focus:border-primary min-h-[220px] placeholder:text-slate-400 p-4 text-base font-normal leading-relaxed" placeholder="Paste the full job description here... (e.g. key responsibilities, required skills, and qualifications)"></textarea>
+<div class="flex justify-between items-center mt-1">
+<span class="text-slate-400 text-xs">Recommended: At least 200 words</span>
+<span class="text-slate-400 text-xs">0 / 2000</span>
+</div>
+</div>
+<!-- Tone Selection (Custom Component) -->
+<div class="flex flex-col gap-4">
+<p class="text-slate-900 dark:text-white text-sm font-semibold uppercase tracking-wide">Desired Tone</p>
+<div class="flex flex-wrap gap-3">
+<button class="flex items-center gap-2 px-5 py-2.5 rounded-full border-2 border-primary bg-primary/10 text-primary text-sm font-bold transition-all">
+<span class="material-symbols-outlined text-lg">work</span>
+                                    Professional
+                                </button>
+<button class="flex items-center gap-2 px-5 py-2.5 rounded-full border-2 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 text-sm font-bold hover:border-primary/50 transition-all">
+<span class="material-symbols-outlined text-lg">palette</span>
+                                    Creative
+                                </button>
+<button class="flex items-center gap-2 px-5 py-2.5 rounded-full border-2 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 text-sm font-bold hover:border-primary/50 transition-all">
+<span class="material-symbols-outlined text-lg">bolt</span>
+                                    Bold
+                                </button>
+</div>
+</div>
+</div>
+<!-- Footer Actions -->
+<div class="p-8 bg-slate-50 dark:bg-slate-800/30 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
+<button class="flex items-center gap-2 text-slate-500 dark:text-slate-400 font-bold text-sm hover:text-slate-900 dark:hover:text-white transition-colors">
+<span class="material-symbols-outlined">arrow_back</span>
+                            Back to Dashboard
+                        </button>
+<div class="flex gap-4">
+<button class="flex items-center justify-center gap-2 min-w-[180px] bg-primary hover:bg-primary/90 text-white rounded-lg h-12 px-8 font-bold text-sm transition-all ai-glow">
+<span class="truncate">Generate Draft</span>
+<span class="material-symbols-outlined text-lg">auto_awesome</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer Small Print -->
+<footer class="py-6 text-center text-slate-400 dark:text-slate-600 text-xs">
+                © 2024 ResumeAI. Tailored precision powered by advanced neural networks.
+            </footer>
+</div>
+</div>
+</body></html>

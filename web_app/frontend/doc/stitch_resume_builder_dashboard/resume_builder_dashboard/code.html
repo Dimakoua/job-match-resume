@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Resume Builder Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2463eb",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#111621",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display min-h-screen text-[#0e121b] dark:text-white">
+<div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<!-- Top Navigation Bar -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-[#e7ebf3] dark:border-[#2d364f] bg-white dark:bg-[#1a202c] px-6 lg:px-40 py-3 sticky top-0 z-50">
+<div class="flex items-center gap-4 text-[#0e121b] dark:text-white">
+<div class="size-6 text-primary">
+<svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_6_330)">
+<path clip-rule="evenodd" d="M24 0.757355L47.2426 24L24 47.2426L0.757355 24L24 0.757355ZM21 35.7574V12.2426L9.24264 24L21 35.7574Z" fill="currentColor" fill-rule="evenodd"></path>
+</g>
+<defs>
+<clippath id="clip0_6_330"><rect fill="white" height="48" width="48"></rect></clippath>
+</defs>
+</svg>
+</div>
+<h2 class="text-[#0e121b] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">AI Resume Builder</h2>
+</div>
+<div class="flex flex-1 justify-end gap-8 items-center">
+<nav class="hidden md:flex items-center gap-9">
+<a class="text-[#0e121b] dark:text-white text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Dashboard</a>
+<a class="text-[#4d6599] dark:text-gray-400 text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Templates</a>
+<a class="text-[#4d6599] dark:text-gray-400 text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Examples</a>
+</nav>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border border-gray-200" data-alt="Professional user profile picture" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCCXI8PjynP9pzVbioixFVUFWs3sDJXCwGbDCY-XnF7HwNek6Ry9qZsgEB13ih6j4StvVsU7-_l3VPSH798OB68Hv_vOM1P7Q6VUEJhQRLHoFGJvbubD1bh3G32CgkdM38OwpuhZaftJSxflxHi0y6bi0E8JVObOFdKnKE6aUJvZQdsdgnlEPeH5SsnwHBNz25TZePmAPaXKHtxlDBdsaLcPcYEG8uQC1zr4A9kfbwunOqUgZaPWnbPeJQ1R-ppXZsKS91zsvfmw5s");'>
+</div>
+</div>
+</header>
+<!-- Main Content Container -->
+<main class="px-6 lg:px-40 flex flex-1 justify-center py-8">
+<div class="layout-content-container flex flex-col max-w-[1024px] flex-1">
+<!-- Page Heading Section -->
+<div class="flex flex-wrap justify-between items-end gap-4 pb-8">
+<div class="flex min-w-72 flex-col gap-1">
+<h1 class="text-[#0e121b] dark:text-white text-4xl font-black leading-tight tracking-[-0.033em]">My Resumes</h1>
+<p class="text-[#4d6599] dark:text-gray-400 text-base font-normal leading-normal">Manage and optimize your professional career documents</p>
+</div>
+<div class="flex gap-3">
+<button class="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-11 px-5 bg-primary text-white gap-2 text-sm font-bold leading-normal tracking-[0.015em] hover:bg-blue-700 transition-all shadow-md">
+<span class="material-symbols-outlined text-[20px]">magic_button</span>
+<span class="truncate">Create with AI</span>
+</button>
+</div>
+</div>
+<!-- Resume Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
+<!-- Empty State / Start from Scratch Card -->
+<div class="flex flex-col group cursor-pointer h-full">
+<div class="flex flex-col items-center justify-center gap-4 rounded-xl border-2 border-dashed border-[#d0d7e7] dark:border-[#2d364f] bg-white/50 dark:bg-[#1a202c]/50 px-6 py-20 hover:border-primary hover:bg-white dark:hover:bg-[#1a202c] transition-all aspect-[3/4]">
+<div class="bg-primary/10 p-4 rounded-full text-primary group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-[32px]">add</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-center">
+<p class="text-[#0e121b] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">Start from Scratch</p>
+<p class="text-[#4d6599] dark:text-gray-400 text-sm font-normal leading-normal max-w-[200px]">Begin with a blank canvas and build your own layout.</p>
+</div>
+</div>
+</div>
+<!-- Resume Card 1 -->
+<div class="flex flex-col gap-3 group">
+<div class="relative w-full bg-white dark:bg-[#1a202c] aspect-[3/4] rounded-xl overflow-hidden shadow-sm border border-[#e7ebf3] dark:border-[#2d364f] group-hover:shadow-lg transition-all">
+<div class="w-full h-full bg-center bg-no-repeat bg-cover opacity-90" data-alt="Modern professional resume layout preview" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuABBa-n8S2IYtVh7fmf070Y7-K5Y6WyjoCm1-tTWGwhFtLM1tHEe75_xA9s_FVNClIJH1WFHearp-7Guz760BSYSPGyVP_5cUJM_n3XBaMrsSKv5VyiWNY3LrC2YQHXUaWuOPa8ZaTC_E6Hdc5l71mmnnK-4NQSAjtMN-9WueQ8x2-4zQRQa0uM0BE0uDqHgi2CMpAM67Eckvx6X61PUOCXkjiqc5oFO1y32YZGnMNSAXxeXujNFs3GHn1dTIT_tDixK47IpD-5ub4");'>
+</div>
+<div class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors"></div>
+<div class="absolute bottom-4 right-4 translate-y-12 group-hover:translate-y-0 transition-transform">
+<button class="bg-white text-primary p-2 rounded-full shadow-lg">
+<span class="material-symbols-outlined">visibility</span>
+</button>
+</div>
+</div>
+<div class="flex flex-col px-1">
+<div class="flex justify-between items-start">
+<div>
+<p class="text-[#0e121b] dark:text-white text-base font-semibold leading-normal">Senior Software Engineer</p>
+<p class="text-[#4d6599] dark:text-gray-400 text-xs font-normal leading-normal">Edited 2 hours ago</p>
+</div>
+<button class="text-[#4d6599] hover:text-[#0e121b] dark:hover:text-white">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+<div class="mt-3 flex gap-2">
+<button class="flex-1 bg-primary/10 text-primary text-xs font-bold py-2 rounded-lg hover:bg-primary hover:text-white transition-colors">Edit Resume</button>
+<button class="px-3 bg-gray-100 dark:bg-gray-800 text-gray-500 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700">
+<span class="material-symbols-outlined text-[18px] leading-none">download</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Resume Card 2 -->
+<div class="flex flex-col gap-3 group">
+<div class="relative w-full bg-white dark:bg-[#1a202c] aspect-[3/4] rounded-xl overflow-hidden shadow-sm border border-[#e7ebf3] dark:border-[#2d364f] group-hover:shadow-lg transition-all">
+<div class="w-full h-full bg-center bg-no-repeat bg-cover opacity-90" data-alt="Marketing manager resume layout preview" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDLEbzw7G8HJaT29CqFHAPvmLXDuFYQ2D5eJBwYga37XkkONo-jV798j22QCI4yThkq4T1_SJSVCpJSRXkFWJjp0U7vOLp-TpXs4Y0A8zNMbD9_LDZXINSN-WC3kq5Xz78WqwOVWnvXeE6bv_xRvetnKQoBS7piAdGwFjCqrwPDv25BzYEPwRVQzt29jABGyRU4zuobBB0f-LDszUaD71u92U1HSjhPBeK-rpSWZ6E6FGFIC_WwORpa-n_Hne84vAFxwl4BoLpaFnM");'>
+</div>
+<div class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors"></div>
+<div class="absolute bottom-4 right-4 translate-y-12 group-hover:translate-y-0 transition-transform">
+<button class="bg-white text-primary p-2 rounded-full shadow-lg">
+<span class="material-symbols-outlined">visibility</span>
+</button>
+</div>
+</div>
+<div class="flex flex-col px-1">
+<div class="flex justify-between items-start">
+<div>
+<p class="text-[#0e121b] dark:text-white text-base font-semibold leading-normal">Marketing Manager 2024</p>
+<p class="text-[#4d6599] dark:text-gray-400 text-xs font-normal leading-normal">Edited 1 week ago</p>
+</div>
+<button class="text-[#4d6599] hover:text-[#0e121b] dark:hover:text-white">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+<div class="mt-3 flex gap-2">
+<button class="flex-1 bg-primary/10 text-primary text-xs font-bold py-2 rounded-lg hover:bg-primary hover:text-white transition-colors">Edit Resume</button>
+<button class="px-3 bg-gray-100 dark:bg-gray-800 text-gray-500 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700">
+<span class="material-symbols-outlined text-[18px] leading-none">download</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Resume Card 3 -->
+<div class="flex flex-col gap-3 group">
+<div class="relative w-full bg-white dark:bg-[#1a202c] aspect-[3/4] rounded-xl overflow-hidden shadow-sm border border-[#e7ebf3] dark:border-[#2d364f] group-hover:shadow-lg transition-all">
+<div class="w-full h-full bg-center bg-no-repeat bg-cover opacity-90" data-alt="Creative product designer resume layout preview" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCUROphtC6kf6n0FTpMAQ-QBlxnKFxcesClUR6ysy2Rd48L_9M9qIyvFnkM1nL55_JRS-FqiB0FOzNnyuzk90yzBpUFFJIaqy8jw-sorzi1v6Tjj0YRgDc4hYY57WhzzGJ6Lq5WjoeZqqO5Syk-u_0uDfKlsQc61lGfvUpUT_p2rQzdEE21OTFdz9uLutJocuJ3BPNA9MbniMVnOo0J2JuGy3dD81eQmgChUoi6A2gSW2NkcmfYnh3TfTHqgYqw4Q4k0Gyk7n-qnqM");'>
+</div>
+<div class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors"></div>
+<div class="absolute bottom-4 right-4 translate-y-12 group-hover:translate-y-0 transition-transform">
+<button class="bg-white text-primary p-2 rounded-full shadow-lg">
+<span class="material-symbols-outlined">visibility</span>
+</button>
+</div>
+</div>
+<div class="flex flex-col px-1">
+<div class="flex justify-between items-start">
+<div>
+<p class="text-[#0e121b] dark:text-white text-base font-semibold leading-normal">Lead Product Designer</p>
+<p class="text-[#4d6599] dark:text-gray-400 text-xs font-normal leading-normal">Edited 1 month ago</p>
+</div>
+<button class="text-[#4d6599] hover:text-[#0e121b] dark:hover:text-white">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+<div class="mt-3 flex gap-2">
+<button class="flex-1 bg-primary/10 text-primary text-xs font-bold py-2 rounded-lg hover:bg-primary hover:text-white transition-colors">Edit Resume</button>
+<button class="px-3 bg-gray-100 dark:bg-gray-800 text-gray-500 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700">
+<span class="material-symbols-outlined text-[18px] leading-none">download</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Additional Help Section -->
+<div class="mt-16 bg-[#e7ebf3]/40 dark:bg-[#1a202c] p-8 rounded-xl flex items-center justify-between">
+<div class="flex gap-4 items-center">
+<div class="size-12 rounded-full bg-primary flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-[28px]">tips_and_updates</span>
+</div>
+<div>
+<h3 class="text-lg font-bold">Need some inspiration?</h3>
+<p class="text-sm text-[#4d6599] dark:text-gray-400">Browse through our library of expert-approved resume examples.</p>
+</div>
+</div>
+<button class="text-primary font-bold text-sm hover:underline">View Examples</button>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="px-6 lg:px-40 py-8 border-t border-[#e7ebf3] dark:border-[#2d364f] text-[#4d6599] dark:text-gray-500 text-sm flex justify-between items-center bg-white dark:bg-[#111621]">
+<p>© 2024 AI Resume Builder. All rights reserved.</p>
+<div class="flex gap-6">
+<a class="hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="hover:text-primary transition-colors" href="#">Help Center</a>
+</div>
+</footer>
+</div>
+</div>
+</body></html>

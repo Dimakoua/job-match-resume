@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sign Up | AI Resume Builder</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2463eb",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#111621",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark min-h-screen flex flex-col font-display">
+<!-- Top Navigation Bar Component -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-slate-800 px-6 py-3 bg-white dark:bg-background-dark">
+<div class="flex items-center gap-3 text-slate-900 dark:text-white">
+<div class="size-8 text-primary">
+<svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_6_330)">
+<path clip-rule="evenodd" d="M24 0.757355L47.2426 24L24 47.2426L0.757355 24L24 0.757355ZM21 35.7574V12.2426L9.24264 24L21 35.7574Z" fill="currentColor" fill-rule="evenodd"></path>
+</g>
+<defs>
+<clippath id="clip0_6_330"><rect fill="white" height="48" width="48"></rect></clippath>
+</defs>
+</svg>
+</div>
+<h2 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-tight">AI Resume Builder</h2>
+</div>
+<div class="flex items-center gap-4">
+<span class="text-sm text-slate-500 hidden sm:inline">Already have an account?</span>
+<button class="flex min-w-[84px] cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal transition-colors hover:bg-blue-700">
+                Log in
+            </button>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="flex-1 flex items-center justify-center p-6">
+<div class="w-full max-w-[440px] bg-white dark:bg-slate-900 shadow-xl rounded-xl border border-slate-200 dark:border-slate-800 p-8">
+<!-- Headline and Body Text Components -->
+<div class="mb-8">
+<h1 class="text-slate-900 dark:text-white tracking-tight text-3xl font-bold leading-tight text-center pb-2">Create your account</h1>
+<p class="text-slate-500 dark:text-slate-400 text-base font-normal leading-normal text-center">Start building your professional resume in minutes.</p>
+</div>
+<!-- Social Sign-Up Component (Modified SingleButton) -->
+<div class="mb-6">
+<button class="w-full flex cursor-pointer items-center justify-center rounded-lg h-12 px-5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 gap-3 text-base font-semibold leading-normal hover:bg-slate-50 dark:hover:bg-slate-750 transition-colors">
+<img alt="Google Logo" class="w-5 h-5" data-alt="Google colorful logo icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAwETL657XWHpCpMNWSyeWHKiukrN19ALERQQq0Q7BC1Cu-883eZn-APT5PSiyB36v7YgN2S4SlMGDHLK9400IENxs1hjKBEyifKqCDX3W0M3AXnz8PKYSQw-BCskG_dj-fRu3v2W6W7zGkOE2YQXdN-pMWoP-lIw906fmueKNWjoAZKd83vXbL29DxBPAi8KvgrJfDRY_tgG2ce0tjsYlis7b26sDVZ_7ktVvOXjlEqsYT9CTxhi6houBAb_0hJUdIC_UQ6HoC1G0"/>
+<span>Sign up with Google</span>
+</button>
+</div>
+<!-- MetaText / Divider Component -->
+<div class="relative mb-6">
+<div aria-hidden="true" class="absolute inset-0 flex items-center">
+<div class="w-full border-t border-slate-200 dark:border-slate-700"></div>
+</div>
+<div class="relative flex justify-center text-sm">
+<span class="px-2 bg-white dark:bg-slate-900 text-slate-500 dark:text-slate-400">Or continue with email</span>
+</div>
+</div>
+<!-- Sign-Up Form -->
+<form action="#" class="space-y-4">
+<div>
+<label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1" for="full-name">Full Name</label>
+<input class="w-full rounded-lg border-slate-300 dark:border-slate-700 dark:bg-slate-800 dark:text-white focus:border-primary focus:ring-primary h-11" id="full-name" placeholder="John Doe" type="text"/>
+</div>
+<div>
+<label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1" for="email">Email address</label>
+<input class="w-full rounded-lg border-slate-300 dark:border-slate-700 dark:bg-slate-800 dark:text-white focus:border-primary focus:ring-primary h-11" id="email" placeholder="name@company.com" type="email"/>
+</div>
+<div>
+<label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1" for="password">Password</label>
+<div class="relative">
+<input class="w-full rounded-lg border-slate-300 dark:border-slate-700 dark:bg-slate-800 dark:text-white focus:border-primary focus:ring-primary h-11 pr-10" id="password" placeholder="••••••••" type="password"/>
+<button class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200" type="button">
+<span class="material-symbols-outlined text-xl">visibility</span>
+</button>
+</div>
+</div>
+<div class="flex items-start gap-3 py-2">
+<div class="flex h-5 items-center">
+<input class="h-4 w-4 rounded border-slate-300 text-primary focus:ring-primary" id="terms" name="terms" type="checkbox"/>
+</div>
+<div class="text-sm">
+<label class="text-slate-600 dark:text-slate-400" for="terms">
+                            I agree to the 
+                            <a class="font-medium text-primary hover:underline" href="#">Terms of Service</a> 
+                            and 
+                            <a class="font-medium text-primary hover:underline" href="#">Privacy Policy</a>
+</label>
+</div>
+</div>
+<!-- Primary Action Button -->
+<button class="w-full flex items-center justify-center rounded-lg h-12 px-5 bg-primary text-white text-base font-bold leading-normal transition-all hover:bg-blue-700 shadow-sm" type="submit">
+                    Create Account
+                </button>
+</form>
+<!-- Footer Navigation -->
+<div class="mt-8 text-center border-t border-slate-100 dark:border-slate-800 pt-6">
+<p class="text-slate-600 dark:text-slate-400 text-sm">
+                    Already have an account? 
+                    <a class="text-primary font-bold hover:underline" href="#">Log in</a>
+</p>
+</div>
+</div>
+</main>
+<!-- Simple Footer for legal links -->
+<footer class="p-6 text-center text-xs text-slate-400 dark:text-slate-500">
+        © 2024 AI Resume Builder. All rights reserved.
+    </footer>
+</body></html>

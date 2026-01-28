@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Resume Sections Manager - AI Resume Builder</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2463eb",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#111621",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .a4-preview {
+            aspect-ratio: 1 / 1.414;
+            width: 100%;
+            max-width: 800px;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #d0d7e7;
+            border-radius: 10px;
+        }
+        .drag-handle {
+            cursor: grab;
+        }
+        .drag-handle:active {
+            cursor: grabbing;
+        }.switch {
+            position: relative;
+            display: inline-block;
+            width: 36px;
+            height: 20px;
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #cbd5e1;
+            transition: .4s;
+            border-radius: 20px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 14px;
+            width: 14px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #2563eb;
+        }
+        input:checked + .slider:before {
+            transform: translateX(16px);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-600 dark:text-slate-300">
+<div class="flex h-screen flex-col overflow-hidden">
+<header class="flex items-center justify-between border-b border-solid border-[#e7ebf3] dark:border-gray-800 bg-white dark:bg-background-dark px-6 py-3 z-10">
+<div class="flex items-center gap-4 text-[#0e121b] dark:text-white">
+<div class="size-8 text-primary">
+<svg fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path clip-rule="evenodd" d="M12.0799 24L4 19.2479L9.95537 8.75216L18.04 13.4961L18.0446 4H29.9554L29.96 13.4961L38.0446 8.75216L44 19.2479L35.92 24L44 28.7521L38.0446 39.2479L29.96 34.5039L29.9554 44H18.0446L18.04 34.5039L9.95537 39.2479L4 28.7521L12.0799 24Z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+</div>
+<div class="flex flex-col">
+<h2 class="text-lg font-bold leading-tight tracking-[-0.015em]">Resume Studio</h2>
+<p class="text-xs text-gray-500 dark:text-gray-400 font-medium">Software Engineer CV • <span class="text-green-500">Saved</span></p>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="hidden md:flex items-center gap-6 mr-4">
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Dashboard</a>
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Templates</a>
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Settings</a>
+</div>
+<div class="flex gap-2">
+<button class="flex min-w-[84px] cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold shadow-sm hover:bg-blue-700 transition-all">
+<span>Download PDF</span>
+</button>
+<button class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg bg-[#e7ebf3] dark:bg-gray-800 text-[#0e121b] dark:text-white">
+<span class="material-symbols-outlined">share</span>
+</button>
+</div>
+<div class="h-10 w-10 rounded-full border border-gray-200 dark:border-gray-700 bg-cover bg-center" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBWenXCkgICzpk7CrT1D2P9MAp78lB2yH2sSG870yS0CV10IJkC--1Plaq-nUNaVGOYC0pg_3vifep022Dxo1rvQDWKhnGL4ksKvUAgOAoV-4EkUBt90d2GRpyXkFt13sYLlybvp9qzp1lElhomweLrLygrPjy9wSyrIB5za9nuteVQ0GEQRBaKlmOQ5XtqAWxjy1bhK7ZQctIDwwg_m6jL81LOHFefjOJm-l7TSwvkb1FaqvuNYn1c7cA48_5I9H0YKbeJqrKYcto");'></div>
+</div>
+</header>
+<div class="flex flex-1 overflow-hidden">
+<aside class="w-16 border-r border-[#e7ebf3] dark:border-gray-800 bg-white dark:bg-background-dark flex flex-col items-center py-6 gap-6">
+<div class="p-2 rounded-lg text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer transition-all">
+<span class="material-symbols-outlined">edit_note</span>
+</div>
+<div class="p-2 rounded-lg bg-primary/10 text-primary">
+<span class="material-symbols-outlined">dashboard_customize</span>
+</div>
+<div class="p-2 rounded-lg text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer transition-all">
+<span class="material-symbols-outlined">view_quilt</span>
+</div>
+<div class="p-2 rounded-lg text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer transition-all">
+<span class="material-symbols-outlined">font_download</span>
+</div>
+<div class="mt-auto p-2 rounded-lg text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer transition-all">
+<span class="material-symbols-outlined">history</span>
+</div>
+</aside>
+<main class="w-full max-w-[550px] bg-white dark:bg-background-dark border-r border-[#e7ebf3] dark:border-gray-800 overflow-y-auto custom-scrollbar flex flex-col">
+<div class="p-8 flex-1">
+<div class="mb-8">
+<h2 class="text-2xl font-bold text-slate-800 dark:text-white tracking-tight">Manage Sections</h2>
+<p class="text-sm text-slate-500 mt-1">Reorder and toggle visibility of your resume sections.</p>
+</div>
+<div class="space-y-3">
+<div class="flex items-center justify-between p-4 bg-slate-50 dark:bg-gray-900 border border-slate-200 dark:border-gray-700 rounded-xl group transition-all hover:border-primary/30">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-slate-400 drag-handle select-none">drag_indicator</span>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary">person</span>
+<span class="font-semibold text-slate-700 dark:text-slate-200">Personal Information</span>
+</div>
+</div>
+<label class="switch">
+<input checked="" disabled="" type="checkbox"/>
+<span class="slider opacity-50 cursor-not-allowed"></span>
+</label>
+</div>
+<div class="flex items-center justify-between p-4 bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-700 rounded-xl group transition-all hover:border-primary/30 hover:shadow-sm">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-slate-400 drag-handle select-none">drag_indicator</span>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-violet-600">psychology</span>
+<span class="font-semibold text-slate-700 dark:text-slate-200">Professional Summary</span>
+</div>
+</div>
+<label class="switch">
+<input checked="" type="checkbox"/>
+<span class="slider"></span>
+</label>
+</div>
+<div class="flex items-center justify-between p-4 bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-700 rounded-xl group transition-all hover:border-primary/30 hover:shadow-sm">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-slate-400 drag-handle select-none">drag_indicator</span>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary">work</span>
+<span class="font-semibold text-slate-700 dark:text-slate-200">Work Experience</span>
+</div>
+</div>
+<label class="switch">
+<input checked="" type="checkbox"/>
+<span class="slider"></span>
+</label>
+</div>
+<div class="flex items-center justify-between p-4 bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-700 rounded-xl group transition-all hover:border-primary/30 hover:shadow-sm">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-slate-400 drag-handle select-none">drag_indicator</span>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-emerald-600">school</span>
+<span class="font-semibold text-slate-700 dark:text-slate-200">Education</span>
+</div>
+</div>
+<label class="switch">
+<input checked="" type="checkbox"/>
+<span class="slider"></span>
+</label>
+</div>
+<div class="flex items-center justify-between p-4 bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-700 rounded-xl group transition-all hover:border-primary/30 hover:shadow-sm">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-slate-400 drag-handle select-none">drag_indicator</span>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-amber-500">bolt</span>
+<span class="font-semibold text-slate-700 dark:text-slate-200">Skills</span>
+</div>
+</div>
+<label class="switch">
+<input checked="" type="checkbox"/>
+<span class="slider"></span>
+</label>
+</div>
+<div class="flex items-center justify-between p-4 bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-700 rounded-xl group transition-all hover:border-primary/30 hover:shadow-sm">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-slate-400 drag-handle select-none">drag_indicator</span>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-indigo-500">grid_view</span>
+<span class="font-semibold text-slate-700 dark:text-slate-200">Projects</span>
+</div>
+</div>
+<label class="switch">
+<input type="checkbox"/>
+<span class="slider"></span>
+</label>
+</div>
+<div class="flex items-center justify-between p-4 bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-700 rounded-xl group transition-all hover:border-primary/30 hover:shadow-sm">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-slate-400 drag-handle select-none">drag_indicator</span>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-rose-500">card_membership</span>
+<span class="font-semibold text-slate-700 dark:text-slate-200">Certifications</span>
+</div>
+</div>
+<label class="switch">
+<input type="checkbox"/>
+<span class="slider"></span>
+</label>
+</div>
+</div>
+</div>
+<div class="p-8 bg-white dark:bg-background-dark border-t border-slate-100 dark:border-gray-800">
+<button class="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl border-2 border-dashed border-slate-300 dark:border-gray-700 text-slate-600 dark:text-slate-400 font-bold hover:border-primary hover:text-primary transition-all group">
+<span class="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform">add_circle</span>
+                        Add Custom Section
+                    </button>
+</div>
+</main>
+<section class="flex-1 bg-slate-100 dark:bg-slate-900 overflow-y-auto p-12 flex justify-center custom-scrollbar relative">
+<div class="absolute top-6 right-6 flex flex-col gap-3">
+<button class="h-12 w-12 flex items-center justify-center bg-white dark:bg-gray-800 rounded-full shadow-lg hover:shadow-xl transition-all group">
+<span class="material-symbols-outlined text-gray-600 dark:text-gray-300 group-hover:text-primary">zoom_in</span>
+</button>
+<button class="h-12 w-12 flex items-center justify-center bg-white dark:bg-gray-800 rounded-full shadow-lg hover:shadow-xl transition-all group">
+<span class="material-symbols-outlined text-gray-600 dark:text-gray-300 group-hover:text-primary">zoom_out</span>
+</button>
+<button class="h-12 w-12 flex items-center justify-center bg-white dark:bg-gray-800 rounded-full shadow-lg hover:shadow-xl transition-all group">
+<span class="material-symbols-outlined text-gray-600 dark:text-gray-300 group-hover:text-primary">palette</span>
+</button>
+</div>
+<div class="a4-preview bg-white shadow-2xl rounded-sm p-16 flex flex-col overflow-hidden text-[#222]">
+<header class="mb-8 flex justify-between border-b-2 border-primary pb-6">
+<div>
+<h1 class="text-4xl font-bold tracking-tight text-gray-900 mb-2">Alex Rivers</h1>
+<p class="text-xl text-primary font-medium">Senior Software Engineer</p>
+</div>
+<div class="text-right text-xs text-gray-500 leading-relaxed">
+<p>alex.rivers@email.com</p>
+<p>+1 (555) 012-3456</p>
+<p>San Francisco, CA</p>
+<p>linkedin.com/in/alexrivers</p>
+</div>
+</header>
+<div class="mb-8">
+<h3 class="text-sm font-bold uppercase tracking-[0.2em] text-gray-400 mb-3">Profile</h3>
+<p class="text-[13px] leading-relaxed text-gray-700">
+                            Experienced Software Engineer with 8+ years of expertise in building scalable web applications. Proven track record in React, Node.js, and cloud architecture. Passionate about mentoring teams and driving technical excellence.
+                        </p>
+</div>
+<div class="mb-8">
+<h3 class="text-sm font-bold uppercase tracking-[0.2em] text-gray-400 mb-4">Experience</h3>
+<div class="mb-6">
+<div class="flex justify-between items-baseline mb-1">
+<h4 class="font-bold text-sm">TechNova Solutions</h4>
+<span class="text-xs text-gray-500 font-medium italic">Jan 2020 — Present</span>
+</div>
+<p class="text-primary text-[13px] font-semibold mb-2">Senior Engineer</p>
+<ul class="list-disc list-inside text-[12px] text-gray-600 space-y-1.5 ml-1">
+<li>Led the migration from monolith to microservices using AWS and Kubernetes.</li>
+<li>Reduced deployment time by 40% through CI/CD optimization.</li>
+<li>Architected a real-time analytics dashboard used by 500k+ users.</li>
+</ul>
+</div>
+</div>
+<div class="mb-8">
+<h3 class="text-sm font-bold uppercase tracking-[0.2em] text-gray-400 mb-4">Education</h3>
+<div class="flex justify-between items-baseline">
+<div>
+<h4 class="font-bold text-sm">Stanford University</h4>
+<p class="text-primary text-[12px] font-semibold">B.S. in Computer Science</p>
+</div>
+<span class="text-xs text-gray-500 font-medium italic">2012 — 2016</span>
+</div>
+</div>
+<div>
+<h3 class="text-sm font-bold uppercase tracking-[0.2em] text-gray-400 mb-4">Expertise</h3>
+<div class="flex flex-wrap gap-2">
+<span class="px-2.5 py-1 bg-gray-100 text-[11px] font-semibold rounded">TypeScript</span>
+<span class="px-2.5 py-1 bg-gray-100 text-[11px] font-semibold rounded">React.js</span>
+<span class="px-2.5 py-1 bg-gray-100 text-[11px] font-semibold rounded">Node.js</span>
+<span class="px-2.5 py-1 bg-gray-100 text-[11px] font-semibold rounded">GraphQL</span>
+<span class="px-2.5 py-1 bg-gray-100 text-[11px] font-semibold rounded">PostgreSQL</span>
+<span class="px-2.5 py-1 bg-gray-100 text-[11px] font-semibold rounded">Kubernetes</span>
+</div>
+</div>
+</div>
+</section>
+</div>
+</div>
+
+</body></html>

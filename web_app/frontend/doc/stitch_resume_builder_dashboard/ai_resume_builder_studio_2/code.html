@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AI Resume Builder Studio</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2463eb",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#111621",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .a4-preview {
+            aspect-ratio: 1 / 1.414;
+            width: 100%;
+            max-width: 800px;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #d0d7e7;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-[#0e121b] dark:text-white">
+<div class="flex h-screen flex-col overflow-hidden">
+<!-- Top Navigation Bar -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-[#e7ebf3] dark:border-gray-800 bg-white dark:bg-background-dark px-6 py-3 z-10">
+<div class="flex items-center gap-4 text-[#0e121b] dark:text-white">
+<div class="size-8 text-primary">
+<svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path clip-rule="evenodd" d="M12.0799 24L4 19.2479L9.95537 8.75216L18.04 13.4961L18.0446 4H29.9554L29.96 13.4961L38.0446 8.75216L44 19.2479L35.92 24L44 28.7521L38.0446 39.2479L29.96 34.5039L29.9554 44H18.0446L18.04 34.5039L9.95537 39.2479L4 28.7521L12.0799 24Z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+</div>
+<div class="flex flex-col">
+<h2 class="text-lg font-bold leading-tight tracking-[-0.015em]">Resume Studio</h2>
+<p class="text-xs text-gray-500 dark:text-gray-400 font-medium">Software Engineer CV • <span class="text-green-500">Saved</span></p>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="hidden md:flex items-center gap-6 mr-4">
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Dashboard</a>
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Templates</a>
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Settings</a>
+</div>
+<div class="flex gap-2">
+<button class="flex min-w-[84px] cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold shadow-sm hover:bg-blue-700 transition-all">
+<span>Download PDF</span>
+</button>
+<button class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg bg-[#e7ebf3] dark:bg-gray-800 text-[#0e121b] dark:text-white">
+<span class="material-symbols-outlined">share</span>
+</button>
+</div>
+<div class="h-10 w-10 rounded-full border border-gray-200 dark:border-gray-700 bg-cover bg-center" data-alt="User profile avatar" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBWenXCkgICzpk7CrT1D2P9MAp78lB2yH2sSG870yS0CV10IJkC--1Plaq-nUNaVGOYC0pg_3vifep022Dxo1rvQDWKhnGL4ksKvUAgOAoV-4EkUBt90d2GRpyXkFt13sYLlybvp9qzp1lElhomweLrLygrPjy9wSyrIB5za9nuteVQ0GEQRBaKlmOQ5XtqAWxjy1bhK7ZQctIDwwg_m6jL81LOHFefjOJm-l7TSwvkb1FaqvuNYn1c7cA48_5I9H0YKbeJqrKYcto");'></div>
+</div>
+</header>
+<div class="flex flex-1 overflow-hidden">
+<!-- Sidebar Navigation (Minimal) -->
+<aside class="w-16 border-r border-[#e7ebf3] dark:border-gray-800 bg-white dark:bg-background-dark flex flex-col items-center py-6 gap-6">
+<div class="p-2 rounded-lg bg-primary/10 text-primary">
+<span class="material-symbols-outlined">edit_note</span>
+</div>
+<div class="p-2 rounded-lg text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer transition-all">
+<span class="material-symbols-outlined">dashboard_customize</span>
+</div>
+<div class="p-2 rounded-lg text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer transition-all">
+<span class="material-symbols-outlined">view_quilt</span>
+</div>
+<div class="p-2 rounded-lg text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer transition-all">
+<span class="material-symbols-outlined">font_download</span>
+</div>
+<div class="mt-auto p-2 rounded-lg text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer transition-all">
+<span class="material-symbols-outlined">history</span>
+</div>
+</aside>
+<!-- Editor Panel (Left) -->
+<main class="w-full max-w-[550px] bg-white dark:bg-background-dark border-r border-[#e7ebf3] dark:border-gray-800 overflow-y-auto custom-scrollbar">
+<div class="p-8">
+<!-- Personal Information -->
+<section class="mb-10">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-primary">person</span>
+<h2 class="text-xl font-bold tracking-tight">Personal Information</h2>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<label class="flex flex-col gap-1.5">
+<span class="text-sm font-semibold text-gray-700 dark:text-gray-300">First Name</span>
+<input class="w-full rounded-lg border-[#d0d7e7] dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:border-primary focus:ring-1 focus:ring-primary p-3 text-sm" type="text" value="Alex"/>
+</label>
+<label class="flex flex-col gap-1.5">
+<span class="text-sm font-semibold text-gray-700 dark:text-gray-300">Last Name</span>
+<input class="w-full rounded-lg border-[#d0d7e7] dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:border-primary focus:ring-1 focus:ring-primary p-3 text-sm" type="text" value="Rivers"/>
+</label>
+<label class="flex flex-col gap-1.5 col-span-2">
+<span class="text-sm font-semibold text-gray-700 dark:text-gray-300">Professional Title</span>
+<input class="w-full rounded-lg border-[#d0d7e7] dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:border-primary focus:ring-1 focus:ring-primary p-3 text-sm" type="text" value="Senior Software Engineer"/>
+</label>
+</div>
+</section>
+<!-- Professional Summary (AI Section) -->
+<section class="mb-10">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-violet-600">psychology</span>
+<h2 class="text-xl font-bold tracking-tight">Professional Summary</h2>
+</div>
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-violet-600 text-white text-xs font-bold hover:bg-violet-700 transition-all shadow-sm">
+<span class="material-symbols-outlined text-[16px]">auto_fix_high</span>
+                                AI Enhance
+                            </button>
+</div>
+<div class="relative group">
+<textarea class="w-full min-h-[160px] rounded-lg border-[#d0d7e7] dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:border-violet-600 focus:ring-1 focus:ring-violet-600 p-4 text-sm leading-relaxed" placeholder="Write a brief overview of your experience...">Experienced Software Engineer with 8+ years of expertise in building scalable web applications. Proven track record in React, Node.js, and cloud architecture. Passionate about mentoring teams and driving technical excellence.</textarea>
+<div class="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+<div class="bg-violet-100 text-violet-600 px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider">AI Powered Editor</div>
+</div>
+</div>
+</section>
+<!-- Professional Experience -->
+<section class="mb-10">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">work</span>
+<h2 class="text-xl font-bold tracking-tight">Work Experience</h2>
+</div>
+<button class="text-primary hover:bg-primary/10 p-1.5 rounded-lg transition-all">
+<span class="material-symbols-outlined">add_circle</span>
+</button>
+</div>
+<!-- Experience Card -->
+<div class="p-5 rounded-xl border border-[#d0d7e7] dark:border-gray-700 bg-white dark:bg-gray-900 mb-4 shadow-sm relative group">
+<div class="absolute -left-2 top-6 h-12 w-1 bg-primary rounded-full hidden group-hover:block"></div>
+<div class="flex flex-col gap-4">
+<div class="grid grid-cols-2 gap-4">
+<label class="flex flex-col gap-1.5">
+<span class="text-sm font-semibold text-gray-700 dark:text-gray-300">Company</span>
+<input class="w-full rounded-lg border-[#d0d7e7] dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-2.5 text-sm" type="text" value="TechNova Solutions"/>
+</label>
+<label class="flex flex-col gap-1.5">
+<span class="text-sm font-semibold text-gray-700 dark:text-gray-300">Job Title</span>
+<input class="w-full rounded-lg border-[#d0d7e7] dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-2.5 text-sm" type="text" value="Senior Engineer"/>
+</label>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<label class="flex flex-col gap-1.5">
+<span class="text-sm font-semibold text-gray-700 dark:text-gray-300">Start Date</span>
+<input class="w-full rounded-lg border-[#d0d7e7] dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-2.5 text-sm" type="text" value="Jan 2020"/>
+</label>
+<label class="flex flex-col gap-1.5">
+<span class="text-sm font-semibold text-gray-700 dark:text-gray-300">End Date</span>
+<input class="w-full rounded-lg border-[#d0d7e7] dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-2.5 text-sm" type="text" value="Present"/>
+</label>
+</div>
+<label class="flex flex-col gap-1.5">
+<span class="text-sm font-semibold text-gray-700 dark:text-gray-300">Description</span>
+<textarea class="w-full rounded-lg border-[#d0d7e7] dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-2.5 text-sm min-h-[80px]">Led the migration from monolith to microservices using AWS and Kubernetes. Reduced deployment time by 40%.</textarea>
+</label>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- Preview Panel (Right) -->
+<section class="flex-1 bg-slate-100 dark:bg-slate-900 overflow-y-auto p-12 flex justify-center custom-scrollbar relative">
+<!-- Floating Action Controls -->
+<div class="absolute top-6 right-6 flex flex-col gap-3">
+<button class="h-12 w-12 flex items-center justify-center bg-white dark:bg-gray-800 rounded-full shadow-lg hover:shadow-xl transition-all group">
+<span class="material-symbols-outlined text-gray-600 dark:text-gray-300 group-hover:text-primary">zoom_in</span>
+</button>
+<button class="h-12 w-12 flex items-center justify-center bg-white dark:bg-gray-800 rounded-full shadow-lg hover:shadow-xl transition-all group">
+<span class="material-symbols-outlined text-gray-600 dark:text-gray-300 group-hover:text-primary">zoom_out</span>
+</button>
+<button class="h-12 w-12 flex items-center justify-center bg-white dark:bg-gray-800 rounded-full shadow-lg hover:shadow-xl transition-all group">
+<span class="material-symbols-outlined text-gray-600 dark:text-gray-300 group-hover:text-primary">palette</span>
+</button>
+</div>
+<!-- A4 Resume Preview -->
+<div class="a4-preview bg-white shadow-2xl rounded-sm p-16 flex flex-col overflow-hidden text-[#222]">
+<!-- Header -->
+<header class="mb-8 flex justify-between border-b-2 border-primary pb-6">
+<div>
+<h1 class="text-4xl font-bold tracking-tight text-gray-900 mb-2">Alex Rivers</h1>
+<p class="text-xl text-primary font-medium">Senior Software Engineer</p>
+</div>
+<div class="text-right text-xs text-gray-500 leading-relaxed">
+<p>alex.rivers@email.com</p>
+<p>+1 (555) 012-3456</p>
+<p>San Francisco, CA</p>
+<p>linkedin.com/in/alexrivers</p>
+</div>
+</header>
+<!-- Summary -->
+<div class="mb-8">
+<h3 class="text-sm font-bold uppercase tracking-[0.2em] text-gray-400 mb-3">Profile</h3>
+<p class="text-[13px] leading-relaxed text-gray-700">
+                            Experienced Software Engineer with 8+ years of expertise in building scalable web applications. Proven track record in React, Node.js, and cloud architecture. Passionate about mentoring teams and driving technical excellence.
+                        </p>
+</div>
+<!-- Experience -->
+<div class="mb-8">
+<h3 class="text-sm font-bold uppercase tracking-[0.2em] text-gray-400 mb-4">Experience</h3>
+<div class="mb-6">
+<div class="flex justify-between items-baseline mb-1">
+<h4 class="font-bold text-sm">TechNova Solutions</h4>
+<span class="text-xs text-gray-500 font-medium italic">Jan 2020 — Present</span>
+</div>
+<p class="text-primary text-[13px] font-semibold mb-2">Senior Engineer</p>
+<ul class="list-disc list-inside text-[12px] text-gray-600 space-y-1.5 ml-1">
+<li>Led the migration from monolith to microservices using AWS and Kubernetes.</li>
+<li>Reduced deployment time by 40% through CI/CD optimization.</li>
+<li>Mentored 12+ junior developers across 3 agile squads.</li>
+<li>Architected a real-time analytics dashboard used by 500k+ users.</li>
+</ul>
+</div>
+<div class="mb-6 opacity-60">
+<div class="flex justify-between items-baseline mb-1">
+<h4 class="font-bold text-sm">Innovate Digital</h4>
+<span class="text-xs text-gray-500 font-medium italic">Jun 2016 — Dec 2019</span>
+</div>
+<p class="text-primary text-[13px] font-semibold mb-2">Frontend Developer</p>
+<ul class="list-disc list-inside text-[12px] text-gray-600 space-y-1 ml-1">
+<li>Developed responsive interfaces using React and Redux.</li>
+<li>Collaborated with UX designers to improve core web vitals by 25%.</li>
+</ul>
+</div>
+</div>
+<!-- Skills -->
+<div>
+<h3 class="text-sm font-bold uppercase tracking-[0.2em] text-gray-400 mb-4">Expertise</h3>
+<div class="flex flex-wrap gap-2">
+<span class="px-2.5 py-1 bg-gray-100 text-[11px] font-semibold rounded">TypeScript</span>
+<span class="px-2.5 py-1 bg-gray-100 text-[11px] font-semibold rounded">React.js</span>
+<span class="px-2.5 py-1 bg-gray-100 text-[11px] font-semibold rounded">Node.js</span>
+<span class="px-2.5 py-1 bg-gray-100 text-[11px] font-semibold rounded">GraphQL</span>
+<span class="px-2.5 py-1 bg-gray-100 text-[11px] font-semibold rounded">PostgreSQL</span>
+<span class="px-2.5 py-1 bg-gray-100 text-[11px] font-semibold rounded">AWS Lambda</span>
+<span class="px-2.5 py-1 bg-gray-100 text-[11px] font-semibold rounded">Kubernetes</span>
+</div>
+</div>
+</div>
+</section>
+</div>
+</div>
+</body></html>
