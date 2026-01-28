@@ -1,6 +1,6 @@
 # backend/tracker.md
 
-**Version:** 1.6
+**Version:** 1.7
 **Last updated:** 2026-01-28
 **Status:** Active
 
@@ -8,13 +8,12 @@
 
 ## Active Tasks
 
-## B-005 — [api] SignUp Endpoint
-- Scope: HTTP layer.
+## B-009 — [domain] Resume Entity
+- Scope: Resume data structure.
 - Acceptance criteria:
-  - Create `src/adapters/controllers/AuthController.js`.
-  - POST `/auth/signup` route in Hono.
-  - Returns 201 on success, 400 on validation error, 409 on duplicate.
-
+  - `src/domain/resume/Resume.js`.
+  - Logic to add/remove sections (Experience, Education).
+  - Resume must belong to a `userId`.
 ---
 
 ## Completed Tasks
@@ -47,45 +46,15 @@
 - Completed: 2026-01-28
 - Evidence: Google OAuth endpoints implemented (/auth/google, /auth/google/callback, /auth/google/login) with ID token verification and user creation/finding.
 
+## B-005 — [api] SignUp Endpoint ✅ 100%
+- Completed: 2026-01-28
+- Evidence: POST /auth/signup endpoint implemented in AuthController, returns 201 on success, 400 on validation error, 409 on duplicate.
+
 ---
 
 ## Backlog (Not Started)
 
-### Phase 1: Foundation & Infrastructure (M1)
-
-## B-001 — [infra] Project Skeleton & Hono Setup
-- Scope: Setup minimal Hono app + Vitest + Wrangler.
-- Acceptance criteria:
-  - `npm install` runs without errors.
-  - `npm test` passes a "Hello World" test.
-  - `wrangler dev` starts the server locally.
-  - Directory structure created: `src/domain`, `src/application`, `src/adapters`.
-
-### Phase 2: User Authentication (M1)
-
-## B-002 — [domain] User Entity & Validation
-- Scope: Core User logic.
-- Acceptance criteria:
-  - Create `src/domain/user/User.js`.
-  - Validate email format and password length in constructor.
-  - Unit tests for valid/invalid Users.
-
-## B-003 — [infra] D1 User Table & Repository
-- Scope: Database persistence.
-- Acceptance criteria:
-  - Create D1 migration SQL: `CREATE TABLE users...`.
-  - Create `src/adapters/repositories/D1UserRepository.js`.
-  - Implement `save(user)` and `findByEmail(email)`.
-  - Integration test using Miniflare D1.
-
 ### Phase 3: Resume Management (M2)
-
-## B-009 — [domain] Resume Entity
-- Scope: Resume data structure.
-- Acceptance criteria:
-  - `src/domain/resume/Resume.js`.
-  - Logic to add/remove sections (Experience, Education).
-  - Resume must belong to a `userId`.
 
 ## B-010 — [infra] D1 Resume Repository
 - Scope: Persist complex JSON data.

@@ -7,10 +7,11 @@
 - Completed B-006 (Login Service) with JWT token generation and password verification.
 - Completed B-007 (Login Endpoint & Auth Middleware) with POST /auth/login and protected routes.
 - Completed B-008 (Google OAuth Integration) with ID token verification and user management.
-- Shifted to integration-only testing strategy for services, removing unit tests in favor of real DB testing.
+- Completed B-005 (SignUp Endpoint) with POST /auth/signup and error handling.
+- Starting B-009 (Resume Entity) for resume data structure and validation.
 
 ## Active Task(s)
-- B-005: SignUp Endpoint — Acceptance: Create src/adapters/controllers/AuthController.js. POST /auth/signup route in Hono. Returns 201 on success, 400 on validation error, 409 on duplicate.
+- B-009: Resume Entity — Acceptance: Create src/domain/resume/Resume.js with logic to add/remove sections (Experience, Education). Resume must belong to a userId.
 
 ## Decisions Made
 - Expanded User entity to include id, name, passwordHash, googleId for full auth support (scope.md § In Scope).
@@ -35,8 +36,8 @@
 - Test DB setup in CI (wrangler local mode).
 
 ## Next Steps
-1. Implement AuthController with POST /auth/signup endpoint.
-2. Add integration test for signup endpoint with D1.
+1. Implement Resume domain entity with validation and section management.
+2. Add unit tests for Resume.js.
 
 ## Status Summary
-- ✅ 100% — B-001, B-002, B-003, B-004, B-006, B-007, B-008 complete, B-005 in progress.
+- ✅ 100% — B-001, B-002, B-003, B-004, B-005, B-006, B-007, B-008 complete, B-009 in progress.
