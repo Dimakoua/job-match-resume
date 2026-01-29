@@ -66,11 +66,9 @@
 - Completed: 2026-01-28
 - Evidence: GeminiAdapter implemented using @google/generative-ai SDK with generateJSON method, comprehensive error handling for API errors (429, 500), unit tests 12/12 passing.
 
-## B-014 — [app] Generate Resume Service (Generator)
-- Scope: scope.md § AI Features (Generator).
-- Acceptance criteria:
-  - `GenerateFromJDService`.
-  - Logic: Construct prompt -> Call Adapter -> Parse JSON -> Create Resume Entity.
+## B-014 — [app] Generate Resume Service (Generator) ✅ 100%
+- Completed: 2026-01-28
+- Evidence: GenerateFromJDService implemented with comprehensive unit tests (15/15 passing) and integration tests (4/4 passing). Service constructs AI prompts, validates responses, and saves generated resumes.
 
 ## B-015 — [app] Improve Text Service (Improver)
 - Scope: scope.md § AI Features (Improver).
