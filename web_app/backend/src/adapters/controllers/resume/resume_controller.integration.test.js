@@ -3,10 +3,13 @@ import { ResumeController } from './resume_controller.js';
 import { Factory } from '../../../factory.js';
 import { CreateResumeService } from '../../../application/resume/create_resume_service.js';
 import { ListResumesService } from '../../../application/resume/list_resumes_service.js';
+import { UpdateResumeService } from '../../../application/update_resume/update_resume_service.js';
+import { ListTemplatesService } from '../../../application/list_templates/list_templates_service.js';
 import { GenerateFromJDService } from '../../../application/generate_from_jd/generate_from_jd_service.js';
 import { ImproveTextService } from '../../../application/improve_text/improve_text_service.js';
 import { ExportResumeService } from '../../../application/export_resume/export_resume_service.js';
 import { D1ResumeRepository } from '../../../adapters/repositories/resume/d1_resume_repository.js';
+import jwt from '@tsndr/cloudflare-worker-jwt';
 
 describe('ResumeController Integration Tests', () => {
   let controller;
@@ -29,6 +32,13 @@ describe('ResumeController Integration Tests', () => {
           { id: 'experience', name: 'Work Experience', required: true }
         ];
       }
+      async getAllTemplates() {
+        return [
+          { id: 'basic', name: 'Basic' },
+          { id: 'modern', name: 'Modern' },
+          { id: 'professional', name: 'Professional' }
+        ];
+      }
     })();
 
     // Mock AI adapter
@@ -38,6 +48,8 @@ describe('ResumeController Integration Tests', () => {
 
     const createResumeService = new CreateResumeService(resumeRepository, templateRepository);
     const listResumesService = new ListResumesService(resumeRepository);
+    const updateResumeService = new UpdateResumeService(resumeRepository, templateRepository);
+    const listTemplatesService = new ListTemplatesService(templateRepository);
     const generateFromJDService = new GenerateFromJDService(mockAIAdapter, resumeRepository, templateRepository);
     const improveTextService = new ImproveTextService(mockAIAdapter);
 
@@ -54,6 +66,8 @@ describe('ResumeController Integration Tests', () => {
     const deps = {
       createResumeService,
       listResumesService,
+      updateResumeService,
+      listTemplatesService,
       generateFromJDService,
       improveTextService,
       exportResumeService,
@@ -62,18 +76,33 @@ describe('ResumeController Integration Tests', () => {
     factory = new Factory(db);
   });
 
+  // Helper function to create JWT token
+  const createToken = async (userId) => {
+    return await jwt.sign(
+      {
+        userId,
+        email: 'test@example.com',
+        exp: Math.floor(Date.now() / 1000) + (24 * 60 * 60), // 24 hours
+      },
+      'test_jwt_secret'
+    );
+  };
+
   it('should create a resume and return 201 on success', async () => {
     // Create a test user
     const user = await factory.insert('user');
     const userId = user.id;
+    const token = await createToken(userId);
 
     const title = 'My Integration Resume';
 
     const request = {
+      headers: {
+        get: (header) => header === 'Authorization' ? `Bearer ${token}` : null,
+      },
       json: async () => ({
         title,
       }),
-      userId, // Set by auth middleware
     };
 
     const response = await controller.createResume(request);
@@ -91,11 +120,15 @@ describe('ResumeController Integration Tests', () => {
     // Create a test user
     const user = await factory.insert('user');
     const userId = user.id;
+    const token = await createToken(userId);
 
     const title = 'My Template Resume';
     const templateId = 'basic';
 
     const request = {
+      headers: {
+        get: (header) => header === 'Authorization' ? `Bearer ${token}` : null,
+      },
       json: async () => ({
         title,
         templateId,
@@ -118,12 +151,15 @@ describe('ResumeController Integration Tests', () => {
     // Create a test user
     const user = await factory.insert('user');
     const userId = user.id;
+    const token = await createToken(userId);
 
     const request = {
+      headers: {
+        get: (header) => header === 'Authorization' ? `Bearer ${token}` : null,
+      },
       json: async () => ({
         title: '', // Invalid: empty title
       }),
-      userId, // Set by auth middleware
     };
 
     const response = await controller.createResume(request);
@@ -154,12 +190,15 @@ describe('ResumeController Integration Tests', () => {
     // Create a test user
     const user = await factory.insert('user');
     const userId = user.id;
+    const token = await createToken(userId);
 
     // Create a resume for the user
     await factory.insert('resume', { userId, title: 'Test Resume' });
 
     const request = {
-      userId, // Set by auth middleware
+      headers: {
+        get: (header) => header === 'Authorization' ? `Bearer ${token}` : null,
+      },
     };
 
     const response = await controller.listResumes(request);
@@ -180,12 +219,15 @@ describe('ResumeController Integration Tests', () => {
     // Create two users
     const userA = await factory.insert('user');
     const userB = await factory.insert('user');
+    const tokenB = await createToken(userB.id);
 
     // Create a resume for user A
     await factory.insert('resume', { userId: userA.id, title: 'User A Resume' });
 
     const request = {
-      userId: userB.id, // Set by auth middleware
+      headers: {
+        get: (header) => header === 'Authorization' ? `Bearer ${tokenB}` : null,
+      },
     };
 
     const response = await controller.listResumes(request);
@@ -203,6 +245,7 @@ describe('ResumeController Integration Tests', () => {
       // Create a test user
       const user = await factory.insert('user');
       const userId = user.id;
+      const token = await createToken(userId);
 
       const jobDescription = 'We are looking for a Software Engineer with 3+ years experience in JavaScript and Node.js.';
 
@@ -259,10 +302,12 @@ describe('ResumeController Integration Tests', () => {
       controller.generateFromJDService.aiAdapter.generateJSON.mockResolvedValue(mockAIResponse);
 
       const request = {
+        headers: {
+          get: (header) => header === 'Authorization' ? `Bearer ${token}` : null,
+        },
         json: async () => ({
           jobDescription,
         }),
-        userId, // Set by auth middleware
       };
 
       const response = await controller.generateFromJD(request);
@@ -282,12 +327,15 @@ describe('ResumeController Integration Tests', () => {
       // Create a test user
       const user = await factory.insert('user');
       const userId = user.id;
+      const token = await createToken(userId);
 
       const request = {
+        headers: {
+          get: (header) => header === 'Authorization' ? `Bearer ${token}` : null,
+        },
         json: async () => ({
           jobDescription: '', // Invalid: empty string
         }),
-        userId, // Set by auth middleware
       };
 
       const response = await controller.generateFromJD(request);
@@ -306,6 +354,7 @@ describe('ResumeController Integration Tests', () => {
       // Create a test user
       const user = await factory.insert('user');
       const userId = user.id;
+      const token = await createToken(userId);
 
       const originalText = 'I am a software engineer with experience in javascript.';
 
@@ -322,10 +371,12 @@ describe('ResumeController Integration Tests', () => {
       controller.improveTextService.aiAdapter.generateJSON.mockResolvedValue(mockAIResponse);
 
       const request = {
+        headers: {
+          get: (header) => header === 'Authorization' ? `Bearer ${token}` : null,
+        },
         json: async () => ({
           text: originalText,
         }),
-        userId, // Set by auth middleware
       };
 
       const response = await controller.improveText(request);
@@ -344,14 +395,17 @@ describe('ResumeController Integration Tests', () => {
       // Create a test user
       const user = await factory.insert('user');
       const userId = user.id;
+      const token = await createToken(userId);
 
       const longText = 'a'.repeat(10001); // Too long
 
       const request = {
+        headers: {
+          get: (header) => header === 'Authorization' ? `Bearer ${token}` : null,
+        },
         json: async () => ({
           text: longText,
         }),
-        userId, // Set by auth middleware
       };
 
       const response = await controller.improveText(request);
@@ -365,13 +419,16 @@ describe('ResumeController Integration Tests', () => {
       // Create a test user
       const user = await factory.insert('user');
       const userId = user.id;
+      const token = await createToken(userId);
 
       // Create a resume using the controller
       const createRequest = {
+        headers: {
+          get: (header) => header === 'Authorization' ? `Bearer ${token}` : null,
+        },
         json: async () => ({
           title: 'Test Resume',
         }),
-        userId,
       };
       const createResponse = await controller.createResume(createRequest);
       expect(createResponse.status).toBe(201);
@@ -385,7 +442,9 @@ describe('ResumeController Integration Tests', () => {
 
       const request = {
         url: `http://localhost/api/resumes/${resumeId}/export?format=pdf`,
-        userId, // Set by auth middleware
+        headers: {
+          get: (header) => header === 'Authorization' ? `Bearer ${token}` : null,
+        },
       };
 
       const response = await controller.exportResume(request);
@@ -401,13 +460,16 @@ describe('ResumeController Integration Tests', () => {
       // Create a test user
       const user = await factory.insert('user');
       const userId = user.id;
+      const token = await createToken(userId);
 
       // Create a resume using the controller
       const createRequest = {
+        headers: {
+          get: (header) => header === 'Authorization' ? `Bearer ${token}` : null,
+        },
         json: async () => ({
           title: 'Test Resume',
         }),
-        userId,
       };
       const createResponse = await controller.createResume(createRequest);
       expect(createResponse.status).toBe(201);
@@ -421,7 +483,9 @@ describe('ResumeController Integration Tests', () => {
 
       const request = {
         url: `http://localhost/api/resumes/${resumeId}/export?format=docx`,
-        userId, // Set by auth middleware
+        headers: {
+          get: (header) => header === 'Authorization' ? `Bearer ${token}` : null,
+        },
       };
 
       const response = await controller.exportResume(request);
@@ -437,10 +501,13 @@ describe('ResumeController Integration Tests', () => {
       // Create a test user
       const user = await factory.insert('user');
       const userId = user.id;
+      const token = await createToken(userId);
 
       const request = {
         url: `http://localhost/api/resumes/resume-123/export?format=txt`,
-        userId, // Set by auth middleware
+        headers: {
+          get: (header) => header === 'Authorization' ? `Bearer ${token}` : null,
+        },
       };
 
       const response = await controller.exportResume(request);
@@ -454,10 +521,13 @@ describe('ResumeController Integration Tests', () => {
       // Create a test user
       const user = await factory.insert('user');
       const userId = user.id;
+      const token = await createToken(userId);
 
       const request = {
         url: `http://localhost/api/resumes/non-existent/export?format=pdf`,
-        userId, // Set by auth middleware
+        headers: {
+          get: (header) => header === 'Authorization' ? `Bearer ${token}` : null,
+        },
       };
 
       const response = await controller.exportResume(request);
@@ -471,13 +541,16 @@ describe('ResumeController Integration Tests', () => {
       // Create two users
       const user1 = await factory.insert('user');
       const user2 = await factory.insert('user');
+      const token2 = await createToken(user2.id);
 
       // Create resume for user1
       const resume = await factory.insert('resume', { userId: user1.id });
 
       const request = {
         url: `http://localhost/api/resumes/${resume.id}/export?format=pdf`,
-        userId: user2.id, // Try to access with user2
+        headers: {
+          get: (header) => header === 'Authorization' ? `Bearer ${token2}` : null,
+        },
       };
 
       const response = await controller.exportResume(request);

@@ -49,4 +49,22 @@ export function setupResumeRoutes(router) {
     const { controller } = createController(env, ResumeController, [env.JWT_SECRET]);
     return controller.exportResume(request);
   });
+
+  // List available templates
+  // Usage: GET /api/templates
+  // Returns: { "success": true, "data": { "templates": [{ "id": "basic", "name": "Basic" }, ...] } }
+  router.get('/api/templates', async (request, env, ctx) => {
+    const { controller } = createController(env, ResumeController, [env.JWT_SECRET]);
+    return controller.listTemplates(request);
+  });
+
+  // Update resume template
+  // Usage: PUT /api/resumes/:id
+  // Headers: Authorization: Bearer <jwt>
+  // Body: { "templateId": "professional" } (templateId can be null to remove template)
+  // Returns: { "success": true, "data": { "resume": { "id": "...", "title": "...", "templateId": "...", "sections": [...], "createdAt": "...", "updatedAt": "..." } } }
+  router.put('/api/resumes/:id', async (request, env, ctx) => {
+    const { controller } = createController(env, ResumeController, [env.JWT_SECRET]);
+    return controller.updateResume(request, request.params.id);
+  });
 }

@@ -15,11 +15,17 @@ const improveTextSchema = z.object({
   text: z.string().min(1, 'Text is required').max(10000, 'Text must be less than 10,000 characters'),
 });
 
+const updateResumeSchema = z.object({
+  templateId: z.string().nullable().optional(),
+});
+
 export class ResumeController extends BaseController {
   constructor(deps, jwtSecret) {
     super(jwtSecret);
     this.createResumeService = deps.createResumeService;
     this.listResumesService = deps.listResumesService;
+    this.updateResumeService = deps.updateResumeService;
+    this.listTemplatesService = deps.listTemplatesService;
     this.generateFromJDService = deps.generateFromJDService;
     this.improveTextService = deps.improveTextService;
     this.exportResumeService = deps.exportResumeService;
@@ -233,6 +239,75 @@ export class ResumeController extends BaseController {
 
       if (error.message && error.message.includes('format')) {
         return this.errorResponse('INVALID_FORMAT', 'Invalid format specified', 400);
+      }
+
+      return this.errorResponse('INTERNAL_ERROR', 'An unexpected error occurred', 500);
+    }
+  }
+
+  async listTemplates(request) {
+    try {
+      // Execute list templates
+      const templates = await this.listTemplatesService.execute();
+
+      return this.successResponse({
+        success: true,
+        data: { templates },
+      });
+    } catch (error) {
+      return this.errorResponse('INTERNAL_ERROR', 'An unexpected error occurred', 500);
+    }
+  }
+
+  async updateResume(request, resumeId) {
+    try {
+      const userId = await this.authenticate(request);
+
+      const body = await request.json();
+
+      // Validate input
+      const validationResult = updateResumeSchema.safeParse(body);
+      if (!validationResult.success) {
+        return this.validationErrorResponse(validationResult.error.issues);
+      }
+
+      const command = {
+        resumeId,
+        userId,
+        ...validationResult.data,
+      };
+
+      // Execute update resume
+      const resume = await this.updateResumeService.execute(command);
+
+      return this.successResponse({
+        success: true,
+        data: {
+          resume: {
+            id: resume.id,
+            title: resume.title,
+            templateId: resume.templateId,
+            sections: resume.sections,
+            createdAt: resume.createdAt,
+            updatedAt: resume.updatedAt,
+          },
+        },
+      });
+    } catch (error) {
+      // If authenticate threw a Response, return it
+      if (error instanceof Response) {
+        return error;
+      }
+
+      // Handle specific business errors
+      if (error.message === 'Resume not found') {
+        return this.errorResponse('RESUME_NOT_FOUND', 'Resume not found', 404);
+      }
+      if (error.message === 'Access denied') {
+        return this.errorResponse('ACCESS_DENIED', 'Access denied', 403);
+      }
+      if (error.message === 'Invalid template ID') {
+        return this.errorResponse('INVALID_TEMPLATE', 'Invalid template ID', 400);
       }
 
       return this.errorResponse('INTERNAL_ERROR', 'An unexpected error occurred', 500);

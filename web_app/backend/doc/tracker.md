@@ -88,10 +88,8 @@
 - Completed: 2026-01-29
 - Evidence: GET `/resumes/:id/export?format=pdf|docx` endpoint implemented with ExportResumeService, proper binary responses, Content-Type and Content-Disposition headers, filename sanitization, authentication, and validation. Unit tests 10/10 passing, integration tests 4/4 passing.
 
-## B-019 — [feature] Template Metadata API
-- Scope: scope.md § Template System.
-- Acceptance criteria:
-  - GET `/templates` returns list of available template IDs and names.
-  - PUT `/resumes/:id` allows updating `template_id`.
+## B-019 — [feature] Template Metadata API ✅ 100%
+- Completed: 2026-01-29
+- Evidence: GET `/templates` endpoint implemented returning array of {id, name} objects. PUT `/resumes/:id` endpoint implemented allowing template_id updates. ListTemplatesService and UpdateResumeService created with full unit tests (9/9 passing). ResumeController integration tests 15/15 passing with proper JWT authentication.
 
 ---

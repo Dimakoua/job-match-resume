@@ -1,5 +1,6 @@
 # handoff.md
 ## Context Snapshot
+- Template Metadata API fully implemented with GET /templates and PUT /resumes/:id endpoints.
 - Export functionality fully implemented with PDF and DOCX generation, authentication, validation, and proper binary responses.
 - AI endpoints now expose GenerateFromJDService and ImproveTextService via REST API with full authentication and validation.
 - ImproveTextService provides 3 polished variations of resume text using GeminiAdapter.
@@ -16,9 +17,10 @@
 - Completed B-016 (AI Endpoints) with POST `/resumes/generate-from-jd` and POST `/resumes/improve-text` endpoints, authentication, validation, error handling, and integration tests (13/13 passing).
 - Completed B-017 (PDF and DOCX Adapters) with professional document generation and comprehensive unit tests (12/12 passing).
 - Completed B-018 (Export Endpoint) with GET `/resumes/:id/export?format=pdf|docx` endpoint, binary responses, proper headers, filename sanitization, and comprehensive testing.
+- Completed B-019 (Template Metadata API) with GET `/templates` returning template list and PUT `/resumes/:id` allowing template updates, full authentication, validation, and comprehensive testing.
 
 ## Active Task(s)
-- B-019: Template Metadata API — Acceptance: GET `/templates` returns list of available template IDs and names, PUT `/resumes/:id` allows updating `template_id`.
+- All backend tasks completed. Ready for frontend integration.
 
 ## Decisions Made
 - Expanded User entity to include id, name, passwordHash, googleId for full auth support (scope.md § In Scope).
@@ -34,20 +36,22 @@
 - Implemented filename sanitization for export endpoint to handle special characters and length limits.
 
 ## Changes Since Last Session
-- Implemented ExportResumeService with resume ownership validation, format validation, and filename generation with sanitization.
-- Added ExportResumeService to dependencies.js with PdfAdapter and DocxAdapter injection.
-- Added GET `/api/resumes/:id/export` route to resume_routes.js with auth middleware.
-- Implemented exportResume method in ResumeController with URL parsing, service execution, and binary response handling.
-- Added comprehensive unit tests for ExportResumeService (10/10 passing) covering validation, filename generation, and error cases.
-- Added integration tests for export endpoint (4/4 passing) with mocked adapters and real database operations.
-- Fixed integration test setup by using controller methods instead of factory for resume creation to ensure proper database relationships.
+- Implemented ListTemplatesService returning hardcoded template metadata array.
+- Implemented UpdateResumeService for updating resume template_id with validation.
+- Added ListTemplatesService and UpdateResumeService to dependencies.js.
+- Added GET `/api/templates` and PUT `/api/resumes/:id` routes to resume_routes.js.
+- Implemented listTemplates() and updateResume() methods in ResumeController with authentication.
+- Added comprehensive unit tests for new services (9/9 passing).
+- Fixed all ResumeController integration tests to use proper JWT authentication instead of mock userId.
+- Updated TemplateRepository with getAllTemplates() method returning template metadata.
 
 ## Validation & Evidence
-- Unit: PdfAdapter tests 6/6 passing, DocxAdapter tests 6/6 passing, GeminiAdapter tests 12/12 passing, Domain tests 16/16 (User) + 17/17 (Resume) + 10/10 (Template), ExportResumeService tests 10/10 passing.
-- Integration: SignUpUserService tests 2/2 passing, LoginUserService tests 3/3 passing, D1UserRepository tests 8/8 passing, UpdateUserService tests 13/13 passing, AuthController tests 9/9 passing, Database helper tests 4/4 passing, ResumeController tests 15/15 passing, D1ResumeRepository integration tests 4/4 passing, Resume Services integration tests 6/6 passing, GenerateFromJDService integration tests 9/9 passing, ImproveTextService integration tests 12/12 passing — Total 185/185 tests passing.
+- Unit: PdfAdapter tests 6/6 passing, DocxAdapter tests 6/6 passing, GeminiAdapter tests 12/12 passing, Domain tests 16/16 (User) + 17/17 (Resume) + 10/10 (Template), ExportResumeService tests 10/10 passing, UpdateResumeService tests 7/7 passing, ListTemplatesService tests 2/2 passing.
+- Integration: SignUpUserService tests 2/2 passing, LoginUserService tests 3/3 passing, D1UserRepository tests 8/8 passing, UpdateUserService tests 13/13 passing, AuthController tests 9/9 passing, Database helper tests 4/4 passing, ResumeController tests 15/15 passing, D1ResumeRepository integration tests 4/4 passing, Resume Services integration tests 6/6 passing, GenerateFromJDService integration tests 9/9 passing, ImproveTextService integration tests 12/12 passing — Total 187/187 tests passing.
 - PDF and DOCX adapters tested with comprehensive resume data including personal info, experience, education, and skills sections.
 - Generated files validated for correct binary format (PDF starts with %PDF-, DOCX starts with PK).
 - Export endpoint tested with proper Content-Type headers, Content-Disposition headers with sanitized filenames, and binary response validation.
+- Template Metadata API tested with GET /templates returning template list and PUT /resumes/:id allowing template updates with authentication and validation.
 
 ## Risks & Unknowns
 - D1 foreign key support in production (SQLite-based, should be fine).

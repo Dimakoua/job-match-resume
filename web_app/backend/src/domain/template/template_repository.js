@@ -3,6 +3,23 @@
 
 export class TemplateRepository {
   /**
+   * Gets all available templates with their metadata.
+   * @returns {Promise<Array>} - Array of template objects with id and name.
+   */
+  async getAllTemplates() {
+    // Predefined templates metadata
+    return [
+      { id: 'basic', name: 'Basic' },
+      { id: 'modern', name: 'Modern' },
+      { id: 'professional', name: 'Professional' },
+      { id: 'creative', name: 'Creative' },
+      { id: 'technical', name: 'Technical' },
+      { id: 'minimal', name: 'Minimal' },
+      { id: 'academic', name: 'Academic' }
+    ];
+  }
+
+  /**
    * Gets template sections by template ID.
    * @param {string} templateId - The template identifier.
    * @returns {Promise<Array>} - Array of section objects or empty array if not found.
