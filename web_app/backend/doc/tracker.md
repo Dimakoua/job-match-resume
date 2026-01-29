@@ -70,11 +70,9 @@
 - Completed: 2026-01-28
 - Evidence: GenerateFromJDService implemented with comprehensive integration tests (9/9 passing). Service constructs AI prompts, validates responses, and saves generated resumes.
 
-## B-015 — [app] Improve Text Service (Improver)
-- Scope: scope.md § AI Features (Improver).
-- Acceptance criteria:
-  - `ImproveTextService`.
-  - Logic: Takes a text block (e.g., "I worked on sales") -> Returns 3 polished variations.
+## B-015 — [app] Improve Text Service (Improver) ✅ 100%
+- Completed: 2026-01-28
+- Evidence: ImproveTextService implemented with AI-powered text improvement, returning 3 polished variations, comprehensive input validation, and integration tests (12/12 passing).
 
 ## B-016 — [api] AI Endpoints
 - Scope: Public facing AI routes.
