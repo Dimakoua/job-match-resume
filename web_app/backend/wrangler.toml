@@ -3,7 +3,7 @@ main = "src/router.js"
 compatibility_date = "2024-01-01"
 
 [env.development]
-vars = { JWT_SECRET = "dev-secret-key-change-in-production" }
+vars = { JWT_SECRET = "dev-secret-key-change-in-production", GEMINI_API_KEY = "test-gemini-key" }
 
 [[env.development.d1_databases]]
 binding = "DB"
@@ -12,7 +12,7 @@ database_id = "local-resume-builder"
 preview_database_id = "local-resume-builder" # Use same for preview
 
 [env.test]
-vars = { JWT_SECRET = "test-secret-key" }
+vars = { JWT_SECRET = "test-secret-key", GEMINI_API_KEY = "test-gemini-key" }
 
 [[env.test.d1_databases]]
 binding = "DB"

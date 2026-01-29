@@ -1,8 +1,10 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ResumeController } from './resume_controller.js';
 import { Factory } from '../../../factory.js';
 import { CreateResumeService } from '../../../application/resume/create_resume_service.js';
 import { ListResumesService } from '../../../application/resume/list_resumes_service.js';
+import { GenerateFromJDService } from '../../../application/generate_from_jd/generate_from_jd_service.js';
+import { ImproveTextService } from '../../../application/improve_text/improve_text_service.js';
 import { D1ResumeRepository } from '../../../adapters/repositories/resume/d1_resume_repository.js';
 
 describe('ResumeController Integration Tests', () => {
@@ -27,11 +29,22 @@ describe('ResumeController Integration Tests', () => {
         ];
       }
     })();
+
+    // Mock AI adapter
+    const mockAIAdapter = {
+      generateJSON: vi.fn(),
+    };
+
     const createResumeService = new CreateResumeService(resumeRepository, templateRepository);
     const listResumesService = new ListResumesService(resumeRepository);
+    const generateFromJDService = new GenerateFromJDService(mockAIAdapter, resumeRepository, templateRepository);
+    const improveTextService = new ImproveTextService(mockAIAdapter);
+
     const deps = {
       createResumeService,
       listResumesService,
+      generateFromJDService,
+      improveTextService,
     };
     controller = new ResumeController(deps, 'test_jwt_secret');
     factory = new Factory(db);
@@ -201,5 +214,216 @@ describe('ResumeController Integration Tests', () => {
     const result = await response.json();
     expect(result.success).toBe(true);
     expect(result.data.resumes.length).toBe(0); // User B should see no resumes
+  });
+
+  describe('generateFromJD endpoint', () => {
+    it('should generate resume from job description and return 201 on success', async () => {
+      if (!controller || !factory) return;
+
+      // Create a test user
+      const user = await factory.insert('user');
+      const userId = user.id;
+
+      // Create JWT token for the user
+      const jwt = await import('@tsndr/cloudflare-worker-jwt');
+      const token = await jwt.sign({ userId }, 'test_jwt_secret');
+
+      const jobDescription = 'We are looking for a Software Engineer with 3+ years experience in JavaScript and Node.js.';
+
+      // Mock AI response
+      const mockAIResponse = {
+        sections: [
+          {
+            type: 'personal_info',
+            title: 'Personal Information',
+            content: {
+              name: 'John Doe',
+              email: 'john@example.com',
+              phone: '(555) 123-4567',
+              location: 'San Francisco, CA'
+            }
+          },
+          {
+            type: 'summary',
+            title: 'Professional Summary',
+            content: 'Experienced software engineer with expertise in JavaScript and Node.js.'
+          },
+          {
+            type: 'experience',
+            title: 'Work Experience',
+            content: [
+              {
+                company: 'Tech Corp',
+                position: 'Software Engineer',
+                duration: '01/2020 - Present',
+                description: 'Developed web applications using JavaScript and Node.js.'
+              }
+            ]
+          },
+          {
+            type: 'education',
+            title: 'Education',
+            content: [
+              {
+                degree: 'Bachelor of Science in Computer Science',
+                school: 'University of California',
+                year: '2019'
+              }
+            ]
+          },
+          {
+            type: 'skills',
+            title: 'Skills',
+            content: ['JavaScript', 'Node.js', 'React', 'Python']
+          }
+        ]
+      };
+
+      // Mock the AI adapter
+      controller.generateFromJDService.aiAdapter.generateJSON.mockResolvedValue(mockAIResponse);
+
+      const request = {
+        json: async () => ({
+          jobDescription,
+        }),
+        headers: new Map([['Authorization', `Bearer ${token}`]]),
+      };
+
+      const response = await controller.generateFromJD(request);
+      expect(response.status).toBe(201);
+
+      const result = await response.json();
+      expect(result.success).toBe(true);
+      expect(result.data.resume.title).toBe('AI Generated Resume');
+      expect(result.data.resume.templateId).toBe('professional');
+      expect(result.data.resume.sections).toEqual(mockAIResponse.sections);
+      expect(result.data.resume.id).toBeDefined();
+    });
+
+    it('should return 400 for invalid job description', async () => {
+      if (!controller || !factory) return;
+
+      // Create a test user
+      const user = await factory.insert('user');
+      const userId = user.id;
+
+      // Create JWT token for the user
+      const jwt = await import('@tsndr/cloudflare-worker-jwt');
+      const token = await jwt.sign({ userId }, 'test_jwt_secret');
+
+      const request = {
+        json: async () => ({
+          jobDescription: '', // Invalid: empty string
+        }),
+        headers: new Map([['Authorization', `Bearer ${token}`]]),
+      };
+
+      const response = await controller.generateFromJD(request);
+      expect(response.status).toBe(400);
+
+      const result = await response.json();
+      expect(result.error.code).toBe('VALIDATION_ERROR');
+    });
+
+    it('should return 401 for missing auth token on generateFromJD', async () => {
+      const request = {
+        json: async () => ({
+          jobDescription: 'Software Engineer position...',
+        }),
+        headers: new Map(),
+      };
+
+      const response = await controller.generateFromJD(request);
+      expect(response.status).toBe(401);
+
+      const result = await response.json();
+      expect(result.error.code).toBe('Unauthorized');
+    });
+  });
+
+  describe('improveText endpoint', () => {
+    it('should improve text and return variations on success', async () => {
+      if (!controller || !factory) return;
+
+      // Create a test user
+      const user = await factory.insert('user');
+      const userId = user.id;
+
+      // Create JWT token for the user
+      const jwt = await import('@tsndr/cloudflare-worker-jwt');
+      const token = await jwt.sign({ userId }, 'test_jwt_secret');
+
+      const originalText = 'I am a software engineer with experience in javascript.';
+
+      // Mock AI response
+      const mockAIResponse = {
+        variations: [
+          'Experienced software engineer proficient in JavaScript development.',
+          'Skilled software engineer with comprehensive JavaScript expertise.',
+          'Professional software engineer specializing in JavaScript technologies.'
+        ]
+      };
+
+      // Mock the AI adapter
+      controller.improveTextService.aiAdapter.generateJSON.mockResolvedValue(mockAIResponse);
+
+      const request = {
+        json: async () => ({
+          text: originalText,
+        }),
+        headers: new Map([['Authorization', `Bearer ${token}`]]),
+      };
+
+      const response = await controller.improveText(request);
+      expect(response.status).toBe(200);
+
+      const result = await response.json();
+      expect(result.success).toBe(true);
+      expect(result.data.originalText).toBe(originalText);
+      expect(result.data.variations).toEqual(mockAIResponse.variations);
+      expect(result.data.variations).toHaveLength(3);
+    });
+
+    it('should return 400 for text too long', async () => {
+      if (!controller || !factory) return;
+
+      // Create a test user
+      const user = await factory.insert('user');
+      const userId = user.id;
+
+      // Create JWT token for the user
+      const jwt = await import('@tsndr/cloudflare-worker-jwt');
+      const token = await jwt.sign({ userId }, 'test_jwt_secret');
+
+      const longText = 'a'.repeat(10001); // Too long
+
+      const request = {
+        json: async () => ({
+          text: longText,
+        }),
+        headers: new Map([['Authorization', `Bearer ${token}`]]),
+      };
+
+      const response = await controller.improveText(request);
+      expect(response.status).toBe(400);
+
+      const result = await response.json();
+      expect(result.error.code).toBe('VALIDATION_ERROR');
+    });
+
+    it('should return 401 for missing auth token on improveText', async () => {
+      const request = {
+        json: async () => ({
+          text: 'Some text to improve',
+        }),
+        headers: new Map(),
+      };
+
+      const response = await controller.improveText(request);
+      expect(response.status).toBe(401);
+
+      const result = await response.json();
+      expect(result.error.code).toBe('Unauthorized');
+    });
   });
 });

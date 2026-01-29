@@ -20,4 +20,24 @@ export function setupResumeRoutes(router) {
     const { controller } = createController(env, ResumeController, [env.JWT_SECRET]);
     return controller.listResumes(request);
   });
+
+  // Generate resume from job description
+  // Usage: POST /api/resumes/generate-from-jd
+  // Headers: Authorization: Bearer <jwt>
+  // Body: { "jobDescription": "Software Engineer position...", "templateId": "professional" } (templateId is optional)
+  // Returns: { "success": true, "data": { "resume": { "id": "...", "title": "...", "templateId": "...", "sections": [...], "createdAt": "...", "updatedAt": "..." } } }
+  router.post('/api/resumes/generate-from-jd', async (request, env, ctx) => {
+    const { controller } = createController(env, ResumeController, [env.JWT_SECRET]);
+    return controller.generateFromJD(request);
+  });
+
+  // Improve resume text
+  // Usage: POST /api/resumes/improve-text
+  // Headers: Authorization: Bearer <jwt>
+  // Body: { "text": "Original resume text to improve..." }
+  // Returns: { "success": true, "data": { "originalText": "...", "variations": ["Improved text 1", "Improved text 2", "Improved text 3"] } }
+  router.post('/api/resumes/improve-text', async (request, env, ctx) => {
+    const { controller } = createController(env, ResumeController, [env.JWT_SECRET]);
+    return controller.improveText(request);
+  });
 }

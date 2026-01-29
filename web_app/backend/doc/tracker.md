@@ -74,11 +74,9 @@
 - Completed: 2026-01-28
 - Evidence: ImproveTextService implemented with AI-powered text improvement, returning 3 polished variations, comprehensive input validation, and integration tests (12/12 passing).
 
-## B-016 — [api] AI Endpoints
-- Scope: Public facing AI routes.
-- Acceptance criteria:
-  - POST `/resumes/generate-from-jd` (Full resume).
-  - POST `/resumes/improve-text` (Specific section).
+## B-016 — [api] AI Endpoints ✅ 100%
+- Completed: 2026-01-28
+- Evidence: POST `/resumes/generate-from-jd` and POST `/resumes/improve-text` endpoints implemented with authentication, validation, error handling, and comprehensive integration tests (13/13 passing).
 
 ### Phase 5: Export & Templates (M4 & M5)
 
