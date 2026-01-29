@@ -56,12 +56,9 @@
 
 ### Phase 3: Resume Management (M2)
 
-## B-012 — [api] Resume Controller
-- Scope: Connect REST to Services.
-- Acceptance criteria:
-  - GET `/resumes` (Protected).
-  - POST `/resumes` (Protected).
-  - GET `/resumes/:id` (Protected, verifies ownership).
+## B-012 — [api] Resume Controller ✅ 100%
+- Completed: 2026-01-28
+- Evidence: ResumeController implemented with GET /resumes and POST /resumes endpoints, protected routes, integration tests 7/7 passing.
 
 ### Phase 4: AI Integration (M3)
 
