@@ -12,9 +12,10 @@
 - Completed B-010 (D1 Resume Repository) with save, findById, findAllByUserId methods and integration tests.
 - Completed B-011 (Resume CRUD Services) with CreateResumeService and ListResumesService, integration tests.
 - Completed B-012 (Resume Controller) with GET /resumes and POST /resumes endpoints, protected routes, and integration tests.
+- Completed B-013 (Gemini Adapter) using @google/generative-ai SDK with generateJSON method, comprehensive error handling, and unit tests.
 
 ## Active Task(s)
-- None — Resume Controller completed. Ready for next phase (AI Integration).
+- None — Gemini Adapter completed. Ready for next phase (AI Services).
 
 ## Decisions Made
 - Expanded User entity to include id, name, passwordHash, googleId for full auth support (scope.md § In Scope).
@@ -41,12 +42,16 @@
 - Implemented ResumeController with createResume and listResumes methods, following BaseController patterns.
 - Added resume routes to router.js and created resume_routes.js with protected endpoints.
 - Created comprehensive integration tests for ResumeController (7/7 passing) covering success cases, validation, and authentication.
+- Implemented GeminiAdapter using @google/generative-ai SDK instead of raw fetch calls for better reliability.
+- Added comprehensive error handling for API errors (429 rate limits, 500 server errors, safety filters).
+- Created unit tests for GeminiAdapter (12/12 passing) covering success cases and various error scenarios.
 
 ## Validation & Evidence
-- Integration: SignUpUserService tests 2/2 passing, LoginUserService tests 3/3 passing, D1UserRepository tests 8/8 passing, UpdateUserService tests 13/13 passing (unit + integration), AuthController tests 9/9 passing, Database helper tests 4/4 passing (with poisoned stub handling), Domain tests 16/16 (User) + 17/17 (Resume) + 10/10 (Template), Controllers 7/7 (Auth) + 7/7 (Resume), D1ResumeRepository integration tests 4/4 passing, Resume Services integration tests 6/6 passing — Total 115/115 tests passing.
+- Integration: SignUpUserService tests 2/2 passing, LoginUserService tests 3/3 passing, D1UserRepository tests 8/8 passing, UpdateUserService tests 13/13 passing (unit + integration), AuthController tests 9/9 passing, Database helper tests 4/4 passing (with poisoned stub handling), Domain tests 16/16 (User) + 17/17 (Resume) + 10/10 (Template), Controllers 7/7 (Auth) + 7/7 (Resume), D1ResumeRepository integration tests 4/4 passing, Resume Services integration tests 6/6 passing, GeminiAdapter unit tests 12/12 passing — Total 127/127 tests passing.
 - Template functionality validated through resume creation integration tests including professional template sections.
 - All template domain tests passing (14/14 total including factory tests).
 - Resume Controller endpoints tested with authentication, validation, and business logic.
+- GeminiAdapter tested with mocked SDK for various success and error scenarios.
 
 ## Risks & Unknowns
 - D1 foreign key support in production (SQLite-based, should be fine).

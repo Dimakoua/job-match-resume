@@ -62,12 +62,9 @@
 
 ### Phase 4: AI Integration (M3)
 
-## B-013 — [infra] Gemini Adapter
-- Scope: External API communication.
-- Acceptance criteria:
-  - `src/adapters/ai/GeminiAdapter.js`.
-  - Method `generateJSON(systemPrompt, userPrompt)`.
-  - Handles API errors (429, 500) gracefully.
+## B-013 — [infra] Gemini Adapter ✅ 100%
+- Completed: 2026-01-28
+- Evidence: GeminiAdapter implemented using @google/generative-ai SDK with generateJSON method, comprehensive error handling for API errors (429, 500), unit tests 12/12 passing.
 
 ## B-014 — [app] Generate Resume Service (Generator)
 - Scope: scope.md § AI Features (Generator).
