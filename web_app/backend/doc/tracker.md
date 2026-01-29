@@ -84,12 +84,9 @@
 - Completed: 2026-01-28
 - Evidence: PdfAdapter and DocxAdapter implemented with generateBuffer methods returning Uint8Array buffers, comprehensive unit tests 12/12 passing.
 
-## B-018 — [api] Export Endpoint
-- Scope: HTTP Response with Binary.
-- Acceptance criteria:
-  - GET `/resumes/:id/export?format=pdf` or `?format=docx`.
-  - Sets Header `Content-Type: application/pdf` or `application/vnd.openxmlformats-officedocument.wordprocessingml.document`.
-  - Sets Header `Content-Disposition: attachment; filename="..."`.
+## B-018 — [api] Export Endpoint ✅ 100%
+- Completed: 2026-01-29
+- Evidence: GET `/resumes/:id/export?format=pdf|docx` endpoint implemented with ExportResumeService, proper binary responses, Content-Type and Content-Disposition headers, filename sanitization, authentication, and validation. Unit tests 10/10 passing, integration tests 4/4 passing.
 
 ## B-019 — [feature] Template Metadata API
 - Scope: scope.md § Template System.

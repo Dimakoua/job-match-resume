@@ -22,6 +22,7 @@ export class ResumeController extends BaseController {
     this.listResumesService = deps.listResumesService;
     this.generateFromJDService = deps.generateFromJDService;
     this.improveTextService = deps.improveTextService;
+    this.exportResumeService = deps.exportResumeService;
   }
 
   async createResume(request) {
@@ -165,6 +166,62 @@ export class ResumeController extends BaseController {
 
       if (error.message && error.message.includes('AI')) {
         return this.errorResponse('AI_ERROR', 'Failed to improve text', 500);
+      }
+
+      return this.errorResponse('INTERNAL_ERROR', 'An unexpected error occurred', 500);
+    }
+  }
+
+  async exportResume(request) {
+    try {
+      // User is already authenticated via middleware
+      const userId = request.userId;
+
+      // Extract resume ID from URL params
+      const url = new URL(request.url);
+      const pathParts = url.pathname.split('/');
+      const resumeId = pathParts[pathParts.length - 2]; // Extract :id from /api/resumes/:id/export
+
+      // Extract format from query params
+      const format = url.searchParams.get('format');
+      if (!format || !['pdf', 'docx'].includes(format)) {
+        return this.errorResponse('INVALID_FORMAT', 'Format must be either "pdf" or "docx"', 400);
+      }
+
+      const command = {
+        resumeId,
+        userId,
+        format,
+      };
+
+      // Execute export
+      const result = await this.exportResumeService.execute(command);
+
+      // Return binary response with appropriate headers
+      const contentType = format === 'pdf'
+        ? 'application/pdf'
+        : 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+
+      return new Response(result.buffer, {
+        status: 200,
+        headers: {
+          'Content-Type': contentType,
+          'Content-Disposition': `attachment; filename="${result.filename}"`,
+        },
+      });
+    } catch (error) {
+      console.error('Export resume error:', error);
+
+      if (error.message && error.message.includes('not found')) {
+        return this.errorResponse('RESUME_NOT_FOUND', 'Resume not found', 404);
+      }
+
+      if (error.message && error.message.includes('Access denied')) {
+        return this.errorResponse('ACCESS_DENIED', 'Access denied', 403);
+      }
+
+      if (error.message && error.message.includes('format')) {
+        return this.errorResponse('INVALID_FORMAT', 'Invalid format specified', 400);
       }
 
       return this.errorResponse('INTERNAL_ERROR', 'An unexpected error occurred', 500);

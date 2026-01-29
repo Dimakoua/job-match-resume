@@ -41,4 +41,13 @@ export function setupResumeRoutes(router) {
     const { controller } = createController(env, ResumeController, [env.JWT_SECRET]);
     return controller.improveText(request);
   });
+
+  // Export resume as PDF or DOCX
+  // Usage: GET /api/resumes/:id/export?format=pdf or ?format=docx
+  // Headers: Authorization: Bearer <jwt>
+  // Returns: Binary file with appropriate Content-Type and Content-Disposition headers
+  router.get('/api/resumes/:id/export', authMiddleware, async (request, env, ctx) => {
+    const { controller } = createController(env, ResumeController, [env.JWT_SECRET]);
+    return controller.exportResume(request);
+  });
 }

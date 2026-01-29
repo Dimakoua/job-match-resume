@@ -5,6 +5,7 @@ import { CreateResumeService } from '../../../application/resume/create_resume_s
 import { ListResumesService } from '../../../application/resume/list_resumes_service.js';
 import { GenerateFromJDService } from '../../../application/generate_from_jd/generate_from_jd_service.js';
 import { ImproveTextService } from '../../../application/improve_text/improve_text_service.js';
+import { ExportResumeService } from '../../../application/export_resume/export_resume_service.js';
 import { D1ResumeRepository } from '../../../adapters/repositories/resume/d1_resume_repository.js';
 
 describe('ResumeController Integration Tests', () => {
@@ -40,11 +41,22 @@ describe('ResumeController Integration Tests', () => {
     const generateFromJDService = new GenerateFromJDService(mockAIAdapter, resumeRepository, templateRepository);
     const improveTextService = new ImproveTextService(mockAIAdapter);
 
+    // Mock adapters for export
+    const mockPdfAdapter = {
+      generateBuffer: vi.fn(),
+    };
+    const mockDocxAdapter = {
+      generateBuffer: vi.fn(),
+    };
+
+    const exportResumeService = new ExportResumeService(resumeRepository, mockPdfAdapter, mockDocxAdapter);
+
     const deps = {
       createResumeService,
       listResumesService,
       generateFromJDService,
       improveTextService,
+      exportResumeService,
     };
     controller = new ResumeController(deps, 'test_jwt_secret');
     factory = new Factory(db);
@@ -347,6 +359,132 @@ describe('ResumeController Integration Tests', () => {
 
       const result = await response.json();
       expect(result.error.code).toBe('VALIDATION_ERROR');
+    });
+
+    it('should export resume as PDF and return 200 with correct headers', async () => {
+      // Create a test user
+      const user = await factory.insert('user');
+      const userId = user.id;
+
+      // Create a resume using the controller
+      const createRequest = {
+        json: async () => ({
+          title: 'Test Resume',
+        }),
+        userId,
+      };
+      const createResponse = await controller.createResume(createRequest);
+      expect(createResponse.status).toBe(201);
+      const createResult = await createResponse.json();
+      const resumeId = createResult.data.resume.id;
+
+      const mockBuffer = new Uint8Array([37, 80, 68, 70]); // Mock PDF header
+
+      // Mock the PDF adapter
+      controller.exportResumeService.pdfAdapter.generateBuffer.mockResolvedValue(mockBuffer);
+
+      const request = {
+        url: `http://localhost/api/resumes/${resumeId}/export?format=pdf`,
+        userId, // Set by auth middleware
+      };
+
+      const response = await controller.exportResume(request);
+      expect(response.status).toBe(200);
+      expect(response.headers.get('Content-Type')).toBe('application/pdf');
+      expect(response.headers.get('Content-Disposition')).toBe(`attachment; filename="Test_Resume.pdf"`);
+
+      const buffer = await response.arrayBuffer();
+      expect(new Uint8Array(buffer)).toEqual(mockBuffer);
+    });
+
+    it('should export resume as DOCX and return 200 with correct headers', async () => {
+      // Create a test user
+      const user = await factory.insert('user');
+      const userId = user.id;
+
+      // Create a resume using the controller
+      const createRequest = {
+        json: async () => ({
+          title: 'Test Resume',
+        }),
+        userId,
+      };
+      const createResponse = await controller.createResume(createRequest);
+      expect(createResponse.status).toBe(201);
+      const createResult = await createResponse.json();
+      const resumeId = createResult.data.resume.id;
+
+      const mockBuffer = new Uint8Array([80, 75, 3, 4]); // Mock DOCX header
+
+      // Mock the DOCX adapter
+      controller.exportResumeService.docxAdapter.generateBuffer.mockResolvedValue(mockBuffer);
+
+      const request = {
+        url: `http://localhost/api/resumes/${resumeId}/export?format=docx`,
+        userId, // Set by auth middleware
+      };
+
+      const response = await controller.exportResume(request);
+      expect(response.status).toBe(200);
+      expect(response.headers.get('Content-Type')).toBe('application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+      expect(response.headers.get('Content-Disposition')).toBe(`attachment; filename="Test_Resume.docx"`);
+
+      const buffer = await response.arrayBuffer();
+      expect(new Uint8Array(buffer)).toEqual(mockBuffer);
+    });
+
+    it('should return 400 for invalid format', async () => {
+      // Create a test user
+      const user = await factory.insert('user');
+      const userId = user.id;
+
+      const request = {
+        url: `http://localhost/api/resumes/resume-123/export?format=txt`,
+        userId, // Set by auth middleware
+      };
+
+      const response = await controller.exportResume(request);
+      expect(response.status).toBe(400);
+
+      const result = await response.json();
+      expect(result.error.code).toBe('INVALID_FORMAT');
+    });
+
+    it('should return 404 for non-existent resume', async () => {
+      // Create a test user
+      const user = await factory.insert('user');
+      const userId = user.id;
+
+      const request = {
+        url: `http://localhost/api/resumes/non-existent/export?format=pdf`,
+        userId, // Set by auth middleware
+      };
+
+      const response = await controller.exportResume(request);
+      expect(response.status).toBe(404);
+
+      const result = await response.json();
+      expect(result.error.code).toBe('RESUME_NOT_FOUND');
+    });
+
+    it('should return 403 for resume belonging to another user', async () => {
+      // Create two users
+      const user1 = await factory.insert('user');
+      const user2 = await factory.insert('user');
+
+      // Create resume for user1
+      const resume = await factory.insert('resume', { userId: user1.id });
+
+      const request = {
+        url: `http://localhost/api/resumes/${resume.id}/export?format=pdf`,
+        userId: user2.id, // Try to access with user2
+      };
+
+      const response = await controller.exportResume(request);
+      expect(response.status).toBe(403);
+
+      const result = await response.json();
+      expect(result.error.code).toBe('ACCESS_DENIED');
     });
 
   });
