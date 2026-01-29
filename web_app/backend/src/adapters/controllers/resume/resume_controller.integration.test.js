@@ -55,17 +55,13 @@ describe('ResumeController Integration Tests', () => {
     const user = await factory.insert('user');
     const userId = user.id;
 
-    // Create JWT token for the user
-    const jwt = await import('@tsndr/cloudflare-worker-jwt');
-    const token = await jwt.sign({ userId }, 'test_jwt_secret');
-
     const title = 'My Integration Resume';
 
     const request = {
       json: async () => ({
         title,
       }),
-      headers: new Map([['Authorization', `Bearer ${token}`]]),
+      userId, // Set by auth middleware
     };
 
     const response = await controller.createResume(request);
@@ -84,10 +80,6 @@ describe('ResumeController Integration Tests', () => {
     const user = await factory.insert('user');
     const userId = user.id;
 
-    // Create JWT token for the user
-    const jwt = await import('@tsndr/cloudflare-worker-jwt');
-    const token = await jwt.sign({ userId }, 'test_jwt_secret');
-
     const title = 'My Template Resume';
     const templateId = 'basic';
 
@@ -96,7 +88,7 @@ describe('ResumeController Integration Tests', () => {
         title,
         templateId,
       }),
-      headers: new Map([['Authorization', `Bearer ${token}`]]),
+      userId, // Set by auth middleware
     };
 
     const response = await controller.createResume(request);
@@ -115,15 +107,11 @@ describe('ResumeController Integration Tests', () => {
     const user = await factory.insert('user');
     const userId = user.id;
 
-    // Create JWT token for the user
-    const jwt = await import('@tsndr/cloudflare-worker-jwt');
-    const token = await jwt.sign({ userId }, 'test_jwt_secret');
-
     const request = {
       json: async () => ({
         title: '', // Invalid: empty title
       }),
-      headers: new Map([['Authorization', `Bearer ${token}`]]),
+      userId, // Set by auth middleware
     };
 
     const response = await controller.createResume(request);
@@ -133,21 +121,21 @@ describe('ResumeController Integration Tests', () => {
     expect(result.error.code).toBe('VALIDATION_ERROR');
   });
 
-  it('should return 401 for missing auth token on create', async () => {
+  it('should return 500 for missing userId', async () => {
     if (!controller) return;
 
     const request = {
       json: async () => ({
         title: 'Test Resume',
       }),
-      headers: new Map(),
+      // No userId set
     };
 
     const response = await controller.createResume(request);
-    expect(response.status).toBe(401);
+    expect(response.status).toBe(500);
 
     const result = await response.json();
-    expect(result.error.code).toBe('Unauthorized');
+    expect(result.error.code).toBe('INTERNAL_ERROR');
   });
 
   it('should list resumes and return 200 on success', async () => {
@@ -158,12 +146,8 @@ describe('ResumeController Integration Tests', () => {
     // Create a resume for the user
     await factory.insert('resume', { userId, title: 'Test Resume' });
 
-    // Create JWT token for the user
-    const jwt = await import('@tsndr/cloudflare-worker-jwt');
-    const token = await jwt.sign({ userId }, 'test_jwt_secret');
-
     const request = {
-      headers: new Map([['Authorization', `Bearer ${token}`]]),
+      userId, // Set by auth middleware
     };
 
     const response = await controller.listResumes(request);
@@ -178,18 +162,6 @@ describe('ResumeController Integration Tests', () => {
     expect(result.data.resumes[0]).toHaveProperty('updatedAt');
   });
 
-  it('should return 401 for missing auth token on list', async () => {
-    const request = {
-      headers: new Map(),
-    };
-
-    const response = await controller.listResumes(request);
-    expect(response.status).toBe(401);
-
-    const result = await response.json();
-    expect(result.error.code).toBe('Unauthorized');
-  });
-
   it('should not list resumes from other users', async () => {
     if (!controller || !factory) return;
 
@@ -200,12 +172,8 @@ describe('ResumeController Integration Tests', () => {
     // Create a resume for user A
     await factory.insert('resume', { userId: userA.id, title: 'User A Resume' });
 
-    // Create JWT token for user B
-    const jwt = await import('@tsndr/cloudflare-worker-jwt');
-    const token = await jwt.sign({ userId: userB.id }, 'test_jwt_secret');
-
     const request = {
-      headers: new Map([['Authorization', `Bearer ${token}`]]),
+      userId: userB.id, // Set by auth middleware
     };
 
     const response = await controller.listResumes(request);
@@ -223,10 +191,6 @@ describe('ResumeController Integration Tests', () => {
       // Create a test user
       const user = await factory.insert('user');
       const userId = user.id;
-
-      // Create JWT token for the user
-      const jwt = await import('@tsndr/cloudflare-worker-jwt');
-      const token = await jwt.sign({ userId }, 'test_jwt_secret');
 
       const jobDescription = 'We are looking for a Software Engineer with 3+ years experience in JavaScript and Node.js.';
 
@@ -286,7 +250,7 @@ describe('ResumeController Integration Tests', () => {
         json: async () => ({
           jobDescription,
         }),
-        headers: new Map([['Authorization', `Bearer ${token}`]]),
+        userId, // Set by auth middleware
       };
 
       const response = await controller.generateFromJD(request);
@@ -307,15 +271,11 @@ describe('ResumeController Integration Tests', () => {
       const user = await factory.insert('user');
       const userId = user.id;
 
-      // Create JWT token for the user
-      const jwt = await import('@tsndr/cloudflare-worker-jwt');
-      const token = await jwt.sign({ userId }, 'test_jwt_secret');
-
       const request = {
         json: async () => ({
           jobDescription: '', // Invalid: empty string
         }),
-        headers: new Map([['Authorization', `Bearer ${token}`]]),
+        userId, // Set by auth middleware
       };
 
       const response = await controller.generateFromJD(request);
@@ -325,20 +285,6 @@ describe('ResumeController Integration Tests', () => {
       expect(result.error.code).toBe('VALIDATION_ERROR');
     });
 
-    it('should return 401 for missing auth token on generateFromJD', async () => {
-      const request = {
-        json: async () => ({
-          jobDescription: 'Software Engineer position...',
-        }),
-        headers: new Map(),
-      };
-
-      const response = await controller.generateFromJD(request);
-      expect(response.status).toBe(401);
-
-      const result = await response.json();
-      expect(result.error.code).toBe('Unauthorized');
-    });
   });
 
   describe('improveText endpoint', () => {
@@ -348,10 +294,6 @@ describe('ResumeController Integration Tests', () => {
       // Create a test user
       const user = await factory.insert('user');
       const userId = user.id;
-
-      // Create JWT token for the user
-      const jwt = await import('@tsndr/cloudflare-worker-jwt');
-      const token = await jwt.sign({ userId }, 'test_jwt_secret');
 
       const originalText = 'I am a software engineer with experience in javascript.';
 
@@ -371,7 +313,7 @@ describe('ResumeController Integration Tests', () => {
         json: async () => ({
           text: originalText,
         }),
-        headers: new Map([['Authorization', `Bearer ${token}`]]),
+        userId, // Set by auth middleware
       };
 
       const response = await controller.improveText(request);
@@ -391,17 +333,13 @@ describe('ResumeController Integration Tests', () => {
       const user = await factory.insert('user');
       const userId = user.id;
 
-      // Create JWT token for the user
-      const jwt = await import('@tsndr/cloudflare-worker-jwt');
-      const token = await jwt.sign({ userId }, 'test_jwt_secret');
-
       const longText = 'a'.repeat(10001); // Too long
 
       const request = {
         json: async () => ({
           text: longText,
         }),
-        headers: new Map([['Authorization', `Bearer ${token}`]]),
+        userId, // Set by auth middleware
       };
 
       const response = await controller.improveText(request);
@@ -411,19 +349,5 @@ describe('ResumeController Integration Tests', () => {
       expect(result.error.code).toBe('VALIDATION_ERROR');
     });
 
-    it('should return 401 for missing auth token on improveText', async () => {
-      const request = {
-        json: async () => ({
-          text: 'Some text to improve',
-        }),
-        headers: new Map(),
-      };
-
-      const response = await controller.improveText(request);
-      expect(response.status).toBe(401);
-
-      const result = await response.json();
-      expect(result.error.code).toBe('Unauthorized');
-    });
   });
 });

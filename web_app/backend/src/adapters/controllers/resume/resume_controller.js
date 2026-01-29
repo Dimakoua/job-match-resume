@@ -26,8 +26,8 @@ export class ResumeController extends BaseController {
 
   async createResume(request) {
     try {
-      // Authenticate user
-      const userId = await this.authenticate(request);
+      // User is already authenticated via middleware
+      const userId = request.userId;
 
       const body = await request.json();
 
@@ -59,11 +59,6 @@ export class ResumeController extends BaseController {
         },
       }, 201);
     } catch (error) {
-      // If error is a Response (from authenticate), return it directly
-      if (error instanceof Response) {
-        return error;
-      }
-
       console.error('Create resume error:', error);
 
       if (error.message && error.message.includes('templateId')) {
@@ -76,8 +71,8 @@ export class ResumeController extends BaseController {
 
   async listResumes(request) {
     try {
-      // Authenticate user
-      const userId = await this.authenticate(request);
+      // User is already authenticated via middleware
+      const userId = request.userId;
 
       // Execute list resumes
       const resumes = await this.listResumesService.execute({ userId });
@@ -87,19 +82,14 @@ export class ResumeController extends BaseController {
         data: { resumes },
       });
     } catch (error) {
-      // If error is a Response (from authenticate), return it directly
-      if (error instanceof Response) {
-        return error;
-      }
-
       return this.errorResponse('INTERNAL_ERROR', 'An unexpected error occurred', 500);
     }
   }
 
   async generateFromJD(request) {
     try {
-      // Authenticate user
-      const userId = await this.authenticate(request);
+      // User is already authenticated via middleware
+      const userId = request.userId;
 
       const body = await request.json();
 
@@ -131,11 +121,6 @@ export class ResumeController extends BaseController {
         },
       }, 201);
     } catch (error) {
-      // If error is a Response (from authenticate), return it directly
-      if (error instanceof Response) {
-        return error;
-      }
-
       console.error('Generate from JD error:', error);
 
       if (error.message && error.message.includes('templateId')) {
@@ -152,8 +137,8 @@ export class ResumeController extends BaseController {
 
   async improveText(request) {
     try {
-      // Authenticate user
-      const userId = await this.authenticate(request);
+      // User is already authenticated via middleware
+      const userId = request.userId;
 
       const body = await request.json();
 
@@ -176,11 +161,6 @@ export class ResumeController extends BaseController {
         data: result,
       });
     } catch (error) {
-      // If error is a Response (from authenticate), return it directly
-      if (error instanceof Response) {
-        return error;
-      }
-
       console.error('Improve text error:', error);
 
       if (error.message && error.message.includes('AI')) {
