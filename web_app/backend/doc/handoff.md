@@ -45,6 +45,7 @@
 - Implemented GeminiAdapter using @google/generative-ai SDK instead of raw fetch calls for better reliability.
 - Added comprehensive error handling for API errors (429 rate limits, 500 server errors, safety filters).
 - Created unit tests for GeminiAdapter (12/12 passing) covering success cases and various error scenarios.
+- Renamed GeminiAdapter.js and GeminiAdapter.test.js to gemini_adapter.js and gemini_adapter.test.js to follow snake_case naming convention.
 
 ## Validation & Evidence
 - Integration: SignUpUserService tests 2/2 passing, LoginUserService tests 3/3 passing, D1UserRepository tests 8/8 passing, UpdateUserService tests 13/13 passing (unit + integration), AuthController tests 9/9 passing, Database helper tests 4/4 passing (with poisoned stub handling), Domain tests 16/16 (User) + 17/17 (Resume) + 10/10 (Template), Controllers 7/7 (Auth) + 7/7 (Resume), D1ResumeRepository integration tests 4/4 passing, Resume Services integration tests 6/6 passing, GeminiAdapter unit tests 12/12 passing — Total 127/127 tests passing.
