@@ -1,6 +1,7 @@
 name = "resume-builder-backend"
 main = "src/router.js"
-compatibility_date = "2024-01-01"
+compatibility_date = "2024-09-23"
+compatibility_flags = ["nodejs_compat"]
 
 [env.development]
 vars = { JWT_SECRET = "dev-secret-key-change-in-production", GEMINI_API_KEY = "test-gemini-key" }
