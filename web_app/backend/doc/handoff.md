@@ -43,8 +43,8 @@
 - Implemented GenerateFromJDService with comprehensive prompt engineering for resume generation from job descriptions.
 - Added JSON schema validation for AI-generated resume content with required sections (personal_info, summary, experience, education, skills).
 - Added support for user-specified templates in AI-generated resumes, with validation and fallback to 'professional' default.
-- Created unit tests (17/17 passing) covering validation, AI integration, template selection, and error handling.
-- Added integration tests (5/5 passing) with database persistence, template validation, and mocked AI adapter.
+- Removed unit tests and kept only integration tests (9/9 passing) following codebase pattern for application services.
+- Integration tests cover input validation, template selection, AI response validation, error handling, and end-to-end functionality.
 - Renamed GeminiAdapter.js and GeminiAdapter.test.js to gemini_adapter.js and gemini_adapter.test.js to follow snake_case naming convention.
 - Added comprehensive unit tests for Template entity (10/10 passing) covering all validation scenarios.
 - Updated Factory class to include templateRepo and fakeTemplate method for testing.
@@ -57,7 +57,7 @@
 - Renamed GeminiAdapter.js and GeminiAdapter.test.js to gemini_adapter.js and gemini_adapter.test.js to follow snake_case naming convention.
 
 ## Validation & Evidence
-- Integration: SignUpUserService tests 2/2 passing, LoginUserService tests 3/3 passing, D1UserRepository tests 8/8 passing, UpdateUserService tests 13/13 passing (unit + integration), AuthController tests 9/9 passing, Database helper tests 4/4 passing (with poisoned stub handling), Domain tests 16/16 (User) + 17/17 (Resume) + 10/10 (Template), Controllers 7/7 (Auth) + 7/7 (Resume), D1ResumeRepository integration tests 4/4 passing, Resume Services integration tests 6/6 passing, GeminiAdapter unit tests 12/12 passing, GenerateFromJDService unit tests 17/17 passing, GenerateFromJDService integration tests 5/5 passing — Total 149/149 tests passing.
+- Integration: SignUpUserService tests 2/2 passing, LoginUserService tests 3/3 passing, D1UserRepository tests 8/8 passing, UpdateUserService tests 13/13 passing (unit + integration), AuthController tests 9/9 passing, Database helper tests 4/4 passing (with poisoned stub handling), Domain tests 16/16 (User) + 17/17 (Resume) + 10/10 (Template), Controllers 7/7 (Auth) + 7/7 (Resume), D1ResumeRepository integration tests 4/4 passing, Resume Services integration tests 6/6 passing, GeminiAdapter unit tests 12/12 passing, GenerateFromJDService integration tests 9/9 passing — Total 136/136 tests passing.
 - Template functionality validated through resume creation integration tests including professional template sections.
 - All template domain tests passing (14/14 total including factory tests).
 - Resume Controller endpoints tested with authentication, validation, and business logic.

@@ -68,7 +68,7 @@
 
 ## B-014 — [app] Generate Resume Service (Generator) ✅ 100%
 - Completed: 2026-01-28
-- Evidence: GenerateFromJDService implemented with comprehensive unit tests (15/15 passing) and integration tests (4/4 passing). Service constructs AI prompts, validates responses, and saves generated resumes.
+- Evidence: GenerateFromJDService implemented with comprehensive integration tests (9/9 passing). Service constructs AI prompts, validates responses, and saves generated resumes.
 
 ## B-015 — [app] Improve Text Service (Improver)
 - Scope: scope.md § AI Features (Improver).
