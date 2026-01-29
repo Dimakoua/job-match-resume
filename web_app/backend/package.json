@@ -17,7 +17,9 @@
         "@google/generative-ai": "^0.24.1",
         "@tsndr/cloudflare-worker-jwt": "^3.2.1",
         "bcryptjs": "^3.0.3",
+        "docx": "^9.5.1",
         "itty-router": "^5.0.18",
+        "pdf-lib": "^1.17.1",
         "zod": "^4.3.5"
     },
     "devDependencies": {

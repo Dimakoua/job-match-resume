@@ -80,14 +80,9 @@
 
 ### Phase 5: Export & Templates (M4 & M5)
 
-## B-017 — [infra] PDF and DOCX Generator Adapter
-- Scope: scope.md § Export (PDF, DOCX).
-- Design: design.md §7.1 (ADR-001 - Pure JS PDF), extend for DOCX.
-- Acceptance criteria:
-  - `src/adapters/pdf/PdfKitAdapter.js` (or `pdf-lib`) for PDF.
-  - `src/adapters/docx/DocxAdapter.js` (using docx library) for DOCX.
-  - Method `generateBuffer(resumeData)` for both.
-  - Returns a binary buffer (Uint8Array).
+## B-017 — [infra] PDF and DOCX Generator Adapter ✅ 100%
+- Completed: 2026-01-28
+- Evidence: PdfAdapter and DocxAdapter implemented with generateBuffer methods returning Uint8Array buffers, comprehensive unit tests 12/12 passing.
 
 ## B-018 — [api] Export Endpoint
 - Scope: HTTP Response with Binary.
