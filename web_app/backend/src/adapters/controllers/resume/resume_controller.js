@@ -27,8 +27,7 @@ export class ResumeController extends BaseController {
 
   async createResume(request) {
     try {
-      // User is already authenticated via middleware
-      const userId = request.userId;
+      const userId = await this.authenticate(request);
 
       const body = await request.json();
 
@@ -72,8 +71,7 @@ export class ResumeController extends BaseController {
 
   async listResumes(request) {
     try {
-      // User is already authenticated via middleware
-      const userId = request.userId;
+      const userId = await this.authenticate(request);
 
       // Execute list resumes
       const resumes = await this.listResumesService.execute({ userId });
@@ -83,14 +81,17 @@ export class ResumeController extends BaseController {
         data: { resumes },
       });
     } catch (error) {
+      // If authenticate threw a Response, return it
+      if (error instanceof Response) {
+        return error;
+      }
       return this.errorResponse('INTERNAL_ERROR', 'An unexpected error occurred', 500);
     }
   }
 
   async generateFromJD(request) {
     try {
-      // User is already authenticated via middleware
-      const userId = request.userId;
+      const userId = await this.authenticate(request);
 
       const body = await request.json();
 
@@ -122,6 +123,10 @@ export class ResumeController extends BaseController {
         },
       }, 201);
     } catch (error) {
+      // If authenticate threw a Response, return it
+      if (error instanceof Response) {
+        return error;
+      }
       console.error('Generate from JD error:', error);
 
       if (error.message && error.message.includes('templateId')) {
@@ -138,8 +143,7 @@ export class ResumeController extends BaseController {
 
   async improveText(request) {
     try {
-      // User is already authenticated via middleware
-      const userId = request.userId;
+      const userId = await this.authenticate(request);
 
       const body = await request.json();
 
@@ -162,6 +166,10 @@ export class ResumeController extends BaseController {
         data: result,
       });
     } catch (error) {
+      // If authenticate threw a Response, return it
+      if (error instanceof Response) {
+        return error;
+      }
       console.error('Improve text error:', error);
 
       if (error.message && error.message.includes('AI')) {
@@ -174,8 +182,7 @@ export class ResumeController extends BaseController {
 
   async exportResume(request) {
     try {
-      // User is already authenticated via middleware
-      const userId = request.userId;
+      const userId = await this.authenticate(request);
 
       // Extract resume ID from URL params
       const url = new URL(request.url);
@@ -210,6 +217,10 @@ export class ResumeController extends BaseController {
         },
       });
     } catch (error) {
+      // If authenticate threw a Response, return it
+      if (error instanceof Response) {
+        return error;
+      }
       console.error('Export resume error:', error);
 
       if (error.message && error.message.includes('not found')) {

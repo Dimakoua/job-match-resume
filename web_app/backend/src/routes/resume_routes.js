@@ -1,6 +1,5 @@
 import { ResumeController } from '../adapters/controllers/resume/resume_controller.js';
 import { createController } from '../utils/route_helpers.js';
-import { authMiddleware } from '../middleware/auth_middleware.js';
 
 export function setupResumeRoutes(router) {
   // Create a new resume
@@ -8,7 +7,7 @@ export function setupResumeRoutes(router) {
   // Headers: Authorization: Bearer <jwt>
   // Body: { "title": "My Resume", "templateId": "basic" } (templateId is optional)
   // Returns: { "success": true, "data": { "resume": { "id": "...", "title": "...", "templateId": "...", "sections": [...], "createdAt": "...", "updatedAt": "..." } } }
-  router.post('/api/resumes', authMiddleware, async (request, env, ctx) => {
+  router.post('/api/resumes', async (request, env, ctx) => {
     const { controller } = createController(env, ResumeController, [env.JWT_SECRET]);
     return controller.createResume(request);
   });
@@ -17,7 +16,7 @@ export function setupResumeRoutes(router) {
   // Usage: GET /api/resumes
   // Headers: Authorization: Bearer <jwt>
   // Returns: { "success": true, "data": { "resumes": [{ "id": "...", "title": "...", "updatedAt": "..." }, ...] } }
-  router.get('/api/resumes', authMiddleware, async (request, env, ctx) => {
+  router.get('/api/resumes', async (request, env, ctx) => {
     const { controller } = createController(env, ResumeController, [env.JWT_SECRET]);
     return controller.listResumes(request);
   });
@@ -27,7 +26,7 @@ export function setupResumeRoutes(router) {
   // Headers: Authorization: Bearer <jwt>
   // Body: { "jobDescription": "Software Engineer position...", "templateId": "professional" } (templateId is optional)
   // Returns: { "success": true, "data": { "resume": { "id": "...", "title": "...", "templateId": "...", "sections": [...], "createdAt": "...", "updatedAt": "..." } } }
-  router.post('/api/resumes/generate-from-jd', authMiddleware, async (request, env, ctx) => {
+  router.post('/api/resumes/generate-from-jd', async (request, env, ctx) => {
     const { controller } = createController(env, ResumeController, [env.JWT_SECRET]);
     return controller.generateFromJD(request);
   });
@@ -37,7 +36,7 @@ export function setupResumeRoutes(router) {
   // Headers: Authorization: Bearer <jwt>
   // Body: { "text": "Original resume text to improve..." }
   // Returns: { "success": true, "data": { "originalText": "...", "variations": ["Improved text 1", "Improved text 2", "Improved text 3"] } }
-  router.post('/api/resumes/improve-text', authMiddleware, async (request, env, ctx) => {
+  router.post('/api/resumes/improve-text', async (request, env, ctx) => {
     const { controller } = createController(env, ResumeController, [env.JWT_SECRET]);
     return controller.improveText(request);
   });
@@ -46,7 +45,7 @@ export function setupResumeRoutes(router) {
   // Usage: GET /api/resumes/:id/export?format=pdf or ?format=docx
   // Headers: Authorization: Bearer <jwt>
   // Returns: Binary file with appropriate Content-Type and Content-Disposition headers
-  router.get('/api/resumes/:id/export', authMiddleware, async (request, env, ctx) => {
+  router.get('/api/resumes/:id/export', async (request, env, ctx) => {
     const { controller } = createController(env, ResumeController, [env.JWT_SECRET]);
     return controller.exportResume(request);
   });
