@@ -1,6 +1,13 @@
 @import "tailwindcss";
 
 /* =============================================================================
+   DARK MODE CONFIGURATION
+   Force class-based dark mode instead of media query based
+   ============================================================================= */
+
+@variant dark (&:where(.dark, .dark *));
+
+/* =============================================================================
    THEME CONFIGURATION
    Tailwind CSS v4 uses CSS-first configuration via @theme directive.
    Define all design tokens here for easy maintenance.

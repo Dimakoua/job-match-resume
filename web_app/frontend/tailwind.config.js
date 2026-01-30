@@ -15,7 +15,16 @@ export default {
   darkMode: 'class',
 
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        primary: '#2463eb',
+        'background-light': '#f6f6f8',
+        'background-dark': '#111621',
+      },
+      fontFamily: {
+        display: ['Inter', 'sans-serif'],
+      },
+    },
   },
 
   plugins: [],
