@@ -145,9 +145,9 @@ const togglePassword = () => {
             <div class="text-sm">
               <label class="text-muted-foreground" for="terms">
                 I agree to the 
-                <a class="font-medium text-primary hover:underline" href="#">Terms of Service</a> 
+                <router-link to="/terms" class="font-medium text-primary hover:underline">Terms of Service</router-link> 
                 and 
-                <a class="font-medium text-primary hover:underline" href="#">Privacy Policy</a>
+                <router-link to="/privacy" class="font-medium text-primary hover:underline">Privacy Policy</router-link>
               </label>
             </div>
           </div>
@@ -174,6 +174,10 @@ const togglePassword = () => {
     <!-- Footer -->
     <footer class="p-6 text-center text-xs text-muted-foreground">
       © 2024 AI Resume Builder. All rights reserved.
+      <div class="flex justify-center gap-4 mt-2">
+        <router-link to="/terms" class="hover:text-primary">Terms of Service</router-link>
+        <router-link to="/privacy" class="hover:text-primary">Privacy Policy</router-link>
+      </div>
     </footer>
   </div>
 </template>
