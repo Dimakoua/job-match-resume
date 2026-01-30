@@ -32,9 +32,12 @@ const togglePassword = () => {
       </div>
       <div class="flex items-center gap-4">
         <span class="text-sm text-muted-foreground hidden sm:block">Need help?</span>
-        <button class="flex min-w-[84px] cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-primary text-primary-foreground text-sm font-bold">
+        <router-link 
+          to="/signup"
+          class="flex min-w-[84px] cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-primary text-primary-foreground text-sm font-bold"
+        >
           Sign up
-        </button>
+        </router-link>
       </div>
     </header>
 
@@ -65,7 +68,7 @@ const togglePassword = () => {
             <div class="flex flex-col w-full">
               <div class="flex justify-between items-end pb-2">
                 <span class="text-foreground text-sm font-semibold leading-normal">Password</span>
-                <a class="text-sm font-medium text-primary hover:underline" href="#">Forgot password?</a>
+                <router-link to="/forgot-password" class="text-sm font-medium text-primary hover:underline">Forgot password?</router-link>
               </div>
               <div class="flex w-full items-stretch rounded-lg">
                 <input 
@@ -109,7 +112,7 @@ const togglePassword = () => {
           <div class="mt-8 text-center">
             <p class="text-sm text-muted-foreground">
               Don't have an account? 
-              <a class="text-primary font-bold hover:underline" href="#">Sign up</a>
+              <router-link to="/signup" class="text-primary font-bold hover:underline">Sign up</router-link>
             </p>
           </div>
         </div>
