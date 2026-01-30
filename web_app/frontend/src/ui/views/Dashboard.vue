@@ -82,74 +82,23 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
 import AppHeader from '../components/AppHeader.vue'
 import AppFooter from '../components/AppFooter.vue'
 import ResumeCard from '../components/ResumeCard.vue'
 import ResumeEmptyCard from '../components/ResumeEmptyCard.vue'
+import { useDashboardController } from '../composables/useDashboardController.js'
 
-const router = useRouter()
-
-const resumes = ref([])
-const isLoading = ref(true)
-const error = ref(null)
-
-// TODO: Replace with actual API call
-const loadResumes = async () => {
-  isLoading.value = true
-  error.value = null
-  
-  try {
-    // Simulated data for now - will be replaced with API call
-    await new Promise(resolve => setTimeout(resolve, 500))
-    resumes.value = [
-      // { id: '1', title: 'Senior Software Engineer', updatedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString() },
-      // { id: '2', title: 'Marketing Manager 2024', updatedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString() },
-      // { id: '3', title: 'Lead Product Designer', updatedAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString() },
-    ]
-  } catch (err) {
-    error.value = 'Failed to load resumes. Please try again.'
-    console.error('Error loading resumes:', err)
-  } finally {
-    isLoading.value = false
-  }
-}
-
-const handleCreateWithAI = () => {
-  router.push('/generator')
-}
-
-const handleCreateFromScratch = () => {
-  router.push('/builder')
-}
-
-const handleEditResume = (resume) => {
-  router.push(`/builder?id=${resume.id}`)
-}
-
-const handleDownloadResume = (resume) => {
-  // TODO: Implement download
-  console.log('Download resume:', resume.id)
-}
-
-const handlePreviewResume = (resume) => {
-  // TODO: Implement preview modal
-  console.log('Preview resume:', resume.id)
-}
-
-const handleDuplicateResume = (resume) => {
-  // TODO: Implement duplicate
-  console.log('Duplicate resume:', resume.id)
-}
-
-const handleDeleteResume = (resume) => {
-  // TODO: Implement delete with confirmation
-  console.log('Delete resume:', resume.id)
-}
-
-onMounted(() => {
-  loadResumes()
-})
+// Use the controller composable (per technical_design.md §3.2D)
+const {
+  resumes,
+  isLoading,
+  error,
+  handleCreateWithAI,
+  handleCreateFromScratch,
+  handleEditResume,
+  handleDownloadResume,
+  handlePreviewResume,
+  handleDuplicateResume,
+  handleDeleteResume
+} = useDashboardController()
 </script>
-
