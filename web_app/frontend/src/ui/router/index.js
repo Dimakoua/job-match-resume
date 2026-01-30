@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { TokenStorage } from '../../infrastructure/storage/TokenStorage.js'
 
 const routes = [
   { path: '/', redirect: '/dashboard' },
@@ -17,11 +18,17 @@ const router = createRouter({
   routes,
 })
 
-// Stub auth guard
+// Auth guard
 router.beforeEach((to, from, next) => {
-  const isAuthenticated = false // Stub: replace with actual auth check
+  const isAuthenticated = !!TokenStorage.getToken()
+  const isAuthPage = ['Login', 'Signup', 'ForgotPassword'].includes(to.name)
+  
   if (to.meta.requiresAuth && !isAuthenticated) {
+    // Trying to access protected route without auth -> redirect to login
     next('/login')
+  } else if (isAuthPage && isAuthenticated) {
+    // Already logged in, trying to access auth pages -> redirect to dashboard
+    next('/dashboard')
   } else {
     next()
   }

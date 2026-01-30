@@ -10,13 +10,8 @@ const pinia = createPinia()
 app.use(pinia)
 app.use(router)
 
-// Simple route guard: redirect to /login when route requires auth
-router.beforeEach((to, from, next) => {
-	const auth = useAuthStore()
-	if (to.meta && to.meta.requiresAuth && !auth.isAuthenticated) {
-		return next({ name: 'Login' })
-	}
-	next()
-})
+// Initialize auth state from localStorage before mounting
+const authStore = useAuthStore()
+authStore.initializeAuth()
 
 app.mount('#app')

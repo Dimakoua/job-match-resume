@@ -21,6 +21,7 @@ export function useAuthController() {
     error.value = null
     try {
       const { user, token } = await loginUseCase.execute(email, password)
+      console.log('Login successful, user:', user, 'token:', token)
       authStore.login(user, token)
       router.push('/dashboard')
     } catch (err) {
