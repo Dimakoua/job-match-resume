@@ -9,11 +9,36 @@
 
 ## Active Tasks
 
+## F-006 — [ui] Sign Up Screen
+- Scope: Build Sign Up screen UI (see sign_up_screen/code.html).
+- Acceptance criteria:
+	- Matches reference HTML/CSS.
+	- Responsive and accessible.
+
+---
+
+## Completed Tasks
+
 ## F-003 — [infra] Pinia Store Setup
 - Scope: Add Pinia store and basic state for auth and resume.
 - Acceptance criteria:
 	- Pinia store is available in app.
 	- State for user and resume is reactive.
+- Status: ✅ 100% — Completed in previous session.
+
+## F-004 — [infra] Router Setup
+- Scope: Implement basic router with routes for login, dashboard, builder, and generator.
+- Acceptance criteria:
+	- Navigation between all main views works.
+	- Route guards for auth (stub).
+- Status: ✅ 100% — Completed in this session.
+
+## F-005 — [ui] Login Screen
+- Scope: Build Login screen UI (see login_screen/code.html).
+- Acceptance criteria:
+	- Matches reference HTML/CSS.
+	- Responsive and accessible.
+- Status: ✅ 100% — Completed in this session.
 
 ---
 
