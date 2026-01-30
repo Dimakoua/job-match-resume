@@ -17,6 +17,11 @@ const handleLogin = async () => {
   await login(form.email, form.password)
 }
 
+const loginWithGoogle = () => {
+  const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8787'
+  window.location.href = `${baseURL}/api/auth/google`
+}
+
 const togglePassword = () => {
   isPasswordVisible.value = !isPasswordVisible.value
 }
@@ -111,7 +116,7 @@ const togglePassword = () => {
               </div>
             </div>
 
-            <button class="w-full flex items-center justify-center gap-3 bg-white dark:bg-secondary border border-border h-12 rounded-lg hover:bg-secondary transition-colors" type="button">
+            <button @click="loginWithGoogle" class="w-full flex items-center justify-center gap-3 bg-white dark:bg-secondary border border-border h-12 rounded-lg hover:bg-secondary transition-colors" type="button">
               <img alt="Google" class="w-5 h-5" src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png"/>
               <span class="text-foreground font-semibold text-sm">Continue with Google</span>
             </button>

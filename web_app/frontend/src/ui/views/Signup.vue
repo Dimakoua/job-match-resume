@@ -18,6 +18,11 @@ const handleSignup = async () => {
   await signup(form.fullName, form.email, form.password)
 }
 
+const handleGoogleSignup = () => {
+  const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8787'
+  window.location.href = `${baseURL}/api/auth/google`
+}
+
 const togglePassword = () => {
   isPasswordVisible.value = !isPasswordVisible.value
 }
@@ -63,6 +68,7 @@ const togglePassword = () => {
         <!-- Social Sign-Up Button -->
         <div class="mb-6">
           <button 
+            @click="handleGoogleSignup"
             type="button"
             class="w-full flex cursor-pointer items-center justify-center rounded-lg h-12 px-5 bg-white dark:bg-secondary border border-border text-foreground gap-3 text-base font-semibold leading-normal hover:bg-secondary transition-colors"
           >
