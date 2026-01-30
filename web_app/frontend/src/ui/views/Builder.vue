@@ -143,8 +143,8 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, watch, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { ref, reactive, computed, watch, onMounted, onUnmounted } from 'vue'
+import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router'
 import BuilderHeader from '../components/BuilderHeader.vue'
 import BuilderSidebar from '../components/BuilderSidebar.vue'
 import ResumeEditor from '../components/ResumeEditor.vue'
@@ -160,11 +160,15 @@ const router = useRouter()
 const aiService = new HttpAIService()
 const resumeRepository = new HttpResumeRepository()
 
+const STORAGE_KEY = 'resume_builder_draft'
+const AUTO_SAVE_DELAY = 1000 // 1 second debounce
+
 const activeTab = ref('edit')
 const zoom = ref(1)
 const isSaved = ref(true)
 const isSaving = ref(false)
 const resumeId = ref(null)
+let autoSaveTimeout = null
 
 const resumeData = ref({
   firstName: '',
@@ -227,10 +231,80 @@ const resumeTitle = computed(() => {
   return 'Untitled Resume'
 })
 
-// Mark as unsaved when data changes
+// Auto-save to localStorage
+const saveToLocalStorage = () => {
+  const draft = {
+    resumeData: resumeData.value,
+    sections: sections.value,
+    layoutSettings: layoutSettings.value,
+    styleSettings: styleSettings.value,
+    resumeId: resumeId.value,
+    savedAt: new Date().toISOString()
+  }
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(draft))
+}
+
+const loadFromLocalStorage = () => {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY)
+    if (saved) {
+      const draft = JSON.parse(saved)
+      // Only load if it's the same resume or a new resume
+      if (!route.query.id || draft.resumeId === route.query.id) {
+        resumeData.value = { ...resumeData.value, ...draft.resumeData }
+        if (draft.sections) sections.value = draft.sections
+        if (draft.layoutSettings) layoutSettings.value = draft.layoutSettings
+        if (draft.styleSettings) styleSettings.value = draft.styleSettings
+        if (draft.resumeId) resumeId.value = draft.resumeId
+        return true
+      }
+    }
+  } catch (e) {
+    console.error('Failed to load draft from localStorage:', e)
+  }
+  return false
+}
+
+const clearLocalStorage = () => {
+  localStorage.removeItem(STORAGE_KEY)
+}
+
+// Debounced auto-save
+const scheduleAutoSave = () => {
+  if (autoSaveTimeout) {
+    clearTimeout(autoSaveTimeout)
+  }
+  autoSaveTimeout = setTimeout(() => {
+    saveToLocalStorage()
+  }, AUTO_SAVE_DELAY)
+}
+
+// Mark as unsaved when data changes and schedule auto-save
 watch([resumeData, sections, layoutSettings, styleSettings], () => {
   isSaved.value = false
+  scheduleAutoSave()
 }, { deep: true })
+
+// Warn before leaving with unsaved changes
+const handleBeforeUnload = (e) => {
+  if (!isSaved.value) {
+    e.preventDefault()
+    e.returnValue = ''
+    return ''
+  }
+}
+
+// Vue Router navigation guard
+onBeforeRouteLeave((to, from, next) => {
+  if (!isSaved.value) {
+    const answer = window.confirm('You have unsaved changes. Are you sure you want to leave?')
+    if (!answer) {
+      next(false)
+      return
+    }
+  }
+  next()
+})
 
 const zoomIn = () => {
   if (zoom.value < 1.5) {
@@ -265,6 +339,7 @@ const handleSave = async () => {
       router.replace({ query: { id: result.id } })
     }
     isSaved.value = true
+    clearLocalStorage() // Clear draft after successful save
   } catch (error) {
     console.error('Failed to save:', error)
     alert('Failed to save resume. Please try again.')
@@ -407,13 +482,16 @@ const applyAiEnhancement = () => {
 
 // Load resume data if editing existing
 onMounted(async () => {
+  // Add beforeunload listener for browser refresh/close warning
+  window.addEventListener('beforeunload', handleBeforeUnload)
+  
   const id = route.query.id
   if (id) {
     resumeId.value = id
     try {
       const resume = await resumeRepository.get(id)
       if (resume.sections) {
-        // Restore all data
+        // Restore all data from server
         const { visibleSections, layout, style, ...content } = resume.sections
         resumeData.value = { ...resumeData.value, ...content }
         if (visibleSections) sections.value = visibleSections
@@ -421,9 +499,27 @@ onMounted(async () => {
         if (style) styleSettings.value = style
       }
       isSaved.value = true
+      clearLocalStorage() // Clear any stale draft for this resume
     } catch (error) {
       console.error('Failed to load resume:', error)
+      // Try to load from localStorage as fallback
+      if (loadFromLocalStorage()) {
+        console.log('Loaded draft from localStorage')
+      }
     }
+  } else {
+    // New resume - try to restore from localStorage
+    if (loadFromLocalStorage()) {
+      console.log('Restored unsaved draft from localStorage')
+      isSaved.value = false // Mark as unsaved since it's a draft
+    }
+  }
+})
+
+onUnmounted(() => {
+  window.removeEventListener('beforeunload', handleBeforeUnload)
+  if (autoSaveTimeout) {
+    clearTimeout(autoSaveTimeout)
   }
 })
 </script>
