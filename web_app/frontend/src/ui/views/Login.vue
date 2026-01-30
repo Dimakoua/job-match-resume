@@ -1,5 +1,6 @@
 <script setup>
 import { ref, reactive } from 'vue'
+import Footer from '../components/Footer.vue'
 
 // State management
 const form = reactive({
@@ -120,13 +121,7 @@ const togglePassword = () => {
       </div>
     </main>
 
-    <footer class="py-6 text-center text-xs text-muted-foreground">
-      <p>© 2024 AI Resume Builder. All rights reserved.</p>
-      <div class="flex justify-center gap-4 mt-2">
-        <router-link to="/terms" class="hover:text-primary">Terms of Service</router-link>
-        <router-link to="/privacy" class="hover:text-primary">Privacy Policy</router-link>
-      </div>
-    </footer>
+    <Footer />
   </div>
 </template>
 

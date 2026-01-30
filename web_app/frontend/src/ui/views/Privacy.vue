@@ -1,4 +1,5 @@
 <script setup>
+import Footer from '../components/Footer.vue'
 </script>
 
 <template>
@@ -116,9 +117,7 @@
     </main>
 
     <!-- Footer -->
-    <footer class="p-6 text-center text-xs text-muted-foreground">
-      © 2024 AI Resume Builder. All rights reserved.
-    </footer>
+    <Footer />
   </div>
 </template>
 
