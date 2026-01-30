@@ -1,6 +1,7 @@
 <script setup>
 import { ref, reactive } from 'vue'
 import Footer from '../components/Footer.vue'
+import { useAuthController } from '../composables/useAuthController.js'
 
 const form = reactive({
   fullName: '',
@@ -11,9 +12,10 @@ const form = reactive({
 
 const isPasswordVisible = ref(false)
 
-const handleSignup = () => {
-  console.log('Signing up with:', form)
-  // Add your registration logic here
+const { signup, isLoading, error } = useAuthController()
+
+const handleSignup = async () => {
+  await signup(form.fullName, form.email, form.password)
 }
 
 const togglePassword = () => {
@@ -157,9 +159,15 @@ const togglePassword = () => {
           <button 
             type="submit"
             class="w-full flex items-center justify-center rounded-lg h-12 px-5 bg-primary text-primary-foreground text-base font-bold leading-normal transition-all hover:bg-primary/90 shadow-sm"
+            :disabled="isLoading"
           >
+            <span v-if="isLoading" class="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-foreground mr-2"></span>
             Create Account
           </button>
+
+          <div v-if="error" class="text-red-500 text-sm text-center mt-2">
+            {{ error }}
+          </div>
         </form>
 
         <!-- Footer Navigation -->
