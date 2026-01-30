@@ -93,9 +93,17 @@ export function useBuilderController() {
   })
 
   // ===== Watch: Auto-save on changes =====
+  // Guard flag to prevent watch from triggering during save operations
+  let isApplyingExternalChange = false
+
   watch(
     [resumeData, sections, layoutSettings, styleSettings],
     () => {
+      // Skip auto-save if we're already saving to prevent recursive updates
+      if (isSaving.value || isApplyingExternalChange) {
+        return
+      }
+
       isSaved.value = false
       draftStorageUseCase.scheduleAutoSave(() => {
         draftStorageUseCase.saveDraft(
@@ -132,7 +140,9 @@ export function useBuilderController() {
       }
     } catch (error) {
       console.error('Failed to save:', error)
-      throw new Error('Failed to save resume. Please try again.')
+      // Show user-friendly error without re-throwing
+      // to avoid recursive state mutations
+      alert('Failed to save resume. Please check your internet connection and try again.')
     } finally {
       isSaving.value = false
     }
