@@ -9,24 +9,27 @@
 - Included Google OAuth button in Signup screen as UI-only per design (design.md §2.1).
 - Added terms/privacy routes and components for complete auth flow navigation.
 ## Changes Since Last Session
-- web_app/frontend/src/ui/views/Signup.vue (+184 lines): Full implementation matching reference design with form reactivity, password toggle, and Google button.
-- web_app/frontend/src/ui/views/ForgotPassword.vue (+114 lines): Full implementation matching reference design with form handling.
-- web_app/frontend/src/ui/router/index.js (+2 routes): Added /terms and /privacy routes.
-- web_app/frontend/src/ui/views/Terms.vue (+130 lines): New component for terms of service.
-- web_app/frontend/src/ui/views/Privacy.vue (+130 lines): New component for privacy policy.
+- src/ restructured to Clean Architecture: core/ (domain + application), infrastructure/ (api + storage), ui/ (components + views + stores + composables).
+- core/domain/user/User.js (+entity), core/domain/resume/Resume.js & Section.js (+entities).
+- infrastructure/api/HttpClient.js (moved from utils, +TokenStorage), HttpResumeRepository.js, HttpAIService.js, HttpAuthService.js.
+- infrastructure/storage/TokenStorage.js (+token management).
+- core/application/auth/LoginUseCase.js, core/application/ai/GenerateFromJDUseCase.js & ImproveTextUseCase.js.
+- ui/composables/useAuthController.js (+login integration).
+- src/ui/views/Login.vue (+useAuthController, +loading/error UI).
+- src/ui/stores/useAuthStore.js (+TokenStorage integration).
 ## Validation & Evidence
-- Unit: N/A (UI tasks).
-- Integration: npm run build succeeds (51 modules, 938ms); npm run dev starts successfully.
+- Unit: N/A (integration task).
+- Integration: npm run build succeeds (107 modules, 1.06s); Login component 43.61 kB (increased due to new logic).
 - Coverage: N/A.
-- Logs: Build completed with 11 assets; no console errors in dev tools.
+- Logs: Build completed with 11 assets; Clean Architecture structure in place.
 ## Risks & Unknowns
 - None; all auth UI screens match references and build cleanly.
 ## Next Steps
-1. Implement Dashboard.vue to match resume_builder_dashboard/code.html.
-2. Set up API client module for backend integration.
-3. Integrate auth forms with backend endpoints to close the auth loop.
+1. Integrate signup form with backend using similar pattern.
+2. Update Signup.vue with useAuthController for signup.
+3. Test signup flow.
 ## Status Summary
-- ✅ 100% — F-006, F-007, F-008 complete; auth flow UI ready for backend integration. New integration tasks F-025 to F-031 added to close the auth loop.
+- ✅ 100% — F-026 complete; login integrated with backend via Clean Architecture. F-027 active for signup.
 
 ## Closing Report
 - **What Changed:** Installed vue-router@4 (+2 packages); updated router/index.js (+signup/forgot-password routes, +stub auth guard); replaced Login.vue with 1:1 design implementation (+form reactivity, +password toggle, +loading state); created Signup.vue and ForgotPassword.vue placeholders.

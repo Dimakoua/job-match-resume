@@ -1,6 +1,7 @@
 <script setup>
 import { ref, reactive } from 'vue'
 import Footer from '../components/Footer.vue'
+import { useAuthController } from '../composables/useAuthController.js'
 
 // State management
 const form = reactive({
@@ -10,9 +11,10 @@ const form = reactive({
 
 const isPasswordVisible = ref(false)
 
-const handleLogin = () => {
-  console.log('Logging in with:', form.email, form.password)
-  // Add your authentication logic here
+const { login, isLoading, error } = useAuthController()
+
+const handleLogin = async () => {
+  await login(form.email, form.password)
 }
 
 const togglePassword = () => {
@@ -91,9 +93,14 @@ const togglePassword = () => {
               </div>
             </div>
 
-            <button class="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold h-12 rounded-lg transition-colors flex items-center justify-center gap-2" type="submit">
+            <button class="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold h-12 rounded-lg transition-colors flex items-center justify-center gap-2" type="submit" :disabled="isLoading">
+              <span v-if="isLoading" class="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-foreground"></span>
               Log In
             </button>
+
+            <div v-if="error" class="text-red-500 text-sm text-center mt-2">
+              {{ error }}
+            </div>
 
             <div class="relative py-4">
               <div aria-hidden="true" class="absolute inset-0 flex items-center">

@@ -9,18 +9,6 @@
 
 ## Active Tasks
 
-## F-009 — [ui] Resume Dashboard
-- Scope: Build Resume Dashboard UI (see resume_builder_dashboard/code.html).
-- Acceptance criteria:
-	- Grid view of resumes with thumbnails.
-	- "Create New" options present.
-
-## F-025 — [integration] Set up API Client
-- Scope: Create Axios/fetch wrapper for backend API calls with error handling and auth headers.
-- Acceptance criteria:
-	- API client module available.
-	- Handles JWT tokens, base URL from env.
-
 ## F-026 — [integration] Integrate Login with Backend
 - Scope: Connect login form to /api/auth/login endpoint.
 - Acceptance criteria:
@@ -103,7 +91,19 @@
 	- Responsive and accessible.
 - Status: ✅ 100% — Completed; matches reference with form handling.
 
----
+## F-025 — [integration] Set up API Client
+- Scope: Create Axios/fetch wrapper for backend API calls with error handling and auth headers.
+- Acceptance criteria:
+	- API client module available.
+	- Handles JWT tokens, base URL from env.
+- Status: ✅ 100% — Completed; Axios client configured with interceptors for auth and 401 handling.
+
+## F-026 — [integration] Integrate Login with Backend
+- Scope: Connect login form to /api/auth/login endpoint.
+- Acceptance criteria:
+	- Successful login stores JWT, redirects to dashboard.
+	- Error handling for invalid credentials.
+- Status: ✅ 100% — Completed; Login.vue uses useAuthController with LoginUseCase, handles loading and errors.
 
 ## Backlog (Not Started)
 

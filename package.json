@@ -1,0 +1,16 @@
+{
+  "name": "job-match-resume",
+  "version": "1.0.0",
+  "description": "AI Resume Builder Project",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:frontend": "cd web_app/frontend && npm run dev",
+    "dev:backend": "cd web_app/backend && npm run dev",
+    "build:frontend": "cd web_app/frontend && npm run build",
+    "build:backend": "cd web_app/backend && npm run deploy",
+    "install:all": "npm install && cd web_app/frontend && npm install && cd ../backend && npm install"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
