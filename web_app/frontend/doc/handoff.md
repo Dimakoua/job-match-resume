@@ -23,10 +23,10 @@
 - None; all auth UI screens match references and build cleanly.
 ## Next Steps
 1. Implement Dashboard.vue to match resume_builder_dashboard/code.html.
-2. Add thumbnail previews and "Create New" options.
-3. Test navigation from auth screens to dashboard.
+2. Set up API client module for backend integration.
+3. Integrate auth forms with backend endpoints to close the auth loop.
 ## Status Summary
-- ✅ 100% — F-006, F-007, F-008 complete; auth flow UI ready for backend integration.
+- ✅ 100% — F-006, F-007, F-008 complete; auth flow UI ready for backend integration. New integration tasks F-025 to F-031 added to close the auth loop.
 
 ## Closing Report
 - **What Changed:** Installed vue-router@4 (+2 packages); updated router/index.js (+signup/forgot-password routes, +stub auth guard); replaced Login.vue with 1:1 design implementation (+form reactivity, +password toggle, +loading state); created Signup.vue and ForgotPassword.vue placeholders.

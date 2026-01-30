@@ -1,8 +1,8 @@
 
 # frontend/tracker.md
 
-**Version:** 1.0
-**Last updated:** 2026-01-28
+**Version:** 1.1
+**Last updated:** 2026-01-29
 **Status:** Active
 
 ---
@@ -14,6 +14,48 @@
 - Acceptance criteria:
 	- Grid view of resumes with thumbnails.
 	- "Create New" options present.
+
+## F-025 — [integration] Set up API Client
+- Scope: Create Axios/fetch wrapper for backend API calls with error handling and auth headers.
+- Acceptance criteria:
+	- API client module available.
+	- Handles JWT tokens, base URL from env.
+
+## F-026 — [integration] Integrate Login with Backend
+- Scope: Connect login form to /api/auth/login endpoint.
+- Acceptance criteria:
+	- Successful login stores JWT, redirects to dashboard.
+	- Error handling for invalid credentials.
+
+## F-027 — [integration] Integrate Signup with Backend
+- Scope: Connect signup form to /api/auth/signup endpoint.
+- Acceptance criteria:
+	- Successful signup redirects to login or dashboard.
+	- Error handling for duplicate email.
+
+## F-028 — [integration] Integrate Google OAuth
+- Scope: Connect Google button to /api/auth/google and handle callback.
+- Acceptance criteria:
+	- Google login works, stores JWT, redirects.
+	- Error handling for OAuth failures.
+
+## F-029 — [integration] Update Auth Guards
+- Scope: Replace stub auth guard with real JWT validation.
+- Acceptance criteria:
+	- Protected routes require valid JWT.
+	- Invalid/expired tokens redirect to login.
+
+## F-030 — [integration] Fetch User Profile
+- Scope: On login, fetch and store user profile in Pinia.
+- Acceptance criteria:
+	- User data available in store after auth.
+	- Profile updates reflected in UI.
+
+## F-031 — [integration] Fetch Resumes for Dashboard
+- Scope: Connect dashboard to /api/resumes endpoint.
+- Acceptance criteria:
+	- Resumes list displayed with thumbnails.
+	- Loading states for fetch.
 
 ---
 
