@@ -24,6 +24,7 @@ export class ResumeController extends BaseController {
     super(jwtSecret);
     this.createResumeService = deps.createResumeService;
     this.listResumesService = deps.listResumesService;
+    this.getResumeService = deps.getResumeService;
     this.updateResumeService = deps.updateResumeService;
     this.listTemplatesService = deps.listTemplatesService;
     this.generateFromJDService = deps.generateFromJDService;
@@ -90,6 +91,32 @@ export class ResumeController extends BaseController {
       // If authenticate threw a Response, return it
       if (error instanceof Response) {
         return error;
+      }
+      return this.errorResponse('INTERNAL_ERROR', 'An unexpected error occurred', 500);
+    }
+  }
+
+  async getResume(request, resumeId) {
+    try {
+      const userId = await this.authenticate(request);
+
+      // Execute get resume
+      const resume = await this.getResumeService.execute(resumeId, userId);
+
+      return this.successResponse({
+        success: true,
+        data: { resume },
+      });
+    } catch (error) {
+      // If authenticate threw a Response, return it
+      if (error instanceof Response) {
+        return error;
+      }
+      if (error.message === 'Resume not found') {
+        return this.errorResponse('NOT_FOUND', 'Resume not found', 404);
+      }
+      if (error.message.includes('Unauthorized')) {
+        return this.errorResponse('FORBIDDEN', error.message, 403);
       }
       return this.errorResponse('INTERNAL_ERROR', 'An unexpected error occurred', 500);
     }

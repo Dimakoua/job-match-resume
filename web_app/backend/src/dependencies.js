@@ -6,6 +6,7 @@ import { SignUpUserService } from './application/sign_up_user/sign_up_user_servi
 import { LoginUserService } from './application/login_user/login_user_service.js';
 import { CreateResumeService } from './application/resume/create_resume_service.js';
 import { ListResumesService } from './application/resume/list_resumes_service.js';
+import { GetResumeService } from './application/resume/get_resume_service.js';
 import { UpdateResumeService } from './application/update_resume/update_resume_service.js';
 import { ListTemplatesService } from './application/list_templates/list_templates_service.js';
 import { GenerateFromJDService } from './application/generate_from_jd/generate_from_jd_service.js';
@@ -53,6 +54,7 @@ export function createDependencies(env) {
   const loginService = new LoginUserService(userRepository, jwt_secret);
   const createResumeService = new CreateResumeService(resumeRepository, templateRepository);
   const listResumesService = new ListResumesService(resumeRepository);
+  const getResumeService = new GetResumeService(resumeRepository);
   const updateResumeService = new UpdateResumeService(resumeRepository, templateRepository);
   const listTemplatesService = new ListTemplatesService(templateRepository);
   const generateFromJDService = new GenerateFromJDService(aiAdapter, resumeRepository, templateRepository);
@@ -70,6 +72,7 @@ export function createDependencies(env) {
     loginService,
     createResumeService,
     listResumesService,
+    getResumeService,
     updateResumeService,
     listTemplatesService,
     generateFromJDService,

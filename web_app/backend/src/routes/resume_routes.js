@@ -21,6 +21,15 @@ export function setupResumeRoutes(router) {
     return controller.listResumes(request);
   });
 
+  // Get a single resume
+  // Usage: GET /api/resumes/:id
+  // Headers: Authorization: Bearer <jwt>
+  // Returns: { "success": true, "data": { "resume": { "id": "...", "title": "...", "templateId": "...", "sections": [...], "createdAt": "...", "updatedAt": "..." } } }
+  router.get('/api/resumes/:id', async (request, env, ctx) => {
+    const { controller } = createController(env, ResumeController, [env.JWT_SECRET]);
+    return controller.getResume(request, request.params.id);
+  });
+
   // Generate resume from job description
   // Usage: POST /api/resumes/generate-from-jd
   // Headers: Authorization: Bearer <jwt>
