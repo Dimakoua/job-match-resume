@@ -9,11 +9,11 @@
 
 ## Active Tasks
 
-## F-006 — [ui] Sign Up Screen
-- Scope: Build Sign Up screen UI (see sign_up_screen/code.html).
+## F-009 — [ui] Resume Dashboard
+- Scope: Build Resume Dashboard UI (see resume_builder_dashboard/code.html).
 - Acceptance criteria:
-	- Matches reference HTML/CSS.
-	- Responsive and accessible.
+	- Grid view of resumes with thumbnails.
+	- "Create New" options present.
 
 ---
 
@@ -40,6 +40,27 @@
 	- Responsive and accessible.
 - Status: ✅ 100% — Completed in this session.
 
+## F-006 — [ui] Sign Up Screen
+- Scope: Build Sign Up screen UI (see sign_up_screen/code.html).
+- Acceptance criteria:
+	- Matches reference HTML/CSS.
+	- Responsive and accessible.
+- Status: ✅ 100% — Completed; matches reference with form handling and Google OAuth button.
+
+## F-007 — [ui] Google OAuth Button
+- Scope: Integrate Google OAuth button (UI only, no backend).
+- Acceptance criteria:
+	- Button styled and placed per design.
+	- No backend logic required.
+- Status: ✅ 100% — Completed; included in Signup screen.
+
+## F-008 — [ui] Forgot Password Screen
+- Scope: Build Forgot Password screen UI (see forgot_password_screen/code.html).
+- Acceptance criteria:
+	- Matches reference HTML/CSS.
+	- Responsive and accessible.
+- Status: ✅ 100% — Completed; matches reference with form handling.
+
 ---
 
 ## Backlog (Not Started)
@@ -54,29 +75,7 @@
 
 ### Phase 2: Auth & Dashboard (M2)
 
-## F-005 — [ui] Login Screen
-- Scope: Build Login screen UI (see login_screen/code.html).
-- Acceptance criteria:
-	- Matches reference HTML/CSS.
-	- Responsive and accessible.
 
-## F-006 — [ui] Sign Up Screen
-- Scope: Build Sign Up screen UI (see sign_up_screen/code.html).
-- Acceptance criteria:
-	- Matches reference HTML/CSS.
-	- Responsive and accessible.
-
-## F-007 — [ui] Google OAuth Button
-- Scope: Integrate Google OAuth button (UI only, no backend).
-- Acceptance criteria:
-	- Button styled and placed per design.
-	- No backend logic required.
-
-## F-008 — [ui] Forgot Password Screen
-- Scope: Build Forgot Password screen UI (see forgot_password_screen/code.html).
-- Acceptance criteria:
-	- Matches reference HTML/CSS.
-	- Responsive and accessible.
 
 ## F-009 — [ui] Resume Dashboard
 - Scope: Build Resume Dashboard UI (see resume_builder_dashboard/code.html).

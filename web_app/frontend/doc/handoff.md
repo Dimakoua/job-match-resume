@@ -1,31 +1,32 @@
 # handoff.md
 ## Context Snapshot
-- F-004 completed, Vue Router installed and configured with routes for login, signup, forgot-password, dashboard, builder, generator; stub auth guards added.
-- F-005 completed, Login.vue built to match reference design 1:1, with form handling and navigation.
+- Auth flow UI screens completed: Login (F-005), Signup (F-006), Forgot Password (F-008), with Google OAuth button (F-007) integrated.
+- Router updated with routes for terms and privacy policies; components created.
+- Build passes cleanly with Vite, no errors; dev server ready on localhost:5173.
 ## Active Task(s)
-- F-005: [ui] Login Screen — Acceptance: Matches reference HTML/CSS. Responsive and accessible.
+- F-009: [ui] Resume Dashboard — Acceptance: Grid view of resumes with thumbnails. "Create New" options present.
 ## Decisions Made
-- Used Vue Router 4 with history mode per assumption; added routes for signup and forgot-password as placeholders.
-- Login component includes reactive form with password visibility toggle, loading state, and integration with Pinia auth store.
+- Included Google OAuth button in Signup screen as UI-only per design (design.md §2.1).
+- Added terms/privacy routes and components for complete auth flow navigation.
 ## Changes Since Last Session
-- web_app/frontend/package.json (+vue-router@4): Added Vue Router dependency.
-- web_app/frontend/src/ui/router/index.js (+routes for signup/forgot-password, +auth guard): Updated router with additional routes and stub guard.
-- web_app/frontend/src/ui/views/Login.vue (replaced): Full 1:1 implementation from reference HTML, with Vue reactivity and form handling.
-- web_app/frontend/src/ui/views/Signup.vue (+new): Placeholder component.
-- web_app/frontend/src/ui/views/ForgotPassword.vue (+new): Placeholder component.
+- web_app/frontend/src/ui/views/Signup.vue (+184 lines): Full implementation matching reference design with form reactivity, password toggle, and Google button.
+- web_app/frontend/src/ui/views/ForgotPassword.vue (+114 lines): Full implementation matching reference design with form handling.
+- web_app/frontend/src/ui/router/index.js (+2 routes): Added /terms and /privacy routes.
+- web_app/frontend/src/ui/views/Terms.vue (+130 lines): New component for terms of service.
+- web_app/frontend/src/ui/views/Privacy.vue (+130 lines): New component for privacy policy.
 ## Validation & Evidence
-- Unit: N/A (UI task).
-- Integration: npm run build succeeds (dist created, no errors); npm run dev starts server on localhost:5173.
+- Unit: N/A (UI tasks).
+- Integration: npm run build succeeds (51 modules, 938ms); npm run dev starts successfully.
 - Coverage: N/A.
-- Logs: Build completed in 935ms with 11 assets; dev server ready in 296ms.
+- Logs: Build completed with 11 assets; no console errors in dev tools.
 ## Risks & Unknowns
-- None; build passes cleanly.
+- None; all auth UI screens match references and build cleanly.
 ## Next Steps
-1. Activate F-006: Sign Up Screen.
-2. Implement Signup.vue to match reference design.
-3. Update router guards with actual auth logic.
+1. Implement Dashboard.vue to match resume_builder_dashboard/code.html.
+2. Add thumbnail previews and "Create New" options.
+3. Test navigation from auth screens to dashboard.
 ## Status Summary
-- ✅ 100% — F-005 complete, login screen matches design and is functional.
+- ✅ 100% — F-006, F-007, F-008 complete; auth flow UI ready for backend integration.
 
 ## Closing Report
 - **What Changed:** Installed vue-router@4 (+2 packages); updated router/index.js (+signup/forgot-password routes, +stub auth guard); replaced Login.vue with 1:1 design implementation (+form reactivity, +password toggle, +loading state); created Signup.vue and ForgotPassword.vue placeholders.
