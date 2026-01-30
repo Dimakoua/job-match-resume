@@ -1,7 +1,7 @@
 <template>
   <div class="p-8">
     <!-- Personal Information -->
-    <section class="mb-10">
+    <section v-if="isSectionVisible('personal')" class="mb-10">
       <div class="flex items-center gap-2 mb-4">
         <svg xmlns="http://www.w3.org/2000/svg" class="size-5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
@@ -77,7 +77,7 @@
     </section>
 
     <!-- Professional Summary -->
-    <section class="mb-10">
+    <section v-if="isSectionVisible('summary')" class="mb-10">
       <div class="flex items-center justify-between mb-4">
         <div class="flex items-center gap-2">
           <svg xmlns="http://www.w3.org/2000/svg" class="size-5 text-violet-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -112,7 +112,7 @@
     </section>
 
     <!-- Work Experience -->
-    <section class="mb-10">
+    <section v-if="isSectionVisible('experience')" class="mb-10">
       <div class="flex items-center justify-between mb-4">
         <div class="flex items-center gap-2">
           <svg xmlns="http://www.w3.org/2000/svg" class="size-5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -211,7 +211,7 @@
     </section>
 
     <!-- Skills -->
-    <section class="mb-10">
+    <section v-if="isSectionVisible('skills')" class="mb-10">
       <div class="flex items-center justify-between mb-4">
         <div class="flex items-center gap-2">
           <svg xmlns="http://www.w3.org/2000/svg" class="size-5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -275,6 +275,10 @@ const props = defineProps({
       experience: [],
       skills: []
     })
+  },
+  sections: {
+    type: Array,
+    default: () => []
   }
 })
 
@@ -290,6 +294,12 @@ watch(form, (newVal) => {
 watch(() => props.modelValue, (newVal) => {
   form.value = JSON.parse(JSON.stringify(newVal))
 }, { deep: true })
+
+const isSectionVisible = (sectionId) => {
+  if (props.sections.length === 0) return true
+  const section = props.sections.find(s => s.id === sectionId)
+  return section ? section.visible : true
+}
 
 const addExperience = () => {
   form.value.experience.push({

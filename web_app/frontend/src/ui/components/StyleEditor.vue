@@ -20,7 +20,7 @@
           <label class="text-sm font-semibold text-gray-700 dark:text-gray-300">Heading Font</label>
           <div class="relative">
             <select 
-              v-model="headingFont"
+              v-model="localStyle.headingFont"
               class="w-full rounded-lg border-[#d0d7e7] dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:border-primary focus:ring-1 focus:ring-primary p-3 text-sm appearance-none cursor-pointer"
             >
               <option value="inter">Inter (Sans-Serif)</option>
@@ -37,7 +37,7 @@
           <label class="text-sm font-semibold text-gray-700 dark:text-gray-300">Body Font</label>
           <div class="relative">
             <select 
-              v-model="bodyFont"
+              v-model="localStyle.bodyFont"
               class="w-full rounded-lg border-[#d0d7e7] dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:border-primary focus:ring-1 focus:ring-primary p-3 text-sm appearance-none cursor-pointer"
             >
               <option value="inter">Inter (Sans-Serif)</option>
@@ -66,10 +66,10 @@
         <div class="space-y-4">
           <div class="flex justify-between items-center">
             <label class="text-sm font-semibold text-gray-700 dark:text-gray-300">Base Font Size</label>
-            <span class="text-xs font-mono bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">{{ fontSize }}pt</span>
+            <span class="text-xs font-mono bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">{{ localStyle.fontSize }}pt</span>
           </div>
           <input 
-            v-model="fontSize"
+            v-model.number="localStyle.fontSize"
             type="range" 
             min="8" 
             max="14" 
@@ -85,10 +85,10 @@
         <div class="space-y-4">
           <div class="flex justify-between items-center">
             <label class="text-sm font-semibold text-gray-700 dark:text-gray-300">Line Height</label>
-            <span class="text-xs font-mono bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">{{ lineHeight }}</span>
+            <span class="text-xs font-mono bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">{{ localStyle.lineHeight }}</span>
           </div>
           <input 
-            v-model="lineHeight"
+            v-model.number="localStyle.lineHeight"
             type="range" 
             min="1.2" 
             max="2" 
@@ -120,10 +120,10 @@
         <button 
           v-for="color in colors" 
           :key="color.value"
-          @click="accentColor = color.value"
+          @click="selectColor(color.value)"
           :class="[
             'size-10 rounded-full border-2 border-white shadow-sm transition-all',
-            accentColor === color.value ? 'ring-2 ring-offset-2' : 'hover:ring-2 hover:ring-offset-1'
+            localStyle.accentColor === color.value ? 'ring-2 ring-offset-2' : 'hover:ring-2 hover:ring-offset-1'
           ]"
           :style="{ backgroundColor: color.value, '--tw-ring-color': color.value }"
           :title="color.name"
@@ -155,7 +155,7 @@
         <div>
           <p class="text-xs font-bold text-violet-700 dark:text-violet-400 uppercase tracking-wider mb-1">AI Recommendation</p>
           <p class="text-sm text-violet-900 dark:text-violet-200 leading-relaxed">Based on your role, a clean Sans-Serif font with 1.4 line height is recommended for maximum readability by ATS systems.</p>
-          <button class="mt-3 text-xs font-bold text-violet-600 hover:underline">Apply AI Style</button>
+          <button @click="applyAIStyle" class="mt-3 text-xs font-bold text-violet-600 hover:underline">Apply AI Style</button>
         </div>
       </div>
     </div>
@@ -163,16 +163,36 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
+
+const props = defineProps({
+  style: {
+    type: Object,
+    default: () => ({
+      headingFont: 'inter',
+      bodyFont: 'inter',
+      fontSize: 11,
+      lineHeight: 1.5,
+      accentColor: '#2463eb'
+    })
+  }
+})
 
 const emit = defineEmits(['update:style'])
 
-const headingFont = ref('inter')
-const bodyFont = ref('inter')
-const fontSize = ref(11)
-const lineHeight = ref(1.5)
-const accentColor = ref('#2463eb')
-const customHex = ref('2463eb')
+const localStyle = ref({ ...props.style })
+const customHex = ref(props.style.accentColor?.replace('#', '') || '2463eb')
+
+// Sync with parent
+watch(() => props.style, (newVal) => {
+  localStyle.value = { ...newVal }
+  customHex.value = newVal.accentColor?.replace('#', '') || '2463eb'
+}, { deep: true })
+
+// Emit changes
+watch(localStyle, (newVal) => {
+  emit('update:style', { ...newVal })
+}, { deep: true })
 
 const colors = [
   { name: 'Blue', value: '#2463eb' },
@@ -183,9 +203,25 @@ const colors = [
   { name: 'Slate', value: '#0f172a' },
 ]
 
+const selectColor = (color) => {
+  localStyle.value.accentColor = color
+  customHex.value = color.replace('#', '')
+}
+
 const applyCustomColor = () => {
   if (/^[0-9A-Fa-f]{6}$/.test(customHex.value)) {
-    accentColor.value = `#${customHex.value}`
+    localStyle.value.accentColor = `#${customHex.value}`
   }
+}
+
+const applyAIStyle = () => {
+  localStyle.value = {
+    headingFont: 'inter',
+    bodyFont: 'inter',
+    fontSize: 11,
+    lineHeight: 1.4,
+    accentColor: '#2463eb'
+  }
+  customHex.value = '2463eb'
 }
 </script>

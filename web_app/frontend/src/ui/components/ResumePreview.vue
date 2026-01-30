@@ -1,14 +1,17 @@
 <template>
-  <div class="bg-white shadow-2xl rounded-sm p-12 flex flex-col overflow-hidden text-[#222]" style="aspect-ratio: 1 / 1.414; width: 600px; min-width: 600px; font-family: 'Inter', sans-serif;">
-    <!-- Header -->
-    <header class="mb-6 flex justify-between border-b-2 border-[#2463eb] pb-4">
+  <div 
+    class="bg-white shadow-2xl rounded-sm flex flex-col overflow-hidden text-[#222]" 
+    :style="previewStyle"
+  >
+    <!-- Header - Classic -->
+    <header v-if="layout.template === 'classic'" class="mb-6 flex justify-between border-b-2 pb-4" :style="{ borderColor: style.accentColor }">
       <div>
-        <h1 class="text-3xl font-bold tracking-tight text-gray-900 mb-1">
+        <h1 class="text-3xl font-bold tracking-tight text-gray-900 mb-1" :style="{ fontFamily: fontFamilies[style.headingFont] }">
           {{ resume.firstName || 'Your' }} {{ resume.lastName || 'Name' }}
         </h1>
-        <p class="text-lg text-[#2463eb] font-medium">{{ resume.title || 'Professional Title' }}</p>
+        <p class="text-lg font-medium" :style="{ color: style.accentColor }">{{ resume.title || 'Professional Title' }}</p>
       </div>
-      <div class="text-right text-[10px] text-gray-500 leading-relaxed">
+      <div class="text-right text-gray-500 leading-relaxed" :style="contactStyle">
         <p v-if="resume.email">{{ resume.email }}</p>
         <p v-if="resume.phone">{{ resume.phone }}</p>
         <p v-if="resume.location">{{ resume.location }}</p>
@@ -16,15 +19,54 @@
       </div>
     </header>
 
+    <!-- Header - Modern -->
+    <header v-else-if="layout.template === 'modern'" class="mb-6 border-l-4 pl-4" :style="{ borderColor: style.accentColor }">
+      <h1 class="text-3xl font-bold tracking-tight text-gray-900 mb-1" :style="{ fontFamily: fontFamilies[style.headingFont] }">
+        {{ resume.firstName || 'Your' }} {{ resume.lastName || 'Name' }}
+      </h1>
+      <p class="text-lg font-medium mb-2" :style="{ color: style.accentColor }">{{ resume.title || 'Professional Title' }}</p>
+      <div class="flex flex-wrap gap-3 text-gray-500" :style="contactStyle">
+        <span v-if="resume.email">{{ resume.email }}</span>
+        <span v-if="resume.phone">• {{ resume.phone }}</span>
+        <span v-if="resume.location">• {{ resume.location }}</span>
+      </div>
+    </header>
+
+    <!-- Header - Minimal -->
+    <header v-else-if="layout.template === 'minimal'" class="mb-6 text-center">
+      <h1 class="text-3xl font-bold tracking-tight text-gray-900 mb-1" :style="{ fontFamily: fontFamilies[style.headingFont] }">
+        {{ resume.firstName || 'Your' }} {{ resume.lastName || 'Name' }}
+      </h1>
+      <p class="text-lg text-gray-600 mb-2">{{ resume.title || 'Professional Title' }}</p>
+      <div class="flex justify-center gap-4 text-gray-500" :style="contactStyle">
+        <span v-if="resume.email">{{ resume.email }}</span>
+        <span v-if="resume.phone">{{ resume.phone }}</span>
+        <span v-if="resume.location">{{ resume.location }}</span>
+      </div>
+    </header>
+
+    <!-- Header - Professional -->
+    <header v-else class="mb-6 border-t-4 pt-4" :style="{ borderColor: style.accentColor }">
+      <h1 class="text-3xl font-bold tracking-tight mb-1" :style="{ fontFamily: fontFamilies[style.headingFont], color: style.accentColor }">
+        {{ resume.firstName || 'Your' }} {{ resume.lastName || 'Name' }}
+      </h1>
+      <p class="text-lg font-semibold text-gray-700 mb-2">{{ resume.title || 'Professional Title' }}</p>
+      <div class="flex flex-wrap gap-3 text-gray-500 border-b pb-4 border-gray-200" :style="contactStyle">
+        <span v-if="resume.email">{{ resume.email }}</span>
+        <span v-if="resume.phone">• {{ resume.phone }}</span>
+        <span v-if="resume.location">• {{ resume.location }}</span>
+      </div>
+    </header>
+
     <!-- Summary -->
-    <div v-if="resume.summary" class="mb-6">
-      <h3 class="text-xs font-bold uppercase tracking-[0.2em] text-gray-400 mb-2 border-b border-gray-100 pb-1">Profile</h3>
-      <p class="text-[11px] leading-relaxed text-gray-700">{{ resume.summary }}</p>
+    <div v-if="resume.summary && isSectionVisible('summary')" :style="{ marginBottom: `${layout.sectionSpacing}px` }">
+      <h3 class="text-xs font-bold uppercase tracking-[0.2em] text-gray-400 mb-2 border-b border-gray-100 pb-1" :style="{ fontFamily: fontFamilies[style.headingFont] }">Profile</h3>
+      <p :style="bodyStyle" class="text-gray-700">{{ resume.summary }}</p>
     </div>
 
     <!-- Experience -->
-    <div v-if="filledExperiences.length > 0" class="mb-6">
-      <h3 class="text-xs font-bold uppercase tracking-[0.2em] text-gray-400 mb-3 border-b border-gray-100 pb-1">Experience</h3>
+    <div v-if="filledExperiences.length > 0 && isSectionVisible('experience')" :style="{ marginBottom: `${layout.sectionSpacing}px` }">
+      <h3 class="text-xs font-bold uppercase tracking-[0.2em] text-gray-400 mb-3 border-b border-gray-100 pb-1" :style="{ fontFamily: fontFamilies[style.headingFont] }">Experience</h3>
       <div 
         v-for="(exp, index) in filledExperiences" 
         :key="index"
@@ -37,19 +79,32 @@
             {{ exp.startDate }}{{ exp.startDate && exp.endDate ? ' — ' : '' }}{{ exp.endDate }}
           </span>
         </div>
-        <p v-if="exp.title" class="text-[#2463eb] text-[10px] font-semibold mb-1">{{ exp.title }}</p>
-        <p v-if="exp.description" class="text-[10px] text-gray-600 leading-relaxed">{{ exp.description }}</p>
+        <p v-if="exp.title" class="text-[10px] font-semibold mb-1" :style="{ color: style.accentColor }">{{ exp.title }}</p>
+        <p v-if="exp.description" :style="bodyStyle" class="text-gray-600">{{ exp.description }}</p>
+      </div>
+    </div>
+
+    <!-- Education -->
+    <div v-if="resume.education && resume.education.length > 0 && isSectionVisible('education')" :style="{ marginBottom: `${layout.sectionSpacing}px` }">
+      <h3 class="text-xs font-bold uppercase tracking-[0.2em] text-gray-400 mb-3 border-b border-gray-100 pb-1" :style="{ fontFamily: fontFamilies[style.headingFont] }">Education</h3>
+      <div v-for="(edu, index) in resume.education" :key="index" class="mb-3">
+        <div class="flex justify-between items-baseline">
+          <h4 class="font-bold text-xs">{{ edu.school }}</h4>
+          <span class="text-[9px] text-gray-500">{{ edu.year }}</span>
+        </div>
+        <p class="text-[10px] font-semibold" :style="{ color: style.accentColor }">{{ edu.degree }}</p>
       </div>
     </div>
 
     <!-- Skills -->
-    <div v-if="resume.skills && resume.skills.length > 0" class="mt-auto">
-      <h3 class="text-xs font-bold uppercase tracking-[0.2em] text-gray-400 mb-3 border-b border-gray-100 pb-1">Expertise</h3>
+    <div v-if="resume.skills && resume.skills.length > 0 && isSectionVisible('skills')" class="mt-auto">
+      <h3 class="text-xs font-bold uppercase tracking-[0.2em] text-gray-400 mb-3 border-b border-gray-100 pb-1" :style="{ fontFamily: fontFamilies[style.headingFont] }">Expertise</h3>
       <div class="flex flex-wrap gap-1.5">
         <span 
           v-for="(skill, index) in resume.skills" 
           :key="index"
-          class="px-2 py-0.5 bg-gray-100 text-[9px] font-semibold rounded"
+          class="px-2 py-0.5 text-[9px] font-semibold rounded"
+          :style="{ backgroundColor: style.accentColor + '15', color: style.accentColor }"
         >
           {{ skill }}
         </span>
@@ -80,8 +135,57 @@ const props = defineProps({
   resume: {
     type: Object,
     default: () => ({})
+  },
+  layout: {
+    type: Object,
+    default: () => ({
+      template: 'classic',
+      margins: 48,
+      sectionSpacing: 24
+    })
+  },
+  style: {
+    type: Object,
+    default: () => ({
+      headingFont: 'inter',
+      bodyFont: 'inter',
+      fontSize: 11,
+      lineHeight: 1.5,
+      accentColor: '#2463eb'
+    })
+  },
+  sections: {
+    type: Array,
+    default: () => []
   }
 })
+
+const fontFamilies = {
+  'inter': "'Inter', sans-serif",
+  'playfair': "'Playfair Display', serif",
+  'roboto': "'Roboto', sans-serif",
+  'lora': "'Lora', serif",
+  'open-sans': "'Open Sans', sans-serif",
+  'roboto-mono': "'Roboto Mono', monospace"
+}
+
+const previewStyle = computed(() => ({
+  aspectRatio: '1 / 1.414',
+  width: '600px',
+  minWidth: '600px',
+  fontFamily: fontFamilies[props.style.bodyFont],
+  padding: `${props.layout.margins}px`
+}))
+
+const bodyStyle = computed(() => ({
+  fontSize: `${props.style.fontSize}px`,
+  lineHeight: props.style.lineHeight,
+  fontFamily: fontFamilies[props.style.bodyFont]
+}))
+
+const contactStyle = computed(() => ({
+  fontSize: `${props.style.fontSize - 1}px`
+}))
 
 // Filter out empty experience entries
 const filledExperiences = computed(() => {
@@ -90,6 +194,12 @@ const filledExperiences = computed(() => {
     exp.company || exp.title || exp.description
   )
 })
+
+const isSectionVisible = (sectionId) => {
+  if (props.sections.length === 0) return true
+  const section = props.sections.find(s => s.id === sectionId)
+  return section ? section.visible : true
+}
 
 const isEmpty = computed(() => {
   const r = props.resume

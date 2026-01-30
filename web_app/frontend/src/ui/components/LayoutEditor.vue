@@ -13,7 +13,7 @@
         @click="selectLayout(layout.id)"
         :class="[
           'p-4 rounded-xl border-2 transition-all text-left group',
-          selectedLayout === layout.id 
+          localLayout.template === layout.id 
             ? 'border-primary bg-primary/5' 
             : 'border-[#d0d7e7] dark:border-gray-700 hover:border-primary/50'
         ]"
@@ -38,7 +38,7 @@
         <p class="text-xs text-gray-500">{{ layout.description }}</p>
 
         <!-- Selected indicator -->
-        <div v-if="selectedLayout === layout.id" class="mt-2 flex items-center gap-1 text-primary text-xs font-semibold">
+        <div v-if="localLayout.template === layout.id" class="mt-2 flex items-center gap-1 text-primary text-xs font-semibold">
           <svg xmlns="http://www.w3.org/2000/svg" class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
             <polyline points="22 4 12 14.01 9 11.01"/>
@@ -63,10 +63,10 @@
         <div class="space-y-3">
           <div class="flex justify-between items-center">
             <label class="text-sm font-semibold text-gray-700 dark:text-gray-300">Page Margins</label>
-            <span class="text-xs font-mono bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">{{ margins }}px</span>
+            <span class="text-xs font-mono bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">{{ localLayout.margins }}px</span>
           </div>
           <input 
-            v-model="margins"
+            v-model.number="localLayout.margins"
             type="range" 
             min="24" 
             max="64" 
@@ -83,10 +83,10 @@
         <div class="space-y-3">
           <div class="flex justify-between items-center">
             <label class="text-sm font-semibold text-gray-700 dark:text-gray-300">Section Spacing</label>
-            <span class="text-xs font-mono bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">{{ sectionSpacing }}px</span>
+            <span class="text-xs font-mono bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">{{ localLayout.sectionSpacing }}px</span>
           </div>
           <input 
-            v-model="sectionSpacing"
+            v-model.number="localLayout.sectionSpacing"
             type="range" 
             min="16" 
             max="48" 
@@ -100,13 +100,32 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 
-const emit = defineEmits(['update:layout', 'update:margins', 'update:sectionSpacing'])
+const props = defineProps({
+  layout: {
+    type: Object,
+    default: () => ({
+      template: 'classic',
+      margins: 48,
+      sectionSpacing: 24
+    })
+  }
+})
 
-const selectedLayout = ref('classic')
-const margins = ref(48)
-const sectionSpacing = ref(24)
+const emit = defineEmits(['update:layout'])
+
+const localLayout = ref({ ...props.layout })
+
+// Sync with parent
+watch(() => props.layout, (newVal) => {
+  localLayout.value = { ...newVal }
+}, { deep: true })
+
+// Emit changes
+watch(localLayout, (newVal) => {
+  emit('update:layout', { ...newVal })
+}, { deep: true })
 
 const layouts = [
   { 
@@ -136,7 +155,6 @@ const layouts = [
 ]
 
 const selectLayout = (id) => {
-  selectedLayout.value = id
-  emit('update:layout', id)
+  localLayout.value.template = id
 }
 </script>

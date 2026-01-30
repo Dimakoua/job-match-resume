@@ -4,6 +4,8 @@
     <BuilderHeader 
       :resume-title="resumeTitle" 
       :is-saved="isSaved"
+      :is-saving="isSaving"
+      @save="handleSave"
       @download="handleDownload"
     />
 
@@ -20,6 +22,7 @@
         <ResumeEditor 
           v-if="activeTab === 'edit'"
           v-model="resumeData"
+          :sections="sections"
           @ai-enhance="handleAiEnhance"
         />
         
@@ -38,7 +41,7 @@
         <!-- Style Tab -->
         <StyleEditor 
           v-else-if="activeTab === 'style'"
-          @update:style="handleStyleUpdate"
+          v-model:style="styleSettings"
         />
       </main>
 
@@ -71,16 +74,77 @@
 
         <!-- Resume Preview -->
         <div :style="{ transform: `scale(${zoom})`, transformOrigin: 'top center' }">
-          <ResumePreview :resume="resumeData" />
+          <ResumePreview 
+            :resume="resumeData" 
+            :layout="layoutSettings"
+            :style="styleSettings"
+            :sections="sections"
+          />
         </div>
       </section>
+    </div>
+
+    <!-- AI Enhancement Modal -->
+    <div v-if="aiModal.show" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+      <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-lg w-full mx-4 overflow-hidden">
+        <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+          <div class="flex items-center gap-3">
+            <div class="h-10 w-10 rounded-full bg-violet-100 dark:bg-violet-900 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="size-5 text-violet-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                <path d="M2 17l10 5 10-5"/>
+                <path d="M2 12l10 5 10-5"/>
+              </svg>
+            </div>
+            <div>
+              <h3 class="text-lg font-bold">AI Enhancement</h3>
+              <p class="text-sm text-gray-500">Improving your {{ aiModal.section }}</p>
+            </div>
+          </div>
+        </div>
+        <div class="p-6">
+          <div v-if="aiModal.loading" class="flex flex-col items-center py-8">
+            <div class="h-8 w-8 border-2 border-violet-600 border-t-transparent rounded-full animate-spin mb-4"></div>
+            <p class="text-sm text-gray-500">AI is enhancing your content...</p>
+          </div>
+          <div v-else-if="aiModal.result">
+            <p class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Enhanced Version:</p>
+            <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg text-sm leading-relaxed mb-4">
+              {{ aiModal.result }}
+            </div>
+            <div class="flex gap-3">
+              <button 
+                @click="applyAiEnhancement"
+                class="flex-1 px-4 py-2.5 bg-violet-600 text-white rounded-lg text-sm font-semibold hover:bg-violet-700 transition-colors"
+              >
+                Apply Enhancement
+              </button>
+              <button 
+                @click="aiModal.show = false"
+                class="px-4 py-2.5 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-semibold hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+          <div v-else-if="aiModal.error" class="text-center py-4">
+            <p class="text-red-500 text-sm">{{ aiModal.error }}</p>
+            <button 
+              @click="aiModal.show = false"
+              class="mt-4 px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded-lg text-sm font-semibold"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { ref, reactive, computed, watch, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import BuilderHeader from '../components/BuilderHeader.vue'
 import BuilderSidebar from '../components/BuilderSidebar.vue'
 import ResumeEditor from '../components/ResumeEditor.vue'
@@ -88,12 +152,19 @@ import ResumePreview from '../components/ResumePreview.vue'
 import SectionsEditor from '../components/SectionsEditor.vue'
 import LayoutEditor from '../components/LayoutEditor.vue'
 import StyleEditor from '../components/StyleEditor.vue'
+import { HttpAIService } from '../../infrastructure/api/HttpAIService.js'
+import { HttpResumeRepository } from '../../infrastructure/api/HttpResumeRepository.js'
 
 const route = useRoute()
+const router = useRouter()
+const aiService = new HttpAIService()
+const resumeRepository = new HttpResumeRepository()
 
 const activeTab = ref('edit')
 const zoom = ref(1)
 const isSaved = ref(true)
+const isSaving = ref(false)
+const resumeId = ref(null)
 
 const resumeData = ref({
   firstName: '',
@@ -105,6 +176,7 @@ const resumeData = ref({
   linkedin: '',
   summary: '',
   experience: [],
+  education: [],
   skills: []
 })
 
@@ -122,8 +194,27 @@ const sections = ref([
 // Layout settings
 const layoutSettings = ref({
   template: 'classic',
-  margins: 1,
-  spacing: 1.5,
+  margins: 48,
+  sectionSpacing: 24,
+})
+
+// Style settings
+const styleSettings = ref({
+  headingFont: 'inter',
+  bodyFont: 'inter',
+  fontSize: 11,
+  lineHeight: 1.5,
+  accentColor: '#2463eb'
+})
+
+// AI Enhancement Modal
+const aiModal = reactive({
+  show: false,
+  loading: false,
+  section: '',
+  index: null,
+  result: null,
+  error: null
 })
 
 const resumeTitle = computed(() => {
@@ -137,7 +228,7 @@ const resumeTitle = computed(() => {
 })
 
 // Mark as unsaved when data changes
-watch(resumeData, () => {
+watch([resumeData, sections, layoutSettings, styleSettings], () => {
   isSaved.value = false
 }, { deep: true })
 
@@ -153,27 +244,186 @@ const zoomOut = () => {
   }
 }
 
-const handleDownload = () => {
-  // TODO: Implement PDF download
-  console.log('Download PDF:', resumeData.value)
+const handleSave = async () => {
+  isSaving.value = true
+  try {
+    const saveData = {
+      title: resumeTitle.value,
+      sections: {
+        ...resumeData.value,
+        visibleSections: sections.value,
+        layout: layoutSettings.value,
+        style: styleSettings.value
+      }
+    }
+    
+    if (resumeId.value) {
+      await resumeRepository.update(resumeId.value, saveData)
+    } else {
+      const result = await resumeRepository.create(saveData)
+      resumeId.value = result.id
+      router.replace({ query: { id: result.id } })
+    }
+    isSaved.value = true
+  } catch (error) {
+    console.error('Failed to save:', error)
+    alert('Failed to save resume. Please try again.')
+  } finally {
+    isSaving.value = false
+  }
 }
 
-const handleAiEnhance = (section, index) => {
-  // TODO: Implement AI enhancement
-  console.log('AI Enhance:', section, index)
+const handleDownload = async () => {
+  // Create a printable version and trigger browser print dialog
+  const previewElement = document.querySelector('[data-preview]')
+  if (!previewElement) {
+    // Fallback: create a simple PDF-like print
+    const printWindow = window.open('', '_blank')
+    const content = generatePrintableHTML()
+    printWindow.document.write(content)
+    printWindow.document.close()
+    printWindow.print()
+    return
+  }
 }
 
-const handleStyleUpdate = (styleData) => {
-  // TODO: Apply style changes to preview
-  console.log('Style Update:', styleData)
+const generatePrintableHTML = () => {
+  const r = resumeData.value
+  const s = styleSettings.value
+  
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>${resumeTitle.value}</title>
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+      <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; font-size: ${s.fontSize}pt; line-height: ${s.lineHeight}; color: #222; }
+        .container { max-width: 800px; margin: 0 auto; padding: ${layoutSettings.value.margins}px; }
+        h1 { font-size: 28pt; font-weight: bold; margin-bottom: 4px; }
+        h2 { font-size: 10pt; text-transform: uppercase; letter-spacing: 0.1em; color: #888; border-bottom: 1px solid #eee; padding-bottom: 4px; margin-bottom: 12px; }
+        .title { color: ${s.accentColor}; font-size: 14pt; }
+        .contact { font-size: 9pt; color: #666; }
+        .section { margin-bottom: ${layoutSettings.value.sectionSpacing}px; }
+        .job { margin-bottom: 16px; }
+        .job-header { display: flex; justify-content: space-between; }
+        .company { font-weight: bold; font-size: 11pt; }
+        .dates { font-size: 9pt; color: #666; font-style: italic; }
+        .job-title { color: ${s.accentColor}; font-size: 10pt; font-weight: 600; }
+        .skills { display: flex; flex-wrap: wrap; gap: 8px; }
+        .skill { background: ${s.accentColor}15; color: ${s.accentColor}; padding: 4px 12px; border-radius: 4px; font-size: 9pt; font-weight: 600; }
+        @media print { body { print-color-adjust: exact; -webkit-print-color-adjust: exact; } }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <header style="border-bottom: 2px solid ${s.accentColor}; padding-bottom: 16px; margin-bottom: 24px;">
+          <h1>${r.firstName || ''} ${r.lastName || ''}</h1>
+          <p class="title">${r.title || ''}</p>
+          <p class="contact">${[r.email, r.phone, r.location].filter(Boolean).join(' • ')}</p>
+        </header>
+        
+        ${r.summary ? `
+        <div class="section">
+          <h2>Profile</h2>
+          <p>${r.summary}</p>
+        </div>
+        ` : ''}
+        
+        ${r.experience?.length ? `
+        <div class="section">
+          <h2>Experience</h2>
+          ${r.experience.filter(e => e.company || e.title).map(exp => `
+            <div class="job">
+              <div class="job-header">
+                <span class="company">${exp.company || ''}</span>
+                <span class="dates">${exp.startDate || ''} — ${exp.endDate || ''}</span>
+              </div>
+              <p class="job-title">${exp.title || ''}</p>
+              <p>${exp.description || ''}</p>
+            </div>
+          `).join('')}
+        </div>
+        ` : ''}
+        
+        ${r.skills?.length ? `
+        <div class="section">
+          <h2>Skills</h2>
+          <div class="skills">
+            ${r.skills.map(skill => `<span class="skill">${skill}</span>`).join('')}
+          </div>
+        </div>
+        ` : ''}
+      </div>
+    </body>
+    </html>
+  `
+}
+
+const handleAiEnhance = async (section, index = null) => {
+  aiModal.show = true
+  aiModal.loading = true
+  aiModal.section = section
+  aiModal.index = index
+  aiModal.result = null
+  aiModal.error = null
+  
+  try {
+    let textToEnhance = ''
+    if (section === 'summary') {
+      textToEnhance = resumeData.value.summary
+    } else if (section === 'experience' && index !== null) {
+      textToEnhance = resumeData.value.experience[index]?.description || ''
+    }
+    
+    if (!textToEnhance.trim()) {
+      aiModal.error = 'Please enter some text first to enhance.'
+      aiModal.loading = false
+      return
+    }
+    
+    const result = await aiService.improveText(textToEnhance)
+    aiModal.result = result.improvedText || result.text || result
+    aiModal.loading = false
+  } catch (error) {
+    console.error('AI Enhancement failed:', error)
+    aiModal.error = 'Failed to enhance text. Please try again.'
+    aiModal.loading = false
+  }
+}
+
+const applyAiEnhancement = () => {
+  if (!aiModal.result) return
+  
+  if (aiModal.section === 'summary') {
+    resumeData.value.summary = aiModal.result
+  } else if (aiModal.section === 'experience' && aiModal.index !== null) {
+    resumeData.value.experience[aiModal.index].description = aiModal.result
+  }
+  
+  aiModal.show = false
 }
 
 // Load resume data if editing existing
-onMounted(() => {
-  const resumeId = route.query.id
-  if (resumeId) {
-    // TODO: Load resume from API
-    console.log('Loading resume:', resumeId)
+onMounted(async () => {
+  const id = route.query.id
+  if (id) {
+    resumeId.value = id
+    try {
+      const resume = await resumeRepository.get(id)
+      if (resume.sections) {
+        // Restore all data
+        const { visibleSections, layout, style, ...content } = resume.sections
+        resumeData.value = { ...resumeData.value, ...content }
+        if (visibleSections) sections.value = visibleSections
+        if (layout) layoutSettings.value = layout
+        if (style) styleSettings.value = style
+      }
+      isSaved.value = true
+    } catch (error) {
+      console.error('Failed to load resume:', error)
+    }
   }
 })
 </script>
