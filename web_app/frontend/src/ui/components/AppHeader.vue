@@ -22,20 +22,6 @@
         >
           Dashboard
         </router-link>
-        <router-link 
-          to="/templates" 
-          class="text-sm font-medium leading-normal transition-colors"
-          :class="isActive('/templates') ? 'text-[#0e121b] dark:text-white' : 'text-[#4d6599] dark:text-gray-400 hover:text-primary'"
-        >
-          Templates
-        </router-link>
-        <router-link 
-          to="/examples" 
-          class="text-sm font-medium leading-normal transition-colors"
-          :class="isActive('/examples') ? 'text-[#0e121b] dark:text-white' : 'text-[#4d6599] dark:text-gray-400 hover:text-primary'"
-        >
-          Examples
-        </router-link>
       </nav>
       <!-- User Menu -->
       <div class="relative">

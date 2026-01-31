@@ -210,6 +210,248 @@
       </div>
     </section>
 
+    <!-- Education -->
+    <section v-if="isSectionVisible('education')" class="mb-10">
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="size-5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+            <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+          </svg>
+          <h2 class="text-xl font-bold tracking-tight">Education</h2>
+        </div>
+        <button 
+          @click="addEducation"
+          class="text-primary hover:bg-primary/10 p-1.5 rounded-lg transition-all"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="16"/>
+            <line x1="8" y1="12" x2="16" y2="12"/>
+          </svg>
+        </button>
+      </div>
+      
+      <!-- Education Cards -->
+      <div 
+        v-for="(edu, index) in form.education" 
+        :key="index"
+        class="p-5 rounded-xl border border-[#d0d7e7] dark:border-gray-700 bg-white dark:bg-gray-900 mb-4 shadow-sm relative group"
+      >
+        <button 
+          @click="removeEducation(index)"
+          class="absolute top-3 right-3 text-gray-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"/>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+          </svg>
+        </button>
+        <div class="flex flex-col gap-4">
+          <div class="grid grid-cols-2 gap-4">
+            <label class="flex flex-col gap-1.5">
+              <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">School</span>
+              <input 
+                v-model="edu.school"
+                class="w-full rounded-lg border-[#d0d7e7] dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-2.5 text-sm" 
+                type="text" 
+                placeholder="University Name"
+              />
+            </label>
+            <label class="flex flex-col gap-1.5">
+              <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">Degree</span>
+              <input 
+                v-model="edu.degree"
+                class="w-full rounded-lg border-[#d0d7e7] dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-2.5 text-sm" 
+                type="text" 
+                placeholder="Bachelor of Science"
+              />
+            </label>
+          </div>
+          <div class="grid grid-cols-3 gap-4">
+            <label class="flex flex-col gap-1.5 col-span-1">
+              <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">Field of Study</span>
+              <input 
+                v-model="edu.field"
+                class="w-full rounded-lg border-[#d0d7e7] dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-2.5 text-sm" 
+                type="text" 
+                placeholder="Computer Science"
+              />
+            </label>
+            <label class="flex flex-col gap-1.5">
+              <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">Start Date</span>
+              <input 
+                v-model="edu.startDate"
+                class="w-full rounded-lg border-[#d0d7e7] dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-2.5 text-sm" 
+                type="text" 
+                placeholder="2016"
+              />
+            </label>
+            <label class="flex flex-col gap-1.5">
+              <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">End Date</span>
+              <input 
+                v-model="edu.endDate"
+                class="w-full rounded-lg border-[#d0d7e7] dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-2.5 text-sm" 
+                type="text" 
+                placeholder="2020"
+              />
+            </label>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Projects -->
+    <section v-if="isSectionVisible('projects')" class="mb-10">
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="size-5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+          </svg>
+          <h2 class="text-xl font-bold tracking-tight">Projects</h2>
+        </div>
+        <button 
+          @click="addProject"
+          class="text-primary hover:bg-primary/10 p-1.5 rounded-lg transition-all"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="16"/>
+            <line x1="8" y1="12" x2="16" y2="12"/>
+          </svg>
+        </button>
+      </div>
+      
+      <!-- Project Cards -->
+      <div 
+        v-for="(project, index) in form.projects" 
+        :key="index"
+        class="p-5 rounded-xl border border-[#d0d7e7] dark:border-gray-700 bg-white dark:bg-gray-900 mb-4 shadow-sm relative group"
+      >
+        <button 
+          @click="removeProject(index)"
+          class="absolute top-3 right-3 text-gray-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"/>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+          </svg>
+        </button>
+        <div class="flex flex-col gap-4">
+          <div class="grid grid-cols-2 gap-4">
+            <label class="flex flex-col gap-1.5">
+              <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">Project Name</span>
+              <input 
+                v-model="project.name"
+                class="w-full rounded-lg border-[#d0d7e7] dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-2.5 text-sm" 
+                type="text" 
+                placeholder="Project Title"
+              />
+            </label>
+            <label class="flex flex-col gap-1.5">
+              <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">Link (Optional)</span>
+              <input 
+                v-model="project.link"
+                class="w-full rounded-lg border-[#d0d7e7] dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-2.5 text-sm" 
+                type="text" 
+                placeholder="https://github.com/..."
+              />
+            </label>
+          </div>
+          <label class="flex flex-col gap-1.5">
+            <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">Description</span>
+            <textarea 
+              v-model="project.description"
+              class="w-full rounded-lg border-[#d0d7e7] dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-2.5 text-sm min-h-[60px]"
+              placeholder="Describe what you built and the technologies used..."
+            ></textarea>
+          </label>
+        </div>
+      </div>
+    </section>
+
+    <!-- Certifications -->
+    <section v-if="isSectionVisible('certifications')" class="mb-10">
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="size-5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 15l-2 5 2-1 2 1-2-5z"/>
+            <path d="M12 3a9 9 0 0 0-9 9 9 9 0 0 0 9 9 9 9 0 0 0 9-9 9 9 0 0 0-9-9z"/>
+          </svg>
+          <h2 class="text-xl font-bold tracking-tight">Certifications</h2>
+        </div>
+        <button 
+          @click="addCertification"
+          class="text-primary hover:bg-primary/10 p-1.5 rounded-lg transition-all"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="16"/>
+            <line x1="8" y1="12" x2="16" y2="12"/>
+          </svg>
+        </button>
+      </div>
+      
+      <!-- Certification Cards -->
+      <div 
+        v-for="(cert, index) in form.certifications" 
+        :key="index"
+        class="p-5 rounded-xl border border-[#d0d7e7] dark:border-gray-700 bg-white dark:bg-gray-900 mb-4 shadow-sm relative group"
+      >
+        <button 
+          @click="removeCertification(index)"
+          class="absolute top-3 right-3 text-gray-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"/>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+          </svg>
+        </button>
+        <div class="flex flex-col gap-4">
+          <div class="grid grid-cols-2 gap-4">
+            <label class="flex flex-col gap-1.5">
+              <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">Name</span>
+              <input 
+                v-model="cert.name"
+                class="w-full rounded-lg border-[#d0d7e7] dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-2.5 text-sm" 
+                type="text" 
+                placeholder="AWS Certified Solutions Architect"
+              />
+            </label>
+            <label class="flex flex-col gap-1.5">
+              <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">Issuer</span>
+              <input 
+                v-model="cert.issuer"
+                class="w-full rounded-lg border-[#d0d7e7] dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-2.5 text-sm" 
+                type="text" 
+                placeholder="Amazon Web Services"
+              />
+            </label>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <label class="flex flex-col gap-1.5">
+              <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">Date</span>
+              <input 
+                v-model="cert.date"
+                class="w-full rounded-lg border-[#d0d7e7] dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-2.5 text-sm" 
+                type="text" 
+                placeholder="2022"
+              />
+            </label>
+            <label class="flex flex-col gap-1.5">
+              <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">Link</span>
+              <input 
+                v-model="cert.link"
+                class="w-full rounded-lg border-[#d0d7e7] dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-2.5 text-sm" 
+                type="text" 
+                placeholder="https://..."
+              />
+            </label>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Skills -->
     <section v-if="isSectionVisible('skills')" class="mb-10">
       <div class="flex items-center justify-between mb-4">
@@ -254,11 +496,28 @@
         </button>
       </div>
     </section>
+
+    <!-- Custom Sections -->
+    <section v-for="customSection in customSections" :key="customSection.id" class="mb-10">
+      <div class="flex items-center gap-2 mb-4">
+        <svg xmlns="http://www.w3.org/2000/svg" class="size-5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 5v14M5 12h14"/>
+        </svg>
+        <h2 class="text-xl font-bold tracking-tight capitalize">{{ customSection.label }}</h2>
+      </div>
+      <label class="flex flex-col gap-1.5">
+        <textarea 
+          v-model="form.customSections[customSection.id]"
+          class="w-full rounded-lg border-[#d0d7e7] dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:border-primary focus:ring-1 focus:ring-primary p-3 text-sm min-h-[120px]"
+          :placeholder="`Enter ${customSection.label.toLowerCase()}...`"
+        ></textarea>
+      </label>
+    </section>
   </div>
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 
 const props = defineProps({
   modelValue: {
@@ -284,33 +543,47 @@ const props = defineProps({
 
 const emit = defineEmits(['update:modelValue', 'aiEnhance'])
 
-const form = ref(JSON.parse(JSON.stringify(props.modelValue)))
+// Initialize form data from props
+const initializeForm = (data) => {
+  const initialized = JSON.parse(JSON.stringify(data))
+  if (!initialized.experience) initialized.experience = []
+  if (!initialized.skills) initialized.skills = []
+  if (!initialized.education) initialized.education = []
+  if (!initialized.certifications) initialized.certifications = []
+  if (!initialized.projects) initialized.projects = []
+  if (!initialized.customSections) initialized.customSections = {}
+  return initialized
+}
+
+const form = ref(initializeForm(props.modelValue))
 const newSkill = ref('')
-let isUpdatingFromEmit = false
 
-// Ensure required arrays exist
-if (!form.value.experience) form.value.experience = []
-if (!form.value.skills) form.value.skills = []
-if (!form.value.education) form.value.education = []
+// Use computed getter/setter to handle v-model binding properly
+// This replaces dual watchers and prevents circular updates
+const syncedForm = computed({
+  get() {
+    return form.value
+  },
+  set(newVal) {
+    form.value = initializeForm(newVal)
+  }
+})
 
+// Single watcher for form changes - emit updates
 watch(form, (newVal) => {
-  isUpdatingFromEmit = true
   emit('update:modelValue', JSON.parse(JSON.stringify(newVal)))
-  // Reset flag after emit completes
-  setTimeout(() => {
-    isUpdatingFromEmit = false
-  }, 0)
 }, { deep: true })
 
+// Watch props.modelValue changes from parent (e.g. on load or undo)
 watch(() => props.modelValue, (newVal) => {
-  // Skip if this update came from our own emit
-  if (isUpdatingFromEmit) return
+  // Use deep comparison to avoid circular updates when parent re-renders 
+  // with the same data we just emitted
+  const currentStr = JSON.stringify(form.value)
+  const newStr = JSON.stringify(newVal)
   
-  form.value = JSON.parse(JSON.stringify(newVal))
-  // Ensure required arrays exist
-  if (!form.value.experience) form.value.experience = []
-  if (!form.value.skills) form.value.skills = []
-  if (!form.value.education) form.value.education = []
+  if (currentStr !== newStr) {
+    form.value = initializeForm(newVal)
+  }
 }, { deep: true })
 
 const isSectionVisible = (sectionId) => {
@@ -333,6 +606,46 @@ const removeExperience = (index) => {
   form.value.experience.splice(index, 1)
 }
 
+const addEducation = () => {
+  form.value.education.push({
+    school: '',
+    degree: '',
+    field: '',
+    startDate: '',
+    endDate: '',
+    description: ''
+  })
+}
+
+const removeEducation = (index) => {
+  form.value.education.splice(index, 1)
+}
+
+const addCertification = () => {
+  form.value.certifications.push({
+    name: '',
+    issuer: '',
+    date: '',
+    link: ''
+  })
+}
+
+const removeCertification = (index) => {
+  form.value.certifications.splice(index, 1)
+}
+
+const addProject = () => {
+  form.value.projects.push({
+    name: '',
+    link: '',
+    description: ''
+  })
+}
+
+const removeProject = (index) => {
+  form.value.projects.splice(index, 1)
+}
+
 const addSkill = () => {
   if (newSkill.value.trim()) {
     form.value.skills.push(newSkill.value.trim())
@@ -343,4 +656,9 @@ const addSkill = () => {
 const removeSkill = (index) => {
   form.value.skills.splice(index, 1)
 }
+
+const customSections = computed(() => {
+  if (!props.sections) return []
+  return props.sections.filter(s => s.custom)
+})
 </script>

@@ -6,7 +6,7 @@
  * 
  * Per technical_design.md §3.2D: "The Composable acts as the Controller."
  */
-import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router'
 import { SaveResumeUseCase } from '../../core/application/editor/SaveResumeUseCase.js'
 import { LoadResumeUseCase } from '../../core/application/editor/LoadResumeUseCase.js'
@@ -45,7 +45,9 @@ export function useBuilderController() {
     summary: '',
     experience: [],
     education: [],
-    skills: []
+    skills: [],
+    certifications: [],
+    projects: []
   })
 
   const sections = ref([
@@ -92,18 +94,10 @@ export function useBuilderController() {
     return 'Untitled Resume'
   })
 
-  // ===== Watch: Auto-save on changes =====
-  // Guard flag to prevent watch from triggering during save operations
-  let isApplyingExternalChange = false
-
-  watch(
-    [resumeData, sections, layoutSettings, styleSettings],
-    () => {
-      // Skip auto-save if we're already saving to prevent recursive updates
-      if (isSaving.value || isApplyingExternalChange) {
-        return
-      }
-
+  // ===== Auto-save functionality =====
+  // Instead of watching all state changes, we'll use explicit marking of changes
+  const markUnsaved = () => {
+    if (!isSaving.value) {
       isSaved.value = false
       draftStorageUseCase.scheduleAutoSave(() => {
         draftStorageUseCase.saveDraft(
@@ -114,8 +108,21 @@ export function useBuilderController() {
           resumeId.value
         )
       })
+    }
+  }
+
+  // Watch for user-initiated changes only (after initial load completes)
+  // Using ref instead of plain variable for proper reactivity
+  const isInitialLoadComplete = ref(false)
+  
+  watch(
+    [resumeData, sections, layoutSettings, styleSettings],
+    () => {
+      if (isInitialLoadComplete.value && !isSaving.value) {
+        markUnsaved()
+      }
     },
-    { deep: true }
+    { deep: true, flush: 'post' }  // flush: 'post' prevents recursive updates during render
   )
 
   // ===== Event Handlers: Save =====
@@ -239,30 +246,35 @@ export function useBuilderController() {
   onMounted(async () => {
     window.addEventListener('beforeunload', handleBeforeUnload)
 
-    const id = route.query.id
-    if (id) {
-      resumeId.value = id
-      try {
+    try {
+      const id = route.query.id
+      if (id) {
+        resumeId.value = id
         const loaded = await loadResumeUseCase.execute(id)
         resumeData.value = loaded.resumeData
         if (loaded.sections) sections.value = loaded.sections
         if (loaded.layoutSettings) layoutSettings.value = loaded.layoutSettings
         if (loaded.styleSettings) styleSettings.value = loaded.styleSettings
         isSaved.value = loaded.source === 'backend'
-      } catch (error) {
-        console.error('Failed to load resume:', error)
+      } else {
+        // New resume - try to restore draft
+        const draft = loadResumeUseCase.loadFromDraftOrNew()
+        if (draft) {
+          resumeData.value = draft.resumeData
+          if (draft.sections) sections.value = draft.sections
+          if (draft.layoutSettings) layoutSettings.value = draft.layoutSettings
+          if (draft.styleSettings) styleSettings.value = draft.styleSettings
+          isSaved.value = !draft.isUnsaved
+        }
       }
-    } else {
-      // New resume - try to restore draft
-      const draft = loadResumeUseCase.loadFromDraftOrNew()
-      if (draft) {
-        resumeData.value = draft.resumeData
-        if (draft.sections) sections.value = draft.sections
-        if (draft.layoutSettings) layoutSettings.value = draft.layoutSettings
-        if (draft.styleSettings) styleSettings.value = draft.styleSettings
-        isSaved.value = !draft.isUnsaved
-      }
+    } catch (error) {
+      console.error('Failed to load resume:', error)
     }
+
+    // Use nextTick to defer enabling watcher until after Vue's update cycle completes
+    // This ensures all reactive assignments have propagated before tracking user changes
+    await nextTick()
+    isInitialLoadComplete.value = true
   })
 
   onUnmounted(() => {

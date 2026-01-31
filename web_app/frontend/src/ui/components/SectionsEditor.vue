@@ -127,8 +127,12 @@ const showAddSection = ref(false)
 const newSectionName = ref('')
 
 // Sync with parent
+// Watch for parent prop changes
 watch(() => props.sections, (newVal) => {
-  localSections.value = JSON.parse(JSON.stringify(newVal))
+  // Use deep comparison to avoid circular updates
+  if (JSON.stringify(newVal) !== JSON.stringify(localSections.value)) {
+    localSections.value = JSON.parse(JSON.stringify(newVal))
+  }
 }, { deep: true })
 
 const sectionDescriptions = {

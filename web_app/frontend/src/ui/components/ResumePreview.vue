@@ -90,9 +90,37 @@
       <div v-for="(edu, index) in resume.education" :key="index" class="mb-3">
         <div class="flex justify-between items-baseline">
           <h4 class="font-bold text-xs">{{ edu.school }}</h4>
-          <span class="text-[9px] text-gray-500">{{ edu.year }}</span>
+          <span class="text-[9px] text-gray-500 font-medium italic">
+            {{ edu.startDate }}{{ edu.startDate && edu.endDate ? ' — ' : '' }}{{ edu.endDate }}
+          </span>
         </div>
-        <p class="text-[10px] font-semibold" :style="{ color: style.accentColor }">{{ edu.degree }}</p>
+        <p class="text-[10px] font-semibold" :style="{ color: style.accentColor }">
+          {{ edu.degree }}{{ edu.degree && edu.field ? ', ' : '' }}{{ edu.field }}
+        </p>
+      </div>
+    </div>
+
+    <!-- Projects -->
+    <div v-if="resume.projects && resume.projects.length > 0 && isSectionVisible('projects')" :style="{ marginBottom: `${layout.sectionSpacing}px` }">
+      <h3 class="text-xs font-bold uppercase tracking-[0.2em] text-gray-400 mb-3 border-b border-gray-100 pb-1" :style="{ fontFamily: fontFamilies[style.headingFont] }">Projects</h3>
+      <div v-for="(project, index) in resume.projects" :key="index" class="mb-3">
+        <div class="flex justify-between items-baseline mb-0.5">
+          <h4 class="font-bold text-xs">{{ project.name }}</h4>
+          <a v-if="project.link" :href="project.link" target="_blank" class="text-[9px] text-primary hover:underline font-medium">Link</a>
+        </div>
+        <p v-if="project.description" :style="bodyStyle" class="text-gray-600 whitespace-pre-wrap">{{ project.description }}</p>
+      </div>
+    </div>
+
+    <!-- Certifications -->
+    <div v-if="resume.certifications && resume.certifications.length > 0 && isSectionVisible('certifications')" :style="{ marginBottom: `${layout.sectionSpacing}px` }">
+      <h3 class="text-xs font-bold uppercase tracking-[0.2em] text-gray-400 mb-3 border-b border-gray-100 pb-1" :style="{ fontFamily: fontFamilies[style.headingFont] }">Certifications</h3>
+      <div v-for="(cert, index) in resume.certifications" :key="index" class="flex justify-between items-baseline mb-1">
+        <div>
+          <span class="font-bold text-xs">{{ cert.name }}</span>
+          <span v-if="cert.issuer" class="text-[10px] text-gray-600"> • {{ cert.issuer }}</span>
+        </div>
+        <span class="text-[9px] text-gray-500">{{ cert.date }}</span>
       </div>
     </div>
 
@@ -110,6 +138,14 @@
         </span>
       </div>
     </div>
+
+    <!-- Custom Sections -->
+    <template v-for="customSection in (customSections || [])" :key="customSection?.id || 'unknown'">
+      <div v-if="customSection?.id && isSectionVisible(customSection.id) && resume.customSections?.[customSection.id]" :style="{ marginBottom: `${layout.sectionSpacing}px` }">
+        <h3 class="text-xs font-bold uppercase tracking-[0.2em] text-gray-400 mb-2 border-b border-gray-100 pb-1 capitalize" :style="{ fontFamily: fontFamilies[style.headingFont] }">{{ customSection.label }}</h3>
+        <p :style="bodyStyle" class="text-gray-700 whitespace-pre-wrap">{{ resume.customSections[customSection.id] }}</p>
+      </div>
+    </template>
 
     <!-- Empty State -->
     <div v-if="isEmpty" class="flex-1 flex items-center justify-center">
@@ -201,10 +237,18 @@ const isSectionVisible = (sectionId) => {
   return section ? section.visible : true
 }
 
+const customSections = computed(() => {
+  if (!props.sections || !Array.isArray(props.sections)) return []
+  return props.sections.filter(s => s?.custom === true)
+})
+
 const isEmpty = computed(() => {
   const r = props.resume
   return !r.firstName && !r.lastName && !r.title && !r.summary && 
          filledExperiences.value.length === 0 && 
+         (!r.education || r.education.length === 0) &&
+         (!r.projects || r.projects.length === 0) &&
+         (!r.certifications || r.certifications.length === 0) &&
          (!r.skills || r.skills.length === 0)
 })
 </script>

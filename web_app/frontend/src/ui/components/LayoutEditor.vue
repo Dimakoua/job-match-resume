@@ -116,24 +116,19 @@ const props = defineProps({
 const emit = defineEmits(['update:layout'])
 
 const localLayout = ref({ ...props.layout })
-let isUpdatingFromEmit = false
 
-// Sync with parent
+// Watch for parent prop changes and update local state
 watch(() => props.layout, (newVal) => {
-  // Skip if this update came from our own emit
-  if (isUpdatingFromEmit) return
-  
-  localLayout.value = { ...newVal }
+  // Use deep comparison to avoid circular updates when parent re-renders 
+  // with the same data we just emitted
+  if (JSON.stringify(newVal) !== JSON.stringify(localLayout.value)) {
+    localLayout.value = { ...newVal }
+  }
 }, { deep: true })
 
-// Emit changes
+// Emit changes when local state changes
 watch(localLayout, (newVal) => {
-  isUpdatingFromEmit = true
   emit('update:layout', { ...newVal })
-  // Reset flag after emit completes
-  setTimeout(() => {
-    isUpdatingFromEmit = false
-  }, 0)
 }, { deep: true })
 
 const layouts = [

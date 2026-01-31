@@ -19,7 +19,6 @@
     <div class="flex items-center gap-4">
       <nav class="hidden md:flex items-center gap-6 mr-4">
         <router-link to="/dashboard" class="text-sm font-medium hover:text-primary transition-colors">Dashboard</router-link>
-        <router-link to="/templates" class="text-sm font-medium hover:text-primary transition-colors">Templates</router-link>
       </nav>
       <div class="flex gap-2">
         <button 
