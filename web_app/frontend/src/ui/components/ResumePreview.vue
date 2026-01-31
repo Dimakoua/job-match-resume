@@ -125,7 +125,7 @@
     </div>
 
     <!-- Skills -->
-    <div v-if="resume.skills && resume.skills.length > 0 && isSectionVisible('skills')" class="mt-auto">
+    <div v-if="resume.skills && resume.skills.length > 0 && isSectionVisible('skills')" :style="{ marginBottom: `${layout.sectionSpacing}px` }">
       <h3 class="text-xs font-bold uppercase tracking-[0.2em] text-gray-400 mb-3 border-b border-gray-100 pb-1" :style="{ fontFamily: fontFamilies[style.headingFont] }">Expertise</h3>
       <div class="flex flex-wrap gap-1.5">
         <span 
