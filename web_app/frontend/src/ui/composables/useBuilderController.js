@@ -34,8 +34,10 @@ export function useBuilderController() {
   const zoom = ref(1)
   const isSaved = ref(true)
   const isSaving = ref(false)
+  const isSyncing = ref(false)
   const resumeId = ref(null)
   const history = ref([])
+  let backendAutoSaveTimeout = null
 
   const defaultResumeData = {
     firstName: '',
@@ -104,6 +106,8 @@ export function useBuilderController() {
   const markUnsaved = () => {
     if (!isSaving.value) {
       isSaved.value = false
+      
+      // 1. Immediate Local Draft Save
       draftStorageUseCase.scheduleAutoSave(() => {
         draftStorageUseCase.saveDraft(
           resumeData.value,
@@ -113,7 +117,48 @@ export function useBuilderController() {
           resumeId.value
         )
       })
+
+      // 2. Debounced Backend Save
+      scheduleBackendAutoSave()
     }
+  }
+
+  const scheduleBackendAutoSave = () => {
+    if (backendAutoSaveTimeout) clearTimeout(backendAutoSaveTimeout)
+    
+    // Only background save if we have an ID and aren't mid-save
+    if (!resumeId.value || isSaving.value) return
+
+    backendAutoSaveTimeout = setTimeout(async () => {
+      // Don't auto-save if user manually saved while we were waiting
+      if (isSaved.value) return
+
+      try {
+        isSyncing.value = true
+        await saveResumeUseCase.execute(
+          resumeData.value,
+          sections.value,
+          layoutSettings.value,
+          styleSettings.value,
+          resumeId.value
+        )
+        isSaved.value = true
+        draftStorageUseCase.clearDraft()
+        
+        // Also create a periodic backup snapshot
+        draftVersionUseCase.saveSnapshot(resumeId.value, 'Auto-save', {
+          resumeData: resumeData.value,
+          sections: sections.value,
+          layoutSettings: layoutSettings.value,
+          styleSettings: styleSettings.value
+        })
+        refreshHistory()
+      } catch (error) {
+        console.warn('Background auto-save failed:', error)
+      } finally {
+        isSyncing.value = false
+      }
+    }, 5000) // 5 second debounce
   }
 
   // Watch for user-initiated changes only (after initial load completes)
@@ -161,6 +206,7 @@ export function useBuilderController() {
 
   // ===== Event Handlers: Save =====
   const handleSave = async () => {
+    if (backendAutoSaveTimeout) clearTimeout(backendAutoSaveTimeout)
     isSaving.value = true
     try {
       const result = await saveResumeUseCase.execute(
@@ -339,6 +385,7 @@ export function useBuilderController() {
   onUnmounted(() => {
     window.removeEventListener('beforeunload', handleBeforeUnload)
     draftStorageUseCase.cancelAutoSave()
+    if (backendAutoSaveTimeout) clearTimeout(backendAutoSaveTimeout)
   })
 
   // ===== Expose to component =====
@@ -366,6 +413,7 @@ export function useBuilderController() {
     history,
     restoreVersion,
     refreshHistory,
-    clearHistory
+    clearHistory,
+    isSyncing
   }
 }

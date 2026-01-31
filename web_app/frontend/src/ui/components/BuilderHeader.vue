@@ -10,7 +10,8 @@
         <h2 class="text-lg font-bold leading-tight tracking-[-0.015em]">Resume Studio</h2>
         <p class="text-xs text-gray-500 dark:text-gray-400 font-medium">
           {{ resumeTitle }} • 
-          <span :class="isSaved ? 'text-green-500' : 'text-amber-500'">
+          <span v-if="isSyncing" class="text-primary animate-pulse">Syncing...</span>
+          <span v-else :class="isSaved ? 'text-green-500' : 'text-amber-500'">
             {{ isSaved ? 'Saved' : 'Unsaved changes' }}
           </span>
         </p>
@@ -85,6 +86,10 @@ const props = defineProps({
     default: true
   },
   isSaving: {
+    type: Boolean,
+    default: false
+  },
+  isSyncing: {
     type: Boolean,
     default: false
   }

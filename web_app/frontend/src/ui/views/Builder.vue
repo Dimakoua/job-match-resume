@@ -5,6 +5,7 @@
       :resume-title="resumeTitle" 
       :is-saved="isSaved"
       :is-saving="isSaving"
+      :is-syncing="isSyncing"
       @save="handleSave"
       @download="handleDownload"
     />
@@ -167,6 +168,7 @@ const {
   zoom,
   isSaved,
   isSaving,
+  isSyncing,
   resumeData,
   sections,
   layoutSettings,
