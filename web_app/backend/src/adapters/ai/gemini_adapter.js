@@ -10,7 +10,7 @@ export class GeminiAdapter {
       throw new Error('Gemini API key is required');
     }
     this.genAI = new GoogleGenerativeAI(apiKey);
-    this.model = this.genAI.getGenerativeModel({ model: 'gemini-pro' });
+    this.model = this.genAI.getGenerativeModel({ model: 'gemma-3-27b-it' });
   }
 
   /**

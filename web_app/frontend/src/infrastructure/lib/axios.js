@@ -3,7 +3,7 @@ import { TokenStorage } from '../storage/TokenStorage.js'
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8787', // Default to local backend
-  timeout: 10000,
+  timeout: 120000, // 120 seconds (2 minutes) for AI generation requests
   headers: {
     'Content-Type': 'application/json',
   },
