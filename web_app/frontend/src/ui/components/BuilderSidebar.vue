@@ -35,7 +35,13 @@
     </button>
     
     <button 
-      class="mt-auto p-2 rounded-lg text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer transition-all"
+      @click="$emit('select', 'history')"
+      :class="[
+        'mt-auto p-2 rounded-lg transition-all',
+        activeTab === 'history' 
+          ? 'bg-primary/10 text-primary' 
+          : 'text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer'
+      ]"
       title="History"
     >
       <svg xmlns="http://www.w3.org/2000/svg" class="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

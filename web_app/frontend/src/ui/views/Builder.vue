@@ -43,6 +43,11 @@
           v-else-if="activeTab === 'style'"
           v-model:style="styleSettings"
         />
+
+        <!-- History Tab -->
+        <HistoryEditor 
+          v-else-if="activeTab === 'history'"
+        />
       </main>
 
       <!-- Preview Panel -->
@@ -150,6 +155,7 @@ import ResumePreview from '../components/ResumePreview.vue'
 import SectionsEditor from '../components/SectionsEditor.vue'
 import LayoutEditor from '../components/LayoutEditor.vue'
 import StyleEditor from '../components/StyleEditor.vue'
+import HistoryEditor from '../components/HistoryEditor.vue'
 import { useBuilderController } from '../composables/useBuilderController.js'
 
 // Use the controller composable (per technical_design.md §3.2D)
