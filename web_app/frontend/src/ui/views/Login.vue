@@ -2,6 +2,7 @@
 import { ref, reactive } from 'vue'
 import Footer from '../components/Footer.vue'
 import { useAuthController } from '../composables/useAuthController.js'
+import { useValidation } from '../composables/useValidation.js'
 
 // State management
 const form = reactive({
@@ -12,6 +13,7 @@ const form = reactive({
 const isPasswordVisible = ref(false)
 
 const { login, isLoading, error } = useAuthController()
+const { errors, validate } = useValidation()
 
 const handleLogin = async () => {
   await login(form.email, form.password)
@@ -65,11 +67,18 @@ const togglePassword = () => {
                 <span class="text-foreground text-sm font-semibold leading-normal pb-2">Email Address</span>
                 <input 
                   v-model="form.email"
-                  class="form-input flex w-full rounded-lg text-foreground focus:outline-0 focus:ring-2 focus:ring-primary/20 border border-input bg-white dark:bg-transparent focus:border-primary h-12 placeholder:text-muted-foreground p-[15px] text-base font-normal" 
+                  @blur="validate('email', form.email, ['email'])"
+                  :class="[
+                    'form-input flex w-full rounded-lg text-foreground focus:outline-0 focus:ring-2 focus:ring-primary/20 border h-12 placeholder:text-muted-foreground p-[15px] text-base font-normal',
+                    errors.email 
+                      ? 'border-red-300 bg-red-50 dark:bg-red-900/20 focus:border-red-500 focus:ring-red-500/20' 
+                      : 'border-input bg-white dark:bg-transparent focus:border-primary'
+                  ]"
                   placeholder="Enter your email" 
                   type="email" 
                   required
                 />
+                <span v-if="errors.email" class="text-red-600 text-xs mt-1">{{ errors.email }}</span>
               </label>
             </div>
 

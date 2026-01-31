@@ -2,6 +2,7 @@
 import { ref, reactive } from 'vue'
 import Footer from '../components/Footer.vue'
 import { useAuthController } from '../composables/useAuthController.js'
+import { useValidation } from '../composables/useValidation.js'
 
 const form = reactive({
   fullName: '',
@@ -13,6 +14,7 @@ const form = reactive({
 const isPasswordVisible = ref(false)
 
 const { signup, isLoading, error } = useAuthController()
+const { errors, validate } = useValidation()
 
 const handleSignup = async () => {
   await signup(form.fullName, form.email, form.password)
@@ -109,12 +111,19 @@ const togglePassword = () => {
             <label class="block text-sm font-semibold text-foreground mb-1" for="email">Email address</label>
             <input 
               v-model="form.email"
-              class="w-full rounded-lg border border-input bg-white dark:bg-transparent text-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-0 h-11 px-3 placeholder:text-muted-foreground" 
+              @blur="validate('email', form.email, ['email'])"
+              :class="[
+                'w-full rounded-lg border bg-white dark:bg-transparent text-foreground focus:ring-2 focus:ring-primary/20 focus:outline-0 h-11 px-3 placeholder:text-muted-foreground',
+                errors.email 
+                  ? 'border-red-300 bg-red-50 dark:bg-red-900/20 focus:border-red-500 focus:ring-red-500/20' 
+                  : 'border-input focus:border-primary'
+              ]"
               id="email" 
               placeholder="name@company.com" 
               type="email"
               required
             />
+            <span v-if="errors.email" class="text-red-600 text-xs mt-1">{{ errors.email }}</span>
           </div>
 
           <div>

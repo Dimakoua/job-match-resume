@@ -41,19 +41,33 @@
           <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">Email</span>
           <input 
             v-model="form.email"
-            class="w-full rounded-lg border-[#d0d7e7] dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:border-primary focus:ring-1 focus:ring-primary p-3 text-sm" 
+            @blur="validate('email', form.email, fieldRules.email)"
+            :class="[
+              'w-full rounded-lg border p-3 text-sm focus:ring-1 focus:ring-primary',
+              errors.email 
+                ? 'border-red-300 bg-red-50 dark:bg-red-900/20 focus:border-red-500' 
+                : 'border-[#d0d7e7] dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:border-primary'
+            ]"
             type="email" 
             placeholder="john@email.com"
           />
+          <span v-if="errors.email" class="text-red-600 text-xs">{{ errors.email }}</span>
         </label>
         <label class="flex flex-col gap-1.5">
           <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">Phone</span>
           <input 
             v-model="form.phone"
-            class="w-full rounded-lg border-[#d0d7e7] dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:border-primary focus:ring-1 focus:ring-primary p-3 text-sm" 
+            @blur="validate('phone', form.phone, fieldRules.phone)"
+            :class="[
+              'w-full rounded-lg border p-3 text-sm focus:ring-1 focus:ring-primary',
+              errors.phone 
+                ? 'border-red-300 bg-red-50 dark:bg-red-900/20 focus:border-red-500' 
+                : 'border-[#d0d7e7] dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:border-primary'
+            ]"
             type="tel" 
             placeholder="+1 (555) 123-4567"
           />
+          <span v-if="errors.phone" class="text-red-600 text-xs">{{ errors.phone }}</span>
         </label>
         <label class="flex flex-col gap-1.5">
           <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">Location</span>
@@ -68,10 +82,17 @@
           <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">LinkedIn</span>
           <input 
             v-model="form.linkedin"
-            class="w-full rounded-lg border-[#d0d7e7] dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:border-primary focus:ring-1 focus:ring-primary p-3 text-sm" 
+            @blur="validate('linkedin', form.linkedin, fieldRules.linkedin)"
+            :class="[
+              'w-full rounded-lg border p-3 text-sm focus:ring-1 focus:ring-primary',
+              errors.linkedin 
+                ? 'border-red-300 bg-red-50 dark:bg-red-900/20 focus:border-red-500' 
+                : 'border-[#d0d7e7] dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:border-primary'
+            ]"
             type="url" 
             placeholder="linkedin.com/in/johndoe"
           />
+          <span v-if="errors.linkedin" class="text-red-600 text-xs">{{ errors.linkedin }}</span>
         </label>
       </div>
     </section>
@@ -518,6 +539,7 @@
 
 <script setup>
 import { ref, watch, computed } from 'vue'
+import { useValidation } from '../composables/useValidation.js'
 
 const props = defineProps({
   modelValue: {
@@ -557,6 +579,16 @@ const initializeForm = (data) => {
 
 const form = ref(initializeForm(props.modelValue))
 const newSkill = ref('')
+
+// Validation setup
+const { errors, validate } = useValidation()
+
+// Validation rules for form fields
+const fieldRules = {
+  email: ['email'],
+  phone: ['phone'],
+  linkedin: ['url']
+}
 
 // Use computed getter/setter to handle v-model binding properly
 // This replaces dual watchers and prevents circular updates
