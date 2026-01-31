@@ -1,6 +1,6 @@
 <template>
   <div 
-    class="bg-white shadow-2xl rounded-sm flex flex-col overflow-hidden text-[#222]" 
+    class="bg-white shadow-2xl rounded-sm flex flex-col overflow-hidden text-[#222] p-4" 
     :style="previewStyle"
   >
     <!-- Header - Basic (Classic) -->
@@ -207,7 +207,6 @@ const fontFamilies = {
 
 const previewStyle = computed(() => ({
   aspectRatio: '1 / 1.414',
-  width: '600px',
   minWidth: '600px',
   fontFamily: fontFamilies[props.style.bodyFont],
   padding: `${props.layout.margins}px`
