@@ -96,6 +96,26 @@ describe("Resume Services Integration Tests", () => {
     expect(resume.sections[4].type).toBe('skills');
   });
 
+  it("should create a resume with provided sections (JSON content)", async () => {
+    // Create a user
+    const user = await factory.insert('user', { id: 'user-provided', email: 'provided@example.com', name: 'Provided User', passwordHash: 'hash' });
+
+    const customSections = {
+      firstName: 'John',
+      lastName: 'Doe',
+      experience: []
+    };
+
+    // Create resume with provided sections
+    const resume = await createService.execute({ 
+      userId: 'user-provided', 
+      title: 'Provided Resume', 
+      sections: customSections 
+    });
+
+    expect(resume.sections).toEqual(customSections);
+  });
+
   it("should create a resume with professional template sections", async () => {
     // Create a user
     const user = await factory.insert('user', { id: 'user-professional', email: 'professional@example.com', name: 'Professional User', passwordHash: 'hash' });

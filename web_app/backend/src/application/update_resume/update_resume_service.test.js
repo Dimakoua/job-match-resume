@@ -4,7 +4,8 @@ import { UpdateResumeService } from './update_resume_service.js';
 describe('UpdateResumeService', () => {
   const mockResumeRepository = {
     findById: vi.fn(),
-    save: vi.fn()
+    save: vi.fn(),
+    update: vi.fn()
   };
 
   const mockTemplateRepository = {
@@ -37,7 +38,7 @@ describe('UpdateResumeService', () => {
 
     mockResumeRepository.findById.mockResolvedValue(mockResume);
     mockTemplateRepository.getSections.mockResolvedValue([{ type: 'contact', data: {} }]);
-    mockResumeRepository.save.mockResolvedValue(mockResume);
+    mockResumeRepository.update.mockResolvedValue(mockResume);
 
     // Act
     const result = await service.execute(command);
@@ -45,8 +46,39 @@ describe('UpdateResumeService', () => {
     // Assert
     expect(mockResumeRepository.findById).toHaveBeenCalledWith('resume-123');
     expect(mockTemplateRepository.getSections).toHaveBeenCalledWith('professional');
-    expect(mockResumeRepository.save).toHaveBeenCalledWith(mockResume);
+    expect(mockResumeRepository.update).toHaveBeenCalledWith(mockResume);
     expect(result.templateId).toBe('professional');
+  });
+
+  it('should update resume title and sections successfully', async () => {
+    // Arrange
+    const command = {
+      resumeId: 'resume-123',
+      userId: 'user-123',
+      title: 'New Title',
+      sections: { firstName: 'Updated' }
+    };
+
+    const mockResume = {
+      id: 'resume-123',
+      userId: 'user-123',
+      title: 'Old Title',
+      templateId: null,
+      sections: [],
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+
+    mockResumeRepository.findById.mockResolvedValue(mockResume);
+    mockResumeRepository.update.mockResolvedValue(mockResume);
+
+    // Act
+    const result = await service.execute(command);
+
+    // Assert
+    expect(mockResumeRepository.update).toHaveBeenCalledWith(mockResume);
+    expect(result.title).toBe('New Title');
+    expect(result.sections).toEqual({ firstName: 'Updated' });
   });
 
   it('should allow setting templateId to null', async () => {
@@ -68,7 +100,7 @@ describe('UpdateResumeService', () => {
     };
 
     mockResumeRepository.findById.mockResolvedValue(mockResume);
-    mockResumeRepository.save.mockResolvedValue(mockResume);
+    mockResumeRepository.update.mockResolvedValue(mockResume);
 
     // Act
     const result = await service.execute(command);

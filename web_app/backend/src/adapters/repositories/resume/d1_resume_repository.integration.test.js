@@ -77,4 +77,24 @@ describe("D1ResumeRepository Integration Tests", () => {
     const found = await repo.findById("resume-no-template");
     expect(found.templateId).toBeNull();
   });
+
+  it("should update an existing resume", async () => {
+    // Create a user
+    const user = await factory.insert('user', {id: 'user-update', email: 'update@example.com', name: 'Update User', passwordHash: 'hash'});
+
+    // Create a resume
+    const originalResume = new Resume("resume-update-id", "user-update", "Original Title", [{ type: "test" }]);
+    await repo.save(originalResume);
+
+    // Update the resume
+    originalResume.title = "Updated Title";
+    originalResume.sections = { key: "value" }; // Test object structure
+    await repo.update(originalResume);
+
+    // Find and verify
+    const found = await repo.findById("resume-update-id");
+    expect(found.title).toBe("Updated Title");
+    expect(found.sections).toEqual({ key: "value" });
+    expect(found.updatedAt).toBeInstanceOf(Date);
+  });
 });
