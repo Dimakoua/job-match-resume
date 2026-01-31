@@ -1,49 +1,81 @@
 
 # frontend/tracker.md
 
-**Version:** 1.1
-**Last updated:** 2026-01-29
+**Version:** 1.2
+**Last updated:** 2026-01-31
 **Status:** Active
+
+---
+
+## Completed Tasks
+
+## F-003 — [infra] Pinia Store Setup ✅ 100%
+- State for user and resume is reactive.
+
+## F-004 — [infra] Router Setup ✅ 100%
+- Navigation between all main views works.
+
+## F-005 — [ui] Login Screen ✅ 100%
+- Matches reference HTML/CSS.
+
+## F-006 — [ui] Sign Up Screen ✅ 100%
+- Responsive and accessible.
+
+## F-008 — [ui] Forgot Password Screen ✅ 100%
+- Form handling complete.
+
+## F-009 — [ui] Resume Dashboard ✅ 100%
+- Grid view with "Create New" options.
+
+## F-010 — [ui] Split-Screen Builder Layout ✅ 100%
+- Editor (left) and Preview (right).
+
+## F-011-F-015 — [ui] Resume Form Sections ✅ 100%
+- Personal Info, Experience, Education, Skills, Projects, Certifications.
+
+## F-016 — [ui] Real-Time Preview ✅ 100%
+- Live rendering with reactive data merging.
+
+## F-017 — [ui] Template Switcher ✅ 100%
+- Sidebar with 7 layout styles.
+
+## F-018 — [ui] AI Generator Wizard ✅ 100%
+- 3-step wizard (JD -> Template -> Result).
+
+## F-019 — [ui] AI "Magic Wand" Improver ✅ 100%
+- Inline LLM enhancements for summaries/experience.
+
+## F-025 — [integration] Set up API Client ✅ 100%
+- Axios interceptors for auth & token management.
+
+## F-026 — [integration] Login with Backend ✅ 100%
+- Real JWT auth flow.
+
+## F-032 — [ui] Version History Sidebar ✅ 100%
+- Local snapshots with restoration.
+
+## F-033 — [infra] Local Storage Draft Architecture ✅ 100%
+- Instant persistence for browser crashes.
+
+## F-034 — [integration] Dual-Layer Auto-save ✅ 100%
+- Local Draft + 5s Debounced Backend Sync.
+
+## F-035 — [ui] Sync Status Indicators ✅ 100%
+- "Saved", "Unsaved", and "Syncing..." pulsing status.
 
 ---
 
 ## Active Tasks
 
-## F-026 — [integration] Integrate Login with Backend
-- Scope: Connect login form to /api/auth/login endpoint.
-- Acceptance criteria:
-	- Successful login stores JWT, redirects to dashboard.
-	- Error handling for invalid credentials.
+## F-036 — [integration] Export to DOCX 🔵 10%
+- Scope: Trigger .docx generation from Builder UI.
+- Acceptance: Download matches preview structure.
 
-## F-027 — [integration] Integrate Signup with Backend
-- Scope: Connect signup form to /api/auth/signup endpoint.
-- Acceptance criteria:
-	- Successful signup redirects to login or dashboard.
-	- Error handling for duplicate email.
+## F-037 — [ui] PDF Download Implementation ⚪ 0%
+- Scope: Connect download button to backend PDF service.
 
-## F-028 — [integration] Integrate Google OAuth
-- Scope: Connect Google button to /api/auth/google and handle callback.
-- Acceptance criteria:
-	- Google login works, stores JWT, redirects.
-	- Error handling for OAuth failures.
-
-## F-029 — [integration] Update Auth Guards
-- Scope: Replace stub auth guard with real JWT validation.
-- Acceptance criteria:
-	- Protected routes require valid JWT.
-	- Invalid/expired tokens redirect to login.
-
-## F-030 — [integration] Fetch User Profile
-- Scope: On login, fetch and store user profile in Pinia.
-- Acceptance criteria:
-	- User data available in store after auth.
-	- Profile updates reflected in UI.
-
-## F-031 — [integration] Fetch Resumes for Dashboard
-- Scope: Connect dashboard to /api/resumes endpoint.
-- Acceptance criteria:
-	- Resumes list displayed with thumbnails.
-	- Loading states for fetch.
+## F-038 — [ui] Dashboard Resume Actions 🔵 40%
+- Scope: Implement Preview, Duplicate, and Delete.
 
 ---
 

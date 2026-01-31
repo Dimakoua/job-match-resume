@@ -92,4 +92,14 @@
 - Completed: 2026-01-31
 - Evidence: GET `/templates` endpoint implemented. PUT `/resumes/:id` endpoint fully expanded to support title, sections/content, and template_id updates with JSON object persistence. ListTemplatesService and UpdateResumeService updated with full validation and integration tests. ResumeController integration tests 15/15 passing. Domain Resume entity updated to handle object-based sections.
 
+## B-020 — [integration] Full-Stack Integration Testing ✅ 100%
+- Completed: 2026-01-31
+- Evidence: Converted UpdateResumeService unit tests into full-stack integration tests using real D1 and Factory. 191/191 tests passing in the backend suite.
+
 ---
+
+## Active Tasks
+
+## B-021 — [infra] Cloud Storage for Exported Assets 🔵 20%
+- Scope: Integrate R2 or equivalent for persisting export files (PDF/DOCX).
+- Acceptance: Files saved to bucket and return signed URLs.

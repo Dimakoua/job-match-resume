@@ -1,23 +1,42 @@
 # handoff.md
 ## Context Snapshot
-- Auth flow UI screens completed: Login (F-005), Signup (F-006), Forgot Password (F-008), with Google OAuth button (F-007) integrated.
-- Router updated with routes for terms and privacy policies; components created.
-- Build passes cleanly with Vite, no errors; dev server ready on localhost:5173.
+- Builder Core: Fully functional split-screen editor with real-time reactive preview.
+- AI Generator: Multi-step wizard (JD -> Template selection) live and connected to backend.
+- Version Control: Local version history sidebar with restoration and privacy clearing.
+- Auto-Persistence: Dual-layer system (Instant Local Storage + 5s Debounced Cloud Sync) implemented.
+- UI Polish: Tailwind dark mode support, syncing indicators, and responsive layouts.
+
 ## Active Task(s)
-- F-009: [ui] Resume Dashboard — Acceptance: Grid view of resumes with thumbnails. "Create New" options present.
+- F-036: Export to DOCX — Logic for triggering document generation.
+- F-037: PDF Download — Connection to backend binary service.
+
 ## Decisions Made
-- Included Google OAuth button in Signup screen as UI-only per design (design.md §2.1).
-- Added terms/privacy routes and components for complete auth flow navigation.
+- Adopted Clean Architecture on Frontend to separate Use Cases (e.g., `SaveResumeUseCase`) from Vue components.
+- Standardized template IDs to `basic`, `modern`, `professional`, etc., to align with D1 schema.
+- Used `localStorage` for instant drafts to mitigate network latency in the primary UX loop.
+
 ## Changes Since Last Session
-- Resolved "Maximum recursive updates exceeded" bug in `Builder.vue` by adding deep-comparison logic to `ResumeEditor.vue` watchers and a post-hydration flag in `useBuilderController.js`.
-- Implemented missing CRUD fields for Education, Projects, and Certifications in `ResumeEditor.vue` and `ResumePreview.vue`.
-- Fixed data loss on reload by updating `LoadResumeUseCase.js` to correctly handle merging logic between loaded resume data and UI defaults.
-- Updated `useBuilderController.js` to utilize the new full update capabilities of the backend API, enabling persistent resume saving.
-- src/ restructured to Clean Architecture: core/ (domain + application), infrastructure/ (api + storage), ui/ (components + views + stores + composables).
-- core/domain/user/User.js (+entity), core/domain/resume/Resume.js & Section.js (+entities).
-- infrastructure/api/HttpClient.js (moved from utils, +TokenStorage), HttpResumeRepository.js, HttpAIService.js, HttpAuthService.js.
-- infrastructure/storage/TokenStorage.js (+token management).
-- core/application/auth/LoginUseCase.js, core/application/ai/GenerateFromJDUseCase.js & ImproveTextUseCase.js.
+- Completed Generator Wizard flow in `Generator.vue`.
+- Implemented `isSyncing` reactive state in `useBuilderController.js` for background save feedback.
+- Added pulsing "Syncing..." status to `BuilderHeader.vue`.
+- Standardized layout template selection in `LayoutEditor.vue` and `ResumePreview.vue`.
+
+## Validation & Evidence
+- Successful generation of 5 resumes via AI Generator with redirect to Builder.
+- Verified Local History snapshots persist across browser restarts.
+- Syncing status correctly appears/disappears during typing sessions.
+
+## Risks & Unknowns
+- Potential for `localStorage` quota expiration if history snapshots are never cleared.
+- Network volatility during background syncs.
+
+## Next Steps
+1. Implement DOCX export trigger.
+2. Build PDF download bridge.
+3. Polish Dashboard resume management (Duplicate/Delete).
+
+## Status Summary
+- ✅ 100% — Core Builder & Generator Experience complete.
 - ui/composables/useAuthController.js (+login integration).
 - src/ui/views/Login.vue (+useAuthController, +loading/error UI).
 - src/ui/stores/useAuthStore.js (+TokenStorage integration).
