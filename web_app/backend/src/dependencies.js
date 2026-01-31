@@ -4,6 +4,8 @@
 
 import { SignUpUserService } from './application/sign_up_user/sign_up_user_service.js';
 import { LoginUserService } from './application/login_user/login_user_service.js';
+import { GetUserProfileService } from './application/get_user_profile/get_user_profile_service.js';
+import { UpdateUserService } from './application/update_user/update_user_service.js';
 import { CreateResumeService } from './application/resume/create_resume_service.js';
 import { ListResumesService } from './application/resume/list_resumes_service.js';
 import { GetResumeService } from './application/resume/get_resume_service.js';
@@ -52,6 +54,8 @@ export function createDependencies(env) {
 
   const signUpService = new SignUpUserService(userRepository);
   const loginService = new LoginUserService(userRepository, jwt_secret);
+  const getUserProfileService = new GetUserProfileService(userRepository);
+  const updateUserService = new UpdateUserService(userRepository);
   const createResumeService = new CreateResumeService(resumeRepository, templateRepository);
   const listResumesService = new ListResumesService(resumeRepository);
   const getResumeService = new GetResumeService(resumeRepository);
@@ -70,6 +74,8 @@ export function createDependencies(env) {
     docxAdapter,
     signUpService,
     loginService,
+    getUserProfileService,
+    updateUserService,
     createResumeService,
     listResumesService,
     getResumeService,
