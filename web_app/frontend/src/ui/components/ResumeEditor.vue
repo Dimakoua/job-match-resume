@@ -287,12 +287,21 @@ const emit = defineEmits(['update:modelValue', 'aiEnhance'])
 const form = ref(JSON.parse(JSON.stringify(props.modelValue)))
 const newSkill = ref('')
 
+// Ensure required arrays exist
+if (!form.value.experience) form.value.experience = []
+if (!form.value.skills) form.value.skills = []
+if (!form.value.education) form.value.education = []
+
 watch(form, (newVal) => {
   emit('update:modelValue', JSON.parse(JSON.stringify(newVal)))
 }, { deep: true })
 
 watch(() => props.modelValue, (newVal) => {
   form.value = JSON.parse(JSON.stringify(newVal))
+  // Ensure required arrays exist
+  if (!form.value.experience) form.value.experience = []
+  if (!form.value.skills) form.value.skills = []
+  if (!form.value.education) form.value.education = []
 }, { deep: true })
 
 const isSectionVisible = (sectionId) => {
