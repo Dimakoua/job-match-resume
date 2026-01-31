@@ -143,7 +143,19 @@ describe("GenerateFromJDService Integration Tests", () => {
     expect(result).toBeDefined();
     expect(result.userId).toBe('user-789');
     expect(result.title).toBe('AI Generated Resume');
-    expect(result.sections).toEqual(mockAiResponse.sections);
+    
+    // Verify sections contains flat Builder format
+    expect(typeof result.sections).toBe('object');
+    expect(result.sections).toHaveProperty('firstName');
+    expect(result.sections).toHaveProperty('lastName');
+    expect(result.sections).toHaveProperty('email');
+    expect(result.sections).toHaveProperty('summary');
+    expect(Array.isArray(result.sections.experience)).toBe(true);
+    expect(Array.isArray(result.sections.education)).toBe(true);
+    expect(Array.isArray(result.sections.skills)).toBe(true);
+    expect(result.sections).toHaveProperty('layout');
+    expect(result.sections).toHaveProperty('style');
+    expect(result.sections).toHaveProperty('visibleSections');
     expect(result.templateId).toBe('professional');
 
     // Verify resume exists in database
@@ -151,7 +163,16 @@ describe("GenerateFromJDService Integration Tests", () => {
     expect(savedResume).toBeDefined();
     expect(savedResume.user_id).toBe('user-789');
     expect(savedResume.title).toBe('AI Generated Resume');
-    expect(JSON.parse(savedResume.content)).toEqual(mockAiResponse.sections);
+    
+    // Verify content is stored as flat Builder format
+    const savedContent = JSON.parse(savedResume.content);
+    expect(typeof savedContent).toBe('object');
+    expect(savedContent).toHaveProperty('firstName');
+    expect(savedContent).toHaveProperty('email');
+    expect(savedContent).toHaveProperty('summary');
+    expect(Array.isArray(savedContent.experience)).toBe(true);
+    expect(savedContent).toHaveProperty('layout');
+    expect(savedContent).toHaveProperty('style');
   });
 
   it("should generate and save a resume with specified template", async () => {
@@ -246,7 +267,16 @@ describe("GenerateFromJDService Integration Tests", () => {
     expect(result.userId).toBe('user-template');
     expect(result.title).toBe('AI Generated Resume');
     expect(result.templateId).toBe('creative');
-    expect(result.sections).toEqual(mockAiResponse.sections);
+    
+    // Verify sections contains flat Builder format
+    expect(typeof result.sections).toBe('object');
+    expect(result.sections).toHaveProperty('firstName');
+    expect(result.sections).toHaveProperty('email');
+    expect(result.sections).toHaveProperty('summary');
+    expect(Array.isArray(result.sections.experience)).toBe(true);
+    expect(result.sections).toHaveProperty('layout');
+    expect(result.sections).toHaveProperty('style');
+    expect(result.sections).toHaveProperty('visibleSections');
 
     // Verify resume exists in database with correct template
     const savedResume = await db.prepare('SELECT * FROM resumes WHERE id = ?').bind(result.id).first();
@@ -254,7 +284,14 @@ describe("GenerateFromJDService Integration Tests", () => {
     expect(savedResume.user_id).toBe('user-template');
     expect(savedResume.title).toBe('AI Generated Resume');
     expect(savedResume.template_id).toBe('creative');
-    expect(JSON.parse(savedResume.content)).toEqual(mockAiResponse.sections);
+    
+    // Verify content is stored as flat Builder format
+    const savedContent = JSON.parse(savedResume.content);
+    expect(typeof savedContent).toBe('object');
+    expect(savedContent).toHaveProperty('firstName');
+    expect(savedContent).toHaveProperty('email');
+    expect(savedContent).toHaveProperty('summary');
+    expect(Array.isArray(savedContent.experience)).toBe(true);
   });
 
   it("should handle AI service errors gracefully", async () => {

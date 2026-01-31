@@ -157,7 +157,194 @@ Create realistic but professional content that would be compelling for this posi
       }
     }
 
-    // Transform to our internal format if needed
-    return aiResponse.sections;
+    // Transform to flat Builder format
+    const sectionsObject = {
+      firstName: '',
+      lastName: '',
+      email: '',
+      phone: '',
+      location: '',
+      linkedin: '',
+      title: '',
+      summary: '',
+      experience: [],
+      education: [],
+      skills: [],
+      certifications: [],
+      projects: [],
+      customSections: {},
+      layout: {
+        template: 'basic'
+      },
+      style: {
+        accentColor: '#2463eb',
+        bodyFont: 'inter',
+        fontSize: 11,
+        headingFont: 'inter',
+        lineHeight: 1.5
+      },
+      visibleSections: [
+        { id: 'personal', label: 'Personal Info', required: true, visible: true },
+        { id: 'summary', label: 'Professional Summary', visible: true },
+        { id: 'experience', label: 'Work Experience', visible: true },
+        { id: 'skills', label: 'Skills', visible: true },
+        { id: 'education', label: 'Education', visible: false },
+        { id: 'certifications', label: 'Certifications', visible: false },
+        { id: 'projects', label: 'Projects', visible: false }
+      ]
+    };
+
+    // Extract data from AI sections
+    for (const section of aiResponse.sections) {
+      switch (section.type) {
+        case 'personal_info':
+          const content = section.content || {};
+          const nameStr = content.name || '';
+          const nameParts = nameStr.trim().split(/\s+/);
+          
+          sectionsObject.firstName = nameParts[0] || '';
+          sectionsObject.lastName = nameParts.slice(1).join(' ') || '';
+          sectionsObject.email = content.email || '';
+          sectionsObject.phone = content.phone || '';
+          sectionsObject.location = content.location || '';
+          sectionsObject.linkedin = content.linkedin || '';
+          break;
+
+        case 'summary':
+          sectionsObject.summary = section.content || '';
+          break;
+
+        case 'experience':
+          if (Array.isArray(section.content)) {
+            sectionsObject.experience = section.content.map(exp => ({
+              company: exp.company || '',
+              position: exp.position || '',
+              location: exp.location || '',
+              startDate: exp.startDate || '',
+              endDate: exp.endDate || '',
+              achievements: Array.isArray(exp.achievements) ? exp.achievements : []
+            }));
+          }
+          break;
+
+        case 'education':
+          if (Array.isArray(section.content)) {
+            sectionsObject.education = section.content.map(edu => ({
+              institution: edu.institution || '',
+              degree: edu.degree || '',
+              field: edu.field || '',
+              location: edu.location || '',
+              graduationDate: edu.graduationDate || '',
+              gpa: edu.gpa || ''
+            }));
+          }
+          break;
+
+        case 'skills':
+          if (section.content) {
+            // Flatten all skill categories into a single array
+            const allSkills = [];
+            if (Array.isArray(section.content.technical)) {
+              allSkills.push(...section.content.technical);
+            }
+            if (Array.isArray(section.content.soft)) {
+              allSkills.push(...section.content.soft);
+            }
+            if (Array.isArray(section.content.tools)) {
+              allSkills.push(...section.content.tools);
+            }
+            sectionsObject.skills = allSkills;
+          }
+          break;
+      }
+    }
+
+    return sectionsObject;
+  }
+
+  /**
+   * Transforms AI sections format (nested) to Builder format (flat)
+   * Used to convert stored resume data for frontend consumption
+   */
+  static transformSectionsToBuilderFormat(sections) {
+    const transformed = {
+      firstName: '',
+      lastName: '',
+      title: '',
+      email: '',
+      phone: '',
+      location: '',
+      linkedin: '',
+      summary: '',
+      experience: [],
+      education: [],
+      skills: [],
+      certifications: [],
+      projects: []
+    };
+
+    if (!Array.isArray(sections)) {
+      return transformed;
+    }
+
+    // Extract data from sections
+    for (const section of sections) {
+      switch (section.type) {
+        case 'personal_info':
+          const content = section.content || {};
+          const nameStr = content.name || '';
+          const nameParts = nameStr.trim().split(/\s+/);
+          
+          transformed.firstName = nameParts[0] || '';
+          transformed.lastName = nameParts.slice(1).join(' ') || '';
+          transformed.email = content.email || '';
+          transformed.phone = content.phone || '';
+          transformed.location = content.location || '';
+          transformed.linkedin = content.linkedin || '';
+          break;
+
+        case 'summary':
+          transformed.summary = section.content || '';
+          break;
+
+        case 'experience':
+          if (Array.isArray(section.content)) {
+            transformed.experience = section.content.map(exp => ({
+              company: exp.company || '',
+              position: exp.position || '',
+              location: exp.location || '',
+              startDate: exp.startDate || '',
+              endDate: exp.endDate || '',
+              achievements: Array.isArray(exp.achievements) ? exp.achievements : []
+            }));
+          }
+          break;
+
+        case 'education':
+          if (Array.isArray(section.content)) {
+            transformed.education = section.content.map(edu => ({
+              institution: edu.institution || '',
+              degree: edu.degree || '',
+              field: edu.field || '',
+              location: edu.location || '',
+              graduationDate: edu.graduationDate || '',
+              gpa: edu.gpa || ''
+            }));
+          }
+          break;
+
+        case 'skills':
+          if (section.content) {
+            transformed.skills = {
+              technical: Array.isArray(section.content.technical) ? section.content.technical : [],
+              soft: Array.isArray(section.content.soft) ? section.content.soft : [],
+              tools: Array.isArray(section.content.tools) ? section.content.tools : []
+            };
+          }
+          break;
+      }
+    }
+
+    return transformed;
   }
 }

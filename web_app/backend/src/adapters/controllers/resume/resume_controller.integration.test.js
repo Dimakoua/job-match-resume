@@ -259,8 +259,8 @@ describe('ResumeController Integration Tests', () => {
             type: 'personal_info',
             title: 'Personal Information',
             content: {
-              name: 'John Doe',
-              email: 'john@example.com',
+              name: 'Alex Johnson',
+              email: 'alex.johnson@email.com',
               phone: '(555) 123-4567',
               location: 'San Francisco, CA'
             }
@@ -320,7 +320,18 @@ describe('ResumeController Integration Tests', () => {
       expect(result.success).toBe(true);
       expect(result.data.resume.title).toBe('AI Generated Resume');
       expect(result.data.resume.templateId).toBe('professional');
-      expect(result.data.resume.sections).toEqual(mockAIResponse.sections);
+      
+      // Verify sections contains flat Builder format
+      expect(typeof result.data.resume.sections).toBe('object');
+      expect(result.data.resume.sections.firstName).toBe('Alex');
+      expect(result.data.resume.sections.lastName).toBe('Johnson');
+      expect(result.data.resume.sections.email).toBe('alex.johnson@email.com');
+      expect(Array.isArray(result.data.resume.sections.experience)).toBe(true);
+      expect(Array.isArray(result.data.resume.sections.education)).toBe(true);
+      expect(Array.isArray(result.data.resume.sections.skills)).toBe(true);
+      expect(result.data.resume.sections).toHaveProperty('layout');
+      expect(result.data.resume.sections).toHaveProperty('style');
+      expect(result.data.resume.sections).toHaveProperty('visibleSections');
       expect(result.data.resume.id).toBeDefined();
     });
 
