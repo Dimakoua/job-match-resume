@@ -3,7 +3,7 @@
  * Manages local version snapshots for resumes in localStorage
  */
 export class DraftVersionUseCase {
-  constructor(storageKey = 'resume_versions_history', maxVersionsPerResume = 10) {
+  constructor(storageKey = 'resume_versions_history', maxVersionsPerResume = 20) {
     this.storageKey = storageKey
     this.maxVersionsPerResume = maxVersionsPerResume
   }
@@ -28,6 +28,22 @@ export class DraftVersionUseCase {
       name,
       timestamp: new Date().toISOString(),
       data: JSON.parse(JSON.stringify(data)) // Deep clone to ensure snapshot integrity
+    }
+
+    // For auto-saves, merge with recent version if within 1 minute
+    const isAutoSave = name === 'Auto-save'
+    const lastVersion = history[resumeId][0] // [0] is newest since unshift
+    if (isAutoSave && lastVersion && lastVersion.name === 'Auto-save') {
+      const lastTime = new Date(lastVersion.timestamp)
+      const now = new Date()
+      const diffMinutes = (now - lastTime) / (1000 * 60)
+      if (diffMinutes < 1) {
+        // Update the last version instead of adding new
+        lastVersion.data = snapshot.data
+        lastVersion.timestamp = snapshot.timestamp
+        localStorage.setItem(this.storageKey, JSON.stringify(history))
+        return lastVersion
+      }
     }
 
     // Add to start of array
