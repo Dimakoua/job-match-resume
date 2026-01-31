@@ -10,36 +10,114 @@ export class DocxAdapter {
     if (!resume || typeof resume !== 'object') {
       throw new Error('Resume data is required');
     }
-    if (!resume.sections || !Array.isArray(resume.sections)) {
-      throw new Error('Resume must have sections array');
+    if (!resume.sections || typeof resume.sections !== 'object') {
+      throw new Error('Resume must have sections object');
     }
 
+    const sections = resume.sections;
     const docSections = [];
 
-    // Add title
-    docSections.push(
-      new Paragraph({
-        text: resume.title,
-        heading: HeadingLevel.TITLE,
-      })
-    );
-
-    // Process each section
-    for (const section of resume.sections) {
-      if (!section.type || !section.data) continue;
-
-      // Add section header
-      const sectionTitle = this._formatSectionTitle(section.type);
+    // Add header with personal info
+    if (sections.firstName || sections.lastName) {
+      const fullName = `${sections.firstName || ''} ${sections.lastName || ''}`.trim();
       docSections.push(
         new Paragraph({
-          text: sectionTitle,
+          text: fullName,
+          heading: HeadingLevel.TITLE,
+        })
+      );
+    }
+
+    // Add contact info
+    if (sections.email || sections.phone || sections.location) {
+      const contactInfo = [sections.email, sections.phone, sections.location].filter(Boolean).join(' • ');
+      docSections.push(new Paragraph(contactInfo));
+    }
+
+    docSections.push(new Paragraph('')); // Spacing
+
+    // Add summary
+    if (sections.summary) {
+      docSections.push(
+        new Paragraph({
+          text: 'Professional Summary',
           heading: HeadingLevel.HEADING_2,
         })
       );
+      docSections.push(new Paragraph(sections.summary));
+      docSections.push(new Paragraph('')); // Spacing
+    }
 
-      // Add section content based on type
-      const contentParagraphs = this._addSectionContent(section);
-      docSections.push(...contentParagraphs);
+    // Add experience
+    if (sections.experience && Array.isArray(sections.experience) && sections.experience.length > 0) {
+      docSections.push(
+        new Paragraph({
+          text: 'Work Experience',
+          heading: HeadingLevel.HEADING_2,
+        })
+      );
+      for (const job of sections.experience) {
+        if (job.position || job.company) {
+          docSections.push(new Paragraph({
+            children: [
+              new TextRun({ text: `${job.position || ''} at ${job.company || ''}`, bold: true }),
+            ],
+          }));
+        }
+        if (job.duration || job.date) {
+          docSections.push(new Paragraph(job.duration || job.date || ''));
+        }
+        if (job.location) {
+          docSections.push(new Paragraph(job.location));
+        }
+        if (job.achievements && Array.isArray(job.achievements)) {
+          for (const achievement of job.achievements) {
+            docSections.push(new Paragraph(`• ${achievement}`));
+          }
+        }
+        docSections.push(new Paragraph('')); // Spacing
+      }
+    }
+
+    // Add education
+    if (sections.education && Array.isArray(sections.education) && sections.education.length > 0) {
+      docSections.push(
+        new Paragraph({
+          text: 'Education',
+          heading: HeadingLevel.HEADING_2,
+        })
+      );
+      for (const edu of sections.education) {
+        if (edu.degree || edu.university) {
+          docSections.push(new Paragraph({
+            children: [
+              new TextRun({ text: `${edu.degree || ''} from ${edu.university || ''}`, bold: true }),
+            ],
+          }));
+        }
+        if (edu.years) {
+          docSections.push(new Paragraph(edu.years));
+        }
+        docSections.push(new Paragraph('')); // Spacing
+      }
+    }
+
+    // Add skills
+    if (sections.skills && (Array.isArray(sections.skills) || typeof sections.skills === 'object')) {
+      docSections.push(
+        new Paragraph({
+          text: 'Skills',
+          heading: HeadingLevel.HEADING_2,
+        })
+      );
+      if (Array.isArray(sections.skills)) {
+        docSections.push(new Paragraph(sections.skills.join(', ')));
+      } else if (sections.skills.technical) {
+        const skillText = Array.isArray(sections.skills.technical)
+          ? sections.skills.technical.join(', ')
+          : sections.skills.technical;
+        docSections.push(new Paragraph(`Technical: ${skillText}`));
+      }
     }
 
     // Create document
@@ -53,114 +131,5 @@ export class DocxAdapter {
     // Serialize the DOCX to bytes
     const buffer = await Packer.toBuffer(doc);
     return new Uint8Array(buffer);
-  }
-
-  _formatSectionTitle(type) {
-    return type.split('_').map(word =>
-      word.charAt(0).toUpperCase() + word.slice(1)
-    ).join(' ');
-  }
-
-  _addSectionContent(section) {
-    const { type, data } = section;
-    const paragraphs = [];
-
-    switch (type) {
-      case 'personal_info':
-      case 'contact':
-        if (data.name) paragraphs.push(new Paragraph(`Name: ${data.name}`));
-        if (data.email) paragraphs.push(new Paragraph(`Email: ${data.email}`));
-        if (data.phone) paragraphs.push(new Paragraph(`Phone: ${data.phone}`));
-        if (data.location || data.address) paragraphs.push(new Paragraph(`Location: ${data.location || data.address}`));
-        break;
-
-      case 'summary':
-      case 'professional_summary':
-        if (data.text) paragraphs.push(new Paragraph(data.text));
-        break;
-
-      case 'experience':
-      case 'work_experience':
-        if (Array.isArray(data)) {
-          for (const exp of data) {
-            if (exp.position && exp.company) {
-              paragraphs.push(new Paragraph({
-                children: [
-                  new TextRun({ text: exp.position, bold: true }),
-                  new TextRun(` at ${exp.company}`),
-                ],
-              }));
-            }
-            if (exp.startDate && exp.endDate) {
-              paragraphs.push(new Paragraph(`${exp.startDate} - ${exp.endDate}`));
-            }
-            if (exp.description) {
-              paragraphs.push(new Paragraph(exp.description));
-            }
-            paragraphs.push(new Paragraph('')); // Empty line
-          }
-        } else {
-          // Single experience object
-          if (data.position && data.company) {
-            paragraphs.push(new Paragraph({
-              children: [
-                new TextRun({ text: data.position, bold: true }),
-                new TextRun(` at ${data.company}`),
-              ],
-            }));
-          }
-          if (data.startDate && data.endDate) {
-            paragraphs.push(new Paragraph(`${data.startDate} - ${data.endDate}`));
-          }
-          if (data.description) {
-            paragraphs.push(new Paragraph(data.description));
-          }
-        }
-        break;
-
-      case 'education':
-        if (Array.isArray(data)) {
-          for (const edu of data) {
-            if (edu.degree && edu.institution) {
-              paragraphs.push(new Paragraph({
-                children: [
-                  new TextRun({ text: edu.degree, bold: true }),
-                  new TextRun(` from ${edu.institution}`),
-                ],
-              }));
-            }
-            if (edu.graduationDate) {
-              paragraphs.push(new Paragraph(`Graduated: ${edu.graduationDate}`));
-            }
-            paragraphs.push(new Paragraph('')); // Empty line
-          }
-        } else {
-          if (data.degree && data.institution) {
-            paragraphs.push(new Paragraph({
-              children: [
-                new TextRun({ text: data.degree, bold: true }),
-                new TextRun(` from ${data.institution}`),
-              ],
-            }));
-          }
-          if (data.graduationDate) {
-            paragraphs.push(new Paragraph(`Graduated: ${data.graduationDate}`));
-          }
-        }
-        break;
-
-      case 'skills':
-        if (data.skills && Array.isArray(data.skills)) {
-          paragraphs.push(new Paragraph(data.skills.join(', ')));
-        }
-        break;
-
-      default:
-        // Generic handling for unknown section types
-        const content = JSON.stringify(data, null, 2);
-        paragraphs.push(new Paragraph(content));
-    }
-
-    return paragraphs;
   }
 }

@@ -30,4 +30,11 @@ export class HttpResumeRepository {
     const response = await axios.get('/api/templates')
     return response.data.data.templates
   }
+
+  async download(id, format) {
+    const response = await axios.get(`/api/resumes/${id}/export?format=${format}`, {
+      responseType: 'blob',
+    })
+    return response.data
+  }
 }

@@ -7,8 +7,10 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ListResumesUseCase } from '../../core/application/editor/ListResumesUseCase.js'
+import { DownloadResumeUseCase } from '../../core/application/export/DownloadResumeUseCase.js'
 import { HttpResumesListService } from '../../infrastructure/api/HttpResumesListService.js'
 import { HttpResumeRepository } from '../../infrastructure/api/HttpResumeRepository.js'
+import { ExportService } from '../../infrastructure/api/ExportService.js'
 
 export function useDashboardController() {
   const router = useRouter()
@@ -16,7 +18,9 @@ export function useDashboardController() {
   // ===== Dependency Injection (DI) =====
   const resumesListService = new HttpResumesListService()
   const resumeRepository = new HttpResumeRepository()
+  const exportService = new ExportService()
   const listResumesUseCase = new ListResumesUseCase(resumesListService)
+  const downloadResumeUseCase = new DownloadResumeUseCase(exportService)
 
   // ===== State =====
   const resumes = ref([])
@@ -59,10 +63,19 @@ export function useDashboardController() {
     router.push(`/builder?id=${resume.id}`)
   }
 
-  const handleDownloadResume = (resume) => {
-    // TODO: Implement download via backend API later
-    console.log('Download resume requested:', resume.id)
-    alert('PDF Download is coming soon!')
+  const handleDownloadResume = async (resume, format = 'pdf') => {
+    try {
+      const command = {
+        resumeId: resume.id,
+        format, // 'pdf' or 'docx'
+      }
+      await downloadResumeUseCase.execute(command)
+      // Download is triggered automatically; no additional feedback needed
+      // (browsers handle downloads silently)
+    } catch (err) {
+      console.error('Failed to download resume:', err)
+      alert(`Failed to download resume: ${err.message}`)
+    }
   }
 
   const handlePreviewResume = async (resume) => {

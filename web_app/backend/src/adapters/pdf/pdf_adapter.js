@@ -10,8 +10,8 @@ export class PdfAdapter {
     if (!resume || typeof resume !== 'object') {
       throw new Error('Resume data is required');
     }
-    if (!resume.sections || !Array.isArray(resume.sections)) {
-      throw new Error('Resume must have sections array');
+    if (!resume.sections || typeof resume.sections !== 'object') {
+      throw new Error('Resume must have sections object');
     }
 
     // Create a new PDF document
@@ -29,7 +29,8 @@ export class PdfAdapter {
 
     // Helper function to add text with word wrapping
     const addText = (text, x, y, size = fontSize, maxWidth = width - 2 * margin) => {
-      const words = text.split(' ');
+      if (!text) return y;
+      const words = String(text).split(' ');
       let line = '';
       let currentY = y;
 
@@ -54,122 +55,83 @@ export class PdfAdapter {
       return currentY;
     };
 
-    // Add title
-    yPosition = addText(resume.title, margin, yPosition, titleFontSize);
-    yPosition -= 20; // Extra space after title
+    const sections = resume.sections;
 
-    // Process each section
-    for (const section of resume.sections) {
-      if (!section.type || !section.data) continue;
+    // Add header with personal info
+    if (sections.firstName || sections.lastName) {
+      const fullName = `${sections.firstName || ''} ${sections.lastName || ''}`.trim();
+      yPosition = addText(fullName, margin, yPosition, titleFontSize);
+    }
 
-      // Add section header
-      const sectionTitle = this._formatSectionTitle(section.type);
-      yPosition = addText(sectionTitle, margin, yPosition, fontSize + 2);
-      yPosition -= 10;
+    // Add contact info
+    if (sections.email || sections.phone || sections.location) {
+      const contactInfo = [sections.email, sections.phone, sections.location].filter(Boolean).join(' • ');
+      yPosition = addText(contactInfo, margin, yPosition, fontSize - 1);
+    }
+    yPosition -= 15; // Extra space after header
 
-      // Add section content based on type
-      yPosition = this._addSectionContent(page, section, margin, yPosition, addText);
-
-      // Add space between sections
+    // Add summary
+    if (sections.summary) {
+      yPosition = addText('Professional Summary', margin, yPosition, fontSize + 2);
+      yPosition -= 5;
+      yPosition = addText(sections.summary, margin + 10, yPosition, fontSize);
       yPosition -= 15;
+    }
 
-      // Check if we need a new page
-      if (yPosition < margin + 100) {
-        // For now, we'll just continue on the same page
-        // In a full implementation, you'd add a new page here
+    // Add experience
+    if (sections.experience && Array.isArray(sections.experience) && sections.experience.length > 0) {
+      yPosition = addText('Work Experience', margin, yPosition, fontSize + 2);
+      yPosition -= 5;
+      for (const job of sections.experience) {
+        if (job.position || job.company) {
+          yPosition = addText(`${job.position || ''} at ${job.company || ''}`, margin + 10, yPosition, fontSize);
+        }
+        if (job.duration || job.date) {
+          yPosition = addText(`${job.duration || job.date || ''}`, margin + 10, yPosition, fontSize - 1);
+        }
+        if (job.location) {
+          yPosition = addText(`${job.location}`, margin + 10, yPosition, fontSize - 1);
+        }
+        if (job.achievements && Array.isArray(job.achievements)) {
+          for (const achievement of job.achievements) {
+            yPosition = addText(`• ${achievement}`, margin + 20, yPosition, fontSize - 1);
+          }
+        }
+        yPosition -= 8;
       }
+      yPosition -= 10;
+    }
+
+    // Add education
+    if (sections.education && Array.isArray(sections.education) && sections.education.length > 0) {
+      yPosition = addText('Education', margin, yPosition, fontSize + 2);
+      yPosition -= 5;
+      for (const edu of sections.education) {
+        if (edu.degree || edu.university) {
+          yPosition = addText(`${edu.degree || ''} from ${edu.university || ''}`, margin + 10, yPosition, fontSize);
+        }
+        if (edu.years) {
+          yPosition = addText(`${edu.years}`, margin + 10, yPosition, fontSize - 1);
+        }
+        yPosition -= 8;
+      }
+      yPosition -= 10;
+    }
+
+    // Add skills
+    if (sections.skills && (Array.isArray(sections.skills) || typeof sections.skills === 'object')) {
+      yPosition = addText('Skills', margin, yPosition, fontSize + 2);
+      yPosition -= 5;
+      if (Array.isArray(sections.skills)) {
+        yPosition = addText(sections.skills.join(', '), margin + 10, yPosition, fontSize);
+      } else if (sections.skills.technical) {
+        yPosition = addText(`Technical: ${Array.isArray(sections.skills.technical) ? sections.skills.technical.join(', ') : sections.skills.technical}`, margin + 10, yPosition, fontSize);
+      }
+      yPosition -= 15;
     }
 
     // Serialize the PDF to bytes
     const pdfBytes = await pdfDoc.save();
     return pdfBytes;
-  }
-
-  _formatSectionTitle(type) {
-    return type.split('_').map(word =>
-      word.charAt(0).toUpperCase() + word.slice(1)
-    ).join(' ');
-  }
-
-  _addSectionContent(page, section, margin, yPosition, addText) {
-    const { type, data } = section;
-
-    switch (type) {
-      case 'personal_info':
-      case 'contact':
-        if (data.name) yPosition = addText(`Name: ${data.name}`, margin + 20, yPosition);
-        if (data.email) yPosition = addText(`Email: ${data.email}`, margin + 20, yPosition);
-        if (data.phone) yPosition = addText(`Phone: ${data.phone}`, margin + 20, yPosition);
-        if (data.location || data.address) yPosition = addText(`Location: ${data.location || data.address}`, margin + 20, yPosition);
-        break;
-
-      case 'summary':
-      case 'professional_summary':
-        if (data.text) yPosition = addText(data.text, margin + 20, yPosition);
-        break;
-
-      case 'experience':
-      case 'work_experience':
-        if (Array.isArray(data)) {
-          for (const exp of data) {
-            if (exp.position && exp.company) {
-              yPosition = addText(`${exp.position} at ${exp.company}`, margin + 20, yPosition);
-            }
-            if (exp.startDate && exp.endDate) {
-              yPosition = addText(`${exp.startDate} - ${exp.endDate}`, margin + 40, yPosition);
-            }
-            if (exp.description) {
-              yPosition = addText(exp.description, margin + 40, yPosition);
-            }
-            yPosition -= 10;
-          }
-        } else {
-          // Single experience object
-          if (data.position && data.company) {
-            yPosition = addText(`${data.position} at ${data.company}`, margin + 20, yPosition);
-          }
-          if (data.startDate && data.endDate) {
-            yPosition = addText(`${data.startDate} - ${data.endDate}`, margin + 20, yPosition);
-          }
-          if (data.description) {
-            yPosition = addText(data.description, margin + 20, yPosition);
-          }
-        }
-        break;
-
-      case 'education':
-        if (Array.isArray(data)) {
-          for (const edu of data) {
-            if (edu.degree && edu.institution) {
-              yPosition = addText(`${edu.degree} from ${edu.institution}`, margin + 20, yPosition);
-            }
-            if (edu.graduationDate) {
-              yPosition = addText(`Graduated: ${edu.graduationDate}`, margin + 40, yPosition);
-            }
-            yPosition -= 10;
-          }
-        } else {
-          if (data.degree && data.institution) {
-            yPosition = addText(`${data.degree} from ${data.institution}`, margin + 20, yPosition);
-          }
-          if (data.graduationDate) {
-            yPosition = addText(`Graduated: ${data.graduationDate}`, margin + 20, yPosition);
-          }
-        }
-        break;
-
-      case 'skills':
-        if (data.skills && Array.isArray(data.skills)) {
-          yPosition = addText(data.skills.join(', '), margin + 20, yPosition);
-        }
-        break;
-
-      default:
-        // Generic handling for unknown section types
-        const content = JSON.stringify(data, null, 2);
-        yPosition = addText(content, margin + 20, yPosition);
-    }
-
-    return yPosition;
   }
 }

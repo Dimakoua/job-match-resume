@@ -5,52 +5,44 @@ describe("PdfAdapter", () => {
   const adapter = new PdfAdapter();
 
   describe("generateBuffer", () => {
-    it("should generate a PDF buffer for a valid resume", async () => {
+    it("should generate a PDF buffer for a valid resume with object sections", async () => {
       const resume = {
         id: "resume-123",
         userId: "user-456",
         title: "Software Engineer Resume",
-        sections: [
-          {
-            type: "personal_info",
-            data: {
-              name: "John Doe",
-              email: "john@example.com",
-              phone: "123-456-7890",
-              location: "New York, NY"
-            }
-          },
-          {
-            type: "summary",
-            data: {
-              text: "Experienced software engineer with 5 years of experience in web development."
-            }
-          },
-          {
-            type: "experience",
-            data: {
+        sections: {
+          firstName: "John",
+          lastName: "Doe",
+          email: "john@example.com",
+          phone: "123-456-7890",
+          location: "New York, NY",
+          linkedin: "https://linkedin.com/in/johndoe",
+          summary: "Experienced software engineer with 5 years of experience in web development.",
+          experience: [
+            {
               position: "Senior Developer",
               company: "Tech Corp",
-              startDate: "2020-01",
-              endDate: "2023-12",
-              description: "Led development of web applications using React and Node.js."
+              duration: "2020-01 to 2023-12",
+              location: "San Francisco, CA",
+              achievements: ["Led development of web applications", "Mentored junior developers"]
+            },
+            {
+              position: "Developer",
+              company: "Startup Inc",
+              duration: "2019-01 to 2020-12",
+              location: "Remote",
+              achievements: ["Built REST APIs", "Implemented CI/CD pipelines"]
             }
-          },
-          {
-            type: "education",
-            data: {
-              degree: "Bachelor of Science",
-              institution: "University of Technology",
-              graduationDate: "2019"
+          ],
+          education: [
+            {
+              degree: "Bachelor of Science in Computer Science",
+              university: "University of Technology",
+              years: "2015-2019"
             }
-          },
-          {
-            type: "skills",
-            data: {
-              skills: ["JavaScript", "React", "Node.js", "Python"]
-            }
-          }
-        ],
+          ],
+          skills: ["JavaScript", "React", "Node.js", "Python", "AWS"]
+        },
         templateId: "professional",
         createdAt: new Date(),
         updatedAt: new Date()
@@ -68,33 +60,39 @@ describe("PdfAdapter", () => {
 
     it("should throw error for invalid resume data", async () => {
       await expect(adapter.generateBuffer(null)).rejects.toThrow("Resume data is required");
-      await expect(adapter.generateBuffer({})).rejects.toThrow("Resume must have sections array");
-      await expect(adapter.generateBuffer({ sections: null })).rejects.toThrow("Resume must have sections array");
+      await expect(adapter.generateBuffer({})).rejects.toThrow("Resume must have sections object");
+      await expect(adapter.generateBuffer({ sections: null })).rejects.toThrow("Resume must have sections object");
     });
 
-    it("should handle empty sections array", async () => {
+    it("should handle minimal resume with only personal info", async () => {
       const resume = {
         id: "resume-123",
         userId: "user-456",
-        title: "Empty Resume",
-        sections: []
+        title: "Basic Resume",
+        sections: {
+          firstName: "Jane",
+          lastName: "Smith",
+          email: "jane@example.com"
+        }
       };
 
       const buffer = await adapter.generateBuffer(resume);
       expect(buffer).toBeInstanceOf(Uint8Array);
       expect(buffer.length).toBeGreaterThan(0);
+
+      const pdfHeader = String.fromCharCode(...buffer.slice(0, 5));
+      expect(pdfHeader).toBe("%PDF-");
     });
 
-    it("should handle sections with missing data", async () => {
+    it("should handle resume without optional fields", async () => {
       const resume = {
         id: "resume-123",
         userId: "user-456",
         title: "Incomplete Resume",
-        sections: [
-          { type: "personal_info", data: null },
-          { type: null, data: { text: "test" } },
-          { type: "summary", data: { text: "Valid summary" } }
-        ]
+        sections: {
+          firstName: "Bob",
+          lastName: "Johnson"
+        }
       };
 
       const buffer = await adapter.generateBuffer(resume);
@@ -102,32 +100,18 @@ describe("PdfAdapter", () => {
       expect(buffer.length).toBeGreaterThan(0);
     });
 
-    it("should handle array-based experience data", async () => {
+    it("should handle empty arrays in sections", async () => {
       const resume = {
         id: "resume-123",
         userId: "user-456",
-        title: "Resume with Array Experience",
-        sections: [
-          {
-            type: "experience",
-            data: [
-              {
-                position: "Developer",
-                company: "Company A",
-                startDate: "2020",
-                endDate: "2021",
-                description: "Worked on projects"
-              },
-              {
-                position: "Senior Developer",
-                company: "Company B",
-                startDate: "2021",
-                endDate: "2023",
-                description: "Led team projects"
-              }
-            ]
-          }
-        ]
+        title: "Resume with Empty Arrays",
+        sections: {
+          firstName: "Alice",
+          lastName: "Brown",
+          experience: [],
+          education: [],
+          skills: []
+        }
       };
 
       const buffer = await adapter.generateBuffer(resume);
@@ -135,28 +119,80 @@ describe("PdfAdapter", () => {
       expect(buffer.length).toBeGreaterThan(0);
     });
 
-    it("should handle array-based education data", async () => {
+    it("should handle multiple experience entries", async () => {
       const resume = {
         id: "resume-123",
         userId: "user-456",
-        title: "Resume with Array Education",
-        sections: [
-          {
-            type: "education",
-            data: [
-              {
-                degree: "Bachelor",
-                institution: "University A",
-                graduationDate: "2019"
-              },
-              {
-                degree: "Master",
-                institution: "University B",
-                graduationDate: "2021"
-              }
-            ]
-          }
-        ]
+        title: "Resume with Multiple Jobs",
+        sections: {
+          firstName: "Charlie",
+          lastName: "Davis",
+          experience: [
+            {
+              position: "Senior Developer",
+              company: "Company A",
+              duration: "2022-01 to Present",
+              achievements: ["Achievement 1", "Achievement 2"]
+            },
+            {
+              position: "Developer",
+              company: "Company B",
+              duration: "2020-01 to 2022-12",
+              achievements: ["Achievement 3"]
+            },
+            {
+              position: "Junior Developer",
+              company: "Company C",
+              duration: "2019-01 to 2020-12",
+              achievements: ["Started learning"]
+            }
+          ]
+        }
+      };
+
+      const buffer = await adapter.generateBuffer(resume);
+      expect(buffer).toBeInstanceOf(Uint8Array);
+      expect(buffer.length).toBeGreaterThan(0);
+    });
+
+    it("should handle multiple education entries", async () => {
+      const resume = {
+        id: "resume-123",
+        userId: "user-456",
+        title: "Resume with Multiple Degrees",
+        sections: {
+          firstName: "Diana",
+          lastName: "Evans",
+          education: [
+            {
+              degree: "Master of Science in Computer Science",
+              university: "MIT",
+              years: "2021-2023"
+            },
+            {
+              degree: "Bachelor of Science in Computer Science",
+              university: "Stanford",
+              years: "2017-2021"
+            }
+          ]
+        }
+      };
+
+      const buffer = await adapter.generateBuffer(resume);
+      expect(buffer).toBeInstanceOf(Uint8Array);
+      expect(buffer.length).toBeGreaterThan(0);
+    });
+
+    it("should handle skills as array", async () => {
+      const resume = {
+        id: "resume-123",
+        userId: "user-456",
+        title: "Resume with Skills",
+        sections: {
+          firstName: "Eve",
+          lastName: "Frank",
+          skills: ["JavaScript", "TypeScript", "React", "Vue.js", "Python", "Java", "C++"]
+        }
       };
 
       const buffer = await adapter.generateBuffer(resume);
