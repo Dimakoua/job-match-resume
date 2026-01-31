@@ -47,6 +47,8 @@
         <!-- History Tab -->
         <HistoryEditor 
           v-else-if="activeTab === 'history'"
+          :history="history"
+          @restore="restoreVersion"
         />
       </main>
 
@@ -175,7 +177,9 @@ const {
   handleAiEnhance,
   applyAiEnhancement,
   zoomIn,
-  zoomOut
+  zoomOut,
+  history,
+  restoreVersion
 } = useBuilderController()
 </script>
 

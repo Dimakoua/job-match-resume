@@ -23,28 +23,36 @@
         </p>
       </div>
 
-      <!-- History List (Mock Data for now) -->
+      <!-- History List -->
       <div 
         v-for="version in history" 
         :key="version.id"
         class="group p-4 rounded-xl border border-gray-100 dark:border-gray-800 hover:border-primary/30 hover:bg-primary/5 transition-all cursor-pointer"
+        @click="$emit('restore', version)"
       >
         <div class="flex items-center justify-between mb-2">
           <div class="flex items-center gap-3">
             <div class="h-8 w-8 rounded-full bg-violet-100 dark:bg-violet-900 flex items-center justify-center text-violet-600">
-              <span class="text-xs font-bold">v{{ version.number }}</span>
+              <svg xmlns="http://www.w3.org/2000/svg" class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
             </div>
             <div>
               <p class="text-sm font-bold text-gray-900 dark:text-white">{{ version.name }}</p>
-              <p class="text-[11px] text-gray-500">{{ version.date }}</p>
+              <p class="text-[11px] text-gray-500">{{ formatDate(version.timestamp) }}</p>
             </div>
           </div>
-          <button class="opacity-0 group-hover:opacity-100 px-3 py-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-[10px] font-bold hover:bg-gray-50 transition-all uppercase tracking-wider">
+          <button 
+            @click.stop="$emit('restore', version)"
+            class="opacity-0 group-hover:opacity-100 px-3 py-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-[10px] font-bold hover:bg-gray-50 transition-all uppercase tracking-wider"
+          >
             Restore
           </button>
         </div>
         <p class="text-xs text-gray-600 dark:text-gray-400 line-clamp-1 italic">
-          "{{ version.changeMessage }}"
+          Snapshot captured during "{{ version.name }}"
         </p>
       </div>
     </div>
@@ -64,33 +72,25 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-
-// Mock history data for UI demonstration
-const history = ref([
-  // Uncomment to test the list view
-  /*
-  { 
-    id: 1, 
-    number: 3, 
-    name: 'Current Version', 
-    date: 'Jan 30, 2026 • 2:45 PM', 
-    changeMessage: 'Added Education and Certifications sections' 
-  },
-  { 
-    id: 2, 
-    number: 2, 
-    name: 'AI Enhanced Version', 
-    date: 'Jan 30, 2026 • 2:10 PM', 
-    changeMessage: 'Improved summary using AI' 
-  },
-  { 
-    id: 3, 
-    number: 1, 
-    name: 'Initial Draft', 
-    date: 'Jan 30, 2026 • 1:55 PM', 
-    changeMessage: 'Created basic resume structure' 
+const props = defineProps({
+  history: {
+    type: Array,
+    default: () => []
   }
-  */
-])
+})
+
+defineEmits(['restore'])
+
+const formatDate = (timestamp) => {
+  if (!timestamp) return ''
+  const date = new Date(timestamp)
+  return date.toLocaleString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true
+  })
+}
 </script>

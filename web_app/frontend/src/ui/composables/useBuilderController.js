@@ -12,6 +12,7 @@ import { SaveResumeUseCase } from '../../core/application/editor/SaveResumeUseCa
 import { LoadResumeUseCase } from '../../core/application/editor/LoadResumeUseCase.js'
 import { DraftStorageUseCase } from '../../core/application/editor/DraftStorageUseCase.js'
 import { DownloadPdfUseCase } from '../../core/application/editor/DownloadPdfUseCase.js'
+import { DraftVersionUseCase } from '../../core/application/editor/DraftVersionUseCase.js'
 import { HttpAIService } from '../../infrastructure/api/HttpAIService.js'
 import { HttpResumeRepository } from '../../infrastructure/api/HttpResumeRepository.js'
 
@@ -26,6 +27,7 @@ export function useBuilderController() {
   const saveResumeUseCase = new SaveResumeUseCase(resumeRepository)
   const loadResumeUseCase = new LoadResumeUseCase(resumeRepository, draftStorageUseCase)
   const downloadPdfUseCase = new DownloadPdfUseCase()
+  const draftVersionUseCase = new DraftVersionUseCase()
 
   // ===== State =====
   const activeTab = ref('edit')
@@ -33,6 +35,7 @@ export function useBuilderController() {
   const isSaved = ref(true)
   const isSaving = ref(false)
   const resumeId = ref(null)
+  const history = ref([])
 
   const defaultResumeData = {
     firstName: '',
@@ -127,6 +130,28 @@ export function useBuilderController() {
     { deep: true, flush: 'post' }  // flush: 'post' prevents recursive updates during render
   )
 
+  // ===== Version History =====
+  const refreshHistory = () => {
+    if (resumeId.value) {
+      history.value = draftVersionUseCase.getHistory(resumeId.value)
+    }
+  }
+
+  const restoreVersion = (version) => {
+    if (!version || !version.data) return
+
+    const { resumeData: vData, sections: vSections, layoutSettings: vLayout, styleSettings: vStyle } = version.data
+    
+    // Update state
+    resumeData.value = JSON.parse(JSON.stringify(vData))
+    if (vSections) sections.value = JSON.parse(JSON.stringify(vSections))
+    if (vLayout) layoutSettings.value = JSON.parse(JSON.stringify(vLayout))
+    if (vStyle) styleSettings.value = JSON.parse(JSON.stringify(vStyle))
+    
+    isSaved.value = false
+    activeTab.value = 'edit'
+  }
+
   // ===== Event Handlers: Save =====
   const handleSave = async () => {
     isSaving.value = true
@@ -147,6 +172,15 @@ export function useBuilderController() {
       if (!route.query.id) {
         router.replace({ query: { id: result.id } })
       }
+
+      // Create a local history snapshot on successful save
+      draftVersionUseCase.saveSnapshot(result.id, 'Manual Save', {
+        resumeData: resumeData.value,
+        sections: sections.value,
+        layoutSettings: layoutSettings.value,
+        styleSettings: styleSettings.value
+      })
+      refreshHistory()
     } catch (error) {
       console.error('Failed to save:', error)
       // Show user-friendly error without re-throwing
@@ -208,6 +242,16 @@ export function useBuilderController() {
       resumeData.value.experience[aiModal.value.index].description = aiModal.value.result
     }
 
+    if (resumeId.value) {
+      draftVersionUseCase.saveSnapshot(resumeId.value, 'AI Enhancement', {
+        resumeData: resumeData.value,
+        sections: sections.value,
+        layoutSettings: layoutSettings.value,
+        styleSettings: styleSettings.value
+      })
+      refreshHistory()
+    }
+
     aiModal.value.show = false
   }
 
@@ -263,6 +307,7 @@ export function useBuilderController() {
         if (loaded.layoutSettings) layoutSettings.value = loaded.layoutSettings
         if (loaded.styleSettings) styleSettings.value = loaded.styleSettings
         isSaved.value = loaded.source === 'backend'
+        refreshHistory()
       } else {
         // New resume - try to restore draft
         const draft = loadResumeUseCase.loadFromDraftOrNew()
@@ -309,6 +354,10 @@ export function useBuilderController() {
     handleAiEnhance,
     applyAiEnhancement,
     zoomIn,
-    zoomOut
+    zoomOut,
+    // History
+    history,
+    restoreVersion,
+    refreshHistory
   }
 }
