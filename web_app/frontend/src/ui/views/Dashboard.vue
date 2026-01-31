@@ -78,6 +78,48 @@
       <!-- Footer -->
       <AppFooter />
     </div>
+
+    <!-- Preview Modal -->
+    <div v-if="previewModal.show" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" @click="previewModal.show = false">
+      <div class="relative w-full max-w-4xl max-h-[90vh] bg-white dark:bg-gray-900 rounded-2xl shadow-2xl overflow-hidden flex flex-col" @click.stop>
+        <!-- Modal Header -->
+        <div class="p-4 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center bg-white dark:bg-gray-900 sticky top-0 z-10">
+          <h3 class="font-bold text-lg text-gray-900 dark:text-white">{{ previewModal.resume?.title }}</h3>
+          <div class="flex items-center gap-2">
+            <button 
+              @click="handleDownloadResume(previewModal.resume)"
+              class="px-4 py-2 bg-primary text-white text-sm font-bold rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Download PDF
+            </button>
+            <button 
+              @click="previewModal.show = false"
+              class="p-2 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="size-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Modal Body (Preview) -->
+        <div class="flex-1 overflow-y-auto p-8 bg-slate-100 dark:bg-slate-950 flex justify-center custom-scrollbar">
+          <div v-if="previewModal.isLoading" class="flex flex-col items-center justify-center py-20">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+            <p class="mt-4 text-gray-500">Loading preview...</p>
+          </div>
+          <div v-else class="w-full max-w-[800px] origin-top scale-90 sm:scale-100">
+            <ResumePreview 
+              :resume="previewModal.resume"
+              :sections="previewModal.sections"
+              :layout="previewModal.layout"
+              :style="previewModal.style"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -86,6 +128,7 @@ import AppHeader from '../components/AppHeader.vue'
 import AppFooter from '../components/AppFooter.vue'
 import ResumeCard from '../components/ResumeCard.vue'
 import ResumeEmptyCard from '../components/ResumeEmptyCard.vue'
+import ResumePreview from '../components/ResumePreview.vue'
 import { useDashboardController } from '../composables/useDashboardController.js'
 
 // Use the controller composable (per technical_design.md §3.2D)
@@ -93,6 +136,7 @@ const {
   resumes,
   isLoading,
   error,
+  previewModal,
   handleCreateWithAI,
   handleCreateFromScratch,
   handleEditResume,
@@ -102,3 +146,16 @@ const {
   handleDeleteResume
 } = useDashboardController()
 </script>
+
+<style scoped>
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #d0d7e7;
+  border-radius: 10px;
+}
+</style>

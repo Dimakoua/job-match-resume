@@ -83,6 +83,8 @@
         >
           Edit Resume
         </button>
+
+        <!-- TODO: download logic we fix later -->
         <button 
           @click="$emit('download', resume)"
           class="px-3 bg-gray-100 dark:bg-gray-800 text-gray-500 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
