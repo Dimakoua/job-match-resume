@@ -7,7 +7,7 @@
       :is-saving="isSaving"
       :is-syncing="isSyncing"
       @save="handleSave"
-      @download="handleDownload"
+      @download="(format) => handleDownload(format)"
     />
 
     <div class="flex flex-1 overflow-hidden">

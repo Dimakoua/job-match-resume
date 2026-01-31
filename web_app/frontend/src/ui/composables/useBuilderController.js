@@ -11,10 +11,11 @@ import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router'
 import { SaveResumeUseCase } from '../../core/application/editor/SaveResumeUseCase.js'
 import { LoadResumeUseCase } from '../../core/application/editor/LoadResumeUseCase.js'
 import { DraftStorageUseCase } from '../../core/application/editor/DraftStorageUseCase.js'
-import { DownloadPdfUseCase } from '../../core/application/editor/DownloadPdfUseCase.js'
 import { DraftVersionUseCase } from '../../core/application/editor/DraftVersionUseCase.js'
 import { HttpAIService } from '../../infrastructure/api/HttpAIService.js'
 import { HttpResumeRepository } from '../../infrastructure/api/HttpResumeRepository.js'
+import { ExportService } from '../../infrastructure/api/ExportService.js'
+import { DownloadResumeUseCase } from '../../core/application/export/DownloadResumeUseCase.js'
 
 export function useBuilderController() {
   const route = useRoute()
@@ -23,10 +24,11 @@ export function useBuilderController() {
   // ===== Dependency Injection (DI) =====
   const resumeRepository = new HttpResumeRepository()
   const aiService = new HttpAIService()
+  const exportService = new ExportService()
   const draftStorageUseCase = new DraftStorageUseCase('resume_builder_draft', 1000)
   const saveResumeUseCase = new SaveResumeUseCase(resumeRepository)
   const loadResumeUseCase = new LoadResumeUseCase(resumeRepository, draftStorageUseCase)
-  const downloadPdfUseCase = new DownloadPdfUseCase()
+  const downloadResumeUseCase = new DownloadResumeUseCase(exportService)
   const draftVersionUseCase = new DraftVersionUseCase()
 
   // ===== State =====
@@ -245,12 +247,22 @@ export function useBuilderController() {
   }
 
   // ===== Event Handlers: Download =====
-  const handleDownload = () => {
-    downloadPdfUseCase.download(
-      resumeData.value,
-      styleSettings.value,
-      layoutSettings.value
-    )
+  const handleDownload = async (format = 'pdf') => {
+    if (!resumeId.value) {
+      alert('Please save your resume first before downloading.')
+      return
+    }
+    try {
+      const command = {
+        resumeId: resumeId.value,
+        format // 'pdf' or 'docx'
+      }
+      await downloadResumeUseCase.execute(command)
+      // Download is triggered automatically; no additional feedback needed
+    } catch (err) {
+      console.error('Failed to download resume:', err)
+      alert(`Failed to download resume: ${err.message}`)
+    }
   }
 
   // ===== Event Handlers: AI Enhancement =====
