@@ -17,6 +17,15 @@ export class ResumeRepository {
   }
 
   /**
+   * Updates an existing Resume entity in the repository.
+   * @param {Resume} resume - The resume to update.
+   * @returns {Promise<void>}
+   */
+  async update(resume) {
+    return this.impl.update(resume);
+  }
+
+  /**
    * Finds a Resume by ID.
    * @param {string} id - The resume ID.
    * @returns {Promise<Resume|null>} The resume or null if not found.

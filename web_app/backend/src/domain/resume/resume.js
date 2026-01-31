@@ -9,7 +9,7 @@ export class Resume {
     this.id = id;
     this.userId = userId;
     this.title = title.trim();
-    this.sections = [...sections]; // Deep copy if needed, but for now shallow
+    this.sections = Array.isArray(sections) ? [...sections] : { ...sections };
     this.templateId = templateId;
     this.createdAt = createdAt || new Date();
     this.updatedAt = updatedAt || new Date();
@@ -41,10 +41,9 @@ export class Resume {
   }
 
   validateSections(sections) {
-    if (!Array.isArray(sections)) {
-      throw new Error('Sections must be an array');
+    if (sections !== null && typeof sections !== 'object') {
+      throw new Error('Sections must be an object or an array');
     }
-    // Additional validation can be added here
   }
 
   validateTemplateId(templateId) {

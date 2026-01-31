@@ -18,9 +18,10 @@ export class CreateResumeService {
     // Generate ID
     const id = crypto.randomUUID();
 
-    // Initialize sections based on template or empty
-    let sections = [];
-    if (command.templateId) {
+    // Initialize sections based on template, provided sections, or empty
+    let sections = command.sections || [];
+    
+    if (!command.sections && command.templateId) {
       // Load predefined template sections
       sections = await this.templateRepository.getSections(command.templateId);
     }

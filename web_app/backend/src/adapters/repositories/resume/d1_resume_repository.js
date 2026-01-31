@@ -17,6 +17,22 @@ export class D1ResumeRepository {
     }
   }
 
+  async update(resume) {
+    const contentJson = JSON.stringify(resume.sections);
+    const sql = 'UPDATE Resumes SET title = ?, content = ?, template_id = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND user_id = ?';
+    try {
+      await execute(this.database, sql, [
+        resume.title,
+        contentJson,
+        resume.templateId || null,
+        resume.id,
+        resume.userId
+      ]);
+    } catch (error) {
+      throw new Error(`Failed to update resume: ${error.message}`);
+    }
+  }
+
   async findById(id) {
     const sql = 'SELECT id, user_id, title, content, template_id, created_at, updated_at FROM Resumes WHERE id = ?';
     try {

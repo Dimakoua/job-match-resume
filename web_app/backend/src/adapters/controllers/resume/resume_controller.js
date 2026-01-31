@@ -4,6 +4,7 @@ import { BaseController } from '../base/base_controller.js';
 const createResumeSchema = z.object({
   title: z.string().min(1, 'Title is required'),
   templateId: z.string().optional(),
+  sections: z.any().optional(), // Flexible for JSON content
 });
 
 const generateFromJDSchema = z.object({
@@ -16,7 +17,9 @@ const improveTextSchema = z.object({
 });
 
 const updateResumeSchema = z.object({
+  title: z.string().min(1, 'Title is required').optional(),
   templateId: z.string().nullable().optional(),
+  sections: z.any().optional(),
 });
 
 export class ResumeController extends BaseController {

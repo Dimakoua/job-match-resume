@@ -34,7 +34,7 @@ export function useBuilderController() {
   const isSaving = ref(false)
   const resumeId = ref(null)
 
-  const resumeData = ref({
+  const defaultResumeData = {
     firstName: '',
     lastName: '',
     title: '',
@@ -48,7 +48,9 @@ export function useBuilderController() {
     skills: [],
     certifications: [],
     projects: []
-  })
+  }
+
+  const resumeData = ref({ ...defaultResumeData })
 
   const sections = ref([
     { id: 'personal', label: 'Personal Info', visible: true, required: true },
@@ -251,8 +253,13 @@ export function useBuilderController() {
       if (id) {
         resumeId.value = id
         const loaded = await loadResumeUseCase.execute(id)
-        resumeData.value = loaded.resumeData
-        if (loaded.sections) sections.value = loaded.sections
+        
+        // Merge with defaults to ensure all fields exist
+        resumeData.value = { ...defaultResumeData, ...loaded.resumeData }
+        
+        if (loaded.sections && loaded.sections.length > 0) {
+          sections.value = loaded.sections
+        }
         if (loaded.layoutSettings) layoutSettings.value = loaded.layoutSettings
         if (loaded.styleSettings) styleSettings.value = loaded.styleSettings
         isSaved.value = loaded.source === 'backend'
@@ -260,7 +267,7 @@ export function useBuilderController() {
         // New resume - try to restore draft
         const draft = loadResumeUseCase.loadFromDraftOrNew()
         if (draft) {
-          resumeData.value = draft.resumeData
+          resumeData.value = { ...defaultResumeData, ...draft.resumeData }
           if (draft.sections) sections.value = draft.sections
           if (draft.layoutSettings) layoutSettings.value = draft.layoutSettings
           if (draft.styleSettings) styleSettings.value = draft.styleSettings

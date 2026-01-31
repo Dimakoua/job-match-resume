@@ -31,11 +31,23 @@ export class UpdateResumeService {
       throw new Error('Access denied');
     }
 
-    // Update the template ID
-    resume.templateId = command.templateId;
+    // Update fields if provided
+    if (command.title !== undefined) {
+      resume.title = command.title;
+    }
+    
+    if (command.templateId !== undefined) {
+      resume.templateId = command.templateId;
+    }
+    
+    if (command.sections !== undefined) {
+      resume.sections = command.sections;
+    }
+
+    resume.updatedAt = new Date();
 
     // Save the updated resume
-    await this.resumeRepository.save(resume);
+    await this.resumeRepository.update(resume);
 
     return resume;
   }

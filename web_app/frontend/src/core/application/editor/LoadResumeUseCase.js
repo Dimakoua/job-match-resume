@@ -18,7 +18,8 @@ export class LoadResumeUseCase {
       this.draftStorageUseCase.clearDraft()
       
       // Parse sections if needed
-      if (resume.sections) {
+      // Check if it's the expected object structure or an array (default)
+      if (resume.sections && !Array.isArray(resume.sections)) {
         const { visibleSections, layout, style, ...content } = resume.sections
         return {
           resumeData: content,
@@ -30,7 +31,13 @@ export class LoadResumeUseCase {
         }
       }
       
-      return { ...resume, source: 'backend' }
+      // If it's an array or empty, return defaults
+      return { 
+        resumeData: {}, 
+        sections: resume.sections || [],
+        resumeId: resume.id,
+        source: 'backend' 
+      }
     } catch (error) {
       console.error('Failed to load resume from backend:', error)
       
