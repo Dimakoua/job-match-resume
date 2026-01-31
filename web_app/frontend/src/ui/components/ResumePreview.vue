@@ -3,8 +3,8 @@
     class="bg-white shadow-2xl rounded-sm flex flex-col overflow-hidden text-[#222]" 
     :style="previewStyle"
   >
-    <!-- Header - Classic -->
-    <header v-if="layout.template === 'classic'" class="mb-6 flex justify-between border-b-2 pb-4" :style="{ borderColor: style.accentColor }">
+    <!-- Header - Basic (Classic) -->
+    <header v-if="layout.template === 'basic' || layout.template === 'classic'" class="mb-6 flex justify-between border-b-2 pb-4" :style="{ borderColor: style.accentColor }">
       <div>
         <h1 class="text-3xl font-bold tracking-tight text-gray-900 mb-1" :style="{ fontFamily: fontFamilies[style.headingFont] }">
           {{ resume.firstName || 'Your' }} {{ resume.lastName || 'Name' }}

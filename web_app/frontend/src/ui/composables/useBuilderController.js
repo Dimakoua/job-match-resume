@@ -68,7 +68,7 @@ export function useBuilderController() {
   ])
 
   const layoutSettings = ref({
-    template: 'classic',
+    template: 'basic',
     margins: 48,
     sectionSpacing: 24,
   })

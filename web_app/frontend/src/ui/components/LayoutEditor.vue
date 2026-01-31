@@ -106,7 +106,7 @@ const props = defineProps({
   layout: {
     type: Object,
     default: () => ({
-      template: 'classic',
+      template: 'basic',
       margins: 48,
       sectionSpacing: 24
     })
@@ -133,8 +133,8 @@ watch(localLayout, (newVal) => {
 
 const layouts = [
   { 
-    id: 'classic', 
-    name: 'Classic', 
+    id: 'basic', 
+    name: 'Basic', 
     description: 'Traditional single-column layout',
     previewClass: ''
   },
@@ -145,16 +145,34 @@ const layouts = [
     previewClass: 'border-l-2 border-primary pl-2'
   },
   { 
+    id: 'professional', 
+    name: 'Professional', 
+    description: 'Bold headers, structured',
+    previewClass: 'border-t-4 border-primary pt-2'
+  },
+  { 
     id: 'minimal', 
     name: 'Minimal', 
     description: 'Ultra-clean, no borders',
     previewClass: 'opacity-80'
   },
   { 
-    id: 'professional', 
-    name: 'Professional', 
-    description: 'Bold headers, structured',
-    previewClass: 'border-t-4 border-primary pt-2'
+    id: 'creative', 
+    name: 'Creative', 
+    description: 'Playful font & accent',
+    previewClass: 'italic'
+  },
+  { 
+    id: 'technical', 
+    name: 'Technical', 
+    description: 'Dense, skill-focused',
+    previewClass: 'text-xs'
+  },
+  { 
+    id: 'academic', 
+    name: 'Academic', 
+    description: 'Standard CV format',
+    previewClass: 'underline'
   },
 ]
 

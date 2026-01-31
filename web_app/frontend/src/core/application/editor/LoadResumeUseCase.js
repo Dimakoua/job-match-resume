@@ -35,6 +35,9 @@ export class LoadResumeUseCase {
       return { 
         resumeData: {}, 
         sections: resume.sections || [],
+        layoutSettings: {
+          template: resume.templateId || 'basic'
+        },
         resumeId: resume.id,
         source: 'backend' 
       }
