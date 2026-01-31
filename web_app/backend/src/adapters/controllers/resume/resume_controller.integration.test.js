@@ -3,6 +3,7 @@ import { ResumeController } from './resume_controller.js';
 import { Factory } from '../../../factory.js';
 import { CreateResumeService } from '../../../application/resume/create_resume_service.js';
 import { ListResumesService } from '../../../application/resume/list_resumes_service.js';
+import { DeleteResumeService } from '../../../application/resume/delete_resume_service.js';
 import { UpdateResumeService } from '../../../application/update_resume/update_resume_service.js';
 import { ListTemplatesService } from '../../../application/list_templates/list_templates_service.js';
 import { GenerateFromJDService } from '../../../application/generate_from_jd/generate_from_jd_service.js';
@@ -48,6 +49,7 @@ describe('ResumeController Integration Tests', () => {
 
     const createResumeService = new CreateResumeService(resumeRepository, templateRepository);
     const listResumesService = new ListResumesService(resumeRepository);
+    const deleteResumeService = new DeleteResumeService(resumeRepository);
     const updateResumeService = new UpdateResumeService(resumeRepository, templateRepository);
     const listTemplatesService = new ListTemplatesService(templateRepository);
     const generateFromJDService = new GenerateFromJDService(mockAIAdapter, resumeRepository, templateRepository);
@@ -66,6 +68,7 @@ describe('ResumeController Integration Tests', () => {
     const deps = {
       createResumeService,
       listResumesService,
+      deleteResumeService,
       updateResumeService,
       listTemplatesService,
       generateFromJDService,
@@ -554,6 +557,75 @@ describe('ResumeController Integration Tests', () => {
       };
 
       const response = await controller.exportResume(request);
+      expect(response.status).toBe(403);
+
+      const result = await response.json();
+      expect(result.error.code).toBe('ACCESS_DENIED');
+    });
+
+  });
+
+  describe('deleteResume', () => {
+    it('should delete a resume successfully', async () => {
+      const user = await factory.insert('user');
+      const token = await createToken(user.id);
+      const resume = await factory.insert('resume', { userId: user.id });
+
+      const request = {
+        headers: {
+          get: (header) => header === 'Authorization' ? `Bearer ${token}` : null,
+        },
+      };
+
+      const response = await controller.deleteResume(request, resume.id);
+      expect(response.status).toBe(200);
+
+      const result = await response.json();
+      expect(result.success).toBe(true);
+      expect(result.data.id).toBe(resume.id);
+    });
+
+    it('should return 401 when not authenticated', async () => {
+      const request = {
+        headers: {
+          get: () => null,
+        },
+      };
+
+      const response = await controller.deleteResume(request, 'some-id');
+      expect(response.status).toBe(401);
+    });
+
+    it('should return 404 for non-existent resume', async () => {
+      const user = await factory.insert('user');
+      const token = await createToken(user.id);
+
+      const request = {
+        headers: {
+          get: (header) => header === 'Authorization' ? `Bearer ${token}` : null,
+        },
+      };
+
+      const response = await controller.deleteResume(request, 'non-existent-id');
+      expect(response.status).toBe(404);
+
+      const result = await response.json();
+      expect(result.error.code).toBe('RESUME_NOT_FOUND');
+    });
+
+    it('should return 403 for resume belonging to another user', async () => {
+      const user1 = await factory.insert('user');
+      const user2 = await factory.insert('user');
+      const token2 = await createToken(user2.id);
+      const resume = await factory.insert('resume', { userId: user1.id });
+
+      const request = {
+        headers: {
+          get: (header) => header === 'Authorization' ? `Bearer ${token2}` : null,
+        },
+      };
+
+      const response = await controller.deleteResume(request, resume.id);
       expect(response.status).toBe(403);
 
       const result = await response.json();

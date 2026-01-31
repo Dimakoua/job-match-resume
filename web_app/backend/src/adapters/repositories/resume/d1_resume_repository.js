@@ -60,4 +60,13 @@ export class D1ResumeRepository {
       throw new Error(`Failed to find resumes: ${error.message}`);
     }
   }
+
+  async delete(id) {
+    const sql = 'DELETE FROM Resumes WHERE id = ?';
+    try {
+      await execute(this.database, sql, [id]);
+    } catch (error) {
+      throw new Error(`Failed to delete resume: ${error.message}`);
+    }
+  }
 }

@@ -76,4 +76,13 @@ export function setupResumeRoutes(router) {
     const { controller } = createController(env, ResumeController, [env.JWT_SECRET]);
     return controller.updateResume(request, request.params.id);
   });
+
+  // Delete resume
+  // Usage: DELETE /api/resumes/:id
+  // Headers: Authorization: Bearer <jwt>
+  // Returns: { "success": true, "data": { "message": "Resume deleted successfully", "id": "..." } }
+  router.delete('/api/resumes/:id', async (request, env, ctx) => {
+    const { controller } = createController(env, ResumeController, [env.JWT_SECRET]);
+    return controller.deleteResume(request, request.params.id);
+  });
 }

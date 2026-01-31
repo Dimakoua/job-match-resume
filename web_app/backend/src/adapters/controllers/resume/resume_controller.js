@@ -28,6 +28,7 @@ export class ResumeController extends BaseController {
     this.createResumeService = deps.createResumeService;
     this.listResumesService = deps.listResumesService;
     this.getResumeService = deps.getResumeService;
+    this.deleteResumeService = deps.deleteResumeService;
     this.updateResumeService = deps.updateResumeService;
     this.listTemplatesService = deps.listTemplatesService;
     this.generateFromJDService = deps.generateFromJDService;
@@ -338,6 +339,43 @@ export class ResumeController extends BaseController {
       }
       if (error.message === 'Invalid template ID') {
         return this.errorResponse('INVALID_TEMPLATE', 'Invalid template ID', 400);
+      }
+
+      return this.errorResponse('INTERNAL_ERROR', 'An unexpected error occurred', 500);
+    }
+  }
+
+  async deleteResume(request, resumeId) {
+    try {
+      const userId = await this.authenticate(request);
+
+      const command = {
+        resumeId,
+        userId,
+      };
+
+      // Execute delete
+      await this.deleteResumeService.execute(command);
+
+      return this.successResponse({
+        success: true,
+        data: {
+          message: 'Resume deleted successfully',
+          id: resumeId,
+        },
+      });
+    } catch (error) {
+      // If authenticate threw a Response, return it
+      if (error instanceof Response) {
+        return error;
+      }
+
+      // Handle specific business errors
+      if (error.message === 'Resume not found') {
+        return this.errorResponse('RESUME_NOT_FOUND', 'Resume not found', 404);
+      }
+      if (error.message === 'Access denied') {
+        return this.errorResponse('ACCESS_DENIED', 'Access denied', 403);
       }
 
       return this.errorResponse('INTERNAL_ERROR', 'An unexpected error occurred', 500);

@@ -42,4 +42,13 @@ export class ResumeRepository {
   async findAllByUserId(userId) {
     return this.impl.findAllByUserId(userId);
   }
+
+  /**
+   * Deletes a Resume by ID.
+   * @param {string} id - The resume ID.
+   * @returns {Promise<void>}
+   */
+  async delete(id) {
+    return this.impl.delete(id);
+  }
 }
