@@ -41,10 +41,15 @@ const togglePassword = () => {
         <h2 class="text-foreground text-lg font-bold leading-tight tracking-[-0.015em]">AI Resume Builder</h2>
       </div>
       <div class="flex items-center gap-4">
-        <span class="text-sm text-muted-foreground hidden sm:block">Need help?</span>
+        <router-link 
+          to="/terms"
+          class="text-sm text-primary hover:underline font-medium hidden sm:block"
+        >
+          Need help?
+        </router-link>
         <router-link 
           to="/signup"
-          class="flex min-w-[84px] cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-primary text-primary-foreground text-sm font-bold"
+          class="flex min-w-[84px] cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-bold transition-colors"
         >
           Sign up
         </router-link>
