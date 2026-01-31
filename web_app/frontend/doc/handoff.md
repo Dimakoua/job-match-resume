@@ -9,6 +9,10 @@
 - Included Google OAuth button in Signup screen as UI-only per design (design.md §2.1).
 - Added terms/privacy routes and components for complete auth flow navigation.
 ## Changes Since Last Session
+- Resolved "Maximum recursive updates exceeded" bug in `Builder.vue` by adding deep-comparison logic to `ResumeEditor.vue` watchers and a post-hydration flag in `useBuilderController.js`.
+- Implemented missing CRUD fields for Education, Projects, and Certifications in `ResumeEditor.vue` and `ResumePreview.vue`.
+- Fixed data loss on reload by updating `LoadResumeUseCase.js` to correctly handle merging logic between loaded resume data and UI defaults.
+- Updated `useBuilderController.js` to utilize the new full update capabilities of the backend API, enabling persistent resume saving.
 - src/ restructured to Clean Architecture: core/ (domain + application), infrastructure/ (api + storage), ui/ (components + views + stores + composables).
 - core/domain/user/User.js (+entity), core/domain/resume/Resume.js & Section.js (+entities).
 - infrastructure/api/HttpClient.js (moved from utils, +TokenStorage), HttpResumeRepository.js, HttpAIService.js, HttpAuthService.js.

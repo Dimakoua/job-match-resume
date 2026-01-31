@@ -17,7 +17,12 @@
 - Completed B-016 (AI Endpoints) with POST `/resumes/generate-from-jd` and POST `/resumes/improve-text` endpoints, authentication, validation, error handling, and integration tests (13/13 passing).
 - Completed B-017 (PDF and DOCX Adapters) with professional document generation and comprehensive unit tests (12/12 passing).
 - Completed B-018 (Export Endpoint) with GET `/resumes/:id/export?format=pdf|docx` endpoint, binary responses, proper headers, filename sanitization, and comprehensive testing.
-- Completed B-019 (Template Metadata API) with GET `/templates` returning template list and PUT `/resumes/:id` allowing template updates, full authentication, validation, and comprehensive testing.
+- Fully integrated Backend and Frontend for resume saving and loading. Resolved "Maximum recursive updates exceeded" reactivity loop in the Builder.
+- Expanded `PUT /resumes/:id` to support full content updates (title, sections). Updated `D1ResumeRepository`, `UpdateResumeService`, and `Resume` domain entity.
+- Fixed 500 error on resume updates by adding missing repository methods and improving domain constructor to handle both object and array section formats.
+- Completed B-019 enhancement with full resume update capabilities, validated with 191/191 backend tests passing (including new integration tests for JSON payloads).
+- Added UI support for Education, Projects, and Certifications in both `ResumeEditor.vue` and `ResumePreview.vue`.
+- Updated `LoadResumeUseCase.js` with robust section parsing to avoid data loss during load/merge cycles.
 
 ## Active Task(s)
 - All backend tasks completed. Ready for frontend integration.

@@ -88,8 +88,8 @@
 - Completed: 2026-01-29
 - Evidence: GET `/resumes/:id/export?format=pdf|docx` endpoint implemented with ExportResumeService, proper binary responses, Content-Type and Content-Disposition headers, filename sanitization, authentication, and validation. Unit tests 10/10 passing, integration tests 4/4 passing.
 
-## B-019 — [feature] Template Metadata API ✅ 100%
-- Completed: 2026-01-29
-- Evidence: GET `/templates` endpoint implemented returning array of {id, name} objects. PUT `/resumes/:id` endpoint implemented allowing template_id updates. ListTemplatesService and UpdateResumeService created with full unit tests (9/9 passing). ResumeController integration tests 15/15 passing with proper JWT authentication.
+## B-019 — [feature] Resume Full Update API ✅ 100%
+- Completed: 2026-01-31
+- Evidence: GET `/templates` endpoint implemented. PUT `/resumes/:id` endpoint fully expanded to support title, sections/content, and template_id updates with JSON object persistence. ListTemplatesService and UpdateResumeService updated with full validation and integration tests. ResumeController integration tests 15/15 passing. Domain Resume entity updated to handle object-based sections.
 
 ---
