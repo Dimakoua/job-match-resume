@@ -182,16 +182,25 @@ const emit = defineEmits(['update:style'])
 
 const localStyle = ref({ ...props.style })
 const customHex = ref(props.style.accentColor?.replace('#', '') || '2463eb')
+let isUpdatingFromEmit = false
 
 // Sync with parent
 watch(() => props.style, (newVal) => {
+  // Skip if this update came from our own emit
+  if (isUpdatingFromEmit) return
+  
   localStyle.value = { ...newVal }
   customHex.value = newVal.accentColor?.replace('#', '') || '2463eb'
 }, { deep: true })
 
 // Emit changes
 watch(localStyle, (newVal) => {
+  isUpdatingFromEmit = true
   emit('update:style', { ...newVal })
+  // Reset flag after emit completes
+  setTimeout(() => {
+    isUpdatingFromEmit = false
+  }, 0)
 }, { deep: true })
 
 const colors = [

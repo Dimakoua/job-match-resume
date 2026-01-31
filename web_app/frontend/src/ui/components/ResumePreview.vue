@@ -61,7 +61,7 @@
     <!-- Summary -->
     <div v-if="resume.summary && isSectionVisible('summary')" :style="{ marginBottom: `${layout.sectionSpacing}px` }">
       <h3 class="text-xs font-bold uppercase tracking-[0.2em] text-gray-400 mb-2 border-b border-gray-100 pb-1" :style="{ fontFamily: fontFamilies[style.headingFont] }">Profile</h3>
-      <p :style="bodyStyle" class="text-gray-700">{{ resume.summary }}</p>
+      <p :style="bodyStyle" class="text-gray-700 whitespace-pre-wrap">{{ resume.summary }}</p>
     </div>
 
     <!-- Experience -->
@@ -80,7 +80,7 @@
           </span>
         </div>
         <p v-if="exp.title" class="text-[10px] font-semibold mb-1" :style="{ color: style.accentColor }">{{ exp.title }}</p>
-        <p v-if="exp.description" :style="bodyStyle" class="text-gray-600">{{ exp.description }}</p>
+        <p v-if="exp.description" :style="bodyStyle" class="text-gray-600 whitespace-pre-wrap">{{ exp.description }}</p>
       </div>
     </div>
 
