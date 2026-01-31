@@ -152,6 +152,13 @@ export function useBuilderController() {
     activeTab.value = 'edit'
   }
 
+  const clearHistory = () => {
+    if (resumeId.value && window.confirm('Are you sure you want to clear all local versions? This cannot be undone.')) {
+      draftVersionUseCase.clearHistory(resumeId.value)
+      refreshHistory()
+    }
+  }
+
   // ===== Event Handlers: Save =====
   const handleSave = async () => {
     isSaving.value = true
@@ -358,6 +365,7 @@ export function useBuilderController() {
     // History
     history,
     restoreVersion,
-    refreshHistory
+    refreshHistory,
+    clearHistory
   }
 }

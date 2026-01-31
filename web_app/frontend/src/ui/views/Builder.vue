@@ -49,6 +49,7 @@
           v-else-if="activeTab === 'history'"
           :history="history"
           @restore="restoreVersion"
+          @clear="clearHistory"
         />
       </main>
 
@@ -179,7 +180,8 @@ const {
   zoomIn,
   zoomOut,
   history,
-  restoreVersion
+  restoreVersion,
+  clearHistory
 } = useBuilderController()
 </script>
 

@@ -1,10 +1,19 @@
 <template>
   <div class="p-6">
-    <div class="mb-8">
-      <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Version History</h2>
-      <p class="text-sm text-gray-500 dark:text-gray-400">
-        View and restore previous versions of your resume.
-      </p>
+    <div class="mb-8 flex justify-between items-start">
+      <div>
+        <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Version History</h2>
+        <p class="text-sm text-gray-500 dark:text-gray-400">
+          View and restore previous versions of your resume.
+        </p>
+      </div>
+      <button 
+        v-if="history.length > 0"
+        @click="$emit('clear')"
+        class="text-[10px] font-bold text-red-500 hover:text-red-600 dark:hover:text-red-400 uppercase tracking-widest bg-red-50 dark:bg-red-900/20 px-2 py-1.5 rounded-lg transition-colors"
+      >
+        Clear All
+      </button>
     </div>
 
     <div class="space-y-4">
@@ -79,7 +88,7 @@ const props = defineProps({
   }
 })
 
-defineEmits(['restore'])
+defineEmits(['restore', 'clear'])
 
 const formatDate = (timestamp) => {
   if (!timestamp) return ''
