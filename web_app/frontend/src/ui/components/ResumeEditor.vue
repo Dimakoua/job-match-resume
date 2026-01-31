@@ -286,6 +286,7 @@ const emit = defineEmits(['update:modelValue', 'aiEnhance'])
 
 const form = ref(JSON.parse(JSON.stringify(props.modelValue)))
 const newSkill = ref('')
+let isUpdatingFromEmit = false
 
 // Ensure required arrays exist
 if (!form.value.experience) form.value.experience = []
@@ -293,10 +294,18 @@ if (!form.value.skills) form.value.skills = []
 if (!form.value.education) form.value.education = []
 
 watch(form, (newVal) => {
+  isUpdatingFromEmit = true
   emit('update:modelValue', JSON.parse(JSON.stringify(newVal)))
+  // Reset flag after emit completes
+  setTimeout(() => {
+    isUpdatingFromEmit = false
+  }, 0)
 }, { deep: true })
 
 watch(() => props.modelValue, (newVal) => {
+  // Skip if this update came from our own emit
+  if (isUpdatingFromEmit) return
+  
   form.value = JSON.parse(JSON.stringify(newVal))
   // Ensure required arrays exist
   if (!form.value.experience) form.value.experience = []
