@@ -70,7 +70,12 @@
                 <p class="text-sm text-[#4d6599] dark:text-gray-400">Browse through our library of expert-approved resume examples.</p>
               </div>
             </div>
-            <button class="text-primary font-bold text-sm hover:underline whitespace-nowrap">View Examples</button>
+            <router-link 
+              to="/examples"
+              class="text-primary font-bold text-sm hover:underline whitespace-nowrap transition-colors"
+            >
+              View Examples
+            </router-link>
           </div>
         </div>
       </main>
