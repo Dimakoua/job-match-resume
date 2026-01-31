@@ -384,6 +384,21 @@ export function useBuilderController() {
           isSaved.value = !draft.isUnsaved
         }
       }
+
+      // Apply template styling if coming from Examples page
+      if (route.query.templateStyle) {
+        try {
+          const templateStyle = JSON.parse(route.query.templateStyle)
+          styleSettings.value = { ...styleSettings.value, ...templateStyle }
+        } catch (error) {
+          console.warn('Failed to parse template style:', error)
+        }
+      }
+
+      // Apply template layout if template specified
+      if (route.query.template) {
+        layoutSettings.value.template = route.query.template
+      }
     } catch (error) {
       console.error('Failed to load resume:', error)
     }
