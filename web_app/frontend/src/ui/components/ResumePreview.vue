@@ -1,6 +1,6 @@
 <template>
   <div 
-    class="bg-white shadow-2xl rounded-sm flex flex-col overflow-hidden text-[#222] p-4" 
+    class="bg-white shadow-2xl rounded-sm flex flex-col overflow-y-auto text-[#222] p-4" 
     :style="previewStyle"
   >
     <!-- Header - Basic (Classic) -->
