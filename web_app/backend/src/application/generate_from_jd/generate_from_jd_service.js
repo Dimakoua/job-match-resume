@@ -74,6 +74,7 @@ Return the resume as a JSON object with the following structure:
       "title": "Personal Information",
       "content": {
         "name": "Professional Name",
+        "title": "Job Title / Professional Headline",
         "email": "professional@email.com",
         "phone": "(555) 123-4567",
         "location": "City, State",
@@ -245,6 +246,7 @@ Please tailor the user's resume to match this job description. Reframe their exp
           
           sectionsObject.firstName = nameParts[0] || '';
           sectionsObject.lastName = nameParts.slice(1).join(' ') || '';
+          sectionsObject.title = content.title || '';
           sectionsObject.email = content.email || '';
           sectionsObject.phone = content.phone || '';
           sectionsObject.location = content.location || '';
