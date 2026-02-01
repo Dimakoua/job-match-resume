@@ -14,6 +14,36 @@ export class DocxAdapter {
       throw new Error('Resume must have sections object');
     }
 
+    // Extract styles from resume
+    const style = resume.style || {};
+    const layout = resume.layout || {};
+    
+    // Font size mapping
+    const fontSize = style.fontSize || 11;
+    const titleFontSize = Math.max(fontSize + 5, 16);
+    const headingFontSize = Math.max(fontSize + 1, 13);
+    
+    // Font family mapping
+    const fontFamilyMap = {
+      'inter': 'Inter',
+      'playfair': 'Playfair Display',
+      'roboto': 'Roboto',
+      'lora': 'Lora',
+      'open-sans': 'Open Sans',
+      'roboto-mono': 'Roboto Mono'
+    };
+    
+    const bodyFont = fontFamilyMap[style.bodyFont] || 'Inter';
+    const headingFont = fontFamilyMap[style.headingFont] || 'Inter';
+    
+    // Color parsing
+    const parseHexColor = (hex) => {
+      const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+      return result ? result[0] : '2463EB'; // Default blue
+    };
+    
+    const accentColor = parseHexColor(style.accentColor || '#2463eb');
+
     const sections = resume.sections;
     const docSections = [];
 
@@ -24,8 +54,25 @@ export class DocxAdapter {
         new Paragraph({
           text: fullName,
           heading: HeadingLevel.TITLE,
+          run: {
+            font: headingFont,
+            size: titleFontSize * 2, // DOCX uses half-points
+            color: accentColor
+          }
         })
       );
+    }
+
+    // Add title
+    if (sections.title) {
+      docSections.push(new Paragraph({
+        text: sections.title,
+        run: {
+          font: bodyFont,
+          size: (fontSize + 2) * 2,
+          color: accentColor
+        }
+      }));
     }
 
     // Add contact info
@@ -40,11 +87,22 @@ export class DocxAdapter {
     if (sections.summary) {
       docSections.push(
         new Paragraph({
-          text: 'Professional Summary',
+          text: 'Profile',
           heading: HeadingLevel.HEADING_2,
+          run: {
+            font: headingFont,
+            size: headingFontSize * 2,
+            color: '666666'
+          }
         })
       );
-      docSections.push(new Paragraph(sections.summary));
+      docSections.push(new Paragraph({
+        text: sections.summary,
+        run: {
+          font: bodyFont,
+          size: fontSize * 2
+        }
+      }));
       docSections.push(new Paragraph('')); // Spacing
     }
 
@@ -52,8 +110,13 @@ export class DocxAdapter {
     if (sections.experience && Array.isArray(sections.experience) && sections.experience.length > 0) {
       docSections.push(
         new Paragraph({
-          text: 'Work Experience',
+          text: 'Experience',
           heading: HeadingLevel.HEADING_2,
+          run: {
+            font: headingFont,
+            size: headingFontSize * 2,
+            color: '666666'
+          }
         })
       );
       for (const job of sections.experience) {
@@ -61,24 +124,60 @@ export class DocxAdapter {
           const title = job.title || job.position || '';
           docSections.push(new Paragraph({
             children: [
-              new TextRun({ text: `${title} at ${job.company || ''}`, bold: true }),
+              new TextRun({ 
+                text: `${title} at ${job.company || ''}`, 
+                bold: true,
+                font: bodyFont,
+                size: fontSize * 2,
+                color: accentColor
+              }),
             ],
           }));
         }
         if (job.startDate || job.endDate) {
           const dateRange = [job.startDate, job.endDate].filter(Boolean).join(' - ');
-          docSections.push(new Paragraph(dateRange));
+          docSections.push(new Paragraph({
+            text: dateRange,
+            run: {
+              font: bodyFont,
+              size: (fontSize - 1) * 2
+            }
+          }));
         } else if (job.duration || job.date) {
-          docSections.push(new Paragraph(job.duration || job.date || ''));
+          docSections.push(new Paragraph({
+            text: job.duration || job.date || '',
+            run: {
+              font: bodyFont,
+              size: (fontSize - 1) * 2
+            }
+          }));
         }
         if (job.location) {
-          docSections.push(new Paragraph(job.location));
+          docSections.push(new Paragraph({
+            text: job.location,
+            run: {
+              font: bodyFont,
+              size: (fontSize - 1) * 2
+            }
+          }));
         }
         if (job.description) {
-          docSections.push(new Paragraph(job.description));
+          docSections.push(new Paragraph({
+            text: job.description,
+            run: {
+              font: bodyFont,
+              size: (fontSize - 1) * 2
+            }
+          }));
         } else if (job.achievements && Array.isArray(job.achievements)) {
           for (const achievement of job.achievements) {
-            docSections.push(new Paragraph(`• ${achievement}`));
+            docSections.push(new Paragraph({
+              text: `• ${achievement}`,
+              run: {
+                font: bodyFont,
+                size: (fontSize - 1) * 2
+              }
+            }));
           }
         }
         docSections.push(new Paragraph('')); // Spacing
@@ -91,23 +190,52 @@ export class DocxAdapter {
         new Paragraph({
           text: 'Education',
           heading: HeadingLevel.HEADING_2,
+          run: {
+            font: headingFont,
+            size: headingFontSize * 2,
+            color: '666666'
+          }
         })
       );
       for (const edu of sections.education) {
-        if (edu.degree || edu.school || edu.university) {
+        if (edu.school || edu.university) {
           const school = edu.school || edu.university || '';
+          docSections.push(new Paragraph({
+            text: school,
+            run: {
+              font: bodyFont,
+              size: fontSize * 2
+            }
+          }));
+        }
+        if (edu.degree || edu.field) {
           const degreeText = [edu.degree, edu.field].filter(Boolean).join(', ');
           docSections.push(new Paragraph({
-            children: [
-              new TextRun({ text: `${degreeText} from ${school}`, bold: true }),
-            ],
+            text: degreeText,
+            run: {
+              font: bodyFont,
+              size: fontSize * 2,
+              color: accentColor
+            }
           }));
         }
         if (edu.startDate || edu.endDate) {
           const dateRange = [edu.startDate, edu.endDate].filter(Boolean).join(' - ');
-          docSections.push(new Paragraph(dateRange));
+          docSections.push(new Paragraph({
+            text: dateRange,
+            run: {
+              font: bodyFont,
+              size: (fontSize - 1) * 2
+            }
+          }));
         } else if (edu.years) {
-          docSections.push(new Paragraph(edu.years));
+          docSections.push(new Paragraph({
+            text: edu.years,
+            run: {
+              font: bodyFont,
+              size: (fontSize - 1) * 2
+            }
+          }));
         }
         docSections.push(new Paragraph('')); // Spacing
       }
@@ -119,6 +247,11 @@ export class DocxAdapter {
         new Paragraph({
           text: 'Certifications',
           heading: HeadingLevel.HEADING_2,
+          run: {
+            font: headingFont,
+            size: headingFontSize * 2,
+            color: '666666'
+          }
         })
       );
       for (const cert of sections.certifications) {
@@ -126,7 +259,13 @@ export class DocxAdapter {
           let certText = cert.name;
           if (cert.issuer) certText += ` • ${cert.issuer}`;
           if (cert.date) certText += ` • ${cert.date}`;
-          docSections.push(new Paragraph(certText));
+          docSections.push(new Paragraph({
+            text: certText,
+            run: {
+              font: bodyFont,
+              size: fontSize * 2
+            }
+          }));
         }
       }
       docSections.push(new Paragraph('')); // Spacing
@@ -138,18 +277,34 @@ export class DocxAdapter {
         new Paragraph({
           text: 'Projects',
           heading: HeadingLevel.HEADING_2,
+          run: {
+            font: headingFont,
+            size: headingFontSize * 2,
+            color: '666666'
+          }
         })
       );
       for (const project of sections.projects) {
         if (project.name) {
           docSections.push(new Paragraph({
             children: [
-              new TextRun({ text: project.name, bold: true }),
+              new TextRun({ 
+                text: project.name, 
+                bold: true,
+                font: bodyFont,
+                size: fontSize * 2
+              }),
             ],
           }));
         }
         if (project.description) {
-          docSections.push(new Paragraph(project.description));
+          docSections.push(new Paragraph({
+            text: project.description,
+            run: {
+              font: bodyFont,
+              size: (fontSize - 1) * 2
+            }
+          }));
         }
         docSections.push(new Paragraph('')); // Spacing
       }
@@ -161,15 +316,32 @@ export class DocxAdapter {
         new Paragraph({
           text: 'Skills',
           heading: HeadingLevel.HEADING_2,
+          run: {
+            font: headingFont,
+            size: headingFontSize * 2,
+            color: '666666'
+          }
         })
       );
       if (Array.isArray(sections.skills)) {
-        docSections.push(new Paragraph(sections.skills.join(', ')));
+        docSections.push(new Paragraph({
+          text: sections.skills.join(', '),
+          run: {
+            font: bodyFont,
+            size: fontSize * 2
+          }
+        }));
       } else if (sections.skills.technical) {
         const skillText = Array.isArray(sections.skills.technical)
           ? sections.skills.technical.join(', ')
           : sections.skills.technical;
-        docSections.push(new Paragraph(`Technical: ${skillText}`));
+        docSections.push(new Paragraph({
+          text: `Technical: ${skillText}`,
+          run: {
+            font: bodyFont,
+            size: fontSize * 2
+          }
+        }));
       }
     }
 

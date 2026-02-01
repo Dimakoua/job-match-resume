@@ -21,14 +21,32 @@ export class PdfAdapter {
     let currentPage = pdfDoc.addPage();
     const { width, height } = currentPage.getSize();
 
-    // Set up fonts and colors
-    const fontSize = 12;
-    const titleFontSize = 16;
+    // Extract styles from resume
+    const style = resume.style || {};
+    const layout = resume.layout || {};
+    
+    // Parse accent color
+    const parseHexColor = (hex) => {
+      const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+      return result ? rgb(
+        parseInt(result[1], 16) / 255,
+        parseInt(result[2], 16) / 255,
+        parseInt(result[3], 16) / 255
+      ) : rgb(0.14, 0.38, 0.92); // Default blue
+    };
+    
+    const accentColor = parseHexColor(style.accentColor || '#2463eb');
+
+    // Font size mapping
+    const fontSize = style.fontSize || 11;
+    const titleFontSize = Math.max(fontSize + 5, 16);
+    const headingFontSize = Math.max(fontSize + 1, 13);
+    
+    // Page margins
     const margin = 50;
-    let yPosition = height - margin;
 
     // Helper function to add text with word wrapping
-    const addText = (text, x, y, size = fontSize, maxWidth = width - 2 * margin) => {
+    const addText = (text, x, y, size = fontSize, maxWidth = width - 2 * margin, color = rgb(0, 0, 0)) => {
       if (!text) return y;
       const words = String(text).split(' ');
       let line = '';
@@ -39,7 +57,7 @@ export class PdfAdapter {
         const textWidth = testLine.length * (size * 0.6); // Rough estimate
 
         if (textWidth > maxWidth && line) {
-          currentPage.drawText(line, { x, y: currentY, size, color: rgb(0, 0, 0) });
+          currentPage.drawText(line, { x, y: currentY, size, color });
           line = word;
           currentY -= size + 5;
         } else {
@@ -48,7 +66,7 @@ export class PdfAdapter {
       }
 
       if (line) {
-        currentPage.drawText(line, { x, y: currentY, size, color: rgb(0, 0, 0) });
+        currentPage.drawText(line, { x, y: currentY, size, color });
         currentY -= size + 5;
       }
 
@@ -57,10 +75,18 @@ export class PdfAdapter {
 
     const sections = resume.sections;
 
+    // Initialize y position for text placement
+    let yPosition = height - margin;
+
     // Add header with personal info
     if (sections.firstName || sections.lastName) {
       const fullName = `${sections.firstName || ''} ${sections.lastName || ''}`.trim();
-      yPosition = addText(fullName, margin, yPosition, titleFontSize);
+      yPosition = addText(fullName, margin, yPosition, titleFontSize, width - 2 * margin, accentColor);
+    }
+
+    // Add title
+    if (sections.title) {
+      yPosition = addText(sections.title, margin, yPosition, fontSize + 2, width - 2 * margin, accentColor);
     }
 
     // Add contact info
@@ -72,7 +98,7 @@ export class PdfAdapter {
 
     // Add summary
     if (sections.summary) {
-      yPosition = addText('Professional Summary', margin, yPosition, fontSize + 2);
+      yPosition = addText('Profile', margin, yPosition, headingFontSize, width - 2 * margin, rgb(0.4, 0.4, 0.4));
       yPosition -= 5;
       yPosition = addText(sections.summary, margin + 10, yPosition, fontSize);
       yPosition -= 15;
@@ -84,12 +110,12 @@ export class PdfAdapter {
 
     // Add experience
     if (sections.experience && Array.isArray(sections.experience) && sections.experience.length > 0) {
-      yPosition = addText('Work Experience', margin, yPosition, fontSize + 2);
+      yPosition = addText('Experience', margin, yPosition, headingFontSize, width - 2 * margin, rgb(0.4, 0.4, 0.4));
       yPosition -= 5;
       for (const job of sections.experience) {
         if (job.title || job.position || job.company) {
           const title = job.title || job.position || '';
-          yPosition = addText(`${title} at ${job.company || ''}`, margin + 10, yPosition, fontSize);
+          yPosition = addText(`${title} at ${job.company || ''}`, margin + 10, yPosition, fontSize, width - 2 * margin - 10, accentColor);
         }
         if (job.startDate || job.endDate) {
           const dateRange = [job.startDate, job.endDate].filter(Boolean).join(' - ');
@@ -118,13 +144,16 @@ export class PdfAdapter {
 
     // Add education
     if (sections.education && Array.isArray(sections.education) && sections.education.length > 0) {
-      yPosition = addText('Education', margin, yPosition, fontSize + 2);
+      yPosition = addText('Education', margin, yPosition, headingFontSize, width - 2 * margin, rgb(0.4, 0.4, 0.4));
       yPosition -= 5;
       for (const edu of sections.education) {
-        if (edu.degree || edu.school || edu.university) {
+        if (edu.school || edu.university) {
           const school = edu.school || edu.university || '';
+          yPosition = addText(school, margin + 10, yPosition, fontSize);
+        }
+        if (edu.degree || edu.field) {
           const degreeText = [edu.degree, edu.field].filter(Boolean).join(', ');
-          yPosition = addText(`${degreeText} from ${school}`, margin + 10, yPosition, fontSize);
+          yPosition = addText(degreeText, margin + 10, yPosition, fontSize, width - 2 * margin - 10, accentColor);
         }
         if (edu.startDate || edu.endDate) {
           const dateRange = [edu.startDate, edu.endDate].filter(Boolean).join(' - ');
@@ -143,7 +172,7 @@ export class PdfAdapter {
 
     // Add certifications
     if (sections.certifications && Array.isArray(sections.certifications) && sections.certifications.length > 0) {
-      yPosition = addText('Certifications', margin, yPosition, fontSize + 2);
+      yPosition = addText('Certifications', margin, yPosition, headingFontSize, width - 2 * margin, rgb(0.4, 0.4, 0.4));
       yPosition -= 5;
       for (const cert of sections.certifications) {
         if (cert.name) {
@@ -163,7 +192,7 @@ export class PdfAdapter {
 
     // Add projects
     if (sections.projects && Array.isArray(sections.projects) && sections.projects.length > 0) {
-      yPosition = addText('Projects', margin, yPosition, fontSize + 2);
+      yPosition = addText('Projects', margin, yPosition, headingFontSize, width - 2 * margin, rgb(0.4, 0.4, 0.4));
       yPosition -= 5;
       for (const project of sections.projects) {
         if (project.name) {
@@ -182,7 +211,7 @@ export class PdfAdapter {
     }
 
     if (sections.skills && (Array.isArray(sections.skills) || typeof sections.skills === 'object')) {
-      yPosition = addText('Skills', margin, yPosition, fontSize + 2);
+      yPosition = addText('Expertise', margin, yPosition, headingFontSize, width - 2 * margin, rgb(0.4, 0.4, 0.4));
       yPosition -= 5;
       if (Array.isArray(sections.skills)) {
         yPosition = addText(sections.skills.join(', '), margin + 10, yPosition, fontSize);
