@@ -9,6 +9,7 @@ const createResumeSchema = z.object({
 
 const generateFromJDSchema = z.object({
   jobDescription: z.string().min(1, 'Job description is required'),
+  userData: z.string().min(1, 'User data is required'),
   templateId: z.string().optional(),
 });
 

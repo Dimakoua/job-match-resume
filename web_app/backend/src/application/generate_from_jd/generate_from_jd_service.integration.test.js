@@ -27,15 +27,23 @@ describe("GenerateFromJDService Integration Tests", () => {
   });
 
   it("should throw error for missing userId", async () => {
-    await expect(service.execute({ jobDescription: "test job" })).rejects.toThrow('userId is required');
+    await expect(service.execute({ jobDescription: "test job", userData: "test data" })).rejects.toThrow('userId is required');
   });
 
   it("should throw error for missing jobDescription", async () => {
-    await expect(service.execute({ userId: "test-user" })).rejects.toThrow('jobDescription is required');
+    await expect(service.execute({ userId: "test-user", userData: "test data" })).rejects.toThrow('jobDescription is required');
+  });
+
+  it("should throw error for missing userData", async () => {
+    await expect(service.execute({ userId: "test-user", jobDescription: "test job" })).rejects.toThrow('userData is required');
   });
 
   it("should throw error for empty jobDescription", async () => {
-    await expect(service.execute({ userId: "test-user", jobDescription: "" })).rejects.toThrow('jobDescription must be a non-empty string');
+    await expect(service.execute({ userId: "test-user", jobDescription: "", userData: "test data" })).rejects.toThrow('jobDescription must be a non-empty string');
+  });
+
+  it("should throw error for empty userData", async () => {
+    await expect(service.execute({ userId: "test-user", jobDescription: "test job", userData: "" })).rejects.toThrow('userData must be a non-empty string');
   });
 
   it("should throw error for invalid template", async () => {
@@ -46,6 +54,7 @@ describe("GenerateFromJDService Integration Tests", () => {
     await expect(service.execute({
       userId: "test-user",
       jobDescription: "test job",
+      userData: "test data",
       templateId: "nonexistent"
     })).rejects.toThrow('Invalid template: nonexistent');
 
@@ -131,7 +140,21 @@ describe("GenerateFromJDService Integration Tests", () => {
     // Execute service
     const command = {
       userId: 'user-789',
-      jobDescription: 'Senior Software Engineer position requiring 5+ years experience with React, Node.js, AWS, and microservices architecture.'
+      jobDescription: 'Senior Software Engineer position requiring 5+ years experience with React, Node.js, AWS, and microservices architecture.',
+      userData: `John Doe
+john.doe@email.com
+(555) 123-4567
+San Francisco, CA
+
+Experience:
+- Senior Software Engineer at Tech Corp (2020-Present)
+- Led microservices development
+- Improved performance by 40%
+
+Education:
+- BS Computer Science, UC Berkeley (2019)
+
+Skills: JavaScript, React, Node.js, Python, AWS, Docker, Kubernetes`
     };
 
     const result = await service.execute(command);
@@ -254,6 +277,20 @@ describe("GenerateFromJDService Integration Tests", () => {
     const command = {
       userId: 'user-template',
       jobDescription: 'UX Designer position requiring experience with Figma, user research, and design systems.',
+      userData: `Jane Smith
+jane.smith@email.com
+(555) 987-6543
+New York, NY
+
+Experience:
+- Senior UX Designer at Design Studio (2021-Present)
+- Led mobile app design (100K+ downloads)
+- Created design system
+
+Education:
+- BFA Graphic Design, Pratt Institute (2020)
+
+Skills: Figma, Sketch, Adobe Creative Suite, InVision`,
       templateId: 'creative'
     };
 
@@ -308,7 +345,8 @@ describe("GenerateFromJDService Integration Tests", () => {
 
     const command = {
       userId: 'user-999',
-      jobDescription: 'Test job description'
+      jobDescription: 'Test job description',
+      userData: 'Test user data'
     };
 
     await expect(service.execute(command)).rejects.toThrow('AI service temporarily unavailable');
@@ -337,7 +375,8 @@ describe("GenerateFromJDService Integration Tests", () => {
 
     const command = {
       userId: 'user-888',
-      jobDescription: 'Test job description'
+      jobDescription: 'Test job description',
+      userData: 'Test user data'
     };
 
     await expect(service.execute(command)).rejects.toThrow('AI response missing required section: summary');
@@ -371,7 +410,8 @@ describe("GenerateFromJDService Integration Tests", () => {
 
     const command = {
       userId: 'user-777',
-      jobDescription: 'Test job description'
+      jobDescription: 'Test job description',
+      userData: 'Test user data'
     };
 
     // Generate two resumes

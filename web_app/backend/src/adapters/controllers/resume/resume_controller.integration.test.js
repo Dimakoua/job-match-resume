@@ -251,6 +251,19 @@ describe('ResumeController Integration Tests', () => {
       const token = await createToken(userId);
 
       const jobDescription = 'We are looking for a Software Engineer with 3+ years experience in JavaScript and Node.js.';
+      const userData = `Alex Johnson
+alex.johnson@email.com
+(555) 123-4567
+San Francisco, CA
+
+Experience:
+- Software Engineer at Tech Corp (2020-Present)
+- Developed web applications using JavaScript and Node.js
+
+Education:
+- BS Computer Science, UC (2019)
+
+Skills: JavaScript, Node.js, React, Python`;
 
       // Mock AI response
       const mockAIResponse = {
@@ -310,6 +323,7 @@ describe('ResumeController Integration Tests', () => {
         },
         json: async () => ({
           jobDescription,
+          userData,
         }),
       };
 
@@ -349,6 +363,32 @@ describe('ResumeController Integration Tests', () => {
         },
         json: async () => ({
           jobDescription: '', // Invalid: empty string
+          userData: 'Test data',
+        }),
+      };
+
+      const response = await controller.generateFromJD(request);
+      expect(response.status).toBe(400);
+
+      const result = await response.json();
+      expect(result.error.code).toBe('VALIDATION_ERROR');
+    });
+
+    it('should return 400 for missing userData', async () => {
+      if (!controller || !factory) return;
+
+      // Create a test user
+      const user = await factory.insert('user');
+      const userId = user.id;
+      const token = await createToken(userId);
+
+      const request = {
+        headers: {
+          get: (header) => header === 'Authorization' ? `Bearer ${token}` : null,
+        },
+        json: async () => ({
+          jobDescription: 'Valid job description',
+          // Missing userData
         }),
       };
 

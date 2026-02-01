@@ -9,7 +9,7 @@ export async function fakeTemplate(repo, opts = {}) {
     opts.structure || [
       { type: 'personal', data: { name: '', email: '', phone: '' } },
       { type: 'experience', data: { company: '', position: '', description: '' } },
-      { type: 'education', data: { institution: '', degree: '' } }
+      { type: 'education', data: { school: '', degree: '' } }
     ]
   );
 

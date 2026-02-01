@@ -18,6 +18,12 @@ export class GenerateFromJDService {
     if (typeof command.jobDescription !== 'string' || command.jobDescription.trim().length === 0) {
       throw new Error('jobDescription must be a non-empty string');
     }
+    if (command.userData === undefined || command.userData === null) {
+      throw new Error('userData is required');
+    }
+    if (typeof command.userData !== 'string' || command.userData.trim().length === 0) {
+      throw new Error('userData must be a non-empty string');
+    }
 
     // Validate template if specified
     if (command.templateId) {
@@ -33,7 +39,7 @@ export class GenerateFromJDService {
 
     // Construct AI prompt
     const systemPrompt = this._buildSystemPrompt();
-    const userPrompt = this._buildUserPrompt(command.jobDescription);
+    const userPrompt = this._buildUserPrompt(command.jobDescription, command.userData);
 
     // Generate resume content using AI
     const aiResponse = await this.aiAdapter.generateJSON(systemPrompt, userPrompt);
@@ -54,7 +60,11 @@ export class GenerateFromJDService {
   }
 
   _buildSystemPrompt() {
-    return `You are an expert resume writer. Generate a complete, professional resume based on a job description.
+    return `You are an expert resume writer. You will be given two inputs:
+1. A job description (the target role)
+2. The user's current resume/CV data
+
+Your task: Tailor the user's ACTUAL experience and skills to match the job requirements. Do NOT invent fictional content. Use only the information provided by the user, but reframe and optimize it to align with the job description.
 
 Return the resume as a JSON object with the following structure:
 {
@@ -86,11 +96,7 @@ Return the resume as a JSON object with the following structure:
           "location": "City, State",
           "startDate": "MM/YYYY",
           "endDate": "MM/YYYY or Present",
-          "achievements": [
-            "Quantified achievement with metrics",
-            "Another key accomplishment",
-            "Technical skill or responsibility"
-          ]
+          "description": "Detailed description of responsibilities and achievements. Include quantified metrics and key accomplishments relevant to the target role."
         }
       ]
     },
@@ -99,11 +105,12 @@ Return the resume as a JSON object with the following structure:
       "title": "Education",
       "content": [
         {
-          "institution": "University Name",
+          "school": "University Name",
           "degree": "Degree Name",
           "field": "Field of Study",
           "location": "City, State",
-          "graduationDate": "MM/YYYY",
+          "startDate": "MM/YYYY",
+          "endDate": "MM/YYYY",
           "gpa": "3.8/4.0 (optional)"
         }
       ]
@@ -116,26 +123,60 @@ Return the resume as a JSON object with the following structure:
         "soft": ["Communication", "Leadership", "Problem Solving"],
         "tools": ["Tool 1", "Tool 2", "Tool 3"]
       }
+    },
+    {
+      "type": "certifications",
+      "title": "Certifications",
+      "content": [
+        {
+          "name": "Certification Name",
+          "issuer": "Issuing Organization",
+          "date": "MM/YYYY",
+          "link": "https://example.com/credential (optional)"
+        }
+      ]
+    },
+    {
+      "type": "projects",
+      "title": "Projects",
+      "content": [
+        {
+          "name": "Project Name",
+          "link": "https://github.com/username/project",
+          "description": "Brief description of the project and your role"
+        }
+      ]
     }
   ]
 }
 
 Guidelines:
-- Make all content realistic and professional
-- Include 2-3 work experiences relevant to the job
-- Add appropriate education background
-- Include relevant skills based on the job requirements
+- Extract contact information from the user's data (name, email, phone, location, LinkedIn)
+- Rewrite work experience bullet points to emphasize skills/achievements relevant to the target job
+- Highlight transferable skills that match the job requirements
+- Reorder or emphasize certain experiences if they're more relevant to the role
+- Keep the user's factual information (companies, dates, degrees) unchanged
+- Add quantifiable metrics where the user provided them
 - Use proper date formats (MM/YYYY)
-- Keep achievements specific and quantifiable where possible
-- Ensure the resume is ATS-friendly`;
+- Ensure the resume is ATS-friendly and professional
+- Include certifications and projects sections if the user has relevant credentials or portfolio work
+- You can create additional custom sections (e.g., "Publications", "Awards", "Volunteer Work") if the user's data includes such information and it's relevant to the job
+- For custom sections, use type: "custom_{section_name}" (e.g., "custom_awards") and provide content as an array or string depending on the data
+- If the user's data is incomplete, work with what's provided`;
   }
 
-  _buildUserPrompt(jobDescription) {
-    return `Generate a complete resume for someone applying to this job:
-
+  _buildUserPrompt(jobDescription, userData) {
+    return `JOB DESCRIPTION:
 ${jobDescription}
 
-Create realistic but professional content that would be compelling for this position. Focus on experiences and skills that align with the job requirements.`;
+---
+
+USER'S CURRENT RESUME/CV:
+${userData}
+
+---
+
+Please tailor the user's resume to match this job description. Reframe their experience and skills to highlight relevance to the role. Use their actual data - do not invent fictional experience.`;
   }
 
   _validateAndTransformResponse(aiResponse) {
@@ -218,11 +259,11 @@ Create realistic but professional content that would be compelling for this posi
           if (Array.isArray(section.content)) {
             sectionsObject.experience = section.content.map(exp => ({
               company: exp.company || '',
-              position: exp.position || '',
+              title: exp.position || '',
               location: exp.location || '',
               startDate: exp.startDate || '',
               endDate: exp.endDate || '',
-              achievements: Array.isArray(exp.achievements) ? exp.achievements : []
+              description: exp.description || ''
             }));
           }
           break;
@@ -230,11 +271,12 @@ Create realistic but professional content that would be compelling for this posi
         case 'education':
           if (Array.isArray(section.content)) {
             sectionsObject.education = section.content.map(edu => ({
-              institution: edu.institution || '',
+              school: edu.school || '',
               degree: edu.degree || '',
               field: edu.field || '',
               location: edu.location || '',
-              graduationDate: edu.graduationDate || '',
+              startDate: edu.startDate || '',
+              endDate: edu.endDate || '',
               gpa: edu.gpa || ''
             }));
           }
@@ -256,95 +298,39 @@ Create realistic but professional content that would be compelling for this posi
             sectionsObject.skills = allSkills;
           }
           break;
+
+        case 'certifications':
+          if (Array.isArray(section.content)) {
+            sectionsObject.certifications = section.content.map(cert => ({
+              name: cert.name || '',
+              issuer: cert.issuer || '',
+              date: cert.date || '',
+              link: cert.link || ''
+            }));
+          }
+          break;
+
+        case 'projects':
+          if (Array.isArray(section.content)) {
+            sectionsObject.projects = section.content.map(proj => ({
+              name: proj.name || '',
+              link: proj.link || '',
+              description: proj.description || ''
+            }));
+          }
+          break;
+
+        default:
+          // Handle custom sections (e.g., custom_awards, custom_publications)
+          if (section.type.startsWith('custom_')) {
+            const customKey = section.type.replace('custom_', '');
+            sectionsObject.customSections[customKey] = section.content;
+          }
+          break;
       }
     }
 
     return sectionsObject;
   }
 
-  /**
-   * Transforms AI sections format (nested) to Builder format (flat)
-   * Used to convert stored resume data for frontend consumption
-   */
-  static transformSectionsToBuilderFormat(sections) {
-    const transformed = {
-      firstName: '',
-      lastName: '',
-      title: '',
-      email: '',
-      phone: '',
-      location: '',
-      linkedin: '',
-      summary: '',
-      experience: [],
-      education: [],
-      skills: [],
-      certifications: [],
-      projects: []
-    };
-
-    if (!Array.isArray(sections)) {
-      return transformed;
-    }
-
-    // Extract data from sections
-    for (const section of sections) {
-      switch (section.type) {
-        case 'personal_info':
-          const content = section.content || {};
-          const nameStr = content.name || '';
-          const nameParts = nameStr.trim().split(/\s+/);
-          
-          transformed.firstName = nameParts[0] || '';
-          transformed.lastName = nameParts.slice(1).join(' ') || '';
-          transformed.email = content.email || '';
-          transformed.phone = content.phone || '';
-          transformed.location = content.location || '';
-          transformed.linkedin = content.linkedin || '';
-          break;
-
-        case 'summary':
-          transformed.summary = section.content || '';
-          break;
-
-        case 'experience':
-          if (Array.isArray(section.content)) {
-            transformed.experience = section.content.map(exp => ({
-              company: exp.company || '',
-              position: exp.position || '',
-              location: exp.location || '',
-              startDate: exp.startDate || '',
-              endDate: exp.endDate || '',
-              achievements: Array.isArray(exp.achievements) ? exp.achievements : []
-            }));
-          }
-          break;
-
-        case 'education':
-          if (Array.isArray(section.content)) {
-            transformed.education = section.content.map(edu => ({
-              institution: edu.institution || '',
-              degree: edu.degree || '',
-              field: edu.field || '',
-              location: edu.location || '',
-              graduationDate: edu.graduationDate || '',
-              gpa: edu.gpa || ''
-            }));
-          }
-          break;
-
-        case 'skills':
-          if (section.content) {
-            transformed.skills = {
-              technical: Array.isArray(section.content.technical) ? section.content.technical : [],
-              soft: Array.isArray(section.content.soft) ? section.content.soft : [],
-              tools: Array.isArray(section.content.tools) ? section.content.tools : []
-            };
-          }
-          break;
-      }
-    }
-
-    return transformed;
-  }
 }

@@ -1,8 +1,12 @@
 import { axios } from '../lib/axios.js'
 
 export class HttpAIService {
-  async generateFromJD(jobDescription, templateId = null) {
-    const response = await axios.post('/api/resumes/generate-from-jd', { jobDescription, templateId })
+  async generateFromJD(jobDescription, userData, templateId = null) {
+    const response = await axios.post('/api/resumes/generate-from-jd', { 
+      jobDescription, 
+      userData, 
+      templateId 
+    })
     return response.data.data.resume
   }
 

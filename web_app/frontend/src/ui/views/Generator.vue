@@ -25,15 +25,33 @@
       <div v-if="step === 1" class="bg-white dark:bg-gray-900 rounded-2xl shadow-xl overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
         <div class="p-8">
           <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">What role are you applying for?</h2>
-          <p class="text-gray-500 dark:text-gray-400 mb-6">Paste the job description here. Our AI will analyze the requirements and tailor your resume to match the key skills and experience.</p>
+          <p class="text-gray-500 dark:text-gray-400 mb-6">Paste the job description and your current resume. Our AI will tailor your experience to match the role requirements.</p>
           
-          <div class="space-y-4">
-            <textarea 
-              v-model="jobDescription"
-              rows="12"
-              class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all resize-none custom-scrollbar"
-              placeholder="Paste the full job description here..."
-            ></textarea>
+          <div class="space-y-6">
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                Job Description <span class="text-red-500">*</span>
+              </label>
+              <textarea 
+                v-model="jobDescription"
+                rows="8"
+                class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all resize-none custom-scrollbar"
+                placeholder="Paste the full job description here..."
+              ></textarea>
+            </div>
+
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                Your Current Resume/CV <span class="text-red-500">*</span>
+              </label>
+              <textarea 
+                v-model="userData"
+                rows="8"
+                class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all resize-none custom-scrollbar"
+                placeholder="Paste your current resume or key details: name, email, work experience, education, skills..."
+              ></textarea>
+              <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">Include your contact info, work history, education, and skills. The AI will use this to create a tailored resume.</p>
+            </div>
             
             <div v-if="error" class="p-3 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-sm border border-red-100 dark:border-red-900/30">
               {{ error }}
@@ -172,6 +190,7 @@ import { useGeneratorController } from '../composables/useGeneratorController.js
 const {
   step,
   jobDescription,
+  userData,
   selectedTemplate,
   templates,
   isGenerating,

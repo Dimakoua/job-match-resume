@@ -31,7 +31,7 @@ export class TemplateRepository {
         { type: 'personal', data: { name: '', email: '', phone: '', location: '' } },
         { type: 'summary', data: { text: '' } },
         { type: 'experience', data: { company: '', position: '', startDate: '', endDate: '', description: '' } },
-        { type: 'education', data: { institution: '', degree: '', graduationDate: '' } },
+        { type: 'education', data: { school: '', degree: '', graduationDate: '' } },
         { type: 'skills', data: { skills: [] } }
       ],
       'modern': [
@@ -44,7 +44,7 @@ export class TemplateRepository {
         { type: 'contact', data: { name: '', email: '', phone: '', address: '', linkedin: '' } },
         { type: 'professional_summary', data: { text: '' } },
         { type: 'work_experience', data: { company: '', position: '', location: '', startDate: '', endDate: '', responsibilities: [] } },
-        { type: 'education', data: { institution: '', degree: '', location: '', graduationDate: '' } },
+        { type: 'education', data: { school: '', degree: '', location: '', graduationDate: '' } },
         { type: 'certifications', data: { certifications: [] } },
         { type: 'professional_development', data: { courses: [] } }
       ],
@@ -54,14 +54,14 @@ export class TemplateRepository {
         { type: 'portfolio', data: { projects: [] } },
         { type: 'experience', data: { company: '', role: '', period: '', description: '', highlights: [] } },
         { type: 'skills', data: { technical: [], creative: [], soft: [] } },
-        { type: 'education', data: { institution: '', program: '', year: '' } }
+        { type: 'education', data: { school: '', program: '', year: '' } }
       ],
       'technical': [
         { type: 'header', data: { name: '', title: '', email: '', phone: '', github: '', linkedin: '' } },
         { type: 'technical_skills', data: { languages: [], frameworks: [], tools: [], databases: [] } },
         { type: 'experience', data: { company: '', position: '', dates: '', technologies: [], achievements: [] } },
         { type: 'projects', data: { name: '', description: '', tech_stack: [], repository: '', demo: '' } },
-        { type: 'education', data: { institution: '', degree: '', field: '', graduation: '' } },
+        { type: 'education', data: { school: '', degree: '', field: '', graduation: '' } },
         { type: 'certifications', data: { name: '', issuer: '', date: '', credential_id: '' } }
       ],
       'minimal': [
@@ -72,9 +72,9 @@ export class TemplateRepository {
         { type: 'skills', data: { skills: [] } }
       ],
       'academic': [
-        { type: 'academic_profile', data: { name: '', title: '', institution: '', department: '', email: '' } },
+        { type: 'academic_profile', data: { name: '', title: '', school: '', department: '', email: '' } },
         { type: 'research_interests', data: { interests: [] } },
-        { type: 'education', data: { degree: '', institution: '', year: '', thesis: '' } },
+        { type: 'education', data: { degree: '', school: '', year: '', thesis: '' } },
         { type: 'publications', data: { papers: [] } },
         { type: 'teaching_experience', data: { courses: [] } },
         { type: 'grants_awards', data: { items: [] } },

@@ -20,8 +20,9 @@ export function useGeneratorController() {
   const listTemplatesUseCase = new ListTemplatesUseCase(resumeRepo)
 
   // ===== State =====
-  const step = ref(1) // 1: JD, 2: Template, 3: Loading
+  const step = ref(1) // 1: JD + User Data, 2: Template, 3: Loading
   const jobDescription = ref('')
+  const userData = ref('')
   const selectedTemplate = ref('basic')
   const templates = ref([])
   const isGenerating = ref(false)
@@ -43,9 +44,15 @@ export function useGeneratorController() {
   }
 
   const nextStep = () => {
-    if (step.value === 1 && !jobDescription.value.trim()) {
-      error.value = 'Please paste a job description first.'
-      return
+    if (step.value === 1) {
+      if (!jobDescription.value.trim()) {
+        error.value = 'Please paste a job description first.'
+        return
+      }
+      if (!userData.value.trim()) {
+        error.value = 'Please paste your current resume or key details.'
+        return
+      }
     }
     error.value = null
     step.value++
@@ -68,6 +75,7 @@ export function useGeneratorController() {
     try {
       const resume = await generateFromJDUseCase.execute(
         jobDescription.value,
+        userData.value,
         selectedTemplate.value
       )
       
@@ -75,7 +83,7 @@ export function useGeneratorController() {
       router.push(`/builder?id=${resume.id}`)
     } catch (err) {
       step.value = 2 // Go back to template selection
-      error.value = 'Generation failed. Please check your JD or try again.'
+      error.value = 'Generation failed. Please check your inputs or try again.'
       console.error('Generation error:', err)
     } finally {
       isGenerating.value = false
@@ -91,6 +99,7 @@ export function useGeneratorController() {
     // State
     step,
     jobDescription,
+    userData,
     selectedTemplate,
     templates,
     isGenerating,
