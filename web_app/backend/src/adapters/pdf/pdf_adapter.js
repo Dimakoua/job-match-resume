@@ -18,8 +18,8 @@ export class PdfAdapter {
     const pdfDoc = await PDFDocument.create();
 
     // Add a page
-    const page = pdfDoc.addPage();
-    const { width, height } = page.getSize();
+    let currentPage = pdfDoc.addPage();
+    const { width, height } = currentPage.getSize();
 
     // Set up fonts and colors
     const fontSize = 12;
@@ -39,7 +39,7 @@ export class PdfAdapter {
         const textWidth = testLine.length * (size * 0.6); // Rough estimate
 
         if (textWidth > maxWidth && line) {
-          page.drawText(line, { x, y: currentY, size, color: rgb(0, 0, 0) });
+          currentPage.drawText(line, { x, y: currentY, size, color: rgb(0, 0, 0) });
           line = word;
           currentY -= size + 5;
         } else {
@@ -48,7 +48,7 @@ export class PdfAdapter {
       }
 
       if (line) {
-        page.drawText(line, { x, y: currentY, size, color: rgb(0, 0, 0) });
+        currentPage.drawText(line, { x, y: currentY, size, color: rgb(0, 0, 0) });
         currentY -= size + 5;
       }
 
@@ -76,6 +76,10 @@ export class PdfAdapter {
       yPosition -= 5;
       yPosition = addText(sections.summary, margin + 10, yPosition, fontSize);
       yPosition -= 15;
+      if (yPosition < margin + 50) {
+        currentPage = pdfDoc.addPage();
+        yPosition = height - margin;
+      }
     }
 
     // Add experience
@@ -83,16 +87,22 @@ export class PdfAdapter {
       yPosition = addText('Work Experience', margin, yPosition, fontSize + 2);
       yPosition -= 5;
       for (const job of sections.experience) {
-        if (job.position || job.company) {
-          yPosition = addText(`${job.position || ''} at ${job.company || ''}`, margin + 10, yPosition, fontSize);
+        if (job.title || job.position || job.company) {
+          const title = job.title || job.position || '';
+          yPosition = addText(`${title} at ${job.company || ''}`, margin + 10, yPosition, fontSize);
         }
-        if (job.duration || job.date) {
+        if (job.startDate || job.endDate) {
+          const dateRange = [job.startDate, job.endDate].filter(Boolean).join(' - ');
+          yPosition = addText(dateRange, margin + 10, yPosition, fontSize - 1);
+        } else if (job.duration || job.date) {
           yPosition = addText(`${job.duration || job.date || ''}`, margin + 10, yPosition, fontSize - 1);
         }
         if (job.location) {
           yPosition = addText(`${job.location}`, margin + 10, yPosition, fontSize - 1);
         }
-        if (job.achievements && Array.isArray(job.achievements)) {
+        if (job.description) {
+          yPosition = addText(job.description, margin + 20, yPosition, fontSize - 1);
+        } else if (job.achievements && Array.isArray(job.achievements)) {
           for (const achievement of job.achievements) {
             yPosition = addText(`• ${achievement}`, margin + 20, yPosition, fontSize - 1);
           }
@@ -100,6 +110,10 @@ export class PdfAdapter {
         yPosition -= 8;
       }
       yPosition -= 10;
+      if (yPosition < margin + 50) {
+        currentPage = pdfDoc.addPage();
+        yPosition = height - margin;
+      }
     }
 
     // Add education
@@ -107,18 +121,66 @@ export class PdfAdapter {
       yPosition = addText('Education', margin, yPosition, fontSize + 2);
       yPosition -= 5;
       for (const edu of sections.education) {
-        if (edu.degree || edu.university) {
-          yPosition = addText(`${edu.degree || ''} from ${edu.university || ''}`, margin + 10, yPosition, fontSize);
+        if (edu.degree || edu.school || edu.university) {
+          const school = edu.school || edu.university || '';
+          const degreeText = [edu.degree, edu.field].filter(Boolean).join(', ');
+          yPosition = addText(`${degreeText} from ${school}`, margin + 10, yPosition, fontSize);
         }
-        if (edu.years) {
+        if (edu.startDate || edu.endDate) {
+          const dateRange = [edu.startDate, edu.endDate].filter(Boolean).join(' - ');
+          yPosition = addText(dateRange, margin + 10, yPosition, fontSize - 1);
+        } else if (edu.years) {
           yPosition = addText(`${edu.years}`, margin + 10, yPosition, fontSize - 1);
         }
         yPosition -= 8;
       }
       yPosition -= 10;
+      if (yPosition < margin + 50) {
+        currentPage = pdfDoc.addPage();
+        yPosition = height - margin;
+      }
     }
 
-    // Add skills
+    // Add certifications
+    if (sections.certifications && Array.isArray(sections.certifications) && sections.certifications.length > 0) {
+      yPosition = addText('Certifications', margin, yPosition, fontSize + 2);
+      yPosition -= 5;
+      for (const cert of sections.certifications) {
+        if (cert.name) {
+          let certText = cert.name;
+          if (cert.issuer) certText += ` • ${cert.issuer}`;
+          if (cert.date) certText += ` • ${cert.date}`;
+          yPosition = addText(certText, margin + 10, yPosition, fontSize);
+        }
+        yPosition -= 8;
+      }
+      yPosition -= 10;
+      if (yPosition < margin + 50) {
+        currentPage = pdfDoc.addPage();
+        yPosition = height - margin;
+      }
+    }
+
+    // Add projects
+    if (sections.projects && Array.isArray(sections.projects) && sections.projects.length > 0) {
+      yPosition = addText('Projects', margin, yPosition, fontSize + 2);
+      yPosition -= 5;
+      for (const project of sections.projects) {
+        if (project.name) {
+          yPosition = addText(project.name, margin + 10, yPosition, fontSize);
+        }
+        if (project.description) {
+          yPosition = addText(project.description, margin + 20, yPosition, fontSize - 1);
+        }
+        yPosition -= 8;
+      }
+      yPosition -= 10;
+      if (yPosition < margin + 50) {
+        currentPage = pdfDoc.addPage();
+        yPosition = height - margin;
+      }
+    }
+
     if (sections.skills && (Array.isArray(sections.skills) || typeof sections.skills === 'object')) {
       yPosition = addText('Skills', margin, yPosition, fontSize + 2);
       yPosition -= 5;

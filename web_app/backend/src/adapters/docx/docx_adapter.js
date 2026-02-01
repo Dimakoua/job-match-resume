@@ -57,20 +57,26 @@ export class DocxAdapter {
         })
       );
       for (const job of sections.experience) {
-        if (job.position || job.company) {
+        if (job.title || job.position || job.company) {
+          const title = job.title || job.position || '';
           docSections.push(new Paragraph({
             children: [
-              new TextRun({ text: `${job.position || ''} at ${job.company || ''}`, bold: true }),
+              new TextRun({ text: `${title} at ${job.company || ''}`, bold: true }),
             ],
           }));
         }
-        if (job.duration || job.date) {
+        if (job.startDate || job.endDate) {
+          const dateRange = [job.startDate, job.endDate].filter(Boolean).join(' - ');
+          docSections.push(new Paragraph(dateRange));
+        } else if (job.duration || job.date) {
           docSections.push(new Paragraph(job.duration || job.date || ''));
         }
         if (job.location) {
           docSections.push(new Paragraph(job.location));
         }
-        if (job.achievements && Array.isArray(job.achievements)) {
+        if (job.description) {
+          docSections.push(new Paragraph(job.description));
+        } else if (job.achievements && Array.isArray(job.achievements)) {
           for (const achievement of job.achievements) {
             docSections.push(new Paragraph(`• ${achievement}`));
           }
@@ -88,15 +94,62 @@ export class DocxAdapter {
         })
       );
       for (const edu of sections.education) {
-        if (edu.degree || edu.university) {
+        if (edu.degree || edu.school || edu.university) {
+          const school = edu.school || edu.university || '';
+          const degreeText = [edu.degree, edu.field].filter(Boolean).join(', ');
           docSections.push(new Paragraph({
             children: [
-              new TextRun({ text: `${edu.degree || ''} from ${edu.university || ''}`, bold: true }),
+              new TextRun({ text: `${degreeText} from ${school}`, bold: true }),
             ],
           }));
         }
-        if (edu.years) {
+        if (edu.startDate || edu.endDate) {
+          const dateRange = [edu.startDate, edu.endDate].filter(Boolean).join(' - ');
+          docSections.push(new Paragraph(dateRange));
+        } else if (edu.years) {
           docSections.push(new Paragraph(edu.years));
+        }
+        docSections.push(new Paragraph('')); // Spacing
+      }
+    }
+
+    // Add certifications
+    if (sections.certifications && Array.isArray(sections.certifications) && sections.certifications.length > 0) {
+      docSections.push(
+        new Paragraph({
+          text: 'Certifications',
+          heading: HeadingLevel.HEADING_2,
+        })
+      );
+      for (const cert of sections.certifications) {
+        if (cert.name) {
+          let certText = cert.name;
+          if (cert.issuer) certText += ` • ${cert.issuer}`;
+          if (cert.date) certText += ` • ${cert.date}`;
+          docSections.push(new Paragraph(certText));
+        }
+      }
+      docSections.push(new Paragraph('')); // Spacing
+    }
+
+    // Add projects
+    if (sections.projects && Array.isArray(sections.projects) && sections.projects.length > 0) {
+      docSections.push(
+        new Paragraph({
+          text: 'Projects',
+          heading: HeadingLevel.HEADING_2,
+        })
+      );
+      for (const project of sections.projects) {
+        if (project.name) {
+          docSections.push(new Paragraph({
+            children: [
+              new TextRun({ text: project.name, bold: true }),
+            ],
+          }));
+        }
+        if (project.description) {
+          docSections.push(new Paragraph(project.description));
         }
         docSections.push(new Paragraph('')); // Spacing
       }
