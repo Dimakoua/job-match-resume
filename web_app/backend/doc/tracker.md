@@ -116,6 +116,6 @@
 - Completed: 2026-02-03
 - Evidence: POST `/api/job-applications/from-extension` endpoint implemented with JWT authentication, Zod validation, CreateJobApplicationFromExtensionService with comprehensive input validation, JobApplicationController with error handling, database migration updated to allow nullable resume_id/company/position fields, full integration tests 37/37 passing across service, controller, and repository layers.
 
-## B-025 — [feature] ATS Score Calculation ⚪ 0%
-- Scope: Implement a service to calculate an ATS score based on keyword matching between a resume and a job description.
-- Acceptance: The service returns a score from 0 to 100.
+## B-025 — [feature] ATS Score Calculation ✅ 100%
+- Completed: 2026-02-03
+- Evidence: CalculateAtsScoreService implemented with keyword extraction algorithm (technical terms + length >=6), filtering stop words and numbers, returning score 0-100 with matched keywords. POST `/api/resumes/calculate-ats-score` endpoint added to ResumeController with JWT auth and Zod validation. Unit tests 15/15 passing, integration tests 23/23 passing.

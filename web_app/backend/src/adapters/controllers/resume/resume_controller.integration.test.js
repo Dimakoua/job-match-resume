@@ -9,6 +9,7 @@ import { ListTemplatesService } from '../../../application/list_templates/list_t
 import { GenerateFromJDService } from '../../../application/generate_from_jd/generate_from_jd_service.js';
 import { ImproveTextService } from '../../../application/improve_text/improve_text_service.js';
 import { ExportResumeService } from '../../../application/export_resume/export_resume_service.js';
+import { CalculateAtsScoreService } from '../../../application/calculate_ats_score/calculate_ats_score_service.js';
 import { D1ResumeRepository } from '../../../adapters/repositories/resume/d1_resume_repository.js';
 import jwt from '@tsndr/cloudflare-worker-jwt';
 
@@ -54,6 +55,7 @@ describe('ResumeController Integration Tests', () => {
     const listTemplatesService = new ListTemplatesService(templateRepository);
     const generateFromJDService = new GenerateFromJDService(mockAIAdapter, resumeRepository, templateRepository);
     const improveTextService = new ImproveTextService(mockAIAdapter);
+    const calculateAtsScoreService = new CalculateAtsScoreService();
 
     // Mock adapters for export
     const mockPdfAdapter = {
@@ -73,6 +75,7 @@ describe('ResumeController Integration Tests', () => {
       listTemplatesService,
       generateFromJDService,
       improveTextService,
+      calculateAtsScoreService,
       exportResumeService,
     };
     controller = new ResumeController(deps, 'test_jwt_secret');
@@ -400,7 +403,92 @@ Skills: JavaScript, Node.js, React, Python`;
     });
 
   });
+  describe('calculateAtsScore endpoint', () => {
+    it('should calculate ATS score and return result on success', async () => {
+      if (!controller || !factory) return;
 
+      // Create a test user
+      const user = await factory.insert('user');
+      const userId = user.id;
+      const token = await createToken(userId);
+
+      const resumeText = 'I am a software engineer with experience in JavaScript, React, and Node.js.';
+      const jobDescription = 'We are looking for a developer with JavaScript, React, and Python skills.';
+
+      const request = {
+        headers: {
+          get: (header) => header === 'Authorization' ? `Bearer ${token}` : null,
+        },
+        json: async () => ({
+          resumeText,
+          jobDescription,
+        }),
+      };
+
+      const response = await controller.calculateAtsScore(request);
+      expect(response.status).toBe(200);
+
+      const result = await response.json();
+      expect(result.success).toBe(true);
+      expect(result.data).toHaveProperty('score');
+      expect(result.data).toHaveProperty('matchedKeywords');
+      expect(result.data).toHaveProperty('totalKeywords');
+      expect(typeof result.data.score).toBe('number');
+      expect(result.data.score).toBeGreaterThanOrEqual(0);
+      expect(result.data.score).toBeLessThanOrEqual(100);
+      expect(Array.isArray(result.data.matchedKeywords)).toBe(true);
+      expect(typeof result.data.totalKeywords).toBe('number');
+    });
+
+    it('should return 400 for missing resume text', async () => {
+      if (!controller || !factory) return;
+
+      // Create a test user
+      const user = await factory.insert('user');
+      const userId = user.id;
+      const token = await createToken(userId);
+
+      const request = {
+        headers: {
+          get: (header) => header === 'Authorization' ? `Bearer ${token}` : null,
+        },
+        json: async () => ({
+          jobDescription: 'We need a developer.',
+        }),
+      };
+
+      const response = await controller.calculateAtsScore(request);
+      expect(response.status).toBe(400);
+
+      const result = await response.json();
+      expect(result.error.code).toBe('VALIDATION_ERROR');
+    });
+
+    it('should return 400 for missing job description', async () => {
+      if (!controller || !factory) return;
+
+      // Create a test user
+      const user = await factory.insert('user');
+      const userId = user.id;
+      const token = await createToken(userId);
+
+      const request = {
+        headers: {
+          get: (header) => header === 'Authorization' ? `Bearer ${token}` : null,
+        },
+        json: async () => ({
+          resumeText: 'I am a developer.',
+        }),
+      };
+
+      const response = await controller.calculateAtsScore(request);
+      expect(response.status).toBe(400);
+
+      const result = await response.json();
+      expect(result.error.code).toBe('VALIDATION_ERROR');
+    });
+
+  });
   describe('improveText endpoint', () => {
     it('should improve text and return variations on success', async () => {
       if (!controller || !factory) return;

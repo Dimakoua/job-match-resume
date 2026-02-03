@@ -17,6 +17,11 @@ const improveTextSchema = z.object({
   text: z.string().min(1, 'Text is required').max(10000, 'Text must be less than 10,000 characters'),
 });
 
+const calculateAtsScoreSchema = z.object({
+  resumeText: z.string().min(1, 'Resume text is required').max(50000, 'Resume text must be less than 50,000 characters'),
+  jobDescription: z.string().min(1, 'Job description is required').max(50000, 'Job description must be less than 50,000 characters'),
+});
+
 const updateResumeSchema = z.object({
   title: z.string().min(1, 'Title is required').optional(),
   templateId: z.string().nullable().optional(),
@@ -35,6 +40,7 @@ export class ResumeController extends BaseController {
     this.generateFromJDService = deps.generateFromJDService;
     this.improveTextService = deps.improveTextService;
     this.exportResumeService = deps.exportResumeService;
+    this.calculateAtsScoreService = deps.calculateAtsScoreService;
   }
 
   async createResume(request) {
@@ -213,6 +219,41 @@ export class ResumeController extends BaseController {
       if (error.message && error.message.includes('AI')) {
         return this.errorResponse('AI_ERROR', 'Failed to improve text', 500);
       }
+
+      return this.errorResponse('INTERNAL_ERROR', 'An unexpected error occurred', 500);
+    }
+  }
+
+  async calculateAtsScore(request) {
+    try {
+      const userId = await this.authenticate(request);
+
+      const body = await request.json();
+
+      // Validate input
+      const validationResult = calculateAtsScoreSchema.safeParse(body);
+      if (!validationResult.success) {
+        return this.validationErrorResponse(validationResult.error.issues);
+      }
+
+      const command = {
+        ...validationResult.data,
+        userId,
+      };
+
+      // Execute ATS score calculation
+      const result = await this.calculateAtsScoreService.execute(command);
+
+      return this.successResponse({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      // If authenticate threw a Response, return it
+      if (error instanceof Response) {
+        return error;
+      }
+      console.error('Calculate ATS score error:', error);
 
       return this.errorResponse('INTERNAL_ERROR', 'An unexpected error occurred', 500);
     }

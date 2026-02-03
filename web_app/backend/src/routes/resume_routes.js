@@ -50,6 +50,16 @@ export function setupResumeRoutes(router) {
     return controller.improveText(request);
   });
 
+  // Calculate ATS score
+  // Usage: POST /api/resumes/calculate-ats-score
+  // Headers: Authorization: Bearer <jwt>
+  // Body: { "resumeText": "Full resume text...", "jobDescription": "Job posting text..." }
+  // Returns: { "success": true, "data": { "score": 75, "matchedKeywords": ["javascript", "react"], "totalKeywords": 3 } }
+  router.post('/api/resumes/calculate-ats-score', async (request, env, ctx) => {
+    const { controller } = createController(env, ResumeController, [env.JWT_SECRET]);
+    return controller.calculateAtsScore(request);
+  });
+
   // Export resume as PDF or DOCX
   // Usage: GET /api/resumes/:id/export?format=pdf or ?format=docx
   // Headers: Authorization: Bearer <jwt>
