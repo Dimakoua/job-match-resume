@@ -108,9 +108,9 @@
 - Completed: 2026-02-03
 - Evidence: Domain entity with validation, D1 repository with CRUD operations, application services with integration tests, REST API endpoints with authentication, full test coverage 23/23 passing.
 
-## B-023 — [feature] Job Application Management ⚪ 0%
-- Scope: Implement CRUD for Job Applications, including linking to a resume and tracking status.
-- Acceptance: User can save a job, link a resume, and update the application status.
+## B-023 — [feature] Job Application Management ✅ 100%
+- Completed: 2026-02-03
+- Evidence: JobApplication domain entity with comprehensive validation (id, userId, resumeId, company, position, jobDescription, status, appliedDate, notes), D1 repository with full CRUD operations (save, findById, findByUserId with filtering, update, deleteById, countByUserId), database migration with foreign key constraints and indexes, factory support for test data generation, domain unit tests 17/17 passing, repository integration tests 8/8 passing, all backend tests 267/267 passing.
 
 ## B-024 — [api] Chrome Extension Endpoint ⚪ 0%
 - Scope: Create an endpoint to receive job descriptions from the Chrome extension.
