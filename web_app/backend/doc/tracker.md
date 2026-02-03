@@ -115,3 +115,7 @@
 ## B-024 — [api] Chrome Extension Endpoint ⚪ 0%
 - Scope: Create an endpoint to receive job descriptions from the Chrome extension.
 - Acceptance: Endpoint securely accepts and stores job data.
+
+## B-025 — [feature] ATS Score Calculation ⚪ 0%
+- Scope: Implement a service to calculate an ATS score based on keyword matching between a resume and a job description.
+- Acceptance: The service returns a score from 0 to 100.

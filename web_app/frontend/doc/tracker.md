@@ -89,6 +89,10 @@
 - Scope: Implement UI to change the status of a job application.
 - Acceptance: User can update the status from a dropdown (e.g., Applied, Interviewing).
 
+## F-042 — [feature] ATS Score Display ⚪ 0%
+- Scope: Display the ATS score for a resume linked to a job.
+- Acceptance: The score is clearly visible on the job application view.
+
 ---
 
 ## Completed Tasks

@@ -27,6 +27,7 @@ The Frontend provides a "Professional Studio" environment. It abstracts the comp
 - **AI Accessibility:** AI features (Improve Text, Generate from JD) are embedded directly into the workflow, not hidden in a separate menu.
 - **Professional Aesthetics:** The UI itself (dashboard, buttons, forms) feels as professional as the resumes it produces.
 - **Seamless Export:** One-click download for PDF and DOCX.
+- **ATS Score Visualization:** Display a score that indicates how well a resume matches a job description.
 - **Job Application Tracking:** A clear and organized way to manage the job application pipeline.
 
 ---
@@ -58,6 +59,7 @@ The Frontend provides a "Professional Studio" environment. It abstracts the comp
     - **AI Improver:** "Magic Wand" button next to text areas to grammar check/expand text.
 - **The Generator (Job Description View):**
     - A dedicated wizard view: User pastes JD -> AI builds structure -> Redirects to Builder.
+- **ATS Score Display:** Show the calculated ATS score on the job application view.
 - **Export:**
     - Download actions triggering Backend API endpoints.
 

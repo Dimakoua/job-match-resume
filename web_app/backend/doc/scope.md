@@ -18,7 +18,7 @@ The "AI Resume Builder" aims to democratize professional career advancement by c
 
 **The Problem:** Job seekers struggle to format resumes professionally, often fail to tailor content to specific job descriptions (JD), and lack objective feedback on their writing.
 
-**The Solution:** A web-based platform where users can manage resume data, use AI to analyze existing content, or generate completely new tailored resumes by pasting a JD. It also includes a job tracking feature to manage job applications, link them to tailored resumes, and monitor the application status.
+lets**The Solution:** A web-based platform where users can manage resume data, use AI to analyze existing content, or generate completely new tailored resumes by pasting a JD. It also includes a job tracking feature to manage job applications, link them to tailored resumes, and monitor the application status.
 
 **Approach:** A secure, high-performance REST API built on Cloudflare Workers and D1, utilizing a strict Layered Architecture to separate AI orchestration from core business logic.
 
@@ -28,6 +28,7 @@ The "AI Resume Builder" aims to democratize professional career advancement by c
 
 - **Professional Output:** Users can export resumes in PDF and DOCX formats that pass ATS (Applicant Tracking Systems) and look professional.
 - **AI Assistance:** The system provides actionable feedback (Analyze Mode) and generates targeted content (Build Mode) based on raw input.
+- **ATS Score:** The system provides a deterministic ATS (Applicant Tracking System) score by comparing a resume against a job description.
 - **Job Application Management:** Users can save job descriptions, organize them into lists, and track their application status from "saved" to "offer".
 - **User Ownership:** Users can manage multiple versions of their resume for different job applications.
 - **Architectural Purity:** The backend follows a strict Layered Architecture (Domain, Application, Adapters) to ensure long-term maintainability.
@@ -57,6 +58,7 @@ The "AI Resume Builder" aims to democratize professional career advancement by c
     - Track application status (e.g., Saved, Applied, Interviewing, Offer, Declined).
 - **Template System:** Backend support for selecting and applying different design templates.
 - **Chrome Extension Integration:** An API to receive and store job descriptions from the browser extension.
+- **ATS Score Calculation:** A deterministic (non-AI) service that compares a resume and a job description to generate a match score based on keyword analysis.
 
 **Technical Deliverables:**
 - REST API deployed on Cloudflare Workers.
