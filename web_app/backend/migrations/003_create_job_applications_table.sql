@@ -6,9 +6,9 @@ CREATE TABLE IF NOT EXISTS JobApplications (
     id TEXT PRIMARY KEY,
     user_id TEXT NOT NULL,
     job_search_list_id TEXT,
-    resume_id TEXT NOT NULL,
-    company TEXT NOT NULL,
-    position TEXT NOT NULL,
+    resume_id TEXT, -- Nullable for Chrome extension integration
+    company TEXT, -- Nullable for Chrome extension integration
+    position TEXT, -- Nullable for Chrome extension integration
     job_description TEXT NOT NULL,
     status TEXT NOT NULL DEFAULT 'saved' CHECK (status IN ('saved', 'applied', 'interviewing', 'rejected', 'accepted', 'withdrawn')),
     applied_date INTEGER, -- Unix timestamp in milliseconds

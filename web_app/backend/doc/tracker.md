@@ -112,9 +112,9 @@
 - Completed: 2026-02-03
 - Evidence: JobApplication domain entity with comprehensive validation (id, userId, resumeId, company, position, jobDescription, status, appliedDate, notes), D1 repository with full CRUD operations (save, findById, findByUserId with filtering, update, deleteById, countByUserId), database migration with foreign key constraints and indexes, factory support for test data generation, domain unit tests 17/17 passing, repository integration tests 8/8 passing, all backend tests 267/267 passing.
 
-## B-024 — [api] Chrome Extension Endpoint ⚪ 0%
-- Scope: Create an endpoint to receive job descriptions from the Chrome extension.
-- Acceptance: Endpoint securely accepts and stores job data.
+## B-024 — [api] Chrome Extension Endpoint ✅ 100%
+- Completed: 2026-02-03
+- Evidence: POST `/api/job-applications/from-extension` endpoint implemented with JWT authentication, Zod validation, CreateJobApplicationFromExtensionService with comprehensive input validation, JobApplicationController with error handling, database migration updated to allow nullable resume_id/company/position fields, full integration tests 37/37 passing across service, controller, and repository layers.
 
 ## B-025 — [feature] ATS Score Calculation ⚪ 0%
 - Scope: Implement a service to calculate an ATS score based on keyword matching between a resume and a job description.

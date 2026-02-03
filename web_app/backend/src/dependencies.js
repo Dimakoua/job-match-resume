@@ -19,12 +19,15 @@ import { CreateJobSearchListService } from './application/job_search_list/create
 import { ListJobSearchListsService } from './application/job_search_list/list_job_search_lists_service.js';
 import { UpdateJobSearchListService } from './application/job_search_list/update_job_search_list_service.js';
 import { DeleteJobSearchListService } from './application/job_search_list/delete_job_search_list_service.js';
+import { CreateJobApplicationFromExtensionService } from './application/job_application/create_job_application_from_extension_service.js';
 import { D1UserRepository } from './adapters/repositories/user/d1_user_repository.js';
 import { D1ResumeRepository } from './adapters/repositories/resume/d1_resume_repository.js';
 import { D1JobSearchListRepository } from './adapters/repositories/job_search_list/d1_job_search_list_repository.js';
+import { D1JobApplicationRepository } from './adapters/repositories/job_application/d1_job_application_repository.js';
 import { UserRepository } from './domain/user/user_repository.js';
 import { ResumeRepository } from './domain/resume/resume_repository.js';
 import { JobSearchListRepository } from './domain/job_search_list/job_search_list_repository.js';
+import { JobApplicationRepository } from './domain/job_application/job_application_repository.js';
 import { TemplateRepository } from './domain/template/template_repository.js';
 import { GeminiAdapter } from './adapters/ai/gemini_adapter.js';
 import { PdfAdapter } from './adapters/pdf/pdf_adapter.js';
@@ -55,6 +58,9 @@ export function createDependencies(env) {
   const jobSearchListRepositoryImplementation = new D1JobSearchListRepository(env.DB);
   const jobSearchListRepository = new JobSearchListRepository(jobSearchListRepositoryImplementation);
 
+  const jobApplicationRepositoryImplementation = new D1JobApplicationRepository(env.DB);
+  const jobApplicationRepository = new JobApplicationRepository(jobApplicationRepositoryImplementation);
+
   const templateRepository = new TemplateRepository();
 
   const aiAdapter = new GeminiAdapter(geminiApiKey);
@@ -79,11 +85,13 @@ export function createDependencies(env) {
   const listJobSearchListsService = new ListJobSearchListsService(jobSearchListRepository);
   const updateJobSearchListService = new UpdateJobSearchListService(jobSearchListRepository);
   const deleteJobSearchListService = new DeleteJobSearchListService(jobSearchListRepository);
+  const createJobApplicationFromExtensionService = new CreateJobApplicationFromExtensionService(jobApplicationRepository, userRepository);
 
   return {
     userRepository,
     resumeRepository,
     jobSearchListRepository,
+    jobApplicationRepository,
     templateRepository,
     aiAdapter,
     pdfAdapter,
@@ -104,6 +112,7 @@ export function createDependencies(env) {
     createJobSearchListService,
     listJobSearchListsService,
     updateJobSearchListService,
-    deleteJobSearchListService
+    deleteJobSearchListService,
+    createJobApplicationFromExtensionService
   };
 }

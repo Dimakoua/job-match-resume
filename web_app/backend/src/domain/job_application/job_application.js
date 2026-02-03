@@ -26,8 +26,8 @@ export class JobApplication {
     this.userId = userId;
     this.jobSearchListId = jobSearchListId;
     this.resumeId = resumeId;
-    this.company = company.trim();
-    this.position = position.trim();
+    this.company = company ? company.trim() : null;
+    this.position = position ? position.trim() : null;
     this.jobDescription = jobDescription.trim();
     this.status = status;
     this.appliedDate = appliedDate;
@@ -53,34 +53,38 @@ export class JobApplication {
   }
 
   validateResumeId(resumeId) {
-    if (!resumeId || typeof resumeId !== 'string') {
-      throw new Error('Resume ID must be a non-empty string');
+    if (resumeId != null && typeof resumeId !== 'string') {
+      throw new Error('Resume ID must be a string or null');
     }
   }
 
   validateCompany(company) {
-    if (company == null || typeof company !== 'string') {
-      throw new Error('Company is required');
+    if (company != null && typeof company !== 'string') {
+      throw new Error('Company must be a string or null');
     }
-    const trimmedCompany = company.trim();
-    if (trimmedCompany === '') {
-      throw new Error('Company cannot be empty');
-    }
-    if (trimmedCompany.length > 100) {
-      throw new Error('Company must be 100 characters or less');
+    if (company != null) {
+      const trimmedCompany = company.trim();
+      if (trimmedCompany === '') {
+        throw new Error('Company cannot be empty');
+      }
+      if (trimmedCompany.length > 100) {
+        throw new Error('Company must be 100 characters or less');
+      }
     }
   }
 
   validatePosition(position) {
-    if (position == null || typeof position !== 'string') {
-      throw new Error('Position is required');
+    if (position != null && typeof position !== 'string') {
+      throw new Error('Position must be a string or null');
     }
-    const trimmedPosition = position.trim();
-    if (trimmedPosition === '') {
-      throw new Error('Position cannot be empty');
-    }
-    if (trimmedPosition.length > 100) {
-      throw new Error('Position must be 100 characters or less');
+    if (position != null) {
+      const trimmedPosition = position.trim();
+      if (trimmedPosition === '') {
+        throw new Error('Position cannot be empty');
+      }
+      if (trimmedPosition.length > 100) {
+        throw new Error('Position must be 100 characters or less');
+      }
     }
   }
 

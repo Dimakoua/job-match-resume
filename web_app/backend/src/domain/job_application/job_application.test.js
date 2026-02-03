@@ -73,7 +73,7 @@ describe('JobApplication Domain Entity', () => {
     });
 
     it('should throw error for invalid resumeId', () => {
-      expect(() => new JobApplication('app-123', 'user-456', null, null, 'Company', 'Position', 'Desc')).toThrow('Resume ID must be a non-empty string');
+      expect(() => new JobApplication('app-123', 'user-456', null, 123, 'Company', 'Position', 'Desc')).toThrow('Resume ID must be a string or null');
     });
 
     it('should throw error for invalid company', () => {
