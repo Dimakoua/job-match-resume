@@ -7,7 +7,7 @@
 - Comprehensive test coverage with 23/23 new tests passing for job search lists.
 
 ## Active Task(s)
-- None — B-022 complete, ready for frontend integration or next feature.
+- B-023: Job Application Management — Acceptance: User can save a job, link a resume, and update the application status.
 
 ## Decisions Made
 - Implemented flat CRUD system for job search lists with optional description field (design.md §3.2).
