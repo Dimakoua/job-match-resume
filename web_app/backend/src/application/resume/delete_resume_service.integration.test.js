@@ -6,6 +6,7 @@ import { ResumeRepository } from "../../domain/resume/resume_repository.js";
 import { TemplateRepository } from "../../domain/template/template_repository.js";
 import { D1ResumeRepository } from "../../adapters/repositories/resume/d1_resume_repository.js";
 import { Factory } from "../../factory.js";
+import { cleanTestDatabase } from "../../test_helpers.js";
 
 describe("DeleteResumeService Integration Tests", () => {
   let deleteService;
@@ -22,6 +23,9 @@ describe("DeleteResumeService Integration Tests", () => {
     createService = new CreateResumeService(resumeRepo, templateRepo);
     listService = new ListResumesService(resumeRepo);
     factory = new Factory(db);
+
+    // Clean the test database
+    await cleanTestDatabase(db);
   });
 
   it("should delete a resume successfully", async () => {

@@ -4,6 +4,7 @@ import { D1UserRepository } from "../user/d1_user_repository.js";
 import { Resume } from "../../../domain/resume/resume.js";
 import { User } from "../../../domain/user/user.js";
 import { Factory } from "../../../factory.js";
+import { cleanTestDatabase } from "../../../test_helpers.js";
 
 describe("D1ResumeRepository Integration Tests", () => {
   let repo;
@@ -16,6 +17,9 @@ describe("D1ResumeRepository Integration Tests", () => {
     repo = new D1ResumeRepository(db);
     userRepo = new D1UserRepository(db);
     factory = new Factory(db);
+
+    // Clean the test database
+    await cleanTestDatabase(db);
   });
 
   it("should save and find a resume by id", async () => {

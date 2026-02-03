@@ -1,5 +1,6 @@
 import { getPlatformProxy } from 'wrangler';
 import { beforeAll, afterAll, beforeEach } from 'vitest';
+import { cleanTestDatabase } from './src/test_helpers.js';
 
 let platform;
 
@@ -18,15 +19,7 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   // Clear all tables before each test in correct order (reverse dependencies)
-  if (global.DB) {
-    try {
-      await global.DB.prepare('DELETE FROM Resumes').run();
-      await global.DB.prepare('DELETE FROM Users').run();
-    } catch (error) {
-      // Silently ignore errors during cleanup
-      console.warn('Cleanup error:', error.message);
-    }
-  }
+  await cleanTestDatabase(global.DB);
 });
 
 afterAll(async () => {

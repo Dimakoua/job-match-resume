@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { SignUpUserService } from './sign_up_user_service.js';
 import { D1UserRepository } from '../../adapters/repositories/user/d1_user_repository.js';
+import { cleanTestDatabase } from '../../test_helpers.js';
 
 describe('SignUpUserService Integration Tests', () => {
   let service;
@@ -14,7 +15,7 @@ describe('SignUpUserService Integration Tests', () => {
     }
 
     // Clean the test database
-    await db.prepare('DELETE FROM Users').run();
+    await cleanTestDatabase(db);
     const repo = new D1UserRepository(db);
     service = new SignUpUserService(repo, 'integration_salt');
   });
@@ -22,7 +23,7 @@ describe('SignUpUserService Integration Tests', () => {
   afterAll(async () => {
     if (db) {
       // Clean up after all tests
-      await db.prepare('DELETE FROM Users').run();
+      await cleanTestDatabase(db);
     }
   });
 

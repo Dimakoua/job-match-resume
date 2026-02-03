@@ -4,6 +4,7 @@ import { ResumeRepository } from '../../domain/resume/resume_repository.js';
 import { TemplateRepository } from '../../domain/template/template_repository.js';
 import { D1ResumeRepository } from '../../adapters/repositories/resume/d1_resume_repository.js';
 import { Factory } from '../../factory.js';
+import { cleanTestDatabase } from '../../test_helpers.js';
 
 describe('UpdateResumeService Integration Tests', () => {
   let service;
@@ -16,6 +17,9 @@ describe('UpdateResumeService Integration Tests', () => {
     const templateRepo = new TemplateRepository();
     service = new UpdateResumeService(resumeRepo, templateRepo);
     factory = new Factory(db);
+
+    // Clean the test database
+    await cleanTestDatabase(db);
   });
 
   it('should update resume template successfully', async () => {

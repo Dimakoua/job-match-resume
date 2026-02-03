@@ -6,6 +6,7 @@ import { AutoRouter } from 'itty-router';
 import { HealthController } from './adapters/controllers/health/health_controller.js';
 import { setupAuthRoutes } from './routes/auth_routes.js';
 import { setupResumeRoutes } from './routes/resume_routes.js';
+import { setupJobSearchListRoutes } from './routes/job_search_list_routes.js';
 
 // ==================== CORS HEADERS ====================
 
@@ -43,6 +44,7 @@ router.get('/', () => new Response('Hello World from Resume Builder Backend!'));
 // Setup feature routes
 setupAuthRoutes(router);
 setupResumeRoutes(router);
+setupJobSearchListRoutes(router);
 
 // Export the router, scheduled handler, and queue handlers
 export default router;

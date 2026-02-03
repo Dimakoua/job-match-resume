@@ -104,9 +104,9 @@
 - Scope: Integrate R2 or equivalent for persisting export files (PDF/DOCX).
 - Acceptance: Files saved to bucket and return signed URLs.
 
-## B-022 — [feature] Job Search List Management ⚪ 0%
-- Scope: Implement CRUD for Job Search Lists.
-- Acceptance: User can create, read, update, and delete lists.
+## B-022 — [feature] Job Search List Management ✅ 100%
+- Completed: 2026-02-03
+- Evidence: Domain entity with validation, D1 repository with CRUD operations, application services with integration tests, REST API endpoints with authentication, full test coverage 23/23 passing.
 
 ## B-023 — [feature] Job Application Management ⚪ 0%
 - Scope: Implement CRUD for Job Applications, including linking to a resume and tracking status.
