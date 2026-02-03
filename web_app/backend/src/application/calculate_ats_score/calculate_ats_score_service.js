@@ -17,7 +17,13 @@ export class CalculateAtsScoreService {
    * @param {Object} command - The command object
    * @param {string} command.resumeText - The resume text to analyze
    * @param {string} command.jobDescription - The job description to compare against
-   * @returns {Promise<Object>} Result containing score, matchedKeywords, and totalKeywords
+   * @returns {Promise<Object>} Result containing score, keywords, and metadata
+   * @returns {number} result.score - ATS compatibility score (0-100)
+   * @returns {string[]} result.matchedKeywords - Keywords found in both resume and job description
+   * @returns {string[]} result.missedKeywords - Keywords in job description but missing from resume
+   * @returns {string[]} result.resumeKeywords - All keywords extracted from resume
+   * @returns {string[]} result.jobDescriptionKeywords - All keywords extracted from job description
+   * @returns {Object} result.metadata - Additional metadata about the analysis
    * @throws {AtsScoringError} If input validation fails
    */
   async execute(command) {
@@ -28,11 +34,15 @@ export class CalculateAtsScoreService {
     const normalizedResume = this._normalizeText(command.resumeText);
     const normalizedJobDesc = this._normalizeText(command.jobDescription);
 
-    // Extract keywords from job description
+    // Extract keywords from both texts
     const jobKeywords = this._extractKeywords(normalizedJobDesc);
+    const resumeKeywords = this._extractKeywords(normalizedResume);
 
     // Find matching keywords in resume
     const matchedKeywords = this._findMatchedKeywords(normalizedResume, jobKeywords);
+
+    // Find missed keywords (in job description but not in resume)
+    const missedKeywords = jobKeywords.filter(keyword => !matchedKeywords.includes(keyword));
 
     // Calculate final score
     const score = this._calculateScore(jobKeywords.length, matchedKeywords.length);
@@ -40,13 +50,20 @@ export class CalculateAtsScoreService {
     return {
       score,
       matchedKeywords: matchedKeywords.sort(), // Sort for consistent output
-      totalKeywords: jobKeywords.length,
+      missedKeywords: missedKeywords.sort(), // Sort for consistent output
+      resumeKeywords: resumeKeywords.sort(), // All resume keywords for highlighting
+      jobDescriptionKeywords: jobKeywords.sort(), // All job keywords for reference
+      totalKeywords: jobKeywords.length, // Keep for backwards compatibility
       metadata: {
         resumeLength: command.resumeText.length,
         jobDescriptionLength: command.jobDescription.length,
         matchRate: jobKeywords.length > 0 
           ? Math.round((matchedKeywords.length / jobKeywords.length) * 100) / 100 
-          : 0
+          : 0,
+        resumeKeywordCount: resumeKeywords.length,
+        jobKeywordCount: jobKeywords.length,
+        matchedCount: matchedKeywords.length,
+        missedCount: missedKeywords.length
       }
     };
   }

@@ -22,9 +22,14 @@ describe('CalculateAtsScoreService', () => {
       expect(result.score).toBe(50); // 2 out of 4 match (javascript, react)
       expect(result.matchedKeywords).toContain('javascript');
       expect(result.matchedKeywords).toContain('react');
+      expect(result.missedKeywords).toContain('python'); // in job but not resume
       expect(result.totalKeywords).toBe(4); // developer, javascript, python, react
+      expect(result.jobDescriptionKeywords).toHaveLength(4);
+      expect(result.resumeKeywords).toBeDefined();
       expect(result.metadata).toBeDefined();
       expect(result.metadata.resumeLength).toBe(command.resumeText.length);
+      expect(result.metadata.matchedCount).toBe(2);
+      expect(result.metadata.missedCount).toBe(2);
     });
 
     it('should return 100 for perfect match', async () => {
@@ -37,6 +42,7 @@ describe('CalculateAtsScoreService', () => {
 
       expect(result.score).toBe(100);
       expect(result.matchedKeywords.sort()).toEqual(['javascript', 'node', 'react']);
+      expect(result.missedKeywords).toHaveLength(0); // All keywords matched
       expect(result.totalKeywords).toBe(3);
     });
 
@@ -49,6 +55,7 @@ describe('CalculateAtsScoreService', () => {
       const result = await service.execute(command);
 
       expect(result.score).toBe(0);
+      expect(result.missedKeywords).toHaveLength(3); // All job keywords missed
       expect(result.matchedKeywords).toEqual([]);
       expect(result.totalKeywords).toBe(3);
     });
@@ -118,7 +125,53 @@ describe('CalculateAtsScoreService', () => {
       expect(result.metadata.jobDescriptionLength).toBe(17);
       expect(result.metadata.matchRate).toBeGreaterThan(0);
     });
+
+    it('should provide detailed keyword information for frontend highlighting', async () => {
+      const command = {
+        resumeText: 'Senior JavaScript developer with React and Node.js expertise. Built scalable applications.',
+        jobDescription: 'Looking for JavaScript developer with React, Angular, and Python skills.'
+      };
+
+      const result = await service.execute(command);
+
+      // Matched keywords (in both resume and job description)
+      expect(result.matchedKeywords).toContain('javascript');
+      expect(result.matchedKeywords).toContain('developer');
+      expect(result.matchedKeywords).toContain('react');
+
+      // Missed keywords (in job description but not in resume)
+      expect(result.missedKeywords).toContain('angular');
+      expect(result.missedKeywords).toContain('python');
+
+      // Resume keywords (all keywords found in resume - for highlighting)
+      expect(result.resumeKeywords).toContain('javascript');
+      expect(result.resumeKeywords).toContain('developer');
+      expect(result.resumeKeywords).toContain('senior');
+      expect(result.resumeKeywords).toContain('expertise');
+      expect(result.resumeKeywords).toContain('scalable');
+      expect(result.resumeKeywords).toContain('applications');
+
+      // Job description keywords
+      expect(result.jobDescriptionKeywords).toContain('javascript');
+      expect(result.jobDescriptionKeywords).toContain('developer');
+      expect(result.jobDescriptionKeywords).toContain('react');
+      expect(result.jobDescriptionKeywords).toContain('angular');
+      expect(result.jobDescriptionKeywords).toContain('python');
+
+      // Metadata counts
+      expect(result.metadata.matchedCount).toBe(result.matchedKeywords.length);
+      expect(result.metadata.missedCount).toBe(result.missedKeywords.length);
+      expect(result.metadata.resumeKeywordCount).toBe(result.resumeKeywords.length);
+      expect(result.metadata.jobKeywordCount).toBe(result.jobDescriptionKeywords.length);
+
+      // Verify all arrays are sorted
+      expect(result.matchedKeywords).toEqual([...result.matchedKeywords].sort());
+      expect(result.missedKeywords).toEqual([...result.missedKeywords].sort());
+      expect(result.resumeKeywords).toEqual([...result.resumeKeywords].sort());
+      expect(result.jobDescriptionKeywords).toEqual([...result.jobDescriptionKeywords].sort());
+    });
   });
+
 
   describe('validation', () => {
     it('should throw AtsScoringError for missing resumeText', async () => {
