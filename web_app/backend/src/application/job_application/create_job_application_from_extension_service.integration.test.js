@@ -13,7 +13,9 @@ describe('CreateJobApplicationFromExtensionService Integration Tests', () => {
     factory = new Factory(db);
     service = new CreateJobApplicationFromExtensionService(
       factory.jobApplicationRepo,
-      factory.userRepo
+      factory.userRepo,
+      factory.jobSearchListRepo,
+      factory.createJobSearchListService
     );
 
     // Clean the test database
@@ -42,7 +44,7 @@ describe('CreateJobApplicationFromExtensionService Integration Tests', () => {
     expect(result).toBeDefined();
     expect(result.id).toBeDefined();
     expect(result.userId).toBe(user.id);
-    expect(result.jobSearchListId).toBeNull();
+    expect(result.jobSearchListId).toBeDefined(); // Should be set to current year list
     expect(result.resumeId).toBeNull();
     expect(result.company).toBe('Tech Corp');
     expect(result.position).toBe('Senior Software Engineer');

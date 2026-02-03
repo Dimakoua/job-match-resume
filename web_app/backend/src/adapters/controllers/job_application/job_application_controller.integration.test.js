@@ -2,8 +2,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { JobApplicationController } from './job_application_controller.js';
 import { Factory } from '../../../factory.js';
-import { JobApplication } from '../../../domain/job_application/job_application.js';
-import { newUUID } from '../../../factory.js';
 import jwt from '@tsndr/cloudflare-worker-jwt';
 
 describe('JobApplicationController Integration Tests', () => {
@@ -17,24 +15,10 @@ describe('JobApplicationController Integration Tests', () => {
     factory = new Factory(db);
     await factory.db.exec('DELETE FROM JobApplications');
     await factory.db.exec('DELETE FROM Users');
+    await factory.db.exec('DELETE FROM JobSearchLists');
 
     const deps = {
-      createJobApplicationFromExtensionService: {
-        execute: async (userId, jobData) => {
-          return new JobApplication(
-            newUUID(),
-            userId,
-            null, // jobSearchListId
-            null, // resumeId
-            jobData.company || null,
-            jobData.position || null,
-            jobData.jobDescription,
-            'saved',
-            null, // appliedDate
-            jobData.url || null // notes
-          );
-        }
-      }
+      createJobApplicationFromExtensionService: factory.createJobApplicationFromExtensionService
     };
 
     controller = new JobApplicationController(deps, mockJwtSecret);
@@ -76,6 +60,16 @@ describe('JobApplicationController Integration Tests', () => {
     expect(result.data.jobApplication.jobDescription).toBe('We are looking for a Senior Software Engineer...');
     expect(result.data.jobApplication.status).toBe('saved');
     expect(result.data.jobApplication.notes).toBe('https://example.com/job/123');
+    
+    // Verify that a year-based job search list was created and assigned
+    expect(result.data.jobApplication.jobSearchListId).toBeDefined();
+    expect(result.data.jobApplication.jobSearchListId).not.toBeNull();
+    
+    // Verify the year list exists in the database
+    const yearList = await db.prepare('SELECT * FROM JobSearchLists WHERE id = ?').bind(result.data.jobApplication.jobSearchListId).first();
+    expect(yearList).toBeDefined();
+    expect(yearList.name).toBe('2026');
+    expect(yearList.user_id).toBe(user.id);
   });
 
   it('should create job application with minimal data', async () => {
@@ -107,6 +101,10 @@ describe('JobApplicationController Integration Tests', () => {
     expect(result.data.jobApplication.company).toBeNull();
     expect(result.data.jobApplication.position).toBeNull();
     expect(result.data.jobApplication.notes).toBeNull();
+    
+    // Verify that a year-based job search list was created and assigned
+    expect(result.data.jobApplication.jobSearchListId).toBeDefined();
+    expect(result.data.jobApplication.jobSearchListId).not.toBeNull();
   });
 
   it('should return 401 for missing authentication', async () => {

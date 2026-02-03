@@ -40,6 +40,20 @@ export class D1JobSearchListRepository {
     }
   }
 
+  async findByNameAndUserId(name, userId) {
+    const sql = 'SELECT id, user_id, name, description FROM JobSearchLists WHERE name = ? AND user_id = ?';
+    try {
+      const result = await query(this.database, sql, [name, userId]);
+      if (result.results.length === 0) {
+        return null;
+      }
+      const row = result.results[0];
+      return new JobSearchList(row.id, row.user_id, row.name, row.description);
+    } catch (error) {
+      throw new Error(`Failed to find job search list by name: ${error.message}`);
+    }
+  }
+
   async update(list) {
     const sql = 'UPDATE JobSearchLists SET name = ?, description = ? WHERE id = ?';
     try {

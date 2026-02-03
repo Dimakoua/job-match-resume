@@ -2,9 +2,11 @@
 import { JobApplication } from '../../domain/job_application/job_application.js';
 
 export class CreateJobApplicationFromExtensionService {
-  constructor(jobApplicationRepository, userRepository) {
+  constructor(jobApplicationRepository, userRepository, jobSearchListRepository, createJobSearchListService) {
     this.jobApplicationRepository = jobApplicationRepository;
     this.userRepository = userRepository;
+    this.jobSearchListRepository = jobSearchListRepository;
+    this.createJobSearchListService = createJobSearchListService;
   }
 
   async execute(userId, jobData) {
@@ -48,11 +50,15 @@ export class CreateJobApplicationFromExtensionService {
       throw new Error('User not found');
     }
 
+    // Get or create current year's job search list
+    const currentYear = new Date().getFullYear().toString();
+    const jobSearchList = await this.getOrCreateYearList(userId, currentYear);
+
     // Create job application
     const jobApplication = new JobApplication(
       crypto.randomUUID(),
       userId,
-      null, // jobSearchListId - can be set later
+      jobSearchList.id, // Use the current year's list
       null, // resumeId - can be linked later
       jobData.company?.trim() || null,
       jobData.position?.trim() || null,
@@ -66,5 +72,21 @@ export class CreateJobApplicationFromExtensionService {
     await this.jobApplicationRepository.save(jobApplication);
 
     return jobApplication;
+  }
+
+  async getOrCreateYearList(userId, year) {
+    // Try to find existing list for this year
+    let list = await this.jobSearchListRepository.findByNameAndUserId(year, userId);
+
+    if (!list) {
+      // Create new list for this year
+      list = await this.createJobSearchListService.execute({
+        userId,
+        name: year,
+        description: `Job applications for ${year}`
+      });
+    }
+
+    return list;
   }
 }

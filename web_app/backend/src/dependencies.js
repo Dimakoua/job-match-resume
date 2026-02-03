@@ -85,7 +85,12 @@ export function createDependencies(env) {
   const listJobSearchListsService = new ListJobSearchListsService(jobSearchListRepository);
   const updateJobSearchListService = new UpdateJobSearchListService(jobSearchListRepository);
   const deleteJobSearchListService = new DeleteJobSearchListService(jobSearchListRepository);
-  const createJobApplicationFromExtensionService = new CreateJobApplicationFromExtensionService(jobApplicationRepository, userRepository);
+  const createJobApplicationFromExtensionService = new CreateJobApplicationFromExtensionService(
+    jobApplicationRepository, 
+    userRepository,
+    jobSearchListRepository,
+    createJobSearchListService
+  );
 
   return {
     userRepository,

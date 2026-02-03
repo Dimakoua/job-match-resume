@@ -35,6 +35,16 @@ export class JobSearchListRepository {
   }
 
   /**
+   * Finds a JobSearchList by name and user ID.
+   * @param {string} name - The list name.
+   * @param {string} userId - The user ID.
+   * @returns {Promise<JobSearchList|null>} - The list or null if not found.
+   */
+  async findByNameAndUserId(name, userId) {
+    return this.impl.findByNameAndUserId(name, userId);
+  }
+
+  /**
    * Updates a JobSearchList in the repository.
    * @param {JobSearchList} list - The list to update.
    * @returns {Promise<void>}

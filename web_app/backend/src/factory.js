@@ -13,6 +13,8 @@ import { D1UserRepository } from './adapters/repositories/user/d1_user_repositor
 import { D1ResumeRepository } from './adapters/repositories/resume/d1_resume_repository.js';
 import { D1JobSearchListRepository } from './adapters/repositories/job_search_list/d1_job_search_list_repository.js';
 import { D1JobApplicationRepository } from './adapters/repositories/job_application/d1_job_application_repository.js';
+import { CreateJobSearchListService } from './application/job_search_list/create_job_search_list_service.js';
+import { CreateJobApplicationFromExtensionService } from './application/job_application/create_job_application_from_extension_service.js';
 
 const words = [
   'apple', 'banana', 'cherry', 'dog', 'elephant', 'flower', 'garden', 'house',
@@ -45,6 +47,13 @@ export class Factory {
     this.jobSearchListRepo = new JobSearchListRepository(new D1JobSearchListRepository(db));
     this.jobApplicationRepo = new JobApplicationRepository(new D1JobApplicationRepository(db));
     this.templateRepo = new TemplateRepository();
+    this.createJobSearchListService = new CreateJobSearchListService(this.jobSearchListRepo);
+    this.createJobApplicationFromExtensionService = new CreateJobApplicationFromExtensionService(
+      this.jobApplicationRepo,
+      this.userRepo,
+      this.jobSearchListRepo,
+      this.createJobSearchListService
+    );
   }
 
   async build(factoryName, opts = {}) {
