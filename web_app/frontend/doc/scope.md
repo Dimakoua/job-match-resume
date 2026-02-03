@@ -17,7 +17,7 @@ This document defines the functional boundaries, user experience goals, and tech
 The Frontend provides a "Professional Studio" environment. It abstracts the complexity of formatting and layout, allowing the user to focus purely on content.
 
 **The Problem:** Traditional resume editors are Clunky (Word) or Rigid (Forms). Users struggle to visualize how their text fits into a page while typing.
-**The Solution:** A reactive "Split-Screen" interface. On the left: intuitive forms and AI tools. On the right: A real-time, pixel-perfect preview of the final document.
+**The Solution:** A reactive "Split-Screen" interface for resume building, and a comprehensive dashboard for tracking job applications. On the left of the builder: intuitive forms and AI tools. On the right: A real-time, pixel-perfect preview of the final document. The dashboard will allow users to manage their job searches, link tailored resumes, and track their progress.
 
 ---
 
@@ -27,6 +27,7 @@ The Frontend provides a "Professional Studio" environment. It abstracts the comp
 - **AI Accessibility:** AI features (Improve Text, Generate from JD) are embedded directly into the workflow, not hidden in a separate menu.
 - **Professional Aesthetics:** The UI itself (dashboard, buttons, forms) feels as professional as the resumes it produces.
 - **Seamless Export:** One-click download for PDF and DOCX.
+- **Job Application Tracking:** A clear and organized way to manage the job application pipeline.
 
 ---
 
@@ -45,9 +46,11 @@ The Frontend provides a "Professional Studio" environment. It abstracts the comp
 - **Auth Flow:**
     - Login/Signup (Email & Password).
     - Google OAuth Button integration.
-- **Dashboard:**
-    - Grid view of saved resumes with thumbnail previews.
-    - "Create New" options: "Start from Scratch" vs "Generate from Job Description".
+- **Job Tracking Dashboard:**
+    - View and manage job search lists (e.g., "2025 Job Hunt").
+    - View saved jobs within those lists.
+    - Track application status (Saved, Applied, Interview, etc.).
+    - Link a specific resume version to a job application.
 - **The Builder (Main View):**
     - **Split Layout:** Form Editor (Left) + Document Preview (Right).
     - **Form Sections:** Personal Info, Experience, Education, Skills, Custom.

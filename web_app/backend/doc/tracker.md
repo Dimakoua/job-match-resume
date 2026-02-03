@@ -103,3 +103,15 @@
 ## B-021 — [infra] Cloud Storage for Exported Assets 🔵 20%
 - Scope: Integrate R2 or equivalent for persisting export files (PDF/DOCX).
 - Acceptance: Files saved to bucket and return signed URLs.
+
+## B-022 — [feature] Job Search List Management ⚪ 0%
+- Scope: Implement CRUD for Job Search Lists.
+- Acceptance: User can create, read, update, and delete lists.
+
+## B-023 — [feature] Job Application Management ⚪ 0%
+- Scope: Implement CRUD for Job Applications, including linking to a resume and tracking status.
+- Acceptance: User can save a job, link a resume, and update the application status.
+
+## B-024 — [api] Chrome Extension Endpoint ⚪ 0%
+- Scope: Create an endpoint to receive job descriptions from the Chrome extension.
+- Acceptance: Endpoint securely accepts and stores job data.

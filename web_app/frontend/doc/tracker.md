@@ -77,6 +77,18 @@
 ## F-038 — [ui] Dashboard Resume Actions 🔵 40%
 - Scope: Implement Preview, Duplicate, and Delete.
 
+## F-039 — [feature] Job Search List Management ⚪ 0%
+- Scope: UI for creating and managing job search lists.
+- Acceptance: User can create, rename, and delete lists from the dashboard.
+
+## F-040 — [feature] Job Application View ⚪ 0%
+- Scope: UI for viewing saved jobs within a list.
+- Acceptance: User can see a list of saved jobs with their status.
+
+## F-041 — [feature] Application Status Tracking ⚪ 0%
+- Scope: Implement UI to change the status of a job application.
+- Acceptance: User can update the status from a dropdown (e.g., Applied, Interviewing).
+
 ---
 
 ## Completed Tasks
