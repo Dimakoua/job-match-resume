@@ -2,14 +2,17 @@
 import { fakeUser } from './domain/user/user_factory.js';
 import { fakeResume } from './domain/resume/resume_factory.js';
 import { fakeJobSearchList } from './domain/job_search_list/job_search_list_factory.js';
+import { fakeJobApplication } from './domain/job_application/job_application_factory.js';
 import { fakeTemplate } from './domain/template/template_factory.js';
 import { UserRepository } from './domain/user/user_repository.js';
 import { ResumeRepository } from './domain/resume/resume_repository.js';
 import { JobSearchListRepository } from './domain/job_search_list/job_search_list_repository.js';
+import { JobApplicationRepository } from './domain/job_application/job_application_repository.js';
 import { TemplateRepository } from './domain/template/template_repository.js';
 import { D1UserRepository } from './adapters/repositories/user/d1_user_repository.js';
 import { D1ResumeRepository } from './adapters/repositories/resume/d1_resume_repository.js';
 import { D1JobSearchListRepository } from './adapters/repositories/job_search_list/d1_job_search_list_repository.js';
+import { D1JobApplicationRepository } from './adapters/repositories/job_application/d1_job_application_repository.js';
 
 const words = [
   'apple', 'banana', 'cherry', 'dog', 'elephant', 'flower', 'garden', 'house',
@@ -40,6 +43,7 @@ export class Factory {
     this.userRepo = new UserRepository(new D1UserRepository(db));
     this.resumeRepo = new ResumeRepository(new D1ResumeRepository(db));
     this.jobSearchListRepo = new JobSearchListRepository(new D1JobSearchListRepository(db));
+    this.jobApplicationRepo = new JobApplicationRepository(new D1JobApplicationRepository(db));
     this.templateRepo = new TemplateRepository();
   }
 
@@ -67,6 +71,10 @@ export class Factory {
 
   async fakeJobSearchList(opts = {}) {
     return await fakeJobSearchList(this.jobSearchListRepo, opts);
+  }
+
+  async fakeJobApplication(opts = {}) {
+    return await fakeJobApplication(this.jobApplicationRepo, opts);
   }
 
   async fakeTemplate(opts = {}) {
