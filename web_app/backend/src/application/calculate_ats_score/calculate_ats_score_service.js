@@ -1,113 +1,201 @@
 // application/calculate_ats_score/calculate_ats_score_service.js
+import { AtsScoringError } from './ats_scoring_error.js';
+import { ATS_CONFIG, STOP_WORDS, TECHNICAL_TERMS } from './keyword_config.js';
+
+/**
+ * Service for calculating ATS (Applicant Tracking System) compatibility scores.
+ * 
+ * This service analyzes the keyword overlap between a resume and job description
+ * to produce a deterministic compatibility score from 0-100.
+ * 
+ * @class CalculateAtsScoreService
+ */
 export class CalculateAtsScoreService {
+  /**
+   * Execute ATS score calculation
+   * 
+   * @param {Object} command - The command object
+   * @param {string} command.resumeText - The resume text to analyze
+   * @param {string} command.jobDescription - The job description to compare against
+   * @returns {Promise<Object>} Result containing score, matchedKeywords, and totalKeywords
+   * @throws {AtsScoringError} If input validation fails
+   */
   async execute(command) {
-    // Validate command
-    if (!command.resumeText || typeof command.resumeText !== 'string' || command.resumeText.trim().length === 0) {
-      throw new Error('resumeText is required and must be a non-empty string');
-    }
+    // Validate inputs
+    this._validateInput(command);
 
-    if (!command.jobDescription || typeof command.jobDescription !== 'string' || command.jobDescription.trim().length === 0) {
-      throw new Error('jobDescription is required and must be a non-empty string');
-    }
-
-    if (command.resumeText.length > 50000) {
-      throw new Error('resumeText must be less than 50,000 characters');
-    }
-
-    if (command.jobDescription.length > 50000) {
-      throw new Error('jobDescription must be less than 50,000 characters');
-    }
+    // Normalize texts for processing
+    const normalizedResume = this._normalizeText(command.resumeText);
+    const normalizedJobDesc = this._normalizeText(command.jobDescription);
 
     // Extract keywords from job description
-    const jobKeywords = this._extractKeywords(command.jobDescription);
+    const jobKeywords = this._extractKeywords(normalizedJobDesc);
 
-    // Calculate score based on keyword matches in resume
-    const score = this._calculateScore(command.resumeText, jobKeywords);
+    // Find matching keywords in resume
+    const matchedKeywords = this._findMatchedKeywords(normalizedResume, jobKeywords);
+
+    // Calculate final score
+    const score = this._calculateScore(jobKeywords.length, matchedKeywords.length);
 
     return {
-      score: score,
-      matchedKeywords: jobKeywords.filter(keyword => this._containsKeyword(command.resumeText, keyword)),
-      totalKeywords: jobKeywords.length
+      score,
+      matchedKeywords: matchedKeywords.sort(), // Sort for consistent output
+      totalKeywords: jobKeywords.length,
+      metadata: {
+        resumeLength: command.resumeText.length,
+        jobDescriptionLength: command.jobDescription.length,
+        matchRate: jobKeywords.length > 0 
+          ? Math.round((matchedKeywords.length / jobKeywords.length) * 100) / 100 
+          : 0
+      }
     };
   }
 
+  /**
+   * Validate command input
+   * 
+   * @private
+   * @param {Object} command - The command to validate
+   * @throws {AtsScoringError} If validation fails
+   */
+  _validateInput(command) {
+    if (!command) {
+      throw AtsScoringError.invalidInput('command', 'command object is required');
+    }
+
+    // Validate resumeText
+    if (!command.resumeText || typeof command.resumeText !== 'string') {
+      throw AtsScoringError.invalidInput('resumeText', 'must be a non-empty string');
+    }
+
+    if (command.resumeText.trim().length === 0) {
+      throw AtsScoringError.invalidInput('resumeText', 'cannot be empty or whitespace only');
+    }
+
+    if (command.resumeText.length > ATS_CONFIG.MAX_TEXT_LENGTH) {
+      throw AtsScoringError.textTooLong(
+        'resumeText', 
+        command.resumeText.length, 
+        ATS_CONFIG.MAX_TEXT_LENGTH
+      );
+    }
+
+    // Validate jobDescription
+    if (!command.jobDescription || typeof command.jobDescription !== 'string') {
+      throw AtsScoringError.invalidInput('jobDescription', 'must be a non-empty string');
+    }
+
+    if (command.jobDescription.trim().length === 0) {
+      throw AtsScoringError.invalidInput('jobDescription', 'cannot be empty or whitespace only');
+    }
+
+    if (command.jobDescription.length > ATS_CONFIG.MAX_TEXT_LENGTH) {
+      throw AtsScoringError.textTooLong(
+        'jobDescription', 
+        command.jobDescription.length, 
+        ATS_CONFIG.MAX_TEXT_LENGTH
+      );
+    }
+  }
+
+  /**
+   * Normalize text for processing
+   * Handles special characters, multiple spaces, etc.
+   * 
+   * @private
+   * @param {string} text - Text to normalize
+   * @returns {string} Normalized text
+   */
+  _normalizeText(text) {
+    return text
+      .toLowerCase()
+      // Replace common separators with spaces for better word boundary detection
+      .replace(/[\/\-_]/g, ' ')
+      // Normalize multiple spaces to single space
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  /**
+   * Extract relevant keywords from text
+   * 
+   * @private
+   * @param {string} text - Normalized text to extract keywords from
+   * @returns {string[]} Array of unique keywords
+   */
   _extractKeywords(text) {
-    // Convert to lowercase and split into words
-    const words = text.toLowerCase().match(/\b\w+\b/g) || [];
+    // Extract all words
+    const words = text.match(/\b[a-z0-9]+\b/g) || [];
 
-    // Filter out common stop words and short words
-    const stopWords = new Set([
-      'a', 'an', 'and', 'are', 'as', 'at', 'be', 'by', 'for', 'from',
-      'has', 'he', 'in', 'is', 'it', 'its', 'of', 'on', 'that', 'the',
-      'to', 'was', 'will', 'with', 'would', 'i', 'you', 'we', 'they',
-      'this', 'these', 'those', 'me', 'my', 'your', 'our', 'their',
-      'his', 'her', 'him', 'she', 'us', 'them', 'who', 'what', 'where',
-      'when', 'why', 'how', 'all', 'any', 'both', 'each', 'few', 'more',
-      'most', 'other', 'some', 'such', 'no', 'nor', 'not', 'only', 'own',
-      'same', 'so', 'than', 'too', 'very', 'can', 'just', 'should', 'now',
-      'have', 'been', 'were', 'had', 'did', 'do', 'does', 'done', 'doing',
-      'am', 'are', 'is', 'was', 'were', 'be', 'been', 'being',
-      'have', 'has', 'had', 'having', 'do', 'does', 'did', 'doing',
-      'make', 'made', 'making', 'get', 'got', 'getting', 'go', 'went', 'going',
-      'come', 'came', 'coming', 'take', 'took', 'taking', 'see', 'saw', 'seeing',
-      'know', 'knew', 'knowing', 'think', 'thought', 'thinking', 'look', 'looked', 'looking'
-    ]);
+    // Filter and deduplicate
+    const keywords = new Set();
 
-    // For ATS scoring, focus on potential technical terms, job titles, and skills
-    // Include words that are likely to be skills/technologies
-    const technicalTerms = new Set([
-      'javascript', 'python', 'java', 'csharp', 'c++', 'c#', 'php', 'ruby', 'go', 'rust', 'swift', 'kotlin',
-      'react', 'angular', 'vue', 'node', 'express', 'django', 'flask', 'spring', 'laravel', 'rails',
-      'html', 'css', 'sass', 'scss', 'bootstrap', 'tailwind', 'material',
-      'sql', 'mysql', 'postgresql', 'mongodb', 'redis', 'elasticsearch',
-      'aws', 'azure', 'gcp', 'docker', 'kubernetes', 'jenkins', 'git', 'github', 'gitlab',
-      'linux', 'windows', 'macos', 'android', 'ios',
-      'developer', 'engineer', 'architect', 'analyst', 'manager', 'lead', 'senior', 'junior',
-      'frontend', 'backend', 'fullstack', 'mobile', 'web', 'software', 'data', 'devops', 'qa', 'testing',
-      'agile', 'scrum', 'kanban', 'ci', 'cd', 'api', 'rest', 'graphql', 'microservices'
-    ]);
+    for (const word of words) {
+      // Skip if too short
+      if (word.length < ATS_CONFIG.MIN_KEYWORD_LENGTH) {
+        continue;
+      }
 
-    const keywords = words.filter(word => {
-      // Must be at least 3 characters
-      if (word.length < 3) return false;
-      
-      // Not a stop word
-      if (stopWords.has(word)) return false;
-      
-      // Not just numbers
-      if (/^\d+$/.test(word)) return false;
-      
-      // Either a known technical term or a longer word (likely technical)
-      return technicalTerms.has(word) || word.length >= 6;
-    });
+      // Skip stop words
+      if (STOP_WORDS.has(word)) {
+        continue;
+      }
 
-    // Remove duplicates and return
-    return [...new Set(keywords)];
+      // Skip pure numbers
+      if (/^\d+$/.test(word)) {
+        continue;
+      }
+
+      // Include technical terms or longer words that are likely meaningful
+      if (TECHNICAL_TERMS.has(word) || word.length >= ATS_CONFIG.MIN_GENERAL_KEYWORD_LENGTH) {
+        keywords.add(word);
+      }
+    }
+
+    return Array.from(keywords);
   }
 
-  _containsKeyword(text, keyword) {
-    // Case-insensitive search for the keyword
-    const regex = new RegExp(`\\b${this._escapeRegExp(keyword)}\\b`, 'i');
-    return regex.test(text);
+  /**
+   * Find which job keywords are present in the resume
+   * 
+   * @private
+   * @param {string} resumeText - Normalized resume text
+   * @param {string[]} jobKeywords - Keywords from job description
+   * @returns {string[]} Array of matched keywords
+   */
+  _findMatchedKeywords(resumeText, jobKeywords) {
+    const matched = [];
+
+    // Pre-compile resume text for efficient searching
+    const resumeWords = new Set(resumeText.match(/\b[a-z0-9]+\b/g) || []);
+
+    for (const keyword of jobKeywords) {
+      if (resumeWords.has(keyword)) {
+        matched.push(keyword);
+      }
+    }
+
+    return matched;
   }
 
-  _escapeRegExp(string) {
-    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  }
-
-  _calculateScore(resumeText, jobKeywords) {
-    if (jobKeywords.length === 0) {
+  /**
+   * Calculate final ATS score
+   * 
+   * @private
+   * @param {number} totalKeywords - Total number of keywords from job description
+   * @param {number} matchedKeywords - Number of matched keywords
+   * @returns {number} Score from 0-100
+   */
+  _calculateScore(totalKeywords, matchedKeywords) {
+    // Handle edge case of no keywords
+    if (totalKeywords === 0) {
       return 0;
     }
 
-    // Count how many keywords are found in the resume
-    const matchedCount = jobKeywords.filter(keyword =>
-      this._containsKeyword(resumeText, keyword)
-    ).length;
+    // Calculate percentage match
+    const rawScore = (matchedKeywords / totalKeywords) * 100;
 
-    // Calculate percentage score (0-100)
-    const score = Math.round((matchedCount / jobKeywords.length) * 100);
-
-    return Math.min(100, Math.max(0, score)); // Ensure score is between 0-100
+    // Round to nearest integer and ensure within bounds
+    return Math.min(100, Math.max(0, Math.round(rawScore)));
   }
 }

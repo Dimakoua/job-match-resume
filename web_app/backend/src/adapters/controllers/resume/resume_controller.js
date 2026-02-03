@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { BaseController } from '../base/base_controller.js';
+import { AtsScoringError } from '../../../application/calculate_ats_score/ats_scoring_error.js';
 
 const createResumeSchema = z.object({
   title: z.string().min(1, 'Title is required'),
@@ -253,8 +254,18 @@ export class ResumeController extends BaseController {
       if (error instanceof Response) {
         return error;
       }
-      console.error('Calculate ATS score error:', error);
 
+      // Handle ATS scoring specific errors
+      if (error instanceof AtsScoringError) {
+        console.error('ATS scoring error:', error.message, error.details);
+        return this.errorResponse(
+          error.code,
+          error.message,
+          error.code === 'INVALID_INPUT' || error.code === 'TEXT_TOO_LONG' ? 400 : 500
+        );
+      }
+
+      console.error('Calculate ATS score error:', error);
       return this.errorResponse('INTERNAL_ERROR', 'An unexpected error occurred', 500);
     }
   }
