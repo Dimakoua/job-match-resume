@@ -48,11 +48,11 @@ export class D1JobApplicationRepository {
 
     try {
       const result = await query(this.database, sql, [id]);
-      if (result.length === 0) {
+      if (result.results.length === 0) {
         return null;
       }
 
-      const row = result[0];
+      const row = result.results[0];
       return this.mapRowToJobApplication(row);
     } catch (error) {
       throw new Error(`Failed to find job application: ${error.message}`);
@@ -74,9 +74,13 @@ export class D1JobApplicationRepository {
       params.push(options.status);
     }
 
-    if (options.jobSearchListId) {
-      sql += ' AND job_search_list_id = ?';
-      params.push(options.jobSearchListId);
+    if (options.jobSearchListId !== undefined) {
+      if (options.jobSearchListId === null) {
+        sql += ' AND job_search_list_id IS NULL';
+      } else {
+        sql += ' AND job_search_list_id = ?';
+        params.push(options.jobSearchListId);
+      }
     }
 
     sql += ' ORDER BY created_at DESC';
@@ -93,7 +97,7 @@ export class D1JobApplicationRepository {
 
     try {
       const results = await query(this.database, sql, params);
-      return results.map(row => this.mapRowToJobApplication(row));
+      return results.results.map(row => this.mapRowToJobApplication(row));
     } catch (error) {
       throw new Error(`Failed to find job applications: ${error.message}`);
     }
@@ -120,7 +124,7 @@ export class D1JobApplicationRepository {
         jobApplication.userId
       ]);
 
-      if (result.changes === 0) {
+      if (result.meta.changes === 0) {
         throw new Error('Job application not found or access denied');
       }
     } catch (error) {
@@ -133,7 +137,7 @@ export class D1JobApplicationRepository {
 
     try {
       const result = await execute(this.database, sql, [id, userId]);
-      return result.changes > 0;
+      return result.meta.changes > 0;
     } catch (error) {
       throw new Error(`Failed to delete job application: ${error.message}`);
     }
@@ -148,14 +152,18 @@ export class D1JobApplicationRepository {
       params.push(options.status);
     }
 
-    if (options.jobSearchListId) {
-      sql += ' AND job_search_list_id = ?';
-      params.push(options.jobSearchListId);
+    if (options.jobSearchListId !== undefined) {
+      if (options.jobSearchListId === null) {
+        sql += ' AND job_search_list_id IS NULL';
+      } else {
+        sql += ' AND job_search_list_id = ?';
+        params.push(options.jobSearchListId);
+      }
     }
 
     try {
       const result = await query(this.database, sql, params);
-      return result[0].count;
+      return result.results[0].count;
     } catch (error) {
       throw new Error(`Failed to count job applications: ${error.message}`);
     }
