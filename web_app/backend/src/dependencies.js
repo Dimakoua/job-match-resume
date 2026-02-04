@@ -40,12 +40,27 @@ import { DocxAdapter } from './adapters/docx/docx_adapter.js';
  * @returns {Object} Dependencies object
  */
 export function createDependencies(env) {
-  if(!env.JWT_SECRET){
-    throw new Error('JWT_SECRET is required');
+  // Validate required environment variables
+  if (!env.JWT_SECRET) {
+    throw new Error('JWT_SECRET environment variable is required. Please set it in your .env file or wrangler.toml');
   }
 
-  if(!env.GEMINI_API_KEY){
-    throw new Error('GEMINI_API_KEY is required');
+  if (!env.GEMINI_API_KEY) {
+    throw new Error('GEMINI_API_KEY environment variable is required. Please set it in your .env file or wrangler.toml');
+  }
+
+  // Validate that secrets are not placeholder values
+  if (env.JWT_SECRET === 'your-development-jwt-secret' || env.JWT_SECRET === 'your-production-jwt-secret' || env.JWT_SECRET === 'dev-secret-key-change-in-production') {
+    throw new Error('JWT_SECRET is set to a placeholder value. Please set a real secret key.');
+  }
+
+  if (env.GEMINI_API_KEY === 'your-development-gemini-api-key' || env.GEMINI_API_KEY === 'your-production-gemini-api-key') {
+    throw new Error('GEMINI_API_KEY is set to a placeholder value. Please set a real Gemini API key from Google AI Studio.');
+  }
+
+  // Validate JWT secret strength (minimum 32 characters for security)
+  if (env.JWT_SECRET.length < 32) {
+    throw new Error('JWT_SECRET must be at least 32 characters long for security.');
   }
 
   const jwt_secret = env.JWT_SECRET;

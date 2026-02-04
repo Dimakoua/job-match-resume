@@ -129,10 +129,9 @@
 
 ## Production Readiness Tasks
 
-## B-026 — [security] Remove Hardcoded Secrets 🔴 Critical
-- Scope: Remove hardcoded API keys and JWT secrets from version control and configuration files.
-- Acceptance: No sensitive credentials in codebase, proper environment variable management implemented.
-- Evidence Required: .env files removed from git, wrangler.toml sanitized, environment validation added.
+## B-026 — [security] Remove Hardcoded Secrets 🔴 Critical ✅ 100%
+- Completed: 2026-02-03
+- Evidence: Hardcoded Gemini API key removed from wrangler.toml and .env.development, environment validation enhanced with placeholder detection and security checks, .env.example created with documentation, README_ENV.md created for setup instructions. All tests passing (306/306).
 
 ## B-027 — [security] Implement Rate Limiting 🔴 Critical
 - Scope: Add rate limiting middleware to prevent API abuse, brute force attacks, and DoS attacks.
