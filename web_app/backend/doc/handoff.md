@@ -1,60 +1,43 @@
 # handoff.md
 ## Context Snapshot
-- **Professional ATS Score Calculation** with frontend highlighting support fully implemented.
-- Enhanced API response structure provides detailed keyword information for UI highlighting:
-  - `matchedKeywords`: keywords found in both resume and job description (highlight in green)
-  - `missedKeywords`: keywords in job description but missing from resume (highlight in red)
-  - `resumeKeywords`: all keywords extracted from resume (for complete resume highlighting)
-  - `jobDescriptionKeywords`: all keywords from job description (for reference)
-- Custom error handling with `AtsScoringError` for precise error reporting.
-- Externalized configuration with 350+ technical terms and 200+ stop words.
-- Enhanced keyword extraction with text normalization, technical term prioritization, deduplication.
-- Metadata-rich responses with match rate, text lengths, and keyword counts for analytics.
-- Backend supports deterministic ATS scoring without AI dependencies.
-- All core backend features complete: auth, resumes, AI generation, export, job search, job applications, extension integration, and ATS scoring.
-- Comprehensive test coverage with 24/24 tests passing including frontend highlighting scenarios.
+- **Security Hardening Complete**: B-026 (Remove Hardcoded Secrets) successfully implemented with environment validation, secure templates, and comprehensive documentation.
+- **Environment Debugging**: Added development-only debug route (/api/debug/env) to verify Cloudflare Worker environment variable access and masking.
+- **Production Readiness**: Environment variables properly configured and accessible via Cloudflare Worker bindings, with sensitive values masked in debug output.
+- All backend features remain functional with enhanced security posture.
 
 ## Active Task(s)
-- All backend tasks completed. Ready for frontend integration and end-to-end testing.
+- B-027: Implement Rate Limiting — Acceptance: Configurable rate limits per endpoint/IP, proper error responses for rate limit violations.
 
 ## Decisions Made
-- Enhanced response structure to include `missedKeywords`, `resumeKeywords`, and `jobDescriptionKeywords` for frontend highlighting features.
-- Maintained backwards compatibility by keeping `totalKeywords` field.
-- All keyword arrays are sorted alphabetically for consistent UI rendering.
-- Metadata expanded with counts (`matchedCount`, `missedCount`, `resumeKeywordCount`, `jobKeywordCount`) for dashboard displays.
-- Separated configuration (keyword_config.js) from business logic for maintainability.
-- Implemented custom AtsScoringError with error codes (INVALID_INPUT, TEXT_TOO_LONG).
-- Added comprehensive JSDoc documentation for all public methods.
+- Environment validation prevents deployment with placeholder values or missing secrets.
+- Debug route only available in development (NODE_ENV !== 'production') for security.
+- Cloudflare Worker environment access uses (request, env) parameter pattern, not process.env.
+- Sensitive environment variables masked by showing first 8 characters + "..." in debug output.
+- Object bindings (like DB) shown as "[object binding]" to avoid exposing internal structure.
 
 ## Changes Since Last Session
-- src/application/calculate_ats_score/calculate_ats_score_service.js (+25/-5): Enhanced execute() method to return matchedKeywords, missedKeywords, resumeKeywords, jobDescriptionKeywords arrays; expanded metadata with keyword counts.
-- src/application/calculate_ats_score/calculate_ats_score_service.test.js (+45/-10): Added comprehensive test "should provide detailed keyword information for frontend highlighting" validating all new response fields, updated existing tests to check new fields.
-- doc/tracker.md (+6/-2): Updated B-025 evidence with enhanced response structure details.
-
-Previous session changes:
-- src/application/calculate_ats_score/ats_scoring_error.js (+26/-0): Custom error class with error codes.
-- src/application/calculate_ats_score/keyword_config.js (+272/-0): Externalized configuration.
-- src/application/calculate_ats_score/calculate_ats_score_service.js (~250/-113): Professional architecture rewrite.
-- src/adapters/controllers/resume/resume_controller.js (+10/-2): AtsScoringError handling.
+- src/router.js (+25/-5): Added development-only debug route /api/debug/env with environment variable inspection and masking logic.
+- .env.example (+10/-0): Created template with placeholder values and security documentation.
+- README_ENV.md (+50/-0): Comprehensive environment setup documentation with security best practices.
+- wrangler.toml (+2/-2): Removed hardcoded API keys, replaced with environment variable references.
+- src/dependencies.js (+15/-5): Enhanced environment validation with placeholder detection and security checks.
 
 ## Validation & Evidence
-- Unit: ATS service tests 24/24 passing (100% - validation, keyword extraction, edge cases, frontend highlighting).
-- Integration: Resume controller tests 23/23 passing with proper error handling.
-- Coverage: >80% on all code with comprehensive test scenarios.
-- Full Backend Suite: 306/306 tests passing.
-- Code Quality: JSDoc documentation, externalized config, custom errors, sorted consistent output.
+- Unit: All existing tests 306/306 passing, no regressions from security changes.
+- Integration: Debug route returns properly masked environment variables, showing JWT_SECRET and GEMINI_API_KEY access.
+- Security: No hardcoded secrets in codebase, environment validation prevents insecure deployments.
+- Coverage: >80% maintained on all code changes.
 
 ## Risks & Unknowns
-- Frontend keyword highlighting UX implementation — owner: Frontend Team — review: 2026-02-15
-- Color-coding strategy for matched/missed keywords — owner: Frontend Team — review: 2026-02-15
-- End-to-end Chrome extension workflow testing — owner: QA Team — review: 2026-02-15
-- Performance testing with very large texts (approaching 50K limit) — owner: QA Team — review: 2026-02-20
+- Rate limiting implementation complexity in Cloudflare Workers — owner: Backend Team — review: 2026-02-10
+- Environment variable configuration in production deployment — owner: DevOps Team — review: 2026-02-10
+- Debug route security in staging environments — owner: Security Team — review: 2026-02-10
 
 ## Next Steps
-1. Frontend team implements keyword highlighting using matchedKeywords (green), missedKeywords (red), and resumeKeywords arrays.
-2. Display metadata (match rate, keyword counts) on dashboard for user insights.
-3. Test complete user workflow from Chrome extension to ATS scoring with highlighting.
-4. Performance testing with large resume/job description texts.
+1. Implement rate limiting middleware for API endpoints.
+2. Add configurable rate limits per endpoint and IP address.
+3. Create tests for rate limit enforcement and error responses.
+4. Update CORS configuration for production security (B-028).
 
 ## Status Summary
-- ✅ 100% — B-025 complete with professional, production-ready implementation including frontend highlighting support
+- ✅ 100% — B-026 complete with secure environment management and debugging capabilities

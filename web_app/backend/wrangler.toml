@@ -4,7 +4,8 @@ compatibility_date = "2024-09-23"
 compatibility_flags = ["nodejs_compat"]
 
 [env.development]
-vars = { JWT_SECRET = "dev-secret-key-change-in-production", GEMINI_API_KEY = "your-development-gemini-api-key" }
+# Environment variables are loaded from .dev.vars file by wrangler
+# Create .dev.vars with your secrets (not committed to git)
 
 [[env.development.d1_databases]]
 binding = "DB"

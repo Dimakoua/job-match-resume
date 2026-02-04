@@ -42,6 +42,42 @@ router.get('/api/health', async () => {
 
 router.get('/', () => new Response('Hello World from Resume Builder Backend!'));
 
+// Debug route - only available in development
+// Usage: GET /api/debug/env
+// Returns: Environment variables (development only)
+if (process.env.NODE_ENV !== 'production') {
+  router.get('/api/debug/env', async (request, env) => {
+    // In Cloudflare Workers, env vars are passed as the second parameter
+    
+    // Create a safe version of all env vars, masking sensitive ones
+    const safeEnv = {};
+    for (const [key, value] of Object.entries(env)) {
+      if (key.includes('SECRET') || key.includes('KEY') || key.includes('TOKEN') || key.includes('PASSWORD')) {
+        // Mask sensitive values (only if they are strings)
+        if (typeof value === 'string') {
+          safeEnv[key] = value ? `${value.substring(0, 8)}...` : 'not set';
+        } else {
+          safeEnv[key] = '[object binding]';
+        }
+      } else {
+        // Show non-sensitive values as-is
+        safeEnv[key] = value;
+      }
+    }
+    
+    safeEnv._debug_info = {
+      timestamp: new Date().toISOString(),
+      total_vars: Object.keys(env).length,
+      masked_vars: Object.keys(safeEnv).filter(key => safeEnv[key] && typeof safeEnv[key] === 'string' && safeEnv[key].includes('...')).length,
+      available_bindings: Object.keys(env).filter(key => typeof env[key] === 'object' && env[key] !== null)
+    };
+
+    return new Response(JSON.stringify(safeEnv, null, 2), {
+      headers: { 'Content-Type': 'application/json' },
+    });
+  });
+}
+
 // Setup feature routes
 setupAuthRoutes(router);
 setupResumeRoutes(router);
