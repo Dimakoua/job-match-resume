@@ -78,6 +78,9 @@
 ## F-037 — [ui] PDF Download Implementation ⚪ 0%
 - Scope: Connect download button to backend PDF service.
 
+## F-037 — [ui] PDF Download Implementation ✅ 100%
+- Scope: Connect download button to backend PDF service.
+
 ## F-038 — [ui] Dashboard Resume Actions 🔵 40%
 - Scope: Implement Preview, Duplicate, and Delete.
 
