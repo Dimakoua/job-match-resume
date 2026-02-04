@@ -74,7 +74,7 @@ describe('DeleteJobApplicationService Integration Tests', () => {
       passwordHash: 'hash'
     });
 
-    await expect(service.execute('non-existent-id', user.id))
+    await expect(service.execute('non-existent-app', 'user-notfound-123'))
       .rejects.toThrow('Job application not found or access denied');
   });
 
@@ -117,7 +117,7 @@ describe('DeleteJobApplicationService Integration Tests', () => {
     });
 
     // Try to delete as user2 (should fail)
-    await expect(service.execute(app.id, user2.id))
+    await expect(service.execute(app.id, 'user2-delete-access'))
       .rejects.toThrow('Job application not found or access denied');
   });
 
