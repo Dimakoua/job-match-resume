@@ -14,6 +14,7 @@ const routes = [
   { path: '/generator', name: 'Generator', component: () => import('../views/Generator.vue'), meta: { requiresAuth: true } },
   { path: '/job-applications/:listId', name: 'JobApplicationView', component: () => import('../views/JobApplicationView.vue'), meta: { requiresAuth: true } },
   { path: '/job-applications/:listId/create', name: 'CreateJobApplication', component: () => import('../views/CreateJobApplicationView.vue'), meta: { requiresAuth: true } },
+  { path: '/job-applications/:listId/:applicationId/edit', name: 'EditJobApplication', component: () => import('../views/EditJobApplicationView.vue'), meta: { requiresAuth: true } },
 ]
 
 const router = createRouter({

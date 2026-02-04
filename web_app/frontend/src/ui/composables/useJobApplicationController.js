@@ -7,6 +7,7 @@
 import { ref, computed } from 'vue';
 import { ListJobApplicationsUseCase } from '../../core/application/job_application/ListJobApplicationsUseCase.js';
 import { CreateJobApplicationUseCase } from '../../core/application/job_application/CreateJobApplicationUseCase.js';
+import { GetJobApplicationUseCase } from '../../core/application/job_application/GetJobApplicationUseCase.js';
 import { UpdateJobApplicationUseCase } from '../../core/application/job_application/UpdateJobApplicationUseCase.js';
 import { DeleteJobApplicationUseCase } from '../../core/application/job_application/DeleteJobApplicationUseCase.js';
 import { HttpJobApplicationRepository } from '../../infrastructure/api/HttpJobApplicationRepository.js';
@@ -23,6 +24,7 @@ export function useJobApplicationController() {
 
   // Use case instances
   const listUseCase = new ListJobApplicationsUseCase(repository);
+  const getUseCase = new GetJobApplicationUseCase(repository);
   const createUseCase = new CreateJobApplicationUseCase(repository);
   const updateUseCase = new UpdateJobApplicationUseCase(repository);
   const deleteUseCase = new DeleteJobApplicationUseCase(repository);
@@ -94,37 +96,55 @@ export function useJobApplicationController() {
     }
   };
 
-  const updateApplication = async (applicationId, updates) => {
+  const getApplication = async (applicationId, userId) => {
     loading.value = true;
     error.value = null;
     try {
-      const existingApp = applications.value.find(app => app.id === applicationId);
+      const result = await getUseCase.execute({ applicationId, userId });
+      return result;
+    } catch (err) {
+      error.value = err.message || 'Failed to load application';
+      console.error('Error loading application:', err);
+      throw err;
+    } finally {
+      loading.value = false;
+    }
+  };
+
+  const updateApplication = async (applicationId, updates, existingApplication = null) => {
+    loading.value = true;
+    error.value = null;
+    try {
+      let existingApp = existingApplication;
       if (!existingApp) {
-        throw new Error('Application not found');
+        existingApp = applications.value.find(app => app.id === applicationId);
+        if (!existingApp) {
+          throw new Error('Application not found');
+        }
       }
 
       const updatedApplication = new JobApplication(
         existingApp.id,
         existingApp.userId,
         existingApp.jobSearchListId,
-        existingApp.resumeId,
-        existingApp.company,
-        existingApp.position,
-        existingApp.jobDescription,
+        updates.resumeId !== undefined ? updates.resumeId : existingApp.resumeId,
+        updates.company || existingApp.company,
+        updates.position || existingApp.position,
+        updates.jobDescription || existingApp.jobDescription,
         updates.status || existingApp.status,
-        updates.appliedDate || existingApp.appliedDate,
+        updates.appliedDate !== undefined ? updates.appliedDate : existingApp.appliedDate,
         updates.notes !== undefined ? updates.notes : existingApp.notes
       );
 
       const result = await updateUseCase.execute({ application: updatedApplication });
 
-      // Update local state
+      // Update local state if it exists
       const index = applications.value.findIndex(app => app.id === applicationId);
       if (index !== -1) {
-        applications.value[index] = result.application;
+        applications.value[index] = result;
       }
 
-      return result.application;
+      return result;
     } catch (err) {
       error.value = err.message || 'Failed to update application';
       console.error('Error updating application:', err);
@@ -168,6 +188,7 @@ export function useJobApplicationController() {
 
     // Actions
     loadApplications,
+    getApplication,
     createApplication,
     updateApplication,
     deleteApplication,

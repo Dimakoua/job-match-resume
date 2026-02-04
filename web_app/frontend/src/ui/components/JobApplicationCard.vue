@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-white dark:bg-gray-900 rounded-xl p-6 shadow-sm border border-[#e7ebf3] dark:border-[#2d364f] hover:shadow-md transition-all">
+  <div @click="handleCardClick" class="bg-white dark:bg-gray-900 rounded-xl p-6 shadow-sm border border-[#e7ebf3] dark:border-[#2d364f] hover:shadow-md transition-all cursor-pointer">
     <div class="flex justify-between items-start mb-4">
       <div class="flex-1">
         <h3 class="text-lg font-semibold text-[#0e121b] dark:text-white mb-1">
@@ -33,7 +33,7 @@
         </button>
 
         <!-- Dropdown Menu -->
-        <div v-if="showMenu" class="absolute right-0 top-full mt-1 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-[#e7ebf3] dark:border-[#2d364f] z-10">
+        <div v-if="showMenu" @click.stop class="absolute right-0 top-full mt-1 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-[#e7ebf3] dark:border-[#2d364f] z-10">
           <div class="py-1">
             <!-- Status Options -->
             <div class="px-3 py-2 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
@@ -54,6 +54,12 @@
             <div class="border-t border-gray-200 dark:border-gray-600 my-1"></div>
 
             <!-- Actions -->
+            <button
+              @click="handleEdit"
+              class="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            >
+              Edit Application
+            </button>
             <button
               @click="handleDelete"
               class="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
@@ -102,7 +108,7 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(['update-status', 'delete']);
+const emit = defineEmits(['update-status', 'delete', 'edit']);
 
 const showMenu = ref(false);
 
@@ -142,6 +148,15 @@ const formatDate = (dateString) => {
 const handleStatusChange = (newStatus) => {
   showMenu.value = false;
   emit('update-status', props.application.id, newStatus);
+};
+
+const handleCardClick = () => {
+  emit('edit', props.application.id);
+};
+
+const handleEdit = () => {
+  showMenu.value = false;
+  emit('edit', props.application.id);
 };
 
 const handleDelete = () => {

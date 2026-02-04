@@ -98,8 +98,8 @@ describe('JobApplicationController Integration Tests', () => {
 
     const result = await response.json();
     expect(result.success).toBe(true);
-    expect(result.data.jobApplication.company).toBeNull();
-    expect(result.data.jobApplication.position).toBeNull();
+    expect(result.data.jobApplication.company).toBe('Unknown Company');
+    expect(result.data.jobApplication.position).toBe('Unknown Position');
     expect(result.data.jobApplication.notes).toBeNull();
     
     // Verify that a year-based job search list was created and assigned

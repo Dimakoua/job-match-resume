@@ -27,6 +27,7 @@ export class JobApplicationController extends BaseController {
     this.listJobApplicationsService = deps.listJobApplicationsService;
     this.updateJobApplicationService = deps.updateJobApplicationService;
     this.deleteJobApplicationService = deps.deleteJobApplicationService;
+    this.jobApplicationRepository = deps.jobApplicationRepository;
   }
 
   async createFromExtension(request) {
@@ -181,6 +182,54 @@ export class JobApplicationController extends BaseController {
 
       if (error.message && error.message.includes('Invalid')) {
         return this.errorResponse('INVALID_INPUT', error.message, 400);
+      }
+
+      return this.errorResponse('INTERNAL_ERROR', 'An unexpected error occurred', 500);
+    }
+  }
+
+  async get(request) {
+    try {
+      const userId = await this.authenticate(request);
+
+      const url = new URL(request.url);
+      const id = url.pathname.split('/').pop();
+
+      if (!id) {
+        return this.errorResponse('MISSING_ID', 'Job application ID is required', 400);
+      }
+
+      // Execute service - for now, use repository directly since no use case
+      const jobApplication = await this.jobApplicationRepository.findById(id);
+
+      if (!jobApplication || jobApplication.userId !== userId) {
+        return this.errorResponse('NOT_FOUND', 'Job application not found', 404);
+      }
+
+      return this.successResponse({
+        success: true,
+        data: {
+          jobApplication: {
+            id: jobApplication.id,
+            userId: jobApplication.userId,
+            jobSearchListId: jobApplication.jobSearchListId,
+            resumeId: jobApplication.resumeId,
+            company: jobApplication.company,
+            position: jobApplication.position,
+            jobDescription: jobApplication.jobDescription,
+            status: jobApplication.status,
+            appliedDate: jobApplication.appliedDate,
+            notes: jobApplication.notes,
+            createdAt: jobApplication.createdAt,
+            updatedAt: jobApplication.updatedAt,
+          },
+        },
+      });
+    } catch (error) {
+      console.error('Get job application error:', error);
+
+      if (error instanceof Response) {
+        return error;
       }
 
       return this.errorResponse('INTERNAL_ERROR', 'An unexpected error occurred', 500);

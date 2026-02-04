@@ -2,7 +2,7 @@
 import { z } from 'zod';
 
 const listJobApplicationsSchema = z.object({
-  jobSearchListId: z.string().min(1, 'Invalid job search list ID'),
+  jobSearchListId: z.union([z.string().min(1, 'Invalid job search list ID'), z.undefined()]),
   userId: z.string().min(1, 'Invalid user ID'),
 });
 

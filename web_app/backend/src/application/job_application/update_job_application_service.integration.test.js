@@ -51,7 +51,12 @@ describe('UpdateJobApplicationService Integration Tests', () => {
     });
 
     // Update the status
-    const result = await service.execute(app.id, user.id, { status: 'applied' });
+    const result = await service.execute(app.id, user.id, { 
+      company: 'Company A',
+      position: 'Position A', 
+      jobDescription: 'Description A',
+      status: 'applied' 
+    });
 
     expect(result.jobApplication).toMatchObject({
       id: app.id,
@@ -101,7 +106,12 @@ describe('UpdateJobApplicationService Integration Tests', () => {
 
     // Update the applied date
     const appliedDate = '2026-02-03T10:00:00.000Z';
-    const result = await service.execute(app.id, user.id, { appliedDate });
+    const result = await service.execute(app.id, user.id, { 
+      company: 'Company B',
+      position: 'Position B',
+      jobDescription: 'Description B',
+      appliedDate 
+    });
 
     expect(result.jobApplication.appliedDate).toEqual(new Date(appliedDate));
 
@@ -142,7 +152,12 @@ describe('UpdateJobApplicationService Integration Tests', () => {
     });
 
     // Update the notes
-    const result = await service.execute(app.id, user.id, { notes: 'Updated notes' });
+    const result = await service.execute(app.id, user.id, { 
+      company: 'Company C',
+      position: 'Position C',
+      jobDescription: 'Description C',
+      notes: 'Updated notes' 
+    });
 
     expect(result.jobApplication.notes).toBe('Updated notes');
 
@@ -185,6 +200,9 @@ describe('UpdateJobApplicationService Integration Tests', () => {
     // Update multiple fields
     const appliedDate = '2026-02-03T15:30:00.000Z';
     const updates = {
+      company: 'Company Multi',
+      position: 'Position Multi',
+      jobDescription: 'Description Multi',
       status: 'interviewing',
       appliedDate,
       notes: 'Multiple updates'
@@ -206,6 +224,88 @@ describe('UpdateJobApplicationService Integration Tests', () => {
     expect(updatedApp.notes).toBe('Multiple updates');
   });
 
+  it('should allow updating notes to null', async () => {
+    const user = await factory.insert('user', {
+      id: 'user-null-notes',
+      email: 'test-null-notes@example.com',
+      name: 'Test User Null Notes',
+      passwordHash: 'hash'
+    });
+
+    const jobSearchList = await factory.insert('jobSearchList', {
+      id: 'list-null-notes',
+      userId: user.id,
+      name: 'Test List',
+      description: 'Test'
+    });
+
+    const app = await factory.insert('jobApplication', {
+      id: 'app-null-notes',
+      userId: user.id,
+      jobSearchListId: jobSearchList.id,
+      resumeId: null,
+      company: 'Company',
+      position: 'Position',
+      jobDescription: 'Description',
+      status: 'saved',
+      appliedDate: null,
+      notes: 'Original Notes'
+    });
+
+    const result = await service.execute(app.id, user.id, { 
+      company: 'Company',
+      position: 'Position',
+      jobDescription: 'Description',
+      notes: null 
+    });
+
+    expect(result.jobApplication.notes).toBeNull();
+
+    const updatedApp = await factory.jobApplicationRepo.findById(app.id);
+    expect(updatedApp.notes).toBeNull();
+  });
+
+  it('should allow updating appliedDate to null', async () => {
+    const user = await factory.insert('user', {
+      id: 'user-null-date',
+      email: 'test-null-date@example.com',
+      name: 'Test User Null Date',
+      passwordHash: 'hash'
+    });
+
+    const jobSearchList = await factory.insert('jobSearchList', {
+      id: 'list-null-date',
+      userId: user.id,
+      name: 'Test List',
+      description: 'Test'
+    });
+
+    const app = await factory.insert('jobApplication', {
+      id: 'app-null-date',
+      userId: user.id,
+      jobSearchListId: jobSearchList.id,
+      resumeId: null,
+      company: 'Company',
+      position: 'Position',
+      jobDescription: 'Description',
+      status: 'saved',
+      appliedDate: new Date('2026-02-01'),
+      notes: 'Notes'
+    });
+
+    const result = await service.execute(app.id, user.id, { 
+      company: 'Company',
+      position: 'Position',
+      jobDescription: 'Description',
+      appliedDate: null 
+    });
+
+    expect(result.jobApplication.appliedDate).toBeNull();
+
+    const updatedApp = await factory.jobApplicationRepo.findById(app.id);
+    expect(updatedApp.appliedDate).toBeNull();
+  });
+
   it('should throw error when application not found', async () => {
     const user = await factory.insert('user', {
       id: 'user-notfound',
@@ -214,7 +314,12 @@ describe('UpdateJobApplicationService Integration Tests', () => {
       passwordHash: 'hash'
     });
 
-    await expect(service.execute('non-existent-id', user.id, { status: 'applied' }))
+    await expect(service.execute('non-existent-id', user.id, { 
+      company: 'Test Company',
+      position: 'Test Position',
+      jobDescription: 'Test Description',
+      status: 'applied' 
+    }))
       .rejects.toThrow('Job application not found');
   });
 
@@ -226,7 +331,12 @@ describe('UpdateJobApplicationService Integration Tests', () => {
       passwordHash: 'hash'
     });
 
-    await expect(service.execute('', user.id, { status: 'applied' }))
+    await expect(service.execute('', user.id, { 
+      company: 'Test Company',
+      position: 'Test Position',
+      jobDescription: 'Test Description',
+      status: 'applied' 
+    }))
       .rejects.toThrow('Invalid job application ID');
   });
 
@@ -263,7 +373,12 @@ describe('UpdateJobApplicationService Integration Tests', () => {
       notes: 'Notes'
     });
 
-    await expect(service.execute(app.id, user.id, { status: 'invalid_status' }))
+    await expect(service.execute(app.id, user.id, { 
+      company: 'Company',
+      position: 'Position',
+      jobDescription: 'Description',
+      status: 'invalid_status' 
+    }))
       .rejects.toThrow('Validation failed');
   });
 });

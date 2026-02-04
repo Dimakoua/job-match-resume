@@ -99,8 +99,11 @@ export class HttpJobApplicationRepository {
    */
   async update(application) {
     const response = await axios.put(`/api/job-applications/${application.id}`, {
+      company: application.company,
+      position: application.position,
+      jobDescription: application.jobDescription,
       status: application.status,
-      appliedDate: application.appliedDate,
+      appliedDate: application.appliedDate ? application.appliedDate.toISOString() : null,
       notes: application.notes
     });
     // Return the updated application from backend response

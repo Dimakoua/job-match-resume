@@ -26,8 +26,8 @@ export class JobApplication {
     this.userId = userId;
     this.jobSearchListId = jobSearchListId;
     this.resumeId = resumeId;
-    this.company = company ? company.trim() : null;
-    this.position = position ? position.trim() : null;
+    this.company = company.trim();
+    this.position = position.trim();
     this.jobDescription = jobDescription.trim();
     this.status = status;
     this.appliedDate = appliedDate;
@@ -59,32 +59,28 @@ export class JobApplication {
   }
 
   validateCompany(company) {
-    if (company != null && typeof company !== 'string') {
-      throw new Error('Company must be a string or null');
+    if (typeof company !== 'string') {
+      throw new Error('Company must be a string');
     }
-    if (company != null) {
-      const trimmedCompany = company.trim();
-      if (trimmedCompany === '') {
-        throw new Error('Company cannot be empty');
-      }
-      if (trimmedCompany.length > 100) {
-        throw new Error('Company must be 100 characters or less');
-      }
+    const trimmedCompany = company.trim();
+    if (trimmedCompany === '') {
+      throw new Error('Company cannot be empty');
+    }
+    if (trimmedCompany.length > 100) {
+      throw new Error('Company must be 100 characters or less');
     }
   }
 
   validatePosition(position) {
-    if (position != null && typeof position !== 'string') {
-      throw new Error('Position must be a string or null');
+    if (typeof position !== 'string') {
+      throw new Error('Position must be a string');
     }
-    if (position != null) {
-      const trimmedPosition = position.trim();
-      if (trimmedPosition === '') {
-        throw new Error('Position cannot be empty');
-      }
-      if (trimmedPosition.length > 100) {
-        throw new Error('Position must be 100 characters or less');
-      }
+    const trimmedPosition = position.trim();
+    if (trimmedPosition === '') {
+      throw new Error('Position cannot be empty');
+    }
+    if (trimmedPosition.length > 100) {
+      throw new Error('Position must be 100 characters or less');
     }
   }
 
@@ -136,6 +132,21 @@ export class JobApplication {
   updateNotes(newNotes) {
     this.validateNotes(newNotes);
     this.notes = newNotes ? newNotes.trim() : null;
+  }
+
+  updateCompany(newCompany) {
+    this.validateCompany(newCompany);
+    this.company = newCompany.trim();
+  }
+
+  updatePosition(newPosition) {
+    this.validatePosition(newPosition);
+    this.position = newPosition.trim();
+  }
+
+  updateJobDescription(newJobDescription) {
+    this.validateJobDescription(newJobDescription);
+    this.jobDescription = newJobDescription.trim();
   }
 
   updateJobSearchList(newJobSearchListId) {

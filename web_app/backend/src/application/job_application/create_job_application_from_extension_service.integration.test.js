@@ -73,8 +73,8 @@ describe('CreateJobApplicationFromExtensionService Integration Tests', () => {
 
     const result = await service.execute(user.id, jobData);
 
-    expect(result.company).toBeNull();
-    expect(result.position).toBeNull();
+    expect(result.company).toBe('Unknown Company');
+    expect(result.position).toBe('Unknown Position');
     expect(result.notes).toBeNull();
     expect(result.status).toBe('saved');
   });

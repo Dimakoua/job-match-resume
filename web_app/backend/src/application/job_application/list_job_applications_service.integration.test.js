@@ -59,15 +59,22 @@ describe('ListJobApplicationsService Integration Tests', () => {
       position: 'Position B',
       jobDescription: 'Description B',
       status: 'applied',
-      appliedDate: Date.now(),
+      appliedDate: new Date(),
       notes: 'Notes B'
     });
 
     // Create an application in a different list (should not be returned)
+    const differentList = await factory.insert('jobSearchList', {
+      id: 'different-list',
+      userId: user.id,
+      name: 'Different List',
+      description: 'Different list'
+    });
+
     await factory.insert('jobApplication', {
       id: 'app-3',
       userId: user.id,
-      jobSearchListId: 'different-list',
+      jobSearchListId: differentList.id,
       resumeId: null,
       company: 'Company C',
       position: 'Position C',
@@ -81,8 +88,22 @@ describe('ListJobApplicationsService Integration Tests', () => {
 
     expect(result.applications).toHaveLength(2);
 
-    // Check first application
+    // Check first application (most recent)
     expect(result.applications[0]).toMatchObject({
+      id: 'app-2',
+      userId: user.id,
+      jobSearchListId: jobSearchList.id,
+      resumeId: null,
+      company: 'Company B',
+      position: 'Position B',
+      jobDescription: 'Description B',
+      status: 'applied',
+      notes: 'Notes B'
+    });
+    expect(result.applications[0].appliedDate).toBeDefined();
+
+    // Check second application
+    expect(result.applications[1]).toMatchObject({
       id: 'app-1',
       userId: user.id,
       jobSearchListId: jobSearchList.id,
@@ -94,20 +115,6 @@ describe('ListJobApplicationsService Integration Tests', () => {
       appliedDate: null,
       notes: 'Notes A'
     });
-
-    // Check second application
-    expect(result.applications[1]).toMatchObject({
-      id: 'app-2',
-      userId: user.id,
-      jobSearchListId: jobSearchList.id,
-      resumeId: null,
-      company: 'Company B',
-      position: 'Position B',
-      jobDescription: 'Description B',
-      status: 'applied',
-      notes: 'Notes B'
-    });
-    expect(result.applications[1].appliedDate).toBeDefined();
   });
 
   it('should return empty array when no applications exist', async () => {
@@ -138,17 +145,24 @@ describe('ListJobApplicationsService Integration Tests', () => {
       passwordHash: 'hash'
     });
 
-    await expect(service.execute(123, user.id)).rejects.toThrow('Invalid job search list ID');
+    await expect(service.execute(123, user.id)).rejects.toThrow('Validation failed');
   });
 
   it('should throw error for invalid userId', async () => {
+    const user = await factory.insert('user', {
+      id: 'user-999',
+      email: 'test4@example.com',
+      name: 'Test User 4',
+      passwordHash: 'hash'
+    });
+
     const jobSearchList = await factory.insert('jobSearchList', {
       id: 'list-789',
-      userId: 'user-789',
+      userId: user.id,
       name: 'Test List',
       description: 'Test'
     });
 
-    await expect(service.execute(jobSearchList.id, null)).rejects.toThrow('Invalid user ID');
+    await expect(service.execute(jobSearchList.id, null)).rejects.toThrow('Validation failed');
   });
 });

@@ -69,6 +69,7 @@
                   :application="application"
                   @update-status="handleUpdateStatus"
                   @delete="handleDeleteApplication"
+                  @edit="handleEditApplication"
                 />
               </div>
             </div>
@@ -141,6 +142,10 @@ const getStatusBadgeClass = (status) => {
 
 const handleCreateApplication = () => {
   router.push(`/job-applications/${jobSearchListId.value}/create`);
+};
+
+const handleEditApplication = (applicationId) => {
+  router.push(`/job-applications/${jobSearchListId.value}/${applicationId}/edit`);
 };
 
 const handleUpdateStatus = async (applicationId, newStatus) => {

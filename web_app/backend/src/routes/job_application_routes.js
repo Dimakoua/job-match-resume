@@ -37,6 +37,16 @@ export function setupJobApplicationRoutes(router) {
   // Headers: Authorization: Bearer <jwt>
   // Body: { "status": "applied", "notes": "Updated notes" }
   // Returns: { "success": true, "data": { "jobApplication": {...} } }
+  router.get('/api/job-applications/:id', async (request, env, ctx) => {
+    const { controller } = createController(env, JobApplicationController, [env.JWT_SECRET]);
+    return controller.get(request);
+  });
+
+  // Update job application
+  // Usage: PUT /api/job-applications/<id>
+  // Headers: Authorization: Bearer <jwt>
+  // Body: { "status": "applied", "notes": "Updated notes" }
+  // Returns: { "success": true, "data": { "jobApplication": {...} } }
   router.put('/api/job-applications/:id', async (request, env, ctx) => {
     const { controller } = createController(env, JobApplicationController, [env.JWT_SECRET]);
     return controller.update(request);
