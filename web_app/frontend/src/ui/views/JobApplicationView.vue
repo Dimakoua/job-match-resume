@@ -101,7 +101,7 @@
 
 <script setup>
 import { onMounted, computed } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import AppHeader from '../components/AppHeader.vue';
 import JobApplicationCard from '../components/JobApplicationCard.vue';
 import { useJobApplicationController } from '../composables/useJobApplicationController.js';
@@ -109,6 +109,7 @@ import { useAuthStore } from '../stores/useAuthStore.js';
 
 // Composables
 const route = useRoute();
+const router = useRouter();
 const authStore = useAuthStore();
 const {
   applications,
@@ -139,8 +140,7 @@ const getStatusBadgeClass = (status) => {
 };
 
 const handleCreateApplication = () => {
-  // TODO: Navigate to create application form
-  console.log('Create application clicked');
+  router.push(`/job-applications/${jobSearchListId.value}/create`);
 };
 
 const handleUpdateStatus = async (applicationId, newStatus) => {
