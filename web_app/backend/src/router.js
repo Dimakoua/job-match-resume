@@ -9,6 +9,7 @@ import { setupResumeRoutes } from './routes/resume_routes.js';
 import { setupJobSearchListRoutes } from './routes/job_search_list_routes.js';
 import { setupJobApplicationRoutes } from './routes/job_application_routes.js';
 import { rateLimitMiddleware } from './middlewares/rate_limit.js';
+import { logger } from './utils/logger.js';
 
 // ==================== MIDDLEWARE ====================
 
@@ -16,6 +17,13 @@ const apiRateLimit = rateLimitMiddleware({
   level: 'STANDARD',
   excludePaths: ['/api/health', '/']
 });
+
+// Correlation ID middleware
+const correlationIdMiddleware = async (request) => {
+  const correlationId = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  logger.setCorrelationId(correlationId);
+  request.correlationId = correlationId; // Also attach to request for potential use
+};
 
 // ==================== CORS HEADERS ====================
 
@@ -28,8 +36,11 @@ const corsHeaders = {
 // ==================== ROUTER ====================
 
 const router = AutoRouter({
-  before: [apiRateLimit],
+  before: [correlationIdMiddleware, apiRateLimit],
   finally: [(response) => {
+    // Clear correlation ID after request
+    logger.clearCorrelationId();
+    
     // Add CORS headers to all responses
     Object.entries(corsHeaders).forEach(([key, value]) => {
       response.headers.set(key, value);

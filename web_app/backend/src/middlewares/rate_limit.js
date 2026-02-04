@@ -3,6 +3,8 @@
  * Production-ready implementation with multiple security levels
  */
 
+import { logger } from '../utils/logger.js';
+
 // ==================== RATE LIMITER CLASS ====================
 
 class RateLimiter {
@@ -97,7 +99,7 @@ export function rateLimitMiddleware(options = {}) {
   const limiter = RateLimitLevels[level] || RateLimitLevels.STANDARD;
   const excludePaths = options.excludePaths || [];
 
-  console.log(`[RateLimit] Initialized with level: ${level} (${limiter.maxRequests} req/${limiter.windowMs / 60000}min)`);
+  logger.info('Rate limit middleware initialized', { level, maxRequests: limiter.maxRequests, windowMinutes: limiter.windowMs / 60000 });
 
   return async (request) => {
     try {
@@ -108,7 +110,7 @@ export function rateLimitMiddleware(options = {}) {
       // Check if path should be excluded first
       const shouldExclude = excludePaths.some(excludePath => path === excludePath || path.startsWith(excludePath + '/'));
       if (shouldExclude) {
-        console.log(`[RateLimit] SKIPPED (excluded path): ${path}`);
+        logger.debug('Rate limit skipped for excluded path', { path });
         return;
       }
 
@@ -116,7 +118,7 @@ export function rateLimitMiddleware(options = {}) {
       const now = Date.now();
       if (!global.__rateLimitLastCleanup || now - global.__rateLimitLastCleanup > 5 * 60 * 1000) {
         const entriesCount = Array.from(Object.values(RateLimitLevels)).reduce((sum, l) => sum + l.requests.size, 0);
-        console.log(`[RateLimit] Cleanup triggered (tracked IPs: ${entriesCount})`);
+        logger.info('Rate limit cleanup triggered', { trackedIPs: entriesCount });
         Object.values(RateLimitLevels).forEach(l => l.cleanup());
         global.__rateLimitLastCleanup = now;
       }
@@ -125,7 +127,7 @@ export function rateLimitMiddleware(options = {}) {
       const result = limiter.check(clientIP);
 
       if (result.limited) {
-        console.log(`[RateLimit] BLOCKED IP ${clientIP}: limit=${limiter.maxRequests}, remaining=${result.remaining}, resetIn=${Math.ceil((result.resetTime - now) / 1000)}s`);
+        logger.warn('Rate limit exceeded', { clientIP, limit: limiter.maxRequests, remaining: result.remaining, resetInSeconds: Math.ceil((result.resetTime - now) / 1000) });
         const resetTime = new Date(result.resetTime);
         return new Response(JSON.stringify({
           error: 'Too Many Requests',
@@ -142,10 +144,10 @@ export function rateLimitMiddleware(options = {}) {
           }
         });
       } else {
-        console.log(`[RateLimit] ALLOWED IP ${clientIP}: remaining=${result.remaining}/${limiter.maxRequests}, path=${path}`);
+        logger.debug('Rate limit allowed', { clientIP, remaining: result.remaining, maxRequests: limiter.maxRequests, path });
       }
     } catch (error) {
-      console.error(`[RateLimit] ERROR: ${error.message}`);
+      logger.error('Rate limit middleware error', { error: error.message });
     }
   };
 }
