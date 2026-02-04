@@ -84,6 +84,9 @@
 ## F-038 — [ui] Dashboard Resume Actions 🔵 40%
 - Scope: Implement Preview, Duplicate, and Delete.
 
+## F-038 — [ui] Dashboard Resume Actions ✅ 100%
+- Scope: Implement Preview, Duplicate, and Delete.
+
 ## F-039 — [feature] Job Search List Management ⚪ 0%
 - Scope: UI for creating and managing job search lists.
 - Acceptance: User can create, rename, and delete lists from the dashboard.

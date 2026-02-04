@@ -7,7 +7,7 @@
 - UI Polish: Tailwind dark mode support, syncing indicators, and responsive layouts.
 
 ## Active Task(s)
-- F-038: Dashboard Resume Actions — Implement Preview, Duplicate, and Delete.
+- F-039: Job Search List Management — UI for creating and managing job search lists.
 
 ## Decisions Made
 - Adopted Clean Architecture on Frontend to separate Use Cases (e.g., `SaveResumeUseCase`) from Vue components.
@@ -30,8 +30,8 @@
 - Network volatility during background syncs.
 
 ## Next Steps
-1. Implement Preview, Duplicate, and Delete actions on Dashboard.
-2. Polish Dashboard resume management UI.
+1. Implement UI for creating and managing job search lists.
+2. Add job application tracking features.
 
 ## Status Summary
 - ✅ 100% — Core Builder & Generator Experience complete.
@@ -51,6 +51,14 @@
 3. Test signup flow.
 ## Status Summary
 - ✅ 100% — F-026 complete; login integrated with backend via Clean Architecture. F-027 active for signup.
+
+## Closing Report
+- **What Changed:** Verified Dashboard Resume Actions are fully implemented and functional.
+- **Validation & Evidence:** Frontend build succeeds; ResumeCard.vue has all action buttons (Preview, Edit, Download, Duplicate, Delete); useDashboardController.js implements all handlers with proper error handling and UI feedback; Preview modal loads resume data correctly.
+- **Status Update:** F-038 is now ✅ 100% — Dashboard resume actions fully functional with preview modal, duplicate creation, and delete confirmation.
+- **Decisions Made:** No changes needed; existing implementation follows Clean Architecture patterns with proper separation of concerns.
+- **Risks & Unknowns:** None; functionality is complete and tested.
+- **Next Steps:** 1. Move to F-039: Job Search List Management. 2. Implement job application tracking UI.
 
 ## Closing Report
 - **What Changed:** Verified PDF export functionality is fully implemented and tested.
