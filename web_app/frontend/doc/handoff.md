@@ -7,7 +7,6 @@
 - UI Polish: Tailwind dark mode support, syncing indicators, and responsive layouts.
 
 ## Active Task(s)
-- F-036: Export to DOCX — Logic for triggering document generation.
 - F-037: PDF Download — Connection to backend binary service.
 
 ## Decisions Made
@@ -31,9 +30,8 @@
 - Network volatility during background syncs.
 
 ## Next Steps
-1. Implement DOCX export trigger.
-2. Build PDF download bridge.
-3. Polish Dashboard resume management (Duplicate/Delete).
+1. Build PDF download bridge.
+2. Polish Dashboard resume management (Duplicate/Delete).
 
 ## Status Summary
 - ✅ 100% — Core Builder & Generator Experience complete.
@@ -53,6 +51,14 @@
 3. Test signup flow.
 ## Status Summary
 - ✅ 100% — F-026 complete; login integrated with backend via Clean Architecture. F-027 active for signup.
+
+## Closing Report
+- **What Changed:** Verified DOCX export functionality is fully implemented and tested.
+- **Validation & Evidence:** Frontend build succeeds; backend tests pass including export_resume_service.test.js (10 tests); UI dropdown in BuilderHeader.vue emits correct format; ExportService handles blob download with proper MIME types.
+- **Status Update:** F-036 is now ✅ 100% — DOCX export fully functional, ready for user testing.
+- **Decisions Made:** No changes needed; existing implementation follows Clean Architecture patterns.
+- **Risks & Unknowns:** None; functionality is complete and tested.
+- **Next Steps:** 1. Move to F-037: PDF Download Implementation. 2. Test PDF export end-to-end.
 
 ## Closing Report
 - **What Changed:** Installed vue-router@4 (+2 packages); updated router/index.js (+signup/forgot-password routes, +stub auth guard); replaced Login.vue with 1:1 design implementation (+form reactivity, +password toggle, +loading state); created Signup.vue and ForgotPassword.vue placeholders.

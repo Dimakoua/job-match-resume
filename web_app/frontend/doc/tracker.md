@@ -71,6 +71,10 @@
 - Scope: Trigger .docx generation from Builder UI.
 - Acceptance: Download matches preview structure.
 
+## F-036 — [integration] Export to DOCX ✅ 100%
+- Scope: Trigger .docx generation from Builder UI.
+- Acceptance: Download matches preview structure.
+
 ## F-037 — [ui] PDF Download Implementation ⚪ 0%
 - Scope: Connect download button to backend PDF service.
 
