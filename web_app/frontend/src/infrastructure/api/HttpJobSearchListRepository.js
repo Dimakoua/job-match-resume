@@ -20,7 +20,7 @@ export class HttpJobSearchListRepository {
     });
     // Return the created list from backend response
     const data = response.data.data.list;
-    return new JobSearchList(data.id, data.userId || list.userId, data.name, data.description);
+    return new JobSearchList(data.id, data.userId || list.userId, data.name, data.description, data.applicationCount || 0);
   }
 
   /**
@@ -32,7 +32,7 @@ export class HttpJobSearchListRepository {
     try {
       const response = await axios.get(`/api/lists/${id}`);
       const data = response.data.data.list;
-      return new JobSearchList(data.id, data.userId, data.name, data.description);
+      return new JobSearchList(data.id, data.userId, data.name, data.description, data.applicationCount || 0);
     } catch (error) {
       if (error.response?.status === 404) {
         return null;
@@ -49,7 +49,7 @@ export class HttpJobSearchListRepository {
   async findAllByUserId(userId) {
     const response = await axios.get('/api/lists');
     return response.data.data.lists.map(list => 
-      new JobSearchList(list.id, list.userId, list.name, list.description)
+      new JobSearchList(list.id, list.userId, list.name, list.description, list.applicationCount || 0)
     );
   }
 
@@ -77,7 +77,7 @@ export class HttpJobSearchListRepository {
     });
     // Return the updated list from backend response
     const data = response.data.data.list;
-    return new JobSearchList(data.id, data.userId || list.userId, data.name, data.description);
+    return new JobSearchList(data.id, data.userId || list.userId, data.name, data.description, data.applicationCount || 0);
   }
 
   /**

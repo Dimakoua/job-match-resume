@@ -134,7 +134,7 @@
                   </div>
                 </div>
                 <div class="flex justify-between items-center">
-                  <span class="text-xs text-[#4d6599] dark:text-gray-400">0 applications</span>
+                  <span class="text-xs text-[#4d6599] dark:text-gray-400">{{ list.applicationCount }} {{ list.applicationCount === 1 ? 'application' : 'applications' }}</span>
                   <button 
                     @click="handleViewList(list)"
                     class="text-primary text-sm font-semibold hover:underline"

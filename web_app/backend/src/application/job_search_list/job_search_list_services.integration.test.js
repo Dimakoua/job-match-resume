@@ -5,6 +5,8 @@ import { UpdateJobSearchListService } from './update_job_search_list_service.js'
 import { DeleteJobSearchListService } from './delete_job_search_list_service.js';
 import { JobSearchListRepository } from '../../domain/job_search_list/job_search_list_repository.js';
 import { D1JobSearchListRepository } from '../../adapters/repositories/job_search_list/d1_job_search_list_repository.js';
+import { JobApplicationRepository } from '../../domain/job_application/job_application_repository.js';
+import { D1JobApplicationRepository } from '../../adapters/repositories/job_application/d1_job_application_repository.js';
 import { Factory, fakeEmail, newUUID } from '../../factory.js';
 
 describe('Job Search List Services Integration Tests', () => {
@@ -18,8 +20,9 @@ describe('Job Search List Services Integration Tests', () => {
   beforeEach(async () => {
     db = global.DB;
     const jobSearchListRepo = new JobSearchListRepository(new D1JobSearchListRepository(db));
+    const jobApplicationRepo = new JobApplicationRepository(new D1JobApplicationRepository(db));
     createService = new CreateJobSearchListService(jobSearchListRepo);
-    listService = new ListJobSearchListsService(jobSearchListRepo);
+    listService = new ListJobSearchListsService(jobSearchListRepo, jobApplicationRepo);
     updateService = new UpdateJobSearchListService(jobSearchListRepo);
     deleteService = new DeleteJobSearchListService(jobSearchListRepo);
     factory = new Factory(db);
@@ -52,6 +55,7 @@ describe('Job Search List Services Integration Tests', () => {
     expect(lists).toHaveLength(1);
     expect(lists[0].id).toBe(createdList.id);
     expect(lists[0].name).toBe('My Job List');
+    expect(lists[0].applicationCount).toBe(0);
   });
 
   it('should update a job search list', async () => {

@@ -5,16 +5,18 @@
  * Per technical_design.md §3.1: "Pure data structures and logic (e.g., Resume class)."
  */
 export class JobSearchList {
-  constructor(id, userId, name, description = null) {
+  constructor(id, userId, name, description = null, applicationCount = 0) {
     this.validateId(id);
     this.validateUserId(userId);
     this.validateName(name);
     this.validateDescription(description);
+    this.validateApplicationCount(applicationCount);
 
     this.id = id;
     this.userId = userId;
     this.name = name.trim();
     this.description = description ? description.trim() : null;
+    this.applicationCount = applicationCount;
   }
 
   validateId(id) {
@@ -48,6 +50,12 @@ export class JobSearchList {
     }
     if (description && description.length > 500) {
       throw new Error('Description must be 500 characters or less');
+    }
+  }
+
+  validateApplicationCount(applicationCount) {
+    if (typeof applicationCount !== 'number' || applicationCount < 0) {
+      throw new Error('Application count must be a non-negative number');
     }
   }
 

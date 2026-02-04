@@ -102,7 +102,7 @@ export function createDependencies(env) {
   const exportResumeService = new ExportResumeService(resumeRepository, pdfAdapter, docxAdapter);
   const calculateAtsScoreService = new CalculateAtsScoreService();
   const createJobSearchListService = new CreateJobSearchListService(jobSearchListRepository);
-  const listJobSearchListsService = new ListJobSearchListsService(jobSearchListRepository);
+  const listJobSearchListsService = new ListJobSearchListsService(jobSearchListRepository, jobApplicationRepository);
   const updateJobSearchListService = new UpdateJobSearchListService(jobSearchListRepository);
   const deleteJobSearchListService = new DeleteJobSearchListService(jobSearchListRepository);
   const createJobApplicationFromExtensionService = new CreateJobApplicationFromExtensionService(
