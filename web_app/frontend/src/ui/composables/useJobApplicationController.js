@@ -57,7 +57,7 @@ export function useJobApplicationController() {
     error.value = null;
     try {
       const result = await listUseCase.execute({ jobSearchListId, userId });
-      applications.value = result.applications || [];
+      applications.value = result || [];
     } catch (err) {
       error.value = err.message || 'Failed to load applications';
       console.error('Error loading applications:', err);
