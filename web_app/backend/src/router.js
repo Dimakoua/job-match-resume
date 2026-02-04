@@ -47,6 +47,11 @@ const router = AutoRouter({
     });
     return response;
   }],
+  catch: (error) => {
+    logger.error('Unhandled error in router', { error: error.message });
+    return new Response(JSON.stringify({ error: 'Internal Server Error' }), { status: 500, headers: { 'Content-Type': 'application/json' } });
+  },
+  catchall: () => new Response(JSON.stringify({ error: 'Not Found' }), { status: 404, headers: { 'Content-Type': 'application/json' } }),
 });
 
 // Handle CORS preflight requests
