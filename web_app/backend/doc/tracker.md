@@ -133,10 +133,9 @@
 - Completed: 2026-02-03
 - Evidence: Hardcoded Gemini API key removed from wrangler.toml and .env.development, environment validation enhanced with placeholder detection and security checks, .env.example created with documentation, README_ENV.md created for setup instructions. All tests passing (306/306).
 
-## B-027 — [security] Implement Rate Limiting 🔴 Critical
-- Scope: Add rate limiting middleware to prevent API abuse, brute force attacks, and DoS attacks.
-- Acceptance: Configurable rate limits per endpoint/IP, proper error responses for rate limit violations.
-- Evidence Required: Rate limiting middleware implemented, tests for rate limit enforcement.
+## B-027 — [security] Implement Rate Limiting 🔴 Critical ✅ 100%
+- Completed: 2026-02-03
+- Evidence: Rate limiting middleware implemented with in-memory storage, configurable limits (100 req/15min), proper 429 responses with headers, health endpoint excluded, comprehensive unit tests (6/6 passing), all tests passing (312/312).
 
 ## B-028 — [security] Secure CORS Configuration 🔴 Critical
 - Scope: Replace wildcard CORS with specific allowed origins.

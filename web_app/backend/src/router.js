@@ -8,6 +8,14 @@ import { setupAuthRoutes } from './routes/auth_routes.js';
 import { setupResumeRoutes } from './routes/resume_routes.js';
 import { setupJobSearchListRoutes } from './routes/job_search_list_routes.js';
 import { setupJobApplicationRoutes } from './routes/job_application_routes.js';
+import { rateLimitMiddleware } from './middlewares/rate_limit.js';
+
+// ==================== MIDDLEWARE ====================
+
+const apiRateLimit = rateLimitMiddleware({
+  level: 'STANDARD',
+  excludePaths: ['/api/health', '/']
+});
 
 // ==================== CORS HEADERS ====================
 
@@ -20,6 +28,7 @@ const corsHeaders = {
 // ==================== ROUTER ====================
 
 const router = AutoRouter({
+  before: [apiRateLimit],
   finally: [(response) => {
     // Add CORS headers to all responses
     Object.entries(corsHeaders).forEach(([key, value]) => {
