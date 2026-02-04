@@ -18,6 +18,7 @@ export class JobSearchListController extends BaseController {
     this.listJobSearchListsService = deps.listJobSearchListsService;
     this.updateJobSearchListService = deps.updateJobSearchListService;
     this.deleteJobSearchListService = deps.deleteJobSearchListService;
+    this.jobSearchListRepository = deps.jobSearchListRepository;
   }
 
   async createJobSearchList(request) {
@@ -68,6 +69,35 @@ export class JobSearchListController extends BaseController {
       return this.successResponse({
         success: true,
         data: { lists },
+      });
+    } catch (error) {
+      // If authenticate threw a Response, return it
+      if (error instanceof Response) {
+        return error;
+      }
+      return this.errorResponse('INTERNAL_ERROR', 'An unexpected error occurred', 500);
+    }
+  }
+
+  async getJobSearchList(request, env, ctx, id) {
+    try {
+      const userId = await this.authenticate(request);
+
+      // Find the list
+      const list = await this.jobSearchListRepository.findById(id);
+      
+      if (!list) {
+        return this.errorResponse('NOT_FOUND', 'Job search list not found', 404);
+      }
+
+      // Check ownership
+      if (list.userId !== userId) {
+        return this.errorResponse('FORBIDDEN', 'Access denied', 403);
+      }
+
+      return this.successResponse({
+        success: true,
+        data: { list },
       });
     } catch (error) {
       // If authenticate threw a Response, return it

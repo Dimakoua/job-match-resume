@@ -21,6 +21,15 @@ export function setupJobSearchListRoutes(router) {
     return controller.listJobSearchLists(request);
   });
 
+  // Get a specific job search list
+  // Usage: GET /api/lists/:id
+  // Headers: Authorization: Bearer <jwt>
+  // Returns: { "success": true, "data": { "list": { "id": "...", "name": "...", "description": "...", "createdAt": "...", "updatedAt": "..." } } }
+  router.get('/api/lists/:id', async (request, env, ctx) => {
+    const { controller } = createController(env, JobSearchListController, [env.JWT_SECRET]);
+    return controller.getJobSearchList(request, env, ctx, request.params.id);
+  });
+
   // Update a job search list
   // Usage: PUT /api/lists/:id
   // Headers: Authorization: Bearer <jwt>

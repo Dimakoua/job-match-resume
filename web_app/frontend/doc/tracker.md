@@ -67,31 +67,7 @@
 
 ## Active Tasks
 
-## F-036 — [integration] Export to DOCX 🔵 10%
-- Scope: Trigger .docx generation from Builder UI.
-- Acceptance: Download matches preview structure.
-
-## F-036 — [integration] Export to DOCX ✅ 100%
-- Scope: Trigger .docx generation from Builder UI.
-- Acceptance: Download matches preview structure.
-
-## F-037 — [ui] PDF Download Implementation ⚪ 0%
-- Scope: Connect download button to backend PDF service.
-
-## F-037 — [ui] PDF Download Implementation ✅ 100%
-- Scope: Connect download button to backend PDF service.
-
-## F-038 — [ui] Dashboard Resume Actions 🔵 40%
-- Scope: Implement Preview, Duplicate, and Delete.
-
-## F-038 — [ui] Dashboard Resume Actions ✅ 100%
-- Scope: Implement Preview, Duplicate, and Delete.
-
-## F-039 — [feature] Job Search List Management ⚪ 0%
-- Scope: UI for creating and managing job search lists.
-- Acceptance: User can create, rename, and delete lists from the dashboard.
-
-## F-040 — [feature] Job Application View ⚪ 0%
+## F-040 — [feature] Job Application View 🔵 10%
 - Scope: UI for viewing saved jobs within a list.
 - Acceptance: User can see a list of saved jobs with their status.
 
@@ -162,6 +138,11 @@
 	- Successful login stores JWT, redirects to dashboard.
 	- Error handling for invalid credentials.
 - Status: ✅ 100% — Completed; Login.vue uses useAuthController with LoginUseCase, handles loading and errors.
+
+## F-039 — [feature] Job Search List Management ✅ 100%
+- Scope: UI for creating and managing job search lists.
+- Acceptance: User can create, rename, and delete lists from the dashboard.
+- Status: ✅ 100% — Completed; implemented with Clean Architecture, domain entities, use cases, repository, and Vue components with modals.
 
 ## Backlog (Not Started)
 
