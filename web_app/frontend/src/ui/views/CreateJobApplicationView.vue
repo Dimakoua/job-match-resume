@@ -27,20 +27,6 @@
 
           <!-- Form -->
           <div class="bg-white dark:bg-gray-900 rounded-xl p-6 shadow-sm border border-[#e7ebf3] dark:border-[#2d364f]">
-            <!-- Error Alert -->
-            <div v-if="error" class="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg flex items-start gap-3">
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"></circle>
-                <line x1="12" y1="8" x2="12" y2="12"></line>
-                <line x1="12" y1="16" x2="12.01" y2="16"></line>
-              </svg>
-              <div class="flex-1">
-                <p class="text-sm font-medium text-red-800 dark:text-red-300">{{ error }}</p>
-              </div>
-              <button @click="error = null" class="text-red-500 hover:text-red-700 dark:hover:text-red-300">
-                ✕
-              </button>
-            </div>
 
             <form @submit.prevent="handleSubmit" class="space-y-6">
               <!-- Company -->
@@ -51,9 +37,10 @@
                   v-model="form.company"
                   type="text"
                   required
-                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-800 text-[#0e121b] dark:text-white"
+                  :class="`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-800 text-[#0e121b] dark:text-white ${fieldErrors.company ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'}`"
                   placeholder="Enter company name"
                 />
+                <div v-if="fieldErrors.company" class="text-red-500 text-sm mt-1">{{ fieldErrors.company }}</div>
               </div>
 
               <!-- Position -->
@@ -64,21 +51,24 @@
                   v-model="form.position"
                   type="text"
                   required
-                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-800 text-[#0e121b] dark:text-white"
+                  :class="`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-800 text-[#0e121b] dark:text-white ${fieldErrors.position ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'}`"
                   placeholder="Enter job position"
                 />
+                <div v-if="fieldErrors.position" class="text-red-500 text-sm mt-1">{{ fieldErrors.position }}</div>
               </div>
 
               <!-- Job Description -->
               <div>
-                <label for="jobDescription" class="block text-sm font-medium text-[#0e121b] dark:text-white mb-2">Job Description</label>
+                <label for="jobDescription" class="block text-sm font-medium text-[#0e121b] dark:text-white mb-2">Job Description *</label>
                 <textarea
                   id="jobDescription"
                   v-model="form.jobDescription"
                   rows="4"
-                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-800 text-[#0e121b] dark:text-white"
+                  required
+                  :class="`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-800 text-[#0e121b] dark:text-white ${fieldErrors.jobDescription ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'}`"
                   placeholder="Paste the job description here"
                 ></textarea>
+                <div v-if="fieldErrors.jobDescription" class="text-red-500 text-sm mt-1">{{ fieldErrors.jobDescription }}</div>
               </div>
 
               <!-- Resume Selection -->
@@ -149,6 +139,7 @@
                 </button>
               </div>
             </form>
+            <div v-if="fieldErrors.api" class="text-red-500 text-sm mt-4">{{ fieldErrors.api }}</div>
           </div>
         </div>
       </main>
@@ -173,7 +164,7 @@ const { createApplication, loading } = useJobApplicationController();
 // const { resumes, loadResumes } = useResumeController(); // TODO: implement
 const resumes = ref([]); // Placeholder
 const userLoaded = ref(false);
-const error = ref(null);
+const fieldErrors = ref({});
 
 // Debug log to track auth state
 watch(
@@ -198,13 +189,28 @@ const form = ref({
 });
 
 const handleSubmit = async () => {
-  error.value = null;
+  fieldErrors.value = {};
   console.log('Submit clicked. AuthStore user:', authStore.user);
   
   if (!authStore.user?.id) {
     console.error('User ID missing. AuthStore user:', authStore.user);
-    error.value = 'User not authenticated. Please log in again.';
+    fieldErrors.value.api = 'User not authenticated. Please log in again.';
     router.push('/login');
+    return;
+  }
+
+  // Validate required fields
+  if (!form.value.company.trim()) {
+    fieldErrors.value.company = 'Company is required';
+  }
+  if (!form.value.position.trim()) {
+    fieldErrors.value.position = 'Position is required';
+  }
+  if (!form.value.jobDescription.trim()) {
+    fieldErrors.value.jobDescription = 'Job description is required';
+  }
+
+  if (Object.keys(fieldErrors.value).length > 0) {
     return;
   }
 
@@ -226,7 +232,7 @@ const handleSubmit = async () => {
     router.push(`/job-applications/${route.params.listId}`);
   } catch (err) {
     console.error('Failed to create application:', err);
-    error.value = err.message || 'Failed to create application. Please try again.';
+    fieldErrors.value.api = err.message || 'Failed to create application. Please try again.';
   }
 };
 
