@@ -6,7 +6,7 @@
 - Navigation: Route added for /job-applications/:listId with proper authentication guards.
 
 ## Active Task(s)
-- F-041: Application Status Tracking — UI to change the status of a job application.
+- F-042: ATS Score Display — Acceptance: The score is clearly visible on the job application view.
 
 ## Decisions Made
 - Adopted Clean Architecture on Frontend to separate Use Cases (e.g., `SaveResumeUseCase`) from Vue components.
@@ -15,14 +15,9 @@
 - Implemented JobSearchList domain entity with validation and full CRUD use cases.
 
 ## Changes Since Last Session
-- Created JobApplication domain entity with validation methods.
-- Implemented ListJobApplicationsUseCase, CreateJobApplicationUseCase, UpdateJobApplicationUseCase, DeleteJobApplicationUseCase.
-- Created HttpJobApplicationRepository with full CRUD operations.
-- Built useJobApplicationController composable for state management.
-- Created JobApplicationView.vue with status grouping and empty states.
-- Added JobApplicationCard.vue component with status dropdown and actions.
-- Added route /job-applications/:listId with authentication guard.
-- Connected Dashboard "View →" buttons to navigate to JobApplicationView.
+- Fixed UpdateJobApplicationUseCase to accept application object instead of individual fields.
+- Status dropdown in JobApplicationCard now functional with backend integration.
+- Updated tracker.md to mark F-041 as completed.
 
 ## Validation & Evidence
 - Build: npm run build succeeds (158 modules, 731ms); JobApplicationView component 17.28 kB.
@@ -35,12 +30,12 @@
 - Network volatility during background syncs.
 
 ## Next Steps
-1. Implement F-041: Application Status Tracking UI (dropdown functionality already in JobApplicationCard)
-2. Add job application creation form/modal
-3. Implement backend API routes for job applications CRUD operations
+1. Implement F-042: ATS Score Display UI in JobApplicationCard.
+2. Add ATS score calculation API call if needed.
+3. Test the complete job application tracking flow.
 
 ## Status Summary
-- ✅ 100% — F-040: Job Application View complete, ready for status tracking enhancements.
+- ✅ 100% — F-041: Application Status Tracking complete, ready for ATS score display.
 ## Status Summary
 - ✅ 100% — F-039 complete; job search list management fully functional with create, rename, delete operations. F-040 active for job application view.
 

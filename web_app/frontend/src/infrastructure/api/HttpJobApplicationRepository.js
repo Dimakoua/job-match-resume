@@ -76,7 +76,7 @@ export class HttpJobApplicationRepository {
    */
   async findAllByJobSearchListId(jobSearchListId, userId) {
     const response = await axios.get(`/api/job-applications?jobSearchListId=${jobSearchListId}`);
-    return response.data.data.jobApplications.map(app =>
+    return response.data.data.applications.map(app =>
       new JobApplication(
         app.id,
         app.userId,

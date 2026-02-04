@@ -104,7 +104,7 @@ import { onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import AppHeader from '../components/AppHeader.vue';
 import JobApplicationCard from '../components/JobApplicationCard.vue';
-import { useJobApplicationController } from '../../infrastructure/controllers/useJobApplicationController.js';
+import { useJobApplicationController } from '../composables/useJobApplicationController.js';
 import { useAuthStore } from '../stores/useAuthStore.js';
 
 // Composables

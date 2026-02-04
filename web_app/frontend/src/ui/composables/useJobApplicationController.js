@@ -9,7 +9,7 @@ import { ListJobApplicationsUseCase } from '../../core/application/job_applicati
 import { CreateJobApplicationUseCase } from '../../core/application/job_application/CreateJobApplicationUseCase.js';
 import { UpdateJobApplicationUseCase } from '../../core/application/job_application/UpdateJobApplicationUseCase.js';
 import { DeleteJobApplicationUseCase } from '../../core/application/job_application/DeleteJobApplicationUseCase.js';
-import { HttpJobApplicationRepository } from '../api/HttpJobApplicationRepository.js';
+import { HttpJobApplicationRepository } from '../../infrastructure/api/HttpJobApplicationRepository.js';
 import { JobApplication } from '../../core/domain/job_application/JobApplication.js';
 
 export function useJobApplicationController() {

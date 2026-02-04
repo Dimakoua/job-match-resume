@@ -71,7 +71,7 @@
 - Scope: UI for viewing saved jobs within a list.
 - Acceptance: User can see a list of saved jobs with their status.
 
-## F-041 — [feature] Application Status Tracking ⚪ 0%
+## F-041 — [feature] Application Status Tracking ✅ 100%
 - Scope: Implement UI to change the status of a job application.
 - Acceptance: User can update the status from a dropdown (e.g., Applied, Interviewing).
 

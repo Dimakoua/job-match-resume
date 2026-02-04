@@ -12,42 +12,26 @@ export class UpdateJobApplicationUseCase {
   /**
    * Execute the update
    * @param {Object} command
-   * @param {string} command.id - The application ID to update
-   * @param {string} command.userId - The user making the update
-   * @param {string} [command.status] - New status
-   * @param {Date} [command.appliedDate] - New applied date
-   * @param {string} [command.notes] - New notes
+   * @param {JobApplication} command.application - The application to update
    * @returns {Promise<JobApplication>} - The updated job application
    */
   async execute(command) {
     // Validate command
-    if (!command.id) {
-      throw new Error('id is required');
-    }
-    if (!command.userId) {
-      throw new Error('userId is required');
+    if (!command.application) {
+      throw new Error('application is required');
     }
 
-    // Find the application
-    const application = await this.jobApplicationRepository.findById(command.id);
-    if (!application) {
+    const application = command.application;
+
+    // Find the existing application
+    const existingApp = await this.jobApplicationRepository.findById(application.id);
+    if (!existingApp) {
       throw new Error('Job application not found');
     }
 
     // Check ownership
-    if (application.userId !== command.userId) {
+    if (existingApp.userId !== application.userId) {
       throw new Error('Access denied');
-    }
-
-    // Update fields if provided
-    if (command.status !== undefined) {
-      application.updateStatus(command.status);
-    }
-    if (command.appliedDate !== undefined) {
-      application.updateAppliedDate(command.appliedDate);
-    }
-    if (command.notes !== undefined) {
-      application.updateNotes(command.notes);
     }
 
     // Save
