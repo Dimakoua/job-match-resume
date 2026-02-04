@@ -40,7 +40,7 @@
           </div>
 
           <!-- Applications List -->
-          <div v-else-if="applications.length > 0" class="space-y-4">
+          <div v-else-if="applications && applications.length > 0" class="space-y-4">
             <!-- Status Summary -->
             <div class="bg-white dark:bg-gray-900 rounded-xl p-6 shadow-sm border border-[#e7ebf3] dark:border-[#2d364f]">
               <h2 class="text-lg font-bold text-[#0e121b] dark:text-white mb-4">Application Status</h2>

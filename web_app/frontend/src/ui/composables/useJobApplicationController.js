@@ -29,6 +29,7 @@ export function useJobApplicationController() {
 
   // Computed properties
   const applicationsByStatus = computed(() => {
+    if (!applications.value || !Array.isArray(applications.value)) return {};
     const grouped = {};
     applications.value.forEach(app => {
       if (!grouped[app.status]) {
@@ -39,9 +40,10 @@ export function useJobApplicationController() {
     return grouped;
   });
 
-  const totalApplications = computed(() => applications.value.length);
+  const totalApplications = computed(() => applications.value?.length || 0);
 
   const applicationsByStatusCount = computed(() => {
+    if (!applications.value || !Array.isArray(applications.value)) return {};
     const counts = {};
     applications.value.forEach(app => {
       counts[app.status] = (counts[app.status] || 0) + 1;
@@ -55,10 +57,11 @@ export function useJobApplicationController() {
     error.value = null;
     try {
       const result = await listUseCase.execute({ jobSearchListId, userId });
-      applications.value = result.applications;
+      applications.value = result.applications || [];
     } catch (err) {
       error.value = err.message || 'Failed to load applications';
       console.error('Error loading applications:', err);
+      applications.value = []; // Ensure it's an array
     } finally {
       loading.value = false;
     }
