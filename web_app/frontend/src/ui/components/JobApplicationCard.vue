@@ -13,6 +13,10 @@
                 class="px-2 py-1 rounded-full text-xs font-medium capitalize">
             {{ application.status }}
           </span>
+          <span v-if="atsScore !== null" :class="getAtsScoreBadgeClass(atsScore)"
+                class="px-2 py-1 rounded-full text-xs font-medium">
+            ATS: {{ atsScore }}%
+          </span>
           <span v-if="application.appliedDate" class="text-xs text-gray-500 dark:text-gray-400">
             Applied {{ formatDate(application.appliedDate) }}
           </span>
@@ -99,7 +103,8 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
+import { useAtsScore } from '../composables/useAtsScore.js';
 
 const props = defineProps({
   application: {
@@ -111,7 +116,7 @@ const props = defineProps({
 const emit = defineEmits(['update-status', 'delete', 'edit']);
 
 const showMenu = ref(false);
-
+const { atsScore } = useAtsScore(props.application);
 // Status options for the dropdown
 const statusOptions = [
   'saved',
@@ -133,6 +138,12 @@ const getStatusBadgeClass = (status) => {
     withdrawn: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300'
   };
   return classes[status] || classes.saved;
+};
+
+const getAtsScoreBadgeClass = (score) => {
+  if (score >= 80) return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
+  if (score >= 60) return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300';
+  return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300';
 };
 
 const formatDate = (dateString) => {

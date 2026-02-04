@@ -86,7 +86,7 @@
                 >
                   <option value="">Select a resume (optional)</option>
                   <option v-for="resume in resumes" :key="resume.id" :value="resume.id">
-                    {{ resume.name }}
+                    {{ resume.title }}
                   </option>
                 </select>
               </div>
@@ -156,14 +156,14 @@ import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import AppHeader from '../components/AppHeader.vue';
 import { useJobApplicationController } from '../composables/useJobApplicationController.js';
+import { useResumeController } from '../composables/useResumeController.js';
 import { useAuthStore } from '../stores/useAuthStore.js';
 
 const route = useRoute();
 const router = useRouter();
 const authStore = useAuthStore();
 const { getApplication, updateApplication, loading } = useJobApplicationController();
-
-const resumes = ref([]); // Placeholder
+const { resumes, loadResumes } = useResumeController();
 const fieldErrors = ref({});
 const application = ref(null);
 
@@ -181,15 +181,13 @@ const loadApplication = async () => {
   try {
     const app = await getApplication(route.params.applicationId, authStore.user.id);
     application.value = app;
-    form.value = {
-      company: app.company || '',
-      position: app.position || '',
-      jobDescription: app.jobDescription || '',
-      resumeId: app.resumeId || '',
-      status: app.status || 'saved',
-      appliedDate: app.appliedDate ? app.appliedDate.toISOString().split('T')[0] : '',
-      notes: app.notes || ''
-    };
+    form.value.company = app.company || '';
+    form.value.position = app.position || '';
+    form.value.jobDescription = app.jobDescription || '';
+    form.value.resumeId = app.resumeId || '';
+    form.value.status = app.status || 'saved';
+    form.value.appliedDate = app.appliedDate ? app.appliedDate.toISOString().split('T')[0] : '';
+    form.value.notes = app.notes || '';
   } catch (err) {
     console.error('Failed to load application:', err);
     fieldErrors.value.api = 'Failed to load application';
@@ -224,6 +222,7 @@ const handleSubmit = async () => {
       notes: form.value.notes
     };
 
+    console.log('Updating application with data:', applicationData);
     await updateApplication(route.params.applicationId, applicationData, application.value);
     router.push(`/job-applications/${route.params.listId}`);
   } catch (err) {
@@ -234,5 +233,6 @@ const handleSubmit = async () => {
 
 onMounted(() => {
   loadApplication();
+  loadResumes();
 });
 </script>

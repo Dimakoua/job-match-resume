@@ -102,6 +102,7 @@ export class HttpJobApplicationRepository {
       company: application.company,
       position: application.position,
       jobDescription: application.jobDescription,
+      resumeId: application.resumeId,
       status: application.status,
       appliedDate: application.appliedDate ? application.appliedDate.toISOString() : null,
       notes: application.notes

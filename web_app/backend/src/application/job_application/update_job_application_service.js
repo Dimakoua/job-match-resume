@@ -4,6 +4,7 @@ import { z } from 'zod';
 const updateJobApplicationSchema = z.object({
   id: z.string().min(1, 'Invalid job application ID'),
   userId: z.string().min(1, 'Invalid user ID'),
+  resumeId: z.union([z.string().uuid('Invalid resume ID'), z.null()]).optional(),
   company: z.string().max(200, 'Company must be less than 200 characters'),
   position: z.string().max(200, 'Position must be less than 200 characters'),
   jobDescription: z.string().min(1, 'Job description is required').max(10000, 'Job description must be less than 10000 characters'),
@@ -36,6 +37,9 @@ export class UpdateJobApplicationService {
     }
 
     // Update fields
+    if (updates.resumeId !== undefined) {
+      application.updateResumeId(updates.resumeId);
+    }
     if (updates.company !== undefined) {
       application.updateCompany(updates.company);
     }

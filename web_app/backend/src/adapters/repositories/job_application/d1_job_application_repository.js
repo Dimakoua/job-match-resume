@@ -106,7 +106,7 @@ export class D1JobApplicationRepository {
   async update(jobApplication) {
     const sql = `
       UPDATE JobApplications
-      SET company = ?, position = ?, job_description = ?, job_search_list_id = ?, status = ?, applied_date = ?, notes = ?, updated_at = ?
+      SET resume_id = ?, company = ?, position = ?, job_description = ?, job_search_list_id = ?, status = ?, applied_date = ?, notes = ?, updated_at = ?
       WHERE id = ? AND user_id = ?
     `;
 
@@ -115,6 +115,7 @@ export class D1JobApplicationRepository {
 
     try {
       const result = await execute(this.database, sql, [
+        jobApplication.resumeId,
         jobApplication.company,
         jobApplication.position,
         jobApplication.jobDescription,

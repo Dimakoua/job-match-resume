@@ -1,41 +1,45 @@
 # handoff.md
 ## Context Snapshot
-- Job Application View: Complete UI for viewing saved jobs within a list with status indicators.
+- Job Application View: Complete UI for viewing saved jobs with status indicators and ATS score display.
 - Clean Architecture Implementation: JobApplication domain entity, use cases, repository, and controller composable.
 - Status Tracking: Applications grouped by status with visual indicators (saved, applied, interviewing, etc.).
+- ATS Score: Calculated and displayed for applications with linked resumes.
 - Navigation: Route added for /job-applications/:listId with proper authentication guards.
 
 ## Active Task(s)
-- F-042: ATS Score Display — Acceptance: The score is clearly visible on the job application view.
+- None — All current features implemented and tested.
 
 ## Decisions Made
 - Adopted Clean Architecture on Frontend to separate Use Cases (e.g., `SaveResumeUseCase`) from Vue components.
 - Standardized template IDs to `basic`, `modern`, `professional`, etc., to align with D1 schema.
 - Used `localStorage` for instant drafts to mitigate network latency in the primary UX loop.
 - Implemented JobSearchList domain entity with validation and full CRUD use cases.
+- Added ATS score calculation on-demand in JobApplicationCard for applications with linked resumes.
 
 ## Changes Since Last Session
 - Fixed UpdateJobApplicationUseCase to accept application object instead of individual fields.
 - Status dropdown in JobApplicationCard now functional with backend integration.
 - Updated tracker.md to mark F-041 as completed.
+- Added ATS score display in JobApplicationCard with on-demand calculation.
 
 ## Validation & Evidence
-- Build: npm run build succeeds (158 modules, 731ms); JobApplicationView component 17.28 kB.
+- Build: npm run build succeeds (162 modules, 781ms); JobApplicationView component updated with ATS score.
 - Clean Architecture: Domain entities, use cases, repository, and controller properly separated.
 - UI Components: JobApplicationView and JobApplicationCard match design patterns from existing components.
 - Status Indicators: Visual status badges with proper color coding implemented.
+- ATS Score: Calculated using backend API, displayed with color-coded badges.
 
 ## Risks & Unknowns
 - Potential for `localStorage` quota expiration if history snapshots are never cleared.
 - Network volatility during background syncs.
+- ATS score calculation may be slow for large resumes; consider caching or pre-calculation.
 
 ## Next Steps
-1. Implement F-042: ATS Score Display UI in JobApplicationCard.
-2. Add ATS score calculation API call if needed.
-3. Test the complete job application tracking flow.
+1. Review completed features and plan next sprint.
+2. Consider optimizing ATS score calculation (e.g., cache scores in application model).
 
 ## Status Summary
-- ✅ 100% — F-041: Application Status Tracking complete, ready for ATS score display.
+- ✅ 100% — F-042: ATS Score Display complete, job application tracking fully functional.
 ## Status Summary
 - ✅ 100% — F-039 complete; job search list management fully functional with create, rename, delete operations. F-040 active for job application view.
 

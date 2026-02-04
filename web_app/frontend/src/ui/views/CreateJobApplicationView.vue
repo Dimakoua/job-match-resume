@@ -81,7 +81,7 @@
                 >
                   <option value="">Select a resume (optional)</option>
                   <option v-for="resume in resumes" :key="resume.id" :value="resume.id">
-                    {{ resume.name }}
+                    {{ resume.title }}
                   </option>
                 </select>
               </div>
@@ -152,17 +152,14 @@ import { ref, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import AppHeader from '../components/AppHeader.vue';
 import { useJobApplicationController } from '../composables/useJobApplicationController.js';
+import { useResumeController } from '../composables/useResumeController.js';
 import { useAuthStore } from '../stores/useAuthStore.js';
-// Assume there's a resume controller
-// import { useResumeController } from '../composables/useResumeController.js';
 
 const route = useRoute();
 const router = useRouter();
 const authStore = useAuthStore();
 const { createApplication, loading } = useJobApplicationController();
-
-// const { resumes, loadResumes } = useResumeController(); // TODO: implement
-const resumes = ref([]); // Placeholder
+const { resumes, loadResumes } = useResumeController();
 const userLoaded = ref(false);
 const fieldErrors = ref({});
 
@@ -237,6 +234,6 @@ const handleSubmit = async () => {
 };
 
 onMounted(() => {
-  // loadResumes(); // TODO: load resumes
+  loadResumes();
 });
 </script>

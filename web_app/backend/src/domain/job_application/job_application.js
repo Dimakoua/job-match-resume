@@ -153,4 +153,9 @@ export class JobApplication {
     this.validateJobSearchListId(newJobSearchListId);
     this.jobSearchListId = newJobSearchListId;
   }
+
+  updateResumeId(newResumeId) {
+    this.validateResumeId(newResumeId);
+    this.resumeId = newResumeId;
+  }
 }

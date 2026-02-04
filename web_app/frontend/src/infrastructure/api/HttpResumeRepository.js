@@ -37,4 +37,12 @@ export class HttpResumeRepository {
     })
     return response.data
   }
+
+  async calculateAtsScore(resumeText, jobDescription) {
+    const response = await axios.post('/api/resumes/calculate-ats-score', {
+      resumeText,
+      jobDescription
+    })
+    return response.data.data
+  }
 }
