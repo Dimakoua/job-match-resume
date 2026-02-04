@@ -32,9 +32,7 @@ export class CreateJobApplicationUseCase {
     if (!command.jobSearchListId) {
       throw new Error('jobSearchListId is required');
     }
-    if (!command.resumeId) {
-      throw new Error('resumeId is required');
-    }
+    // resumeId is optional
     if (!command.company) {
       throw new Error('company is required');
     }
@@ -53,12 +51,12 @@ export class CreateJobApplicationUseCase {
       id,
       command.userId,
       command.jobSearchListId,
-      command.resumeId,
+      command.resumeId || null,
       command.company,
       command.position,
       command.jobDescription,
       command.status || 'saved',
-      null, // appliedDate
+      command.appliedDate || null,
       command.notes || null
     );
 

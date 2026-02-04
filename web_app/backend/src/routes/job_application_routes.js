@@ -3,6 +3,16 @@ import { JobApplicationController } from '../adapters/controllers/job_applicatio
 import { createController } from '../utils/route_helpers.js';
 
 export function setupJobApplicationRoutes(router) {
+  // Create job application
+  // Usage: POST /api/job-applications
+  // Headers: Authorization: Bearer <jwt>
+  // Body: { "jobSearchListId": "...", "company": "...", "position": "...", "jobDescription": "...", "status": "saved", "resumeId": "..." (optional), "appliedDate": "..." (optional), "notes": "..." (optional) }
+  // Returns: { "success": true, "data": { "jobApplication": { "id": "...", "company": "...", "position": "...", "jobDescription": "...", "status": "saved", ... } } }
+  router.post('/api/job-applications', async (request, env, ctx) => {
+    const { controller } = createController(env, JobApplicationController, [env.JWT_SECRET]);
+    return controller.create(request);
+  });
+
   // Create job application from Chrome extension
   // Usage: POST /api/job-applications/from-extension
   // Headers: Authorization: Bearer <jwt>

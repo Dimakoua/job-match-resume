@@ -9,6 +9,17 @@ const createFromExtensionSchema = z.object({
   url: z.string().max(1000, 'URL must be less than 1000 characters').optional(),
 });
 
+const createSchema = z.object({
+  jobSearchListId: z.string().uuid('Invalid job search list ID'),
+  resumeId: z.string().uuid('Invalid resume ID').nullable().optional(),
+  company: z.string().min(1, 'Company is required').max(200, 'Company must be less than 200 characters'),
+  position: z.string().min(1, 'Position is required').max(200, 'Position must be less than 200 characters'),
+  jobDescription: z.string().min(1, 'Job description is required').max(10000, 'Job description must be less than 10,000 characters'),
+  status: z.enum(['saved', 'applied', 'interviewing', 'rejected', 'accepted', 'withdrawn']).optional(),
+  appliedDate: z.string().datetime().nullable().optional(),
+  notes: z.string().max(5000, 'Notes must be less than 5,000 characters').nullable().optional(),
+});
+
 export class JobApplicationController extends BaseController {
   constructor(deps, jwtSecret) {
     super(jwtSecret);
@@ -72,6 +83,69 @@ export class JobApplicationController extends BaseController {
           error.message && error.message.includes('Position') ||
           error.message && error.message.includes('URL')) {
         return this.errorResponse('INVALID_INPUT', error.message, 400);
+      }
+
+      return this.errorResponse('INTERNAL_ERROR', 'An unexpected error occurred', 500);
+    }
+  }
+
+  async create(request) {
+    try {
+      const userId = await this.authenticate(request);
+
+      const body = await request.json();
+
+      // Validate input
+      const validationResult = createSchema.safeParse(body);
+      if (!validationResult.success) {
+        return this.validationErrorResponse(validationResult.error.issues);
+      }
+
+      // Execute service
+      const jobApplication = await this.createJobApplicationFromExtensionService.execute(userId, {
+        jobDescription: validationResult.data.jobDescription,
+        company: validationResult.data.company,
+        position: validationResult.data.position,
+        jobSearchListId: validationResult.data.jobSearchListId,
+        resumeId: validationResult.data.resumeId,
+        status: validationResult.data.status,
+        appliedDate: validationResult.data.appliedDate,
+        notes: validationResult.data.notes,
+      });
+
+      return this.successResponse({
+        success: true,
+        data: {
+          jobApplication: {
+            id: jobApplication.id,
+            userId: jobApplication.userId,
+            jobSearchListId: jobApplication.jobSearchListId,
+            resumeId: jobApplication.resumeId,
+            company: jobApplication.company,
+            position: jobApplication.position,
+            jobDescription: jobApplication.jobDescription,
+            status: jobApplication.status,
+            appliedDate: jobApplication.appliedDate,
+            notes: jobApplication.notes,
+            createdAt: jobApplication.createdAt,
+            updatedAt: jobApplication.updatedAt,
+          },
+        },
+      }, 201);
+    } catch (error) {
+      console.error('Create job application error:', error);
+
+      // If authenticate threw a Response, return it
+      if (error instanceof Response) {
+        return error;
+      }
+
+      if (error.message && error.message.includes('User not found')) {
+        return this.errorResponse('USER_NOT_FOUND', 'User not found', 404);
+      }
+
+      if (error.message && error.message.includes('required')) {
+        return this.errorResponse('VALIDATION_ERROR', error.message, 400);
       }
 
       return this.errorResponse('INTERNAL_ERROR', 'An unexpected error occurred', 500);
