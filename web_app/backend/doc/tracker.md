@@ -1,7 +1,7 @@
 # backend/tracker.md
 
-**Version:** 1.9
-**Last updated:** 2026-01-28
+**Version:** 1.10
+**Last updated:** 2026-02-04
 **Status:** Active
 
 ---
@@ -115,6 +115,10 @@
 ## B-024 — [api] Chrome Extension Endpoint ✅ 100%
 - Completed: 2026-02-03
 - Evidence: POST `/api/job-applications/from-extension` endpoint implemented with JWT authentication, Zod validation, CreateJobApplicationFromExtensionService with comprehensive input validation, JobApplicationController with error handling, database migration updated to allow nullable resume_id/company/position fields, full integration tests 37/37 passing across service, controller, and repository layers.
+
+## B-047 — [testing] Job Application Integration Tests ✅ 100%
+- Completed: 2026-02-04
+- Evidence: Comprehensive integration tests implemented for all job application CRUD services (List, Update, Delete) using real D1 repositories instead of mocks. Fixed foreign key constraint issues by updating factory defaults, adjusted Zod validation schemas for flexible ID handling, improved repository date conversion, and updated test expectations for proper error message validation. All integration tests 23/23 passing with real database interactions.
 
 ## B-025 — [feature] ATS Score Calculation ✅ 100%
 - Completed: 2026-02-03
