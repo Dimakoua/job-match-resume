@@ -12,4 +12,32 @@ export function setupJobApplicationRoutes(router) {
     const { controller } = createController(env, JobApplicationController, [env.JWT_SECRET]);
     return controller.createFromExtension(request);
   });
+
+  // List job applications
+  // Usage: GET /api/job-applications?jobSearchListId=<uuid>
+  // Headers: Authorization: Bearer <jwt>
+  // Returns: { "success": true, "data": { "applications": [...] } }
+  router.get('/api/job-applications', async (request, env, ctx) => {
+    const { controller } = createController(env, JobApplicationController, [env.JWT_SECRET]);
+    return controller.list(request);
+  });
+
+  // Update job application
+  // Usage: PUT /api/job-applications/<id>
+  // Headers: Authorization: Bearer <jwt>
+  // Body: { "status": "applied", "notes": "Updated notes" }
+  // Returns: { "success": true, "data": { "jobApplication": {...} } }
+  router.put('/api/job-applications/:id', async (request, env, ctx) => {
+    const { controller } = createController(env, JobApplicationController, [env.JWT_SECRET]);
+    return controller.update(request);
+  });
+
+  // Delete job application
+  // Usage: DELETE /api/job-applications/<id>
+  // Headers: Authorization: Bearer <jwt>
+  // Returns: { "success": true, "message": "Job application deleted successfully" }
+  router.delete('/api/job-applications/:id', async (request, env, ctx) => {
+    const { controller } = createController(env, JobApplicationController, [env.JWT_SECRET]);
+    return controller.delete(request);
+  });
 }

@@ -7,7 +7,7 @@ export async function fakeJobApplication(repo, opts = {}) {
     opts.id || newUUID(),
     opts.userId || newUUID(),
     opts.jobSearchListId || null,
-    opts.resumeId || newUUID(),
+    opts.resumeId || null,
     opts.company || fakeRandomSentence(2),
     opts.position || fakeRandomSentence(3),
     opts.jobDescription || fakeRandomSentence(10),

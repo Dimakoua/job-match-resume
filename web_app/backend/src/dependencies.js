@@ -21,6 +21,9 @@ import { ListJobSearchListsService } from './application/job_search_list/list_jo
 import { UpdateJobSearchListService } from './application/job_search_list/update_job_search_list_service.js';
 import { DeleteJobSearchListService } from './application/job_search_list/delete_job_search_list_service.js';
 import { CreateJobApplicationFromExtensionService } from './application/job_application/create_job_application_from_extension_service.js';
+import { ListJobApplicationsService } from './application/job_application/list_job_applications_service.js';
+import { UpdateJobApplicationService } from './application/job_application/update_job_application_service.js';
+import { DeleteJobApplicationService } from './application/job_application/delete_job_application_service.js';
 import { D1UserRepository } from './adapters/repositories/user/d1_user_repository.js';
 import { D1ResumeRepository } from './adapters/repositories/resume/d1_resume_repository.js';
 import { D1JobSearchListRepository } from './adapters/repositories/job_search_list/d1_job_search_list_repository.js';
@@ -108,6 +111,9 @@ export function createDependencies(env) {
     jobSearchListRepository,
     createJobSearchListService
   );
+  const listJobApplicationsService = new ListJobApplicationsService(jobApplicationRepository);
+  const updateJobApplicationService = new UpdateJobApplicationService(jobApplicationRepository);
+  const deleteJobApplicationService = new DeleteJobApplicationService(jobApplicationRepository);
 
   return {
     userRepository,
@@ -136,6 +142,9 @@ export function createDependencies(env) {
     listJobSearchListsService,
     updateJobSearchListService,
     deleteJobSearchListService,
-    createJobApplicationFromExtensionService
+    createJobApplicationFromExtensionService,
+    listJobApplicationsService,
+    updateJobApplicationService,
+    deleteJobApplicationService
   };
 }

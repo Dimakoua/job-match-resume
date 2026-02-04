@@ -13,6 +13,9 @@ export class JobApplicationController extends BaseController {
   constructor(deps, jwtSecret) {
     super(jwtSecret);
     this.createJobApplicationFromExtensionService = deps.createJobApplicationFromExtensionService;
+    this.listJobApplicationsService = deps.listJobApplicationsService;
+    this.updateJobApplicationService = deps.updateJobApplicationService;
+    this.deleteJobApplicationService = deps.deleteJobApplicationService;
   }
 
   async createFromExtension(request) {
@@ -68,6 +71,127 @@ export class JobApplicationController extends BaseController {
       if (error.message && error.message.includes('Company') ||
           error.message && error.message.includes('Position') ||
           error.message && error.message.includes('URL')) {
+        return this.errorResponse('INVALID_INPUT', error.message, 400);
+      }
+
+      return this.errorResponse('INTERNAL_ERROR', 'An unexpected error occurred', 500);
+    }
+  }
+
+  async list(request) {
+    try {
+      const userId = await this.authenticate(request);
+
+      // Get query params
+      const url = new URL(request.url);
+      const jobSearchListId = url.searchParams.get('jobSearchListId');
+
+      if (!jobSearchListId) {
+        return this.errorResponse('MISSING_JOB_SEARCH_LIST_ID', 'jobSearchListId query parameter is required', 400);
+      }
+
+      // Execute service
+      const result = await this.listJobApplicationsService.execute(jobSearchListId, userId);
+
+      return this.successResponse({
+        success: true,
+        data: result
+      });
+    } catch (error) {
+      console.error('List job applications error:', error);
+
+      // If authenticate threw a Response, return it
+      if (error instanceof Response) {
+        return error;
+      }
+
+      if (error.message && error.message.includes('Invalid')) {
+        return this.errorResponse('INVALID_INPUT', error.message, 400);
+      }
+
+      return this.errorResponse('INTERNAL_ERROR', 'An unexpected error occurred', 500);
+    }
+  }
+
+  async update(request) {
+    try {
+      const userId = await this.authenticate(request);
+
+      const url = new URL(request.url);
+      const id = url.pathname.split('/').pop();
+
+      if (!id) {
+        return this.errorResponse('MISSING_ID', 'Job application ID is required', 400);
+      }
+
+      const body = await request.json();
+
+      // Execute service
+      const result = await this.updateJobApplicationService.execute(id, userId, body);
+
+      return this.successResponse({
+        success: true,
+        data: result
+      });
+    } catch (error) {
+      console.error('Update job application error:', error);
+
+      // If authenticate threw a Response, return it
+      if (error instanceof Response) {
+        return error;
+      }
+
+      if (error.message && error.message.includes('not found')) {
+        return this.errorResponse('NOT_FOUND', error.message, 404);
+      }
+
+      if (error.message && error.message.includes('Access denied')) {
+        return this.errorResponse('ACCESS_DENIED', error.message, 403);
+      }
+
+      if (error.message && error.message.includes('Validation failed')) {
+        return this.errorResponse('INVALID_INPUT', error.message, 400);
+      }
+
+      return this.errorResponse('INTERNAL_ERROR', 'An unexpected error occurred', 500);
+    }
+  }
+
+  async delete(request) {
+    try {
+      const userId = await this.authenticate(request);
+
+      const url = new URL(request.url);
+      const id = url.pathname.split('/').pop();
+
+      if (!id) {
+        return this.errorResponse('MISSING_ID', 'Job application ID is required', 400);
+      }
+
+      // Execute service
+      await this.deleteJobApplicationService.execute(id, userId);
+
+      return this.successResponse({
+        success: true,
+        message: 'Job application deleted successfully'
+      });
+    } catch (error) {
+      console.error('Delete job application error:', error);
+
+      // If authenticate threw a Response, return it
+      if (error instanceof Response) {
+        return error;
+      }
+
+      if (error.message && error.message.includes('not found')) {
+        return this.errorResponse('NOT_FOUND', error.message, 404);
+      }
+
+      if (error.message && error.message.includes('Access denied')) {
+        return this.errorResponse('ACCESS_DENIED', error.message, 403);
+      }
+
+      if (error.message && error.message.includes('Validation failed')) {
         return this.errorResponse('INVALID_INPUT', error.message, 400);
       }
 
