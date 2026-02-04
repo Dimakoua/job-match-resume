@@ -79,6 +79,10 @@
 - Scope: Display the ATS score for a resume linked to a job.
 - Acceptance: The score is clearly visible on the job application view.
 
+## F-043 — [feature] Display Application Counts on Dashboard ✅ 100%
+- Scope: Show the correct number of applications for each job search list.
+- Acceptance: Each job search list card displays the actual application count instead of hardcoded "0".
+
 ---
 
 ## Completed Tasks
