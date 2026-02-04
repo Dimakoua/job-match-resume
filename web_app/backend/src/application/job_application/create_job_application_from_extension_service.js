@@ -50,22 +50,32 @@ export class CreateJobApplicationFromExtensionService {
       throw new Error('User not found');
     }
 
-    // Get or create current year's job search list
-    const currentYear = new Date().getFullYear().toString();
-    const jobSearchList = await this.getOrCreateYearList(userId, currentYear);
+    // Get job search list - use provided or create current year's
+    let jobSearchList;
+    if (jobData.jobSearchListId) {
+      // Verify the list exists and belongs to user
+      jobSearchList = await this.jobSearchListRepository.findById(jobData.jobSearchListId);
+      if (!jobSearchList || jobSearchList.userId !== userId) {
+        throw new Error('Job search list not found or access denied');
+      }
+    } else {
+      // Get or create current year's job search list
+      const currentYear = new Date().getFullYear().toString();
+      jobSearchList = await this.getOrCreateYearList(userId, currentYear);
+    }
 
     // Create job application
     const jobApplication = new JobApplication(
       crypto.randomUUID(),
       userId,
-      jobSearchList.id, // Use the current year's list
-      null, // resumeId - can be linked later
+      jobSearchList.id,
+      jobData.resumeId || null,
       jobData.company?.trim() || null,
       jobData.position?.trim() || null,
       jobData.jobDescription.trim(),
-      'saved', // status - always start as saved
-      null, // appliedDate - not applied yet
-      jobData.url?.trim() || null // notes field can store the URL
+      jobData.status || 'saved',
+      jobData.appliedDate || null,
+      jobData.notes?.trim() || jobData.url?.trim() || null
     );
 
     // Save to database
