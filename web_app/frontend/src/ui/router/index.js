@@ -12,6 +12,7 @@ const routes = [
   { path: '/dashboard', name: 'Dashboard', component: () => import('../views/Dashboard.vue'), meta: { requiresAuth: true } },
   { path: '/builder', name: 'Builder', component: () => import('../views/Builder.vue'), meta: { requiresAuth: true } },
   { path: '/generator', name: 'Generator', component: () => import('../views/Generator.vue'), meta: { requiresAuth: true } },
+  { path: '/job-applications/:listId', name: 'JobApplicationView', component: () => import('../views/JobApplicationView.vue'), meta: { requiresAuth: true } },
 ]
 
 const router = createRouter({

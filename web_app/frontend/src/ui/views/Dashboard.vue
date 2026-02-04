@@ -307,6 +307,7 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
+import { useRouter } from 'vue-router'
 import AppHeader from '../components/AppHeader.vue'
 import AppFooter from '../components/AppFooter.vue'
 import ResumeCard from '../components/ResumeCard.vue'
@@ -340,6 +341,9 @@ const {
   deleteList
 } = useJobSearchListController()
 
+// Router instance
+const router = useRouter()
+
 // Job search list state
 const activeListMenu = ref(null)
 const createListModal = ref({
@@ -368,8 +372,7 @@ const handleCreateJobSearchList = () => {
 }
 
 const handleViewList = (list) => {
-  // TODO: Navigate to job search list detail view
-  console.log('View list:', list)
+  router.push(`/job-applications/${list.id}`)
 }
 
 const handleEditList = (list) => {
