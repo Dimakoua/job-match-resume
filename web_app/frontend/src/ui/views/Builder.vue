@@ -117,8 +117,16 @@
             <p class="text-sm text-gray-500">AI is enhancing your content...</p>
           </div>
           <div v-else-if="aiModal.result">
-            <p class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Enhanced Version:</p>
-            <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg text-sm leading-relaxed mb-4">
+            <p class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Enhanced Version{{ aiModal.allVariations.length > 1 ? 's' : '' }}:</p>
+            <div v-if="aiModal.allVariations.length > 1" class="space-y-3 mb-4">
+              <div v-for="(variation, idx) in aiModal.allVariations" :key="idx" class="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg text-sm leading-relaxed border-2 border-transparent hover:border-violet-200 dark:hover:border-violet-700 cursor-pointer transition-colors" :class="{ 'border-violet-500 bg-violet-50 dark:bg-violet-900/20': aiModal.selectedVariation === idx }" @click="aiModal.selectedVariation = idx">
+                <div class="flex items-start gap-3">
+                  <input type="radio" :checked="aiModal.selectedVariation === idx" @change="aiModal.selectedVariation = idx" class="mt-0.5 text-violet-600 focus:ring-violet-500" />
+                  <div class="flex-1">{{ variation }}</div>
+                </div>
+              </div>
+            </div>
+            <div v-else class="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg text-sm leading-relaxed mb-4">
               {{ aiModal.result }}
             </div>
             <div class="flex gap-3">

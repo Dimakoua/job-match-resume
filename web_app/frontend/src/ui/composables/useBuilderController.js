@@ -89,6 +89,8 @@ export function useBuilderController() {
     section: '',
     index: null,
     result: null,
+    allVariations: [],
+    selectedVariation: 0,
     error: null
   })
 
@@ -272,6 +274,8 @@ export function useBuilderController() {
     aiModal.value.section = section
     aiModal.value.index = index
     aiModal.value.result = null
+    aiModal.value.allVariations = []
+    aiModal.value.selectedVariation = 0
     aiModal.value.error = null
 
     try {
@@ -289,7 +293,13 @@ export function useBuilderController() {
       }
 
       const result = await aiService.improveText(textToEnhance)
-      aiModal.value.result = result.improvedText || result.text || result
+      // Handle variations array from backend
+      if (result.variations && Array.isArray(result.variations)) {
+        aiModal.value.result = result.variations[0] // Display first variation
+        aiModal.value.allVariations = result.variations // Store all for potential future use
+      } else {
+        aiModal.value.result = result.improvedText || result.text || result
+      }
       aiModal.value.loading = false
     } catch (error) {
       console.error('AI Enhancement failed:', error)
@@ -299,12 +309,16 @@ export function useBuilderController() {
   }
 
   const applyAiEnhancement = () => {
-    if (!aiModal.value.result) return
+    const selectedText = aiModal.value.allVariations.length > 0 
+      ? aiModal.value.allVariations[aiModal.value.selectedVariation] 
+      : aiModal.value.result
+
+    if (!selectedText) return
 
     if (aiModal.value.section === 'summary') {
-      resumeData.value.summary = aiModal.value.result
+      resumeData.value.summary = selectedText
     } else if (aiModal.value.section === 'experience' && aiModal.value.index !== null) {
-      resumeData.value.experience[aiModal.value.index].description = aiModal.value.result
+      resumeData.value.experience[aiModal.value.index].description = selectedText
     }
 
     if (resumeId.value) {
