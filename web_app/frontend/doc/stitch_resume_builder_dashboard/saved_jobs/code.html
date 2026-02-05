@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#2463eb",
+              "background-light": "#f6f6f8",
+              "background-dark": "#111621",
+            },
+            fontFamily: {
+              "display": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display">
+<div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
+<!-- Top Navigation Bar -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-[#e7ebf3] dark:border-gray-800 bg-white dark:bg-background-dark px-10 py-3 sticky top-0 z-50">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-4 text-[#0e121b] dark:text-white">
+<div class="size-8 flex items-center justify-center bg-primary rounded-lg text-white">
+<span class="material-symbols-outlined">rocket_launch</span>
+</div>
+<h2 class="text-lg font-bold leading-tight tracking-[-0.015em]">JobSync</h2>
+</div>
+<label class="flex flex-col min-w-40 !h-10 max-w-64">
+<div class="flex w-full flex-1 items-stretch rounded-lg h-full">
+<div class="text-[#4d6599] flex border-none bg-[#e7ebf3] dark:bg-gray-800 items-center justify-center pl-4 rounded-l-lg">
+<span class="material-symbols-outlined text-sm">search</span>
+</div>
+<input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#0e121b] dark:text-white focus:outline-0 focus:ring-0 border-none bg-[#e7ebf3] dark:bg-gray-800 focus:border-none h-full placeholder:text-[#4d6599] px-4 rounded-l-none pl-2 text-base font-normal leading-normal" placeholder="Search saved jobs..." value=""/>
+</div>
+</label>
+</div>
+<div class="flex flex-1 justify-end gap-8">
+<div class="flex items-center gap-9">
+<a class="text-[#0e121b] dark:text-gray-300 text-sm font-medium leading-normal" href="#">Dashboard</a>
+<a class="text-primary text-sm font-bold leading-normal" href="#">Jobs</a>
+<a class="text-[#0e121b] dark:text-gray-300 text-sm font-medium leading-normal" href="#">Resumes</a>
+<a class="text-[#0e121b] dark:text-gray-300 text-sm font-medium leading-normal" href="#">Settings</a>
+</div>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-primary/20" data-alt="User profile avatar" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB4zorm5E13ad3ij4GFVxJp0c8fbiGigtp9YuzW7U4v83obMrF2eS-3UW6-adHPZXQV5bvZwT5cquvsDuGUjUXBMgWAbOfLOq3099OjRlLQxeH18LIgLh9UcmvPtRfISgkQ9U2acGuc_M4Dzg6sNj9W7HOyegxBA9bes7ULKn0yOxZ4pLbrfKquG_aJ-LsrnMy5CmB2EQNxWefxFMSoOTQQzujsmeza-vBvqj8oxH-UtB5NYi8UUgSQLmhgwrm_t0NUmbTlLSLG_p4");'></div>
+</div>
+</header>
+<div class="flex flex-1 w-full max-w-[1440px] mx-auto">
+<!-- Sidebar Navigation -->
+<aside class="w-64 border-r border-[#e7ebf3] dark:border-gray-800 p-6 flex flex-col gap-6 bg-white dark:bg-background-dark hidden lg:flex">
+<div class="flex flex-col gap-1">
+<h1 class="text-[#0e121b] dark:text-white text-base font-bold leading-normal">Campaigns</h1>
+<p class="text-[#4d6599] text-xs font-normal leading-normal">Organize your applications</p>
+</div>
+<nav class="flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-[#4d6599] hover:bg-[#e7ebf3] dark:hover:bg-gray-800" href="#">
+<span class="material-symbols-outlined text-[20px]">work</span>
+<p class="text-sm font-medium leading-normal">All Jobs</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-primary/10 text-primary" href="#">
+<span class="material-symbols-outlined text-[20px]">folder_open</span>
+<p class="text-sm font-bold leading-normal">2025 Tech Roles</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-[#4d6599] hover:bg-[#e7ebf3] dark:hover:bg-gray-800" href="#">
+<span class="material-symbols-outlined text-[20px]">brush</span>
+<p class="text-sm font-medium leading-normal">Design Leads</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-[#4d6599] hover:bg-[#e7ebf3] dark:hover:bg-gray-800" href="#">
+<span class="material-symbols-outlined text-[20px]">public</span>
+<p class="text-sm font-medium leading-normal">Remote Product</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-[#4d6599] hover:bg-[#e7ebf3] dark:hover:bg-gray-800" href="#">
+<span class="material-symbols-outlined text-[20px]">archive</span>
+<p class="text-sm font-medium leading-normal">Archive</p>
+</a>
+</nav>
+<button class="flex items-center justify-center gap-2 rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold mt-auto">
+<span class="material-symbols-outlined text-sm">add</span>
+<span class="truncate">New List</span>
+</button>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col bg-background-light dark:bg-background-dark min-h-screen">
+<!-- Page Heading -->
+<div class="flex flex-wrap justify-between items-end gap-3 p-8">
+<div class="flex min-w-72 flex-col gap-2">
+<p class="text-[#0e121b] dark:text-white text-4xl font-black leading-tight tracking-[-0.033em]">2025 Tech Roles</p>
+<p class="text-[#4d6599] dark:text-gray-400 text-base font-normal leading-normal">12 saved job descriptions from Chrome Extension</p>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center justify-center rounded-lg h-10 px-4 bg-white dark:bg-gray-800 text-[#0e121b] dark:text-white border border-[#e7ebf3] dark:border-gray-700 text-sm font-bold shadow-sm">
+<span class="truncate">Add Job Manually</span>
+</button>
+</div>
+</div>
+<!-- Filters/Chips -->
+<div class="flex gap-3 px-8 pb-4 flex-wrap">
+<div class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-primary text-white pl-4 pr-4">
+<p class="text-xs font-bold leading-normal">All Jobs</p>
+</div>
+<div class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-white dark:bg-gray-800 border border-[#e7ebf3] dark:border-gray-700 pl-4 pr-4">
+<p class="text-[#0e121b] dark:text-white text-xs font-medium leading-normal">Matching &gt; 90%</p>
+</div>
+<div class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-white dark:bg-gray-800 border border-[#e7ebf3] dark:border-gray-700 pl-4 pr-4">
+<p class="text-[#0e121b] dark:text-white text-xs font-medium leading-normal">Recently Added</p>
+</div>
+<div class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-white dark:bg-gray-800 border border-[#e7ebf3] dark:border-gray-700 pl-4 pr-4">
+<p class="text-[#0e121b] dark:text-white text-xs font-medium leading-normal">Needs Tailoring</p>
+</div>
+</div>
+<!-- Job Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 p-8">
+<!-- Card 1 -->
+<div class="flex flex-col gap-4 p-5 bg-white dark:bg-gray-800 rounded-xl border border-[#e7ebf3] dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start">
+<div class="size-14 bg-[#f8f9fc] dark:bg-gray-900 rounded-lg flex items-center justify-center border border-[#e7ebf3] dark:border-gray-700 overflow-hidden" data-alt="Company Logo Placeholder">
+<span class="material-symbols-outlined text-gray-400">corporate_fare</span>
+</div>
+<div class="flex h-6 items-center justify-center rounded-full bg-green-100 text-green-700 px-3">
+<p class="text-[10px] font-bold uppercase tracking-wider">New</p>
+</div>
+</div>
+<div>
+<p class="text-[#0e121b] dark:text-white text-lg font-bold leading-tight">Senior UX Designer</p>
+<p class="text-[#4d6599] dark:text-gray-400 text-sm font-medium">Google</p>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-xs font-bold text-primary bg-primary/10 px-2 py-1 rounded">Match Score: 95%</span>
+</div>
+<button class="w-full flex items-center justify-center gap-2 rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold shadow-sm hover:bg-primary/90">
+<span class="material-symbols-outlined text-sm">magic_button</span>
+<span class="truncate">Generate Tailored Resume</span>
+</button>
+</div>
+<!-- Card 2 -->
+<div class="flex flex-col gap-4 p-5 bg-white dark:bg-gray-800 rounded-xl border border-[#e7ebf3] dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start">
+<div class="size-14 bg-[#f8f9fc] dark:bg-gray-900 rounded-lg flex items-center justify-center border border-[#e7ebf3] dark:border-gray-700 overflow-hidden" data-alt="Company Logo Placeholder">
+<span class="material-symbols-outlined text-gray-400">corporate_fare</span>
+</div>
+<div class="flex h-6 items-center justify-center rounded-full bg-blue-100 text-blue-700 px-3">
+<p class="text-[10px] font-bold uppercase tracking-wider">Tailoring</p>
+</div>
+</div>
+<div>
+<p class="text-[#0e121b] dark:text-white text-lg font-bold leading-tight">Product Manager</p>
+<p class="text-[#4d6599] dark:text-gray-400 text-sm font-medium">Meta</p>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-xs font-bold text-primary bg-primary/10 px-2 py-1 rounded">Match Score: 88%</span>
+</div>
+<button class="w-full flex items-center justify-center gap-2 rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold shadow-sm hover:bg-primary/90">
+<span class="material-symbols-outlined text-sm">magic_button</span>
+<span class="truncate">Generate Tailored Resume</span>
+</button>
+</div>
+<!-- Card 3 -->
+<div class="flex flex-col gap-4 p-5 bg-white dark:bg-gray-800 rounded-xl border border-[#e7ebf3] dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start">
+<div class="size-14 bg-[#f8f9fc] dark:bg-gray-900 rounded-lg flex items-center justify-center border border-[#e7ebf3] dark:border-gray-700 overflow-hidden" data-alt="Company Logo Placeholder">
+<span class="material-symbols-outlined text-gray-400">corporate_fare</span>
+</div>
+<div class="flex h-6 items-center justify-center rounded-full bg-green-100 text-green-700 px-3">
+<p class="text-[10px] font-bold uppercase tracking-wider">New</p>
+</div>
+</div>
+<div>
+<p class="text-[#0e121b] dark:text-white text-lg font-bold leading-tight">Staff Engineer</p>
+<p class="text-[#4d6599] dark:text-gray-400 text-sm font-medium">Stripe</p>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-xs font-bold text-primary bg-primary/10 px-2 py-1 rounded">Match Score: 92%</span>
+</div>
+<button class="w-full flex items-center justify-center gap-2 rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold shadow-sm hover:bg-primary/90">
+<span class="material-symbols-outlined text-sm">magic_button</span>
+<span class="truncate">Generate Tailored Resume</span>
+</button>
+</div>
+<!-- Card 4 -->
+<div class="flex flex-col gap-4 p-5 bg-white dark:bg-gray-800 rounded-xl border border-[#e7ebf3] dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start">
+<div class="size-14 bg-[#f8f9fc] dark:bg-gray-900 rounded-lg flex items-center justify-center border border-[#e7ebf3] dark:border-gray-700 overflow-hidden" data-alt="Company Logo Placeholder">
+<span class="material-symbols-outlined text-gray-400">corporate_fare</span>
+</div>
+<div class="flex h-6 items-center justify-center rounded-full bg-blue-100 text-blue-700 px-3">
+<p class="text-[10px] font-bold uppercase tracking-wider">Tailoring</p>
+</div>
+</div>
+<div>
+<p class="text-[#0e121b] dark:text-white text-lg font-bold leading-tight">Growth Lead</p>
+<p class="text-[#4d6599] dark:text-gray-400 text-sm font-medium">Airbnb</p>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-xs font-bold text-primary bg-primary/10 px-2 py-1 rounded">Match Score: 84%</span>
+</div>
+<button class="w-full flex items-center justify-center gap-2 rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold shadow-sm hover:bg-primary/90">
+<span class="material-symbols-outlined text-sm">magic_button</span>
+<span class="truncate">Generate Tailored Resume</span>
+</button>
+</div>
+<!-- Card 5 -->
+<div class="flex flex-col gap-4 p-5 bg-white dark:bg-gray-800 rounded-xl border border-[#e7ebf3] dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start">
+<div class="size-14 bg-[#f8f9fc] dark:bg-gray-900 rounded-lg flex items-center justify-center border border-[#e7ebf3] dark:border-gray-700 overflow-hidden" data-alt="Company Logo Placeholder">
+<span class="material-symbols-outlined text-gray-400">corporate_fare</span>
+</div>
+<div class="flex h-6 items-center justify-center rounded-full bg-green-100 text-green-700 px-3">
+<p class="text-[10px] font-bold uppercase tracking-wider">New</p>
+</div>
+</div>
+<div>
+<p class="text-[#0e121b] dark:text-white text-lg font-bold leading-tight">Engineering Manager</p>
+<p class="text-[#4d6599] dark:text-gray-400 text-sm font-medium">Netflix</p>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-xs font-bold text-primary bg-primary/10 px-2 py-1 rounded">Match Score: 91%</span>
+</div>
+<button class="w-full flex items-center justify-center gap-2 rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold shadow-sm hover:bg-primary/90">
+<span class="material-symbols-outlined text-sm">magic_button</span>
+<span class="truncate">Generate Tailored Resume</span>
+</button>
+</div>
+<!-- Card 6 -->
+<div class="flex flex-col gap-4 p-5 bg-white dark:bg-gray-800 rounded-xl border border-[#e7ebf3] dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start">
+<div class="size-14 bg-[#f8f9fc] dark:bg-gray-900 rounded-lg flex items-center justify-center border border-[#e7ebf3] dark:border-gray-700 overflow-hidden" data-alt="Company Logo Placeholder">
+<span class="material-symbols-outlined text-gray-400">corporate_fare</span>
+</div>
+<div class="flex h-6 items-center justify-center rounded-full bg-blue-100 text-blue-700 px-3">
+<p class="text-[10px] font-bold uppercase tracking-wider">Tailoring</p>
+</div>
+</div>
+<div>
+<p class="text-[#0e121b] dark:text-white text-lg font-bold leading-tight">Data Scientist</p>
+<p class="text-[#4d6599] dark:text-gray-400 text-sm font-medium">OpenAI</p>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-xs font-bold text-primary bg-primary/10 px-2 py-1 rounded">Match Score: 96%</span>
+</div>
+<button class="w-full flex items-center justify-center gap-2 rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold shadow-sm hover:bg-primary/90">
+<span class="material-symbols-outlined text-sm">magic_button</span>
+<span class="truncate">Generate Tailored Resume</span>
+</button>
+</div>
+</div>
+</main>
+</div>
+</div>
+</body></html>

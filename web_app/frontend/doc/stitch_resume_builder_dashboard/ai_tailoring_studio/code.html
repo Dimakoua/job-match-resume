@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Resume Tailoring Studio</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2463eb",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#111621",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-[#0e121b] dark:text-white min-h-screen flex flex-col font-display">
+<!-- TopNavBar -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-[#e7ebf3] dark:border-white/10 bg-white dark:bg-background-dark px-6 py-3 sticky top-0 z-50">
+<div class="flex items-center gap-4">
+<div class="size-8 bg-primary rounded-lg flex items-center justify-center text-white">
+<span class="material-symbols-outlined">auto_fix_high</span>
+</div>
+<h2 class="text-lg font-bold leading-tight tracking-tight">ResumeTailor</h2>
+</div>
+<div class="flex flex-1 justify-end gap-6 items-center">
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Dashboard</a>
+<a class="text-sm font-medium hover:text-primary transition-colors text-primary" href="#">Jobs</a>
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Resumes</a>
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Settings</a>
+</nav>
+<div class="h-6 w-[1px] bg-[#e7ebf3] dark:bg-white/10"></div>
+<button class="flex min-w-[100px] cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold shadow-sm hover:bg-primary/90 transition-all">
+<span>Save Draft</span>
+</button>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border border-[#e7ebf3] dark:border-white/10" data-alt="User profile avatar photo" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBHISnmmpRp6fKv1NtoIzFr_e_bRgNEn2hCS7Rs7EroV1mWIOIvCqSAfH-3RnccDQ4JAlwlSjK4cUd9uidHSHYEpjNeHhgx4ZeFzjJHQbKrvrfvQkoHncrnr9rKn9qMkIIXoAig_ij0t0HhJgC9PrIu0h3t6XckwyaoueFidmxm-nK36OcKVsEI1qbEcEeJWETw2Z6juHL4RaSUTrrjXbU71-rWDsUHCdge3xPW1qjRwrocNQUfWLTTNr8KPQykHlnxVbPquW8DwoU");'></div>
+</div>
+</header>
+<main class="flex-1 flex flex-col overflow-hidden">
+<!-- Breadcrumbs & Headline -->
+<div class="px-6 py-4 flex flex-col gap-2">
+<div class="flex flex-wrap items-center gap-2">
+<a class="text-[#4d6599] dark:text-gray-400 text-sm font-medium hover:underline" href="#">Jobs</a>
+<span class="material-symbols-outlined text-xs text-[#4d6599]">chevron_right</span>
+<span class="text-sm font-medium">Apple - Senior Product Designer</span>
+</div>
+<div class="flex justify-between items-end">
+<h1 class="text-2xl font-bold tracking-tight">AI Resume Tailoring Studio</h1>
+<div class="flex items-center gap-4">
+<div class="flex flex-col items-end">
+<span class="text-xs font-semibold text-[#4d6599] uppercase tracking-wider">ATS Match Score</span>
+<div class="flex items-center gap-2">
+<div class="w-32 h-2 bg-[#e7ebf3] dark:bg-white/10 rounded-full overflow-hidden">
+<div class="bg-green-500 h-full w-[85%]"></div>
+</div>
+<span class="text-lg font-bold text-green-500">85%</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Layout Container: SideNav + Split View -->
+<div class="flex flex-1 px-6 pb-6 gap-6 overflow-hidden">
+<!-- SideNavBar -->
+<aside class="w-64 flex flex-col gap-6 bg-white dark:bg-background-dark/50 border border-[#e7ebf3] dark:border-white/10 rounded-xl p-4 shrink-0">
+<div class="flex flex-col">
+<h3 class="text-base font-bold">Project Apple</h3>
+<p class="text-[#4d6599] dark:text-gray-400 text-xs">Cupertino, CA (Remote)</p>
+</div>
+<div class="flex flex-col gap-1">
+<button class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined text-xl">work</span>
+<p class="text-sm font-medium">Job Details</p>
+</button>
+<button class="flex items-center gap-3 px-3 py-2 rounded-lg bg-primary/10 text-primary transition-colors">
+<span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1">description</span>
+<p class="text-sm font-medium">Resume Editor</p>
+</button>
+<button class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined text-xl">auto_fix_high</span>
+<p class="text-sm font-medium">AI Suggestions</p>
+</button>
+<button class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined text-xl">analytics</span>
+<p class="text-sm font-medium">ATS Analysis</p>
+</button>
+</div>
+<div class="mt-auto p-4 bg-primary/5 rounded-lg border border-primary/20">
+<p class="text-xs font-bold text-primary uppercase mb-2">Pro Tip</p>
+<p class="text-xs leading-relaxed text-[#4d6599] dark:text-gray-300">Highlighting keywords like "User Research" and "Figma" can boost your score by 12%.</p>
+</div>
+</aside>
+<!-- Main Content Area -->
+<div class="flex-1 flex flex-col gap-6 overflow-hidden">
+<!-- ActionPanel (AI Link) -->
+<div class="flex flex-col md:flex-row items-center justify-between gap-4 rounded-xl border border-primary/30 bg-white dark:bg-background-dark/50 p-4 shadow-sm">
+<div class="flex items-center gap-4">
+<div class="p-2 bg-primary/10 rounded-lg text-primary">
+<span class="material-symbols-outlined">link</span>
+</div>
+<div class="flex flex-col">
+<p class="text-sm font-bold">Application Connection</p>
+<p class="text-xs text-[#4d6599] dark:text-gray-400">Current Stage: <span class="text-primary font-semibold">Interviewing</span></p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div class="flex -space-x-2">
+<div class="size-8 rounded-full border-2 border-white dark:border-background-dark bg-gray-200 flex items-center justify-center text-[10px] font-bold">JD</div>
+<div class="size-8 rounded-full border-2 border-white dark:border-background-dark bg-primary flex items-center justify-center text-[10px] font-bold text-white">CV</div>
+</div>
+<button class="flex items-center gap-2 cursor-pointer rounded-lg h-9 px-4 bg-primary text-white text-sm font-medium hover:bg-primary/90 shadow-md transition-all">
+<span>Link to this Resume</span>
+</button>
+</div>
+</div>
+<!-- Split Screen View -->
+<div class="flex-1 flex gap-6 overflow-hidden">
+<!-- Left Side: Job Description -->
+<div class="flex-1 bg-white dark:bg-background-dark/50 border border-[#e7ebf3] dark:border-white/10 rounded-xl flex flex-col overflow-hidden">
+<div class="p-4 border-b border-[#e7ebf3] dark:border-white/10 flex justify-between items-center bg-gray-50/50 dark:bg-white/5">
+<h3 class="text-sm font-bold flex items-center gap-2">
+<span class="material-symbols-outlined text-lg">description</span>
+                                Job Description
+                            </h3>
+<span class="text-[10px] font-bold px-2 py-1 bg-yellow-100 text-yellow-800 rounded uppercase">8 Keywords Found</span>
+</div>
+<div class="p-6 overflow-y-auto no-scrollbar prose prose-sm dark:prose-invert">
+<h4 class="font-bold text-base mb-2">Role Overview</h4>
+<p class="mb-4">We are looking for a <span class="bg-yellow-200 dark:bg-yellow-500/30 px-1 rounded">Senior Product Designer</span> to join our team in Cupertino. You will be responsible for leading the design of our next-generation ecosystem products.</p>
+<h4 class="font-bold text-base mb-2">Requirements</h4>
+<ul class="space-y-2 list-disc pl-4">
+<li>5+ years of experience in <span class="bg-yellow-200 dark:bg-yellow-500/30 px-1 rounded">UX/UI Design</span>.</li>
+<li>Expertise in <span class="bg-yellow-200 dark:bg-yellow-500/30 px-1 rounded">Figma</span> and Adobe Creative Suite.</li>
+<li>Strong understanding of <span class="bg-yellow-200 dark:bg-yellow-500/30 px-1 rounded">Design Systems</span>.</li>
+<li>Proven track record of <span class="bg-yellow-200 dark:bg-yellow-500/30 px-1 rounded">Cross-functional Collaboration</span>.</li>
+<li>Experience with <span class="bg-yellow-200 dark:bg-yellow-500/30 px-1 rounded">User Research</span> and testing methodologies.</li>
+<li>Ability to translate <span class="bg-yellow-200 dark:bg-yellow-500/30 px-1 rounded">Business Requirements</span> into intuitive interfaces.</li>
+<li>Excellent <span class="bg-yellow-200 dark:bg-yellow-500/30 px-1 rounded">Stakeholder Management</span> skills.</li>
+</ul>
+</div>
+</div>
+<!-- Right Side: Resume Editor -->
+<div class="flex-1 bg-white dark:bg-background-dark/50 border border-[#e7ebf3] dark:border-white/10 rounded-xl flex flex-col overflow-hidden shadow-2xl">
+<div class="p-4 border-b border-[#e7ebf3] dark:border-white/10 flex justify-between items-center bg-white dark:bg-background-dark">
+<div class="flex items-center gap-3">
+<h3 class="text-sm font-bold flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined text-lg">edit_note</span>
+                                    Resume Editor
+                                </h3>
+<span class="text-[10px] text-[#4d6599] italic">Draft v2.4</span>
+</div>
+<div class="flex gap-2">
+<button class="p-1 hover:bg-gray-100 dark:hover:bg-white/10 rounded"><span class="material-symbols-outlined text-lg">undo</span></button>
+<button class="p-1 hover:bg-gray-100 dark:hover:bg-white/10 rounded"><span class="material-symbols-outlined text-lg">redo</span></button>
+<button class="p-1 hover:bg-gray-100 dark:hover:bg-white/10 rounded"><span class="material-symbols-outlined text-lg">download</span></button>
+</div>
+</div>
+<div class="p-8 overflow-y-auto no-scrollbar bg-gray-50 dark:bg-background-dark/30">
+<!-- Resume Content Simulation -->
+<div class="bg-white dark:bg-background-dark p-10 shadow-lg min-h-[800px] border border-gray-100 dark:border-white/5">
+<div class="text-center mb-8">
+<h2 class="text-2xl font-bold uppercase tracking-widest border-b-2 border-primary pb-2 inline-block">Alex Rivera</h2>
+<div class="text-xs text-gray-500 mt-2">alex.rivera@design.com | +1 (555) 012-3456 | linkedin.com/in/alexrivera</div>
+</div>
+<div class="mb-6">
+<h4 class="text-xs font-bold text-primary uppercase mb-2 border-b border-gray-100 dark:border-white/5 pb-1">Professional Summary</h4>
+<p class="text-xs text-gray-700 dark:text-gray-300 leading-relaxed italic">
+                                        Innovative <span class="bg-primary/10 border-b border-primary text-primary px-1">Senior Product Designer</span> with 6 years of experience. Expert in building scalable <span class="bg-primary/10 border-b border-primary text-primary px-1">Design Systems</span> and conducting <span class="bg-primary/10 border-b border-primary text-primary px-1">User Research</span> to drive product excellence at scale.
+                                    </p>
+</div>
+<div class="mb-6">
+<h4 class="text-xs font-bold text-primary uppercase mb-2 border-b border-gray-100 dark:border-white/5 pb-1">Experience</h4>
+<div class="mb-4">
+<div class="flex justify-between items-baseline">
+<span class="text-sm font-bold">Lead Designer | TechFlow Inc.</span>
+<span class="text-[10px] text-gray-500 uppercase">2020 – Present</span>
+</div>
+<ul class="mt-2 space-y-1 list-disc pl-4 text-xs text-gray-700 dark:text-gray-300">
+<li>Directed <span class="bg-primary/10 border-b border-primary text-primary px-1">Cross-functional Collaboration</span> efforts between engineering and marketing.</li>
+<li>Utilized <span class="bg-primary/10 border-b border-primary text-primary px-1">Figma</span> to develop a comprehensive mobile UI kit.</li>
+<li>Integrated <span class="bg-primary/10 border-b border-primary text-primary px-1">Business Requirements</span> into user-centric product roadmaps.</li>
+</ul>
+</div>
+<div>
+<div class="flex justify-between items-baseline">
+<span class="text-sm font-bold">UX Designer | Creative Pulse</span>
+<span class="text-[10px] text-gray-500 uppercase">2017 – 2020</span>
+</div>
+<ul class="mt-2 space-y-1 list-disc pl-4 text-xs text-gray-700 dark:text-gray-300">
+<li>Pioneered <span class="bg-primary/10 border-b border-primary text-primary px-1">UX/UI Design</span> improvements resulting in 20% growth.</li>
+<li>Managed <span class="bg-primary/10 border-b border-primary text-primary px-1">Stakeholder Management</span> for enterprise-level clients.</li>
+</ul>
+</div>
+</div>
+<div>
+<h4 class="text-xs font-bold text-primary uppercase mb-2 border-b border-gray-100 dark:border-white/5 pb-1">Skills</h4>
+<div class="flex flex-wrap gap-2">
+<span class="text-[10px] bg-gray-100 dark:bg-white/5 px-2 py-1 rounded">Interaction Design</span>
+<span class="text-[10px] bg-gray-100 dark:bg-white/5 px-2 py-1 rounded">Prototyping</span>
+<span class="text-[10px] bg-primary/10 text-primary px-2 py-1 rounded font-bold">Figma</span>
+<span class="text-[10px] bg-primary/10 text-primary px-2 py-1 rounded font-bold">User Research</span>
+<span class="text-[10px] bg-gray-100 dark:bg-white/5 px-2 py-1 rounded">Agile</span>
+</div>
+</div>
+</div>
+</div>
+<div class="p-3 bg-primary text-white text-[10px] font-medium flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm">bolt</span>
+                            AI Tailoring Active: Auto-suggesting keyword placement
+                        </div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

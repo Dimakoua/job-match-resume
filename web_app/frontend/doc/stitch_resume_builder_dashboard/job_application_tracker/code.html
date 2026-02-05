@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Job Application Status Tracker</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2463eb",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#111621",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen">
+<div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<!-- Top Navigation Bar -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-10 py-3">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-4 text-primary">
+<div class="size-6 flex items-center justify-center">
+<span class="material-symbols-outlined text-3xl">work_history</span>
+</div>
+<h2 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">JobTrack</h2>
+</div>
+<label class="flex flex-col min-w-40 !h-10 max-w-64">
+<div class="flex w-full flex-1 items-stretch rounded-lg h-full">
+<div class="text-slate-500 flex border-none bg-slate-100 dark:bg-slate-800 items-center justify-center pl-4 rounded-l-lg border-r-0">
+<span class="material-symbols-outlined text-xl">search</span>
+</div>
+<input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-900 dark:text-white focus:outline-0 focus:ring-0 border-none bg-slate-100 dark:bg-slate-800 focus:border-none h-full placeholder:text-slate-500 px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal" placeholder="Search applications..." value=""/>
+</div>
+</label>
+</div>
+<div class="flex flex-1 justify-end gap-8">
+<div class="flex items-center gap-9">
+<a class="text-slate-700 dark:text-slate-300 text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Dashboard</a>
+<a class="text-primary text-sm font-semibold leading-normal" href="#">Applications</a>
+<a class="text-slate-700 dark:text-slate-300 text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Resumes</a>
+<a class="text-slate-700 dark:text-slate-300 text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Network</a>
+</div>
+<div class="flex gap-2">
+<button class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-2.5 hover:bg-slate-200 dark:hover:bg-slate-700">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-2.5 hover:bg-slate-200 dark:hover:bg-slate-700">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-slate-200 dark:border-slate-700" data-alt="Professional user profile picture" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC2EtUt68RN7xpHHmFcTu820x69jB--Jsq3u4CNhN62IdqUenbhewNnUE5ojmp3txSbuknSETVXA1kVtDCQqGE3RB5VYHz_BKAonCra0MKWR0kBHytubV5q3zQHbUgWX83ehALKigVdKN9p5znuZ9UO8LGMxNPiWLNPLX6oIviZzozmDgE3d7inHROO9rEahSE1cd-RjezVmSx6rUSqQ44egIL9wEWS4bxhd3VHSqiraEBn8ewZMTIOwXJaSLdkdtIS5njPGAqpwGk");'></div>
+</div>
+</header>
+<main class="flex-1 overflow-y-auto">
+<div class="max-w-[1200px] mx-auto px-6 py-8">
+<!-- Breadcrumbs -->
+<div class="flex flex-wrap gap-2 mb-4">
+<a class="text-slate-500 dark:text-slate-400 text-sm font-medium leading-normal flex items-center gap-1 hover:text-primary" href="#">
+<span class="material-symbols-outlined text-sm">arrow_back</span>
+                            Applications
+                        </a>
+<span class="text-slate-400 text-sm font-medium leading-normal">/</span>
+<span class="text-slate-900 dark:text-white text-sm font-medium leading-normal">Senior Designer at Google</span>
+</div>
+<!-- Page Heading -->
+<div class="flex flex-wrap justify-between items-end gap-3 mb-8">
+<div class="flex min-w-72 flex-col gap-2">
+<h1 class="text-slate-900 dark:text-white text-4xl font-black leading-tight tracking-[-0.033em]">Senior Designer at Google</h1>
+<div class="flex items-center gap-2 text-slate-500 dark:text-slate-400 text-base font-normal">
+<span class="material-symbols-outlined text-lg">location_on</span>
+<p>Mountain View, CA (Remote) • Applied on Oct 12, 2023</p>
+</div>
+</div>
+<div class="flex gap-3">
+<button class="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-11 px-4 bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white text-sm font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-all">
+<span class="material-symbols-outlined mr-2 text-lg">edit</span>
+<span class="truncate">Edit Details</span>
+</button>
+<button class="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-11 px-6 bg-primary text-white text-sm font-bold hover:bg-blue-700 shadow-lg shadow-primary/20 transition-all">
+<span class="truncate">Update Status</span>
+</button>
+</div>
+</div>
+<!-- Application Pipeline Tracker -->
+<div class="bg-white dark:bg-slate-900 rounded-xl p-8 border border-slate-200 dark:border-slate-800 mb-8 shadow-sm">
+<h2 class="text-slate-900 dark:text-white text-lg font-bold mb-8">Application Pipeline</h2>
+<div class="relative flex justify-between">
+<!-- Progress Line Background -->
+<div class="absolute top-[18px] left-0 w-full h-1 bg-slate-100 dark:bg-slate-800 z-0"></div>
+<!-- Active Progress Line -->
+<div class="absolute top-[18px] left-0 w-[60%] h-1 bg-primary z-0"></div>
+<!-- Stage 1: Saved -->
+<div class="relative z-10 flex flex-col items-center group w-32">
+<div class="size-9 rounded-full bg-primary text-white flex items-center justify-center mb-3">
+<span class="material-symbols-outlined text-xl">check</span>
+</div>
+<p class="text-sm font-bold text-slate-900 dark:text-white">Saved</p>
+<p class="text-xs text-slate-500">Oct 10</p>
+</div>
+<!-- Stage 2: Resume Tailored -->
+<div class="relative z-10 flex flex-col items-center group w-32">
+<div class="size-9 rounded-full bg-primary text-white flex items-center justify-center mb-3">
+<span class="material-symbols-outlined text-xl">check</span>
+</div>
+<p class="text-sm font-bold text-slate-900 dark:text-white text-center">Resume Tailored</p>
+<p class="text-xs text-slate-500">Oct 11</p>
+</div>
+<!-- Stage 3: Applied -->
+<div class="relative z-10 flex flex-col items-center group w-32">
+<div class="size-9 rounded-full bg-primary text-white flex items-center justify-center mb-3">
+<span class="material-symbols-outlined text-xl">check</span>
+</div>
+<p class="text-sm font-bold text-slate-900 dark:text-white">Applied</p>
+<p class="text-xs text-slate-500">Oct 12</p>
+</div>
+<!-- Stage 4: Interviewing -->
+<div class="relative z-10 flex flex-col items-center group w-32">
+<div class="size-9 rounded-full bg-white dark:bg-slate-900 border-4 border-primary text-primary flex items-center justify-center mb-3 ring-8 ring-primary/10">
+<span class="material-symbols-outlined text-xl">pending</span>
+</div>
+<p class="text-sm font-bold text-primary">Interviewing</p>
+<p class="text-xs text-primary font-medium">In Progress</p>
+</div>
+<!-- Stage 5: Offer -->
+<div class="relative z-10 flex flex-col items-center group w-32">
+<div class="size-9 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-400 flex items-center justify-center mb-3">
+<span class="material-symbols-outlined text-xl">workspace_premium</span>
+</div>
+<p class="text-sm font-medium text-slate-500">Offer</p>
+<p class="text-xs text-slate-400">Upcoming</p>
+</div>
+<!-- Stage 6: Hired/Declined -->
+<div class="relative z-10 flex flex-col items-center group w-32">
+<div class="size-9 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-400 flex items-center justify-center mb-3">
+<span class="material-symbols-outlined text-xl">flag</span>
+</div>
+<p class="text-sm font-medium text-slate-500 text-center">Hired / Declined</p>
+<p class="text-xs text-slate-400">TBD</p>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<!-- Left Column: Details & Assets -->
+<div class="lg:col-span-2 space-y-8">
+<!-- Application Notes -->
+<div class="bg-white dark:bg-slate-900 rounded-xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm">
+<div class="flex justify-between items-center mb-4">
+<h3 class="text-slate-900 dark:text-white text-lg font-bold flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">notes</span>
+                                        Application Notes
+                                    </h3>
+<button class="text-primary text-sm font-bold hover:underline">Add Note</button>
+</div>
+<div class="space-y-4">
+<div class="p-4 bg-background-light dark:bg-slate-800/50 rounded-lg border border-slate-100 dark:border-slate-800">
+<p class="text-slate-700 dark:text-slate-300 text-sm leading-relaxed italic">
+                                            "Spoke with Sarah (HR) about the role. They are looking for someone with strong experience in design systems and multi-modal interfaces. Emphasized my work on the recent Spark design system during the initial screening."
+                                        </p>
+<p class="text-xs text-slate-500 mt-2">Oct 14, 2023 • 2:30 PM</p>
+</div>
+<div class="p-4 bg-background-light dark:bg-slate-800/50 rounded-lg border border-slate-100 dark:border-slate-800">
+<p class="text-slate-700 dark:text-slate-300 text-sm leading-relaxed">
+                                            Follow-up: Prepare portfolio presentation focusing on case studies for the internal tools project. Review Google's Material 3 guidelines.
+                                        </p>
+<p class="text-xs text-slate-500 mt-2">Oct 15, 2023 • 9:15 AM</p>
+</div>
+</div>
+</div>
+<!-- Interaction History -->
+<div class="bg-white dark:bg-slate-900 rounded-xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm">
+<h3 class="text-slate-900 dark:text-white text-lg font-bold mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">history</span>
+                                    Interaction History
+                                </h3>
+<div class="space-y-0">
+<!-- Interaction 1 -->
+<div class="flex gap-4 group">
+<div class="flex flex-col items-center">
+<div class="size-10 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-xl">call</span>
+</div>
+<div class="w-px h-full bg-slate-100 dark:bg-slate-800 my-1"></div>
+</div>
+<div class="pb-8">
+<p class="text-slate-900 dark:text-white font-semibold">Initial Screening Call</p>
+<p class="text-slate-500 dark:text-slate-400 text-sm">With Sarah Miller, Recruitment Lead</p>
+<p class="text-xs text-slate-400 mt-1">Oct 14, 2023 • 45 mins</p>
+</div>
+</div>
+<!-- Interaction 2 -->
+<div class="flex gap-4 group">
+<div class="flex flex-col items-center">
+<div class="size-10 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-xl">mail</span>
+</div>
+<div class="w-px h-full bg-slate-100 dark:bg-slate-800 my-1"></div>
+</div>
+<div class="pb-8">
+<p class="text-slate-900 dark:text-white font-semibold">Invitation to Onsite Interviews</p>
+<p class="text-slate-500 dark:text-slate-400 text-sm">Scheduled 4 rounds of interviews for next week.</p>
+<p class="text-xs text-slate-400 mt-1">Oct 13, 2023 • 11:20 AM</p>
+</div>
+</div>
+<!-- Interaction 3 -->
+<div class="flex gap-4 group">
+<div class="flex flex-col items-center">
+<div class="size-10 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-xl">description</span>
+</div>
+</div>
+<div class="pb-4">
+<p class="text-slate-900 dark:text-white font-semibold">Application Submitted</p>
+<p class="text-slate-500 dark:text-slate-400 text-sm">Via Greenhouse portal</p>
+<p class="text-xs text-slate-400 mt-1">Oct 12, 2023 • 4:30 PM</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Sidebar -->
+<div class="space-y-8">
+<!-- Assets -->
+<div class="bg-white dark:bg-slate-900 rounded-xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm">
+<h3 class="text-slate-900 dark:text-white text-base font-bold mb-4">Application Assets</h3>
+<div class="space-y-3">
+<a class="flex items-center p-3 rounded-lg border border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group" href="#">
+<span class="material-symbols-outlined text-primary mr-3">picture_as_pdf</span>
+<div class="flex-1 min-w-0">
+<p class="text-sm font-semibold text-slate-900 dark:text-white truncate">Resume_SeniorDesigner_Google.pdf</p>
+<p class="text-xs text-slate-500">Version 4.2 • Tailored</p>
+</div>
+<span class="material-symbols-outlined text-slate-400 group-hover:text-primary text-lg">open_in_new</span>
+</a>
+<a class="flex items-center p-3 rounded-lg border border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group" href="#">
+<span class="material-symbols-outlined text-primary mr-3">description</span>
+<div class="flex-1 min-w-0">
+<p class="text-sm font-semibold text-slate-900 dark:text-white truncate">CoverLetter_Google.docx</p>
+<p class="text-xs text-slate-500">Customized for UX team</p>
+</div>
+<span class="material-symbols-outlined text-slate-400 group-hover:text-primary text-lg">download</span>
+</a>
+<a class="flex items-center p-3 rounded-lg border border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group" href="#">
+<span class="material-symbols-outlined text-primary mr-3">link</span>
+<div class="flex-1 min-w-0">
+<p class="text-sm font-semibold text-slate-900 dark:text-white truncate">Case Study: Spark System</p>
+<p class="text-xs text-slate-500">Portfolio Link</p>
+</div>
+<span class="material-symbols-outlined text-slate-400 group-hover:text-primary text-lg">link</span>
+</a>
+</div>
+</div>
+<!-- Company Info Card -->
+<div class="bg-primary/5 dark:bg-primary/10 rounded-xl p-6 border border-primary/10 shadow-sm">
+<div class="flex items-center gap-4 mb-4">
+<div class="size-12 rounded-lg bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm">
+<img alt="Google Logo" class="size-8 object-contain" data-alt="Google Company Logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCgyrF1V34FEIVQK089zZKajZ3V-Ac8UWxPnlQvz463njFvpuFbvJ09hycOxDH1I0LcmMMHY9AHTRe_Uh0laAgBExeIwTM47SrS-hnDYAtyEtBV19zbJ-jyuIZteOowh42KQWNG3LYaLnt4QKEzqQuDtFqeNoPKgdc8NShByv0VQokGQN8d6JYnyAkcca9HyFUvKsHJGn3_r5z-In70KX7B6SB0C5lj2i-E3wPTKVfis5UrgaRZN7hBRchx8WwIzDEhHzrafvu6l9U"/>
+</div>
+<div>
+<h3 class="text-slate-900 dark:text-white font-bold">Google</h3>
+<p class="text-xs text-primary font-semibold">Technology • Mountain View</p>
+</div>
+</div>
+<div class="space-y-3 pt-3 border-t border-primary/10">
+<div class="flex justify-between text-sm">
+<span class="text-slate-500 dark:text-slate-400">Recruiter</span>
+<span class="text-slate-900 dark:text-white font-medium">Sarah Miller</span>
+</div>
+<div class="flex justify-between text-sm">
+<span class="text-slate-500 dark:text-slate-400">Salary Range</span>
+<span class="text-slate-900 dark:text-white font-medium">$180k - $240k</span>
+</div>
+<div class="flex justify-between text-sm">
+<span class="text-slate-500 dark:text-slate-400">Job Type</span>
+<span class="text-slate-900 dark:text-white font-medium">Full-time</span>
+</div>
+</div>
+<button class="w-full mt-6 py-2 bg-white dark:bg-slate-800 text-primary border border-primary/20 rounded-lg text-sm font-bold hover:bg-primary hover:text-white transition-all">
+                                    View Company Page
+                                </button>
+</div>
+<!-- Reminders -->
+<div class="bg-emerald-50 dark:bg-emerald-900/10 rounded-xl p-6 border border-emerald-100 dark:border-emerald-900/20 shadow-sm">
+<h3 class="text-emerald-900 dark:text-emerald-400 text-sm font-bold mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-emerald-600">alarm</span>
+                                    Upcoming Tasks
+                                </h3>
+<ul class="space-y-3">
+<li class="flex gap-3">
+<div class="size-5 rounded border border-emerald-300 dark:border-emerald-700 bg-white dark:bg-slate-800 flex-shrink-0 mt-0.5"></div>
+<div>
+<p class="text-sm font-medium text-slate-800 dark:text-slate-200">Prep for Portfolio Review</p>
+<p class="text-xs text-emerald-600 font-semibold">Due Tomorrow</p>
+</div>
+</li>
+<li class="flex gap-3">
+<div class="size-5 rounded border border-emerald-300 dark:border-emerald-700 bg-white dark:bg-slate-800 flex-shrink-0 mt-0.5"></div>
+<div>
+<p class="text-sm font-medium text-slate-800 dark:text-slate-200">Send thank-you note to Sarah</p>
+<p class="text-xs text-slate-500">In 2 days</p>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</div>
+</body></html>
