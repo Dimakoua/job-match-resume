@@ -99,72 +99,231 @@
               </div>
             </div>
           </div>
-          <!-- Split Screen View -->
-          <div class="flex-1 flex gap-6 overflow-hidden">
-            <!-- Left Side: Job Description -->
-            <div class="flex-1 bg-white dark:bg-background-dark/50 border border-[#e7ebf3] dark:border-white/10 rounded-xl flex flex-col overflow-hidden">
+          <!-- Dynamic Content Area Based on Active Section -->
+          <div class="flex-1 overflow-hidden">
+            <!-- Job Details Section -->
+            <div v-if="activeSection === 'details'" class="bg-white dark:bg-background-dark/50 border border-[#e7ebf3] dark:border-white/10 rounded-xl flex flex-col overflow-hidden">
               <div class="p-4 border-b border-[#e7ebf3] dark:border-white/10 flex justify-between items-center bg-gray-50/50 dark:bg-white/5">
                 <h3 class="text-sm font-bold flex items-center gap-2">
-                  <span class="material-symbols-outlined text-lg">description</span>
-                  Job Description
+                  <span class="material-symbols-outlined text-lg">work</span>
+                  Job Details
                 </h3>
-                <span v-if="jobKeywords.length > 0" class="text-[10px] font-bold px-2 py-1 bg-yellow-100 text-yellow-800 rounded uppercase">{{ jobKeywords.length }} Keywords Found</span>
-              </div>
-              <div class="p-6 overflow-y-auto prose prose-sm dark:prose-invert max-w-none">
-                <p v-if="isLoadingJob" class="text-gray-400">Loading job description...</p>
-                <p v-else-if="job?.jobDescription" class="whitespace-pre-wrap text-sm text-gray-700 dark:text-gray-300">{{ job.jobDescription }}</p>
-                <p v-else class="text-gray-400">No job description available</p>
-              </div>
-            </div>
-            <!-- Right Side: Resume Editor -->
-            <div class="flex-1 bg-white dark:bg-background-dark/50 border border-[#e7ebf3] dark:border-white/10 rounded-xl flex flex-col overflow-hidden shadow-2xl">
-              <div class="p-4 border-b border-[#e7ebf3] dark:border-white/10 flex justify-between items-center bg-white dark:bg-background-dark">
-                <div class="flex items-center gap-3">
-                  <h3 class="text-sm font-bold flex items-center gap-2 text-primary">
-                    <span class="material-symbols-outlined text-lg">edit_note</span>
-                    Resume Editor
-                  </h3>
-                  <span v-if="resume?.title" class="text-[10px] text-[#4d6599] italic">{{ resume.title }}</span>
-                </div>
-                <div class="flex gap-2">
-                  <button class="p-1 hover:bg-gray-100 dark:hover:bg-white/10 rounded"><span class="material-symbols-outlined text-lg">undo</span></button>
-                  <button class="p-1 hover:bg-gray-100 dark:hover:bg-white/10 rounded"><span class="material-symbols-outlined text-lg">redo</span></button>
-                  <button class="p-1 hover:bg-gray-100 dark:hover:bg-white/10 rounded"><span class="material-symbols-outlined text-lg">download</span></button>
+                <div class="flex items-center gap-2">
+                  <span class="text-[10px] font-bold px-2 py-1 bg-blue-100 text-blue-800 rounded uppercase">Details</span>
+                  <span v-if="jobKeywords.length > 0" class="text-[10px] font-bold px-2 py-1 bg-yellow-100 text-yellow-800 rounded uppercase">{{ jobKeywords.length }} Keywords</span>
                 </div>
               </div>
-              <div class="p-8 overflow-y-auto bg-gray-50 dark:bg-background-dark/30 flex-1">
-                <!-- Resume Content -->
-                <div v-if="isLoadingResume" class="flex items-center justify-center h-full">
-                  <p class="text-gray-400">Loading resume...</p>
-                </div>
-                <div v-else-if="resume" class="bg-white dark:bg-background-dark p-10 shadow-lg border border-gray-100 dark:border-white/5">
-                  <div class="text-center mb-8">
-                    <h2 class="text-2xl font-bold uppercase tracking-widest">{{ resume.title || 'Resume' }}</h2>
+              <div class="p-6 overflow-y-auto">
+                <div v-if="isLoadingJob" class="flex items-center justify-center h-64">
+                  <div class="text-center">
+                    <div class="animate-spin mb-4"><span class="material-symbols-outlined text-4xl text-gray-400">hourglass_empty</span></div>
+                    <p class="text-gray-400">Loading job details...</p>
                   </div>
-                  <div v-if="displaySections && displaySections.length > 0" class="space-y-6">
-                    <div v-for="(section, idx) in displaySections" :key="idx" class="mb-6">
-                      <h4 class="text-xs font-bold text-primary uppercase mb-2 border-b border-gray-100 dark:border-white/5 pb-1">{{ section.title }}</h4>
-                      <p class="text-xs text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">{{ section.content }}</p>
+                </div>
+                <div v-else-if="job" class="space-y-6">
+                  <!-- Job Header -->
+                  <div class="border-b border-gray-100 dark:border-white/10 pb-6">
+                    <div class="flex items-start justify-between mb-4">
+                      <div>
+                        <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">{{ job.position }}</h1>
+                        <p class="text-lg text-gray-600 dark:text-gray-300 mb-1">{{ job.company }}</p>
+                        <div class="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
+                          <span v-if="job.location" class="flex items-center gap-1">
+                            <span class="material-symbols-outlined text-sm">location_on</span>
+                            {{ job.location }}
+                          </span>
+                          <span v-if="job.salary" class="flex items-center gap-1">
+                            <span class="material-symbols-outlined text-sm">attach_money</span>
+                            {{ job.salary }}
+                          </span>
+                          <span v-if="job.jobType" class="flex items-center gap-1">
+                            <span class="material-symbols-outlined text-sm">work</span>
+                            {{ job.jobType }}
+                          </span>
+                        </div>
+                      </div>
+                      <div class="text-right">
+                        <span :class="['inline-flex items-center px-3 py-1 rounded-full text-xs font-medium', getStatusBadgeClass(job.status)]">
+                          {{ job.status || 'pending' }}
+                        </span>
+                        <p v-if="job.appliedDate" class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                          Applied {{ formatDate(job.appliedDate) }}
+                        </p>
+                      </div>
                     </div>
                   </div>
-                  <div v-else class="text-center py-8 text-gray-400">
-                    <p>No resume sections available. Generate a tailored resume to see content here.</p>
+
+                  <!-- Job Description -->
+                  <div>
+                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                      <span class="material-symbols-outlined text-lg">description</span>
+                      Job Description
+                    </h2>
+                    <div class="bg-gray-50 dark:bg-background-dark/50 rounded-lg p-4">
+                      <p v-if="job.jobDescription" class="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">
+                        {{ job.jobDescription }}
+                      </p>
+                      <p v-else class="text-gray-400 italic">No job description available</p>
+                    </div>
+                  </div>
+
+                  <!-- Requirements & Skills -->
+                  <div v-if="job.requirements || jobKeywords.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div v-if="job.requirements">
+                      <h3 class="text-md font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-lg">checklist</span>
+                        Requirements
+                      </h3>
+                      <div class="bg-gray-50 dark:bg-background-dark/50 rounded-lg p-4">
+                        <p class="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{{ job.requirements }}</p>
+                      </div>
+                    </div>
+
+                    <div v-if="jobKeywords.length > 0">
+                      <h3 class="text-md font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-lg">lightbulb</span>
+                        Key Skills & Keywords
+                      </h3>
+                      <div class="bg-gray-50 dark:bg-background-dark/50 rounded-lg p-4">
+                        <div class="flex flex-wrap gap-2">
+                          <span v-for="keyword in jobKeywords" :key="keyword"
+                            class="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-primary/10 text-primary border border-primary/20">
+                            {{ keyword }}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Application Notes -->
+                  <div v-if="job.notes">
+                    <h3 class="text-md font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                      <span class="material-symbols-outlined text-lg">note</span>
+                      Application Notes
+                    </h3>
+                    <div class="bg-gray-50 dark:bg-background-dark/50 rounded-lg p-4">
+                      <p class="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{{ job.notes }}</p>
+                    </div>
+                  </div>
+
+                  <!-- Contact Information -->
+                  <div v-if="job.contactName || job.contactEmail || job.contactPhone">
+                    <h3 class="text-md font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                      <span class="material-symbols-outlined text-lg">contact_mail</span>
+                      Contact Information
+                    </h3>
+                    <div class="bg-gray-50 dark:bg-background-dark/50 rounded-lg p-4">
+                      <div class="space-y-2 text-sm">
+                        <p v-if="job.contactName" class="flex items-center gap-2">
+                          <span class="material-symbols-outlined text-sm text-gray-500">person</span>
+                          <span class="text-gray-700 dark:text-gray-300">{{ job.contactName }}</span>
+                        </p>
+                        <p v-if="job.contactEmail" class="flex items-center gap-2">
+                          <span class="material-symbols-outlined text-sm text-gray-500">email</span>
+                          <a :href="`mailto:${job.contactEmail}`" class="text-primary hover:underline">{{ job.contactEmail }}</a>
+                        </p>
+                        <p v-if="job.contactPhone" class="flex items-center gap-2">
+                          <span class="material-symbols-outlined text-sm text-gray-500">phone</span>
+                          <a :href="`tel:${job.contactPhone}`" class="text-primary hover:underline">{{ job.contactPhone }}</a>
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <div v-else class="flex items-center justify-center h-full">
+                <div v-else class="flex items-center justify-center h-64">
                   <div class="text-center">
-                    <p class="text-gray-400 mb-4">No resume linked to this application</p>
-                    <button @click="handleGenerateClick" v-if="!isGenerating"
-                      class="flex items-center gap-2 rounded-lg h-10 px-4 bg-primary text-white text-sm font-semibold mx-auto">
-                      <span class="material-symbols-outlined">auto_awesome</span>
-                      Create Resume
-                    </button>
+                    <span class="material-symbols-outlined text-6xl text-gray-300 mb-4">work_off</span>
+                    <p class="text-gray-400">No job details available</p>
                   </div>
                 </div>
               </div>
-              <div v-if="isGenerating || isCalculatingAts" class="p-3 bg-primary text-white text-[10px] font-medium flex items-center justify-center gap-2 animate-pulse">
-                <span class="material-symbols-outlined text-sm">bolt</span>
-                AI Tailoring Active: Processing your resume...
+            </div>
+
+            <!-- Editor Section (Split View) -->
+            <div v-if="activeSection === 'editor'" class="flex gap-6 overflow-hidden">
+              <!-- Left Side: Job Description -->
+              <div class="flex-1 bg-white dark:bg-background-dark/50 border border-[#e7ebf3] dark:border-white/10 rounded-xl flex flex-col overflow-hidden">
+                <div class="p-4 border-b border-[#e7ebf3] dark:border-white/10 flex justify-between items-center bg-gray-50/50 dark:bg-white/5">
+                  <h3 class="text-sm font-bold flex items-center gap-2">
+                    <span class="material-symbols-outlined text-lg">description</span>
+                    Job Description
+                  </h3>
+                  <span v-if="jobKeywords.length > 0" class="text-[10px] font-bold px-2 py-1 bg-yellow-100 text-yellow-800 rounded uppercase">{{ jobKeywords.length }} Keywords Found</span>
+                </div>
+                <div class="p-6 overflow-y-auto prose prose-sm dark:prose-invert max-w-none">
+                  <p v-if="isLoadingJob" class="text-gray-400">Loading job description...</p>
+                  <p v-else-if="job?.jobDescription" class="whitespace-pre-wrap text-sm text-gray-700 dark:text-gray-300">{{ job.jobDescription }}</p>
+                  <p v-else class="text-gray-400">No job description available</p>
+                </div>
+              </div>
+              <!-- Right Side: Resume Editor -->
+              <div class="flex-1 bg-white dark:bg-background-dark/50 border border-[#e7ebf3] dark:border-white/10 rounded-xl flex flex-col overflow-hidden shadow-2xl">
+                <div class="p-4 border-b border-[#e7ebf3] dark:border-white/10 flex justify-between items-center bg-white dark:bg-background-dark">
+                  <div class="flex items-center gap-3">
+                    <h3 class="text-sm font-bold flex items-center gap-2 text-primary">
+                      <span class="material-symbols-outlined text-lg">edit_note</span>
+                      Resume Editor
+                    </h3>
+                    <span v-if="resume?.title" class="text-[10px] text-[#4d6599] italic">{{ resume.title }}</span>
+                  </div>
+                  <div class="flex gap-2">
+                    <button class="p-1 hover:bg-gray-100 dark:hover:bg-white/10 rounded"><span class="material-symbols-outlined text-lg">undo</span></button>
+                    <button class="p-1 hover:bg-gray-100 dark:hover:bg-white/10 rounded"><span class="material-symbols-outlined text-lg">redo</span></button>
+                    <button class="p-1 hover:bg-gray-100 dark:hover:bg-white/10 rounded"><span class="material-symbols-outlined text-lg">download</span></button>
+                  </div>
+                </div>
+                <div class="p-8 overflow-y-auto bg-gray-50 dark:bg-background-dark/30 flex-1">
+                  <!-- Resume Content -->
+                  <div v-if="isLoadingResume" class="flex items-center justify-center h-full">
+                    <p class="text-gray-400">Loading resume...</p>
+                  </div>
+                  <div v-else-if="resume" class="bg-white dark:bg-background-dark p-10 shadow-lg border border-gray-100 dark:border-white/5">
+                    <div class="text-center mb-8">
+                      <h2 class="text-2xl font-bold uppercase tracking-widest">{{ resume.title || 'Resume' }}</h2>
+                    </div>
+                    <div v-if="displaySections && displaySections.length > 0" class="space-y-6">
+                      <div v-for="(section, idx) in displaySections" :key="idx" class="mb-6">
+                        <h4 class="text-xs font-bold text-primary uppercase mb-2 border-b border-gray-100 dark:border-white/5 pb-1">{{ section.title }}</h4>
+                        <p class="text-xs text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">{{ section.content }}</p>
+                      </div>
+                    </div>
+                    <div v-else class="text-center py-8 text-gray-400">
+                      <p>No resume sections available. Generate a tailored resume to see content here.</p>
+                    </div>
+                  </div>
+                  <div v-else class="flex items-center justify-center h-full">
+                    <div class="text-center">
+                      <p class="text-gray-400 mb-4">No resume linked to this application</p>
+                      <button @click="handleGenerateClick" v-if="!isGenerating"
+                        class="flex items-center gap-2 rounded-lg h-10 px-4 bg-primary text-white text-sm font-semibold mx-auto">
+                        <span class="material-symbols-outlined">auto_awesome</span>
+                        Create Resume
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div v-if="isGenerating || isCalculatingAts" class="p-3 bg-primary text-white text-[10px] font-medium flex items-center justify-center gap-2 animate-pulse">
+                  <span class="material-symbols-outlined text-sm">bolt</span>
+                  AI Tailoring Active: Processing your resume...
+                </div>
+              </div>
+            </div>
+
+            <!-- Suggestions Section -->
+            <div v-if="activeSection === 'suggestions'" class="bg-white dark:bg-background-dark/50 border border-[#e7ebf3] dark:border-white/10 rounded-xl flex flex-col overflow-hidden">
+              <div class="p-4 border-b border-[#e7ebf3] dark:border-white/10 flex justify-between items-center bg-gray-50/50 dark:bg-white/5">
+                <h3 class="text-sm font-bold flex items-center gap-2">
+                  <span class="material-symbols-outlined text-lg">lightbulb</span>
+                  AI Suggestions
+                </h3>
+                <span class="text-[10px] font-bold px-2 py-1 bg-green-100 text-green-800 rounded uppercase">AI Powered</span>
+              </div>
+              <div class="p-6 overflow-y-auto">
+                <div class="text-center py-12">
+                  <span class="material-symbols-outlined text-6xl text-gray-300 mb-4">lightbulb</span>
+                  <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">AI Suggestions Coming Soon</h3>
+                  <p class="text-gray-500 dark:text-gray-400 text-sm">Get personalized recommendations to improve your resume match for this job.</p>
+                </div>
               </div>
             </div>
           </div>
@@ -402,6 +561,16 @@ const getStatusBadgeClass = (status) => {
     case 'rejected': return 'bg-red-50 text-red-700 border border-red-200 dark:bg-red-900/20 dark:text-red-400';
     default: return 'bg-gray-50 text-gray-700 border border-gray-200 dark:bg-gray-900/20 dark:text-gray-400';
   }
+};
+
+const formatDate = (dateString) => {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  });
 };
 </script>
 
