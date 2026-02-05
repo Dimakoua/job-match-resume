@@ -2,7 +2,7 @@
     <div class="flex h-full grow flex-col">
         <AppHeader></AppHeader>
 
-        <div class="flex flex-col max-w-[1024px] flex-1">
+        <div class="flex flex-col max-w-[1440px] flex-1">
             <div class="flex flex-1 w-full max-w-[1440px] mx-auto">
                 <!-- Sidebar Navigation -->
                 <aside
