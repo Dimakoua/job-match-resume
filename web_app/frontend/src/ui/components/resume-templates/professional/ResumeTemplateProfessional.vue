@@ -3,7 +3,7 @@
     class="bg-white shadow-2xl rounded-sm flex flex-col overflow-y-auto text-[#222] p-4"
     :style="previewStyle"
   >
-    <ResumeHeaderClassic :resume="resume" :style="style" />
+    <ResumeHeaderProfessional :resume="resume" :style="style" />
     <ResumeSections
       :resume="resume"
       :layout="layout"
@@ -15,8 +15,8 @@
 
 <script setup>
 import { computed } from 'vue'
-import ResumeHeaderClassic from './ResumeHeaderClassic.vue'
-import ResumeSections from './ResumeSections.vue'
+import ResumeHeaderProfessional from './ResumeHeaderProfessional.vue'
+import ResumeSections from '../ResumeSections.vue'
 
 const props = defineProps({
   resume: {
@@ -26,7 +26,7 @@ const props = defineProps({
   layout: {
     type: Object,
     default: () => ({
-      template: 'classic',
+      template: 'professional',
       margins: 48,
       sectionSpacing: 24
     })

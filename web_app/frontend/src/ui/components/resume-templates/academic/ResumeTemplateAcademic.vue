@@ -19,7 +19,7 @@
 
 <script setup>
 import ResumeHeaderAcademic from './ResumeHeaderAcademic.vue'
-import ResumeSections from './ResumeSections.vue'
+import ResumeSections from '../ResumeSections.vue'
 
 defineProps({
   resume: {
