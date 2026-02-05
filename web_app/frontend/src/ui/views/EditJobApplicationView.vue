@@ -224,7 +224,7 @@ const handleSubmit = async () => {
 
     console.log('Updating application with data:', applicationData);
     await updateApplication(route.params.applicationId, applicationData, application.value);
-    router.push(`/job-applications/${route.params.listId}`);
+    router.push(`/saved-jobs/${route.params.listId}`);
   } catch (err) {
     console.error('Failed to update application:', err);
     fieldErrors.value.api = err.message || 'Failed to update application. Please try again.';

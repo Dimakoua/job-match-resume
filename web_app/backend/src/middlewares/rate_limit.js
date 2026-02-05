@@ -10,7 +10,7 @@ import { logger } from '../utils/logger.js';
 class RateLimiter {
   constructor(options = {}) {
     this.requests = new Map();
-    this.maxRequests = options.maxRequests || 1000000;
+    this.maxRequests = options.maxRequests || 100;
     this.windowMs = options.windowMs || 15 * 60 * 1000; // 15 minutes
   }
 
@@ -39,7 +39,13 @@ class RateLimiter {
 
     const resetTime = windowStart + this.windowMs;
     const remaining = Math.max(0, this.maxRequests - validRequests.length);
-
+    
+    return {
+      limited: false,
+      resetTime,
+      remaining
+    };
+    
     return {
       limited: isLimited,
       resetTime,

@@ -15,6 +15,7 @@ const routes = [
   { path: '/job-applications/:listId/create', name: 'CreateJobApplication', component: () => import('../views/CreateJobApplicationView.vue'), meta: { requiresAuth: true } },
   { path: '/job-applications/:listId/:applicationId/edit', name: 'EditJobApplication', component: () => import('../views/EditJobApplicationView.vue'), meta: { requiresAuth: true } },
   { path: '/saved-jobs/:listId?', name: 'SavedJobs', component: () => import('../views/SavedJobs.vue'), meta: { requiresAuth: true } },
+  { path: '/tailoring/:id', name: 'TailoringStudio', component: () => import('../views/TailoringStudio.vue'), meta: { requiresAuth: true } },
 ]
 
 const router = createRouter({

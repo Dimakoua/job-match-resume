@@ -226,7 +226,7 @@ const handleSubmit = async () => {
 
     console.log('Creating application with data:', applicationData);
     await createApplication(applicationData);
-    router.push(`/job-applications/${route.params.listId}`);
+    router.push(`/saved-jobs/${route.params.listId}`);
   } catch (err) {
     console.error('Failed to create application:', err);
     fieldErrors.value.api = err.message || 'Failed to create application. Please try again.';
