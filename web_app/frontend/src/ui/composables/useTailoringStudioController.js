@@ -124,9 +124,48 @@ export function useTailoringStudioController(applicationIdRef) {
     return text.trim();
   });
 
+  // ATS Analysis Data
   const atsScorePercent = computed(() => {
-    if (!atsScore.value) return null;
-    return Math.min(Math.round(atsScore.value * 100), 100);
+    if (!atsScore.value?.score && typeof atsScore.value !== 'number') return null;
+    // Support both legacy (number) and new (object) formats
+    if (typeof atsScore.value === 'number') return Math.min(Math.round(atsScore.value * 100), 100);
+    return Math.min(Math.round(atsScore.value.score), 100);
+  });
+
+  const atsMatchedKeywords = computed(() => {
+    if (!atsScore.value) return [];
+    if (typeof atsScore.value === 'number') return [];
+    return atsScore.value.matchedKeywords || [];
+  });
+
+  const atsMissedKeywords = computed(() => {
+    if (!atsScore.value) return [];
+    if (typeof atsScore.value === 'number') return [];
+    return atsScore.value.missedKeywords || [];
+  });
+
+  const atsJobKeywords = computed(() => {
+    if (!atsScore.value) return [];
+    if (typeof atsScore.value === 'number') return [];
+    return atsScore.value.jobDescriptionKeywords || [];
+  });
+
+  // Sub-scores (mocked for now, can be replaced with backend values if available)
+  const atsSkillRelevance = computed(() => {
+    // Example: percent of matched keywords
+    if (!atsScore.value || typeof atsScore.value === 'number') return null;
+    const total = atsScore.value.jobDescriptionKeywords?.length || 0;
+    const matched = atsScore.value.matchedKeywords?.length || 0;
+    if (!total) return null;
+    return Math.round((matched / total) * 100);
+  });
+  const atsFormatScore = computed(() => 78); // Placeholder
+  const atsKeywordDensity = computed(() => {
+    if (!atsScore.value || typeof atsScore.value === 'number') return null;
+    const resumeCount = atsScore.value.resumeKeywordCount || 0;
+    const jobCount = atsScore.value.jobKeywordCount || 0;
+    if (!resumeCount || !jobCount) return null;
+    return Math.round((resumeCount / jobCount) * 100);
   });
 
   const displaySections = computed(() => {
@@ -568,6 +607,14 @@ Each suggestion should be:
     resumeText,
     atsScorePercent,
     displaySections,
+
+    // ATS Analysis
+    atsMatchedKeywords,
+    atsMissedKeywords,
+    atsJobKeywords,
+    atsSkillRelevance,
+    atsFormatScore,
+    atsKeywordDensity,
 
     // Methods
     loadApplication,

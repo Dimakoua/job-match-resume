@@ -432,6 +432,122 @@
                 </div>
               </div>
             </div>
+
+            <!-- ATS Analysis Section -->
+            <div v-if="activeSection === 'analysis'" class="flex flex-col gap-6 overflow-y-auto no-scrollbar pb-6">
+              <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 bg-white dark:bg-background-dark border border-[#e7ebf3] dark:border-white/10 rounded-xl p-6 shadow-sm">
+                <div class="lg:col-span-1 flex flex-col items-center justify-center border-r border-[#e7ebf3] dark:border-white/10 pr-6">
+                  <div class="relative size-32 flex items-center justify-center">
+                    <svg class="size-full" viewBox="0 0 100 100">
+                      <circle class="text-gray-100 dark:text-white/5" cx="50" cy="50" fill="transparent" r="42" stroke="currentColor" stroke-width="8"></circle>
+                      <circle class="text-success" cx="50" cy="50" fill="transparent" r="42" stroke="currentColor" :stroke-dasharray="264" :stroke-dashoffset="264 - (atsScorePercent ? atsScorePercent * 2.64 : 0)" stroke-linecap="round" stroke-width="8"></circle>
+                    </svg>
+                    <div class="absolute inset-0 flex flex-col items-center justify-center">
+                      <span class="text-3xl font-bold text-success">{{ atsScorePercent || '--' }}%</span>
+                      <span class="text-[10px] uppercase font-bold text-[#4d6599]">Match Score</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="lg:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-8 pl-2">
+                  <div class="flex flex-col justify-center">
+                    <div class="flex items-center justify-between mb-2">
+                      <span class="text-sm font-medium text-[#4d6599]">Skill Relevance</span>
+                      <span class="text-sm font-bold">{{ atsSkillRelevance || '--' }}%</span>
+                    </div>
+                    <div class="w-full h-1.5 bg-gray-100 dark:bg-white/5 rounded-full overflow-hidden">
+                      <div class="h-full bg-primary" :style="{ width: (atsSkillRelevance || 0) + '%' }"></div>
+                    </div>
+                    <p class="text-[10px] mt-2 text-[#4d6599]">Strong overlap in core competencies</p>
+                  </div>
+                  <div class="flex flex-col justify-center">
+                    <div class="flex items-center justify-between mb-2">
+                      <span class="text-sm font-medium text-[#4d6599]">Format Score</span>
+                      <span class="text-sm font-bold">{{ atsFormatScore || '--' }}%</span>
+                    </div>
+                    <div class="w-full h-1.5 bg-gray-100 dark:bg-white/5 rounded-full overflow-hidden">
+                      <div class="h-full bg-warning" :style="{ width: (atsFormatScore || 0) + '%' }"></div>
+                    </div>
+                    <p class="text-[10px] mt-2 text-[#4d6599]">Minor adjustments needed in layout</p>
+                  </div>
+                  <div class="flex flex-col justify-center">
+                    <div class="flex items-center justify-between mb-2">
+                      <span class="text-sm font-medium text-[#4d6599]">Keyword Density</span>
+                      <span class="text-sm font-bold">{{ atsKeywordDensity || '--' }}%</span>
+                    </div>
+                    <div class="w-full h-1.5 bg-gray-100 dark:bg-white/5 rounded-full overflow-hidden">
+                      <div class="h-full bg-danger" :style="{ width: (atsKeywordDensity || 0) + '%' }"></div>
+                    </div>
+                    <p class="text-[10px] mt-2 text-[#4d6599]">Lacking critical technical terms</p>
+                  </div>
+                </div>
+              </div>
+              <div class="flex flex-col bg-white dark:bg-background-dark border border-[#e7ebf3] dark:border-white/10 rounded-xl overflow-hidden shadow-sm">
+                <div class="p-4 border-b border-[#e7ebf3] dark:border-white/10 bg-gray-50/50 dark:bg-white/5 flex justify-between items-center">
+                  <h3 class="text-sm font-bold flex items-center gap-2">
+                    <span class="material-symbols-outlined text-lg">compare_arrows</span>
+                    Keyword Match Matrix
+                  </h3>
+                  <div class="flex gap-4">
+                    <div class="flex items-center gap-2">
+                      <div class="size-2 rounded-full bg-success"></div>
+                      <span class="text-[10px] font-medium">Matched</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <div class="size-2 rounded-full bg-danger"></div>
+                      <span class="text-[10px] font-medium">Missing</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="grid grid-cols-2">
+                  <div class="border-r border-[#e7ebf3] dark:border-white/10">
+                    <div class="px-6 py-3 border-b border-[#e7ebf3] dark:border-white/10 bg-gray-50/30 dark:bg-transparent">
+                      <span class="text-xs font-bold uppercase tracking-wider text-[#4d6599]">Required Keywords (Job Description)</span>
+                    </div>
+                    <div class="p-6 space-y-4">
+                      <div v-for="keyword in atsJobKeywords" :key="keyword" class="flex items-center justify-between p-3 rounded-lg border" :class="atsMatchedKeywords.includes(keyword) ? 'border-success/20 bg-success/5' : 'border-danger/20 bg-danger/5'">
+                        <span class="text-sm font-medium">{{ keyword }}</span>
+                        <span class="material-symbols-outlined" :class="atsMatchedKeywords.includes(keyword) ? 'text-success' : 'text-danger'">{{ atsMatchedKeywords.includes(keyword) ? 'check_circle' : 'cancel' }}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="px-6 py-3 border-b border-[#e7ebf3] dark:border-white/10 bg-gray-50/30 dark:bg-transparent">
+                      <span class="text-xs font-bold uppercase tracking-wider text-[#4d6599]">Your Resume Presence</span>
+                    </div>
+                    <div class="p-6 space-y-4">
+                      <div v-for="keyword in atsJobKeywords" :key="keyword + '-presence'" class="flex items-center justify-between p-3">
+                        <span class="text-sm" v-if="atsMatchedKeywords.includes(keyword)">Found in <span class="font-bold">Experience, Skills</span></span>
+                        <span class="text-sm text-danger italic" v-else>Not found in any section</span>
+                        <span class="text-xs font-bold" :class="atsMatchedKeywords.includes(keyword) ? 'text-success' : 'text-danger'">{{ atsMatchedKeywords.includes(keyword) ? '1 Occurrence' : '0 Occurrences' }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="bg-white dark:bg-background-dark border border-[#e7ebf3] dark:border-white/10 rounded-xl p-6 shadow-sm">
+                <div class="flex items-center gap-3 mb-6">
+                  <div class="p-2 bg-danger/10 text-danger rounded-lg">
+                    <span class="material-symbols-outlined">report</span>
+                  </div>
+                  <div>
+                    <h3 class="text-lg font-bold">Missing Critical Keywords</h3>
+                    <p class="text-sm text-[#4d6599]">These keywords have a high weighting in the JD and are missing from your resume.</p>
+                  </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div v-for="keyword in atsMissedKeywords" :key="keyword + '-missed'" class="p-4 rounded-xl border border-dashed border-[#e7ebf3] dark:border-white/10 flex items-center justify-between hover:border-primary/50 transition-colors cursor-pointer group">
+                    <div class="flex flex-col">
+                      <span class="text-sm font-bold group-hover:text-primary transition-colors">{{ keyword }}</span>
+                      <span class="text-[10px] text-[#4d6599]">Weight: Medium</span>
+                    </div>
+                    <button class="flex items-center gap-1 text-[10px] font-bold text-primary px-3 py-1.5 bg-primary/5 rounded-full">
+                      <span class="material-symbols-outlined text-sm">add</span>
+                      Auto-insert
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -610,6 +726,14 @@ const {
   userResumes,
   isLoadingResumes,
   showLinkResumeModal,
+
+  // ATS Analysis
+  atsMatchedKeywords,
+  atsMissedKeywords,
+  atsJobKeywords,
+  atsSkillRelevance,
+  atsFormatScore,
+  atsKeywordDensity,
 
   // AI Suggestions
   suggestions,
