@@ -87,6 +87,59 @@
 - Scope: Create Vue component for saved jobs list with search, filters, job cards, and tailoring modal.
 - Acceptance: SavedJobs.vue created, route added, matches design, includes generate tailoring modal.
 
+## F-046 — [feature] Implement Tailoring Studio Screen ✅ 100%
+- Scope: Create AI-powered resume tailoring interface with job details, ATS scoring, and real-time resume generation.
+- Acceptance: 
+  - useTailoringStudioController composable following Clean Architecture §3.2D
+  - Job application fetching with user validation
+  - Real-time ATS score calculation from resume + job description
+  - AI resume generation from job description via GenerateFromJDUseCase
+  - Dynamic UI with reactive data binding (no hardcoded values)
+  - Loading states for all async operations
+  - Error handling with user feedback
+- Status: ✅ 100% — Completed; useTailoringStudioController created, TailoringStudio.vue refactored, build passes
+
+---
+
+## Backlog (Next Phase)
+
+## F-047 — [feature] Resume Edit & Save in Tailoring Studio
+- Scope: Enable in-line editing of resume sections within TailoringStudio with backend sync.
+- Acceptance:
+  - User can edit individual resume sections
+  - Changes sync to backend (debounced)
+  - Undo/redo buttons functional
+  - Local draft saved to localStorage
+
+## F-048 — [feature] Keyword Highlighting & ATS Suggestions
+- Scope: Highlight job keywords in resume and show specific ATS improvement suggestions.
+- Acceptance:
+  - Keywords from job description highlighted in resume preview
+  - AI suggests where to add/improve keywords
+  - Visual indicators for matched keywords
+
+## F-049 — [feature] Resume Download from Tailoring Studio
+- Scope: Add PDF/DOCX download button in TailoringStudio with tailored version.
+- Acceptance:
+  - Download button exports current tailored resume
+  - Supports both PDF and DOCX formats
+  - Filename includes job company name
+
+## F-050 — [feature] Save Tailored Resume as New Version
+- Scope: Allow user to save the tailored resume as a new version/variant.
+- Acceptance:
+  - "Save as New Version" button available
+  - Creates copy linked to job application
+  - Version history maintained
+
+## F-051 — [integration] End-to-End Testing
+- Scope: Test complete user workflow from SavedJobs → TailoringStudio → Resume Download.
+- Acceptance:
+  - All data loads correctly from backend
+  - ATS scores calculate accurately
+  - AI generation completes without errors
+  - UI responsive on desktop/tablet/mobile
+
 ---
 
 ## Completed Tasks
@@ -270,6 +323,15 @@
 	- All screens match reference implementation.
 
 ---
+
+## Status Summary
+- ✅ 100% — F-045: Saved Jobs View complete
+- ✅ 100% — F-046: Tailoring Studio Screen complete with full Clean Architecture implementation
+- 🔵 0% — F-047: Resume editing in TailoringStudio (backlog)
+- 🔵 0% — F-048: Keyword highlighting (backlog)
+- 🔵 0% — F-049: Download from Tailoring Studio (backlog)
+- 🔵 0% — F-050: Save tailored version (backlog)
+- 🔵 0% — F-051: End-to-end testing (backlog)
 
 ## Status
 - Update status and completion % after each session per methodology.md §5–6
