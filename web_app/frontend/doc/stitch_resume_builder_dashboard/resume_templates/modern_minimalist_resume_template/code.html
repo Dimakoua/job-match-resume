@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Modern Minimalist Resume Template</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2463eb",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#111621",
+                        "slate": {
+                            "900": "#0f172a",
+                            "600": "#475569",
+                            "500": "#64748b",
+                            "200": "#e2e8f0",
+                            "50": "#f8fafc"
+                        }
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .resume-container {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        }
+        .section-divider {
+            height: 1px;
+            background: linear-gradient(to right, #2463eb 0%, #e2e8f0 100%);
+        }
+        .bullet-point::before {
+            content: "";
+            display: inline-block;
+            width: 4px;
+            height: 4px;
+            background-color: #2463eb;
+            border-radius: 50%;
+            margin-right: 12px;
+            margin-bottom: 2px;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 transition-colors duration-200">
+<div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<!-- Navigation Header -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-6 lg:px-40 py-3 sticky top-0 z-50">
+<div class="flex items-center gap-4 text-slate-900 dark:text-white">
+<div class="text-primary">
+<span class="material-symbols-outlined text-3xl">description</span>
+</div>
+<h2 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">AI Resume Builder</h2>
+</div>
+<div class="flex flex-1 justify-end gap-8">
+<nav class="hidden md:flex items-center gap-9">
+<a class="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-primary" href="#">Templates</a>
+<a class="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-primary" href="#">My Resumes</a>
+<a class="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-primary" href="#">Resources</a>
+</nav>
+<div class="flex gap-2">
+<button class="flex min-w-[120px] cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold transition-all hover:bg-blue-700">
+<span class="material-symbols-outlined mr-2 text-sm">download</span>
+<span>Download PDF</span>
+</button>
+<button class="flex min-w-[84px] cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white text-sm font-bold hover:bg-slate-200">
+<span>Save</span>
+</button>
+</div>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border border-slate-200" data-alt="User profile placeholder" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDxLPFl9jeM5Y7puHkhHyyooTAik0ImKsYKP-VSGqtuedQa4Eo31j33THcNrZ7UOPgXkgPBu3XOTXByrbqUiNy3jm-gsvlnjAqfTZJCy19PsqHbmOTew3Z7BDDQa4hJOvLBBokQXQW0JHpokxuQo7ROAFsc34MnH4MZDenuF6clL4i7ziEPwfV52gExWK52XsTb8rVTMBgx_NMLk6giTOfwzorLzrCGmCpbsnGgweF8HXZK38cxzkL_VDTPHLURW7yo4y0RUiacUCE");'></div>
+</div>
+</header>
+<main class="flex-1 flex flex-col items-center py-10 px-4">
+<!-- Breadcrumbs -->
+<div class="flex w-full max-w-[850px] gap-2 mb-6">
+<a class="text-slate-500 text-sm font-medium" href="#">Dashboard</a>
+<span class="text-slate-300 text-sm font-medium">/</span>
+<a class="text-slate-500 text-sm font-medium" href="#">Templates</a>
+<span class="text-slate-300 text-sm font-medium">/</span>
+<span class="text-primary text-sm font-medium">Modern Minimalist</span>
+</div>
+<!-- Resume Canvas -->
+<div class="resume-container w-full max-w-[850px] bg-white dark:bg-slate-900 p-12 lg:p-20 rounded-lg min-h-[1100px] border border-slate-200 dark:border-slate-800">
+<!-- Resume Header -->
+<div class="flex flex-col items-center text-center mb-16">
+<h1 class="text-4xl font-bold text-slate-900 dark:text-white mb-4 tracking-tight">ALEX RIVERS</h1>
+<div class="flex flex-wrap justify-center items-center gap-3 text-slate-500 dark:text-slate-400 text-sm font-medium uppercase tracking-widest">
+<span>San Francisco, CA</span>
+<span class="text-primary">•</span>
+<span>+1 (555) 012-3456</span>
+<span class="text-primary">•</span>
+<span>alex.rivers@email.com</span>
+<span class="text-primary">•</span>
+<span>linkedin.com/in/alexrivers</span>
+</div>
+</div>
+<!-- Professional Summary -->
+<div class="mb-12">
+<h3 class="text-primary text-xs font-bold tracking-[0.2em] mb-2">PROFESSIONAL SUMMARY</h3>
+<div class="section-divider mb-6 opacity-30"></div>
+<p class="text-slate-600 dark:text-slate-300 leading-relaxed text-base">
+                        Senior Product Designer with 8+ years of experience in crafting user-centric digital experiences. Specialist in AI-driven interfaces and design systems. Proven track record of leading cross-functional teams to deliver high-impact products that balance aesthetic excellence with measurable business results.
+                    </p>
+</div>
+<!-- Experience -->
+<div class="mb-12">
+<h3 class="text-primary text-xs font-bold tracking-[0.2em] mb-2">EXPERIENCE</h3>
+<div class="section-divider mb-8 opacity-30"></div>
+<div class="space-y-10">
+<!-- Job 1 -->
+<div>
+<div class="flex justify-between items-baseline mb-1">
+<h4 class="text-lg font-bold text-slate-900 dark:text-white">Senior Product Designer</h4>
+<span class="text-slate-500 text-sm font-medium italic">Jan 2021 – Present</span>
+</div>
+<p class="text-primary font-semibold text-sm mb-4">Innovate Tech</p>
+<ul class="space-y-3">
+<li class="bullet-point text-slate-600 dark:text-slate-300 text-sm leading-relaxed">Led the design system team to improve cross-functional efficiency by 40% through atomic design principles.</li>
+<li class="bullet-point text-slate-600 dark:text-slate-300 text-sm leading-relaxed">Designed and launched 3 core AI features which increased user retention by 25% within the first quarter.</li>
+<li class="bullet-point text-slate-600 dark:text-slate-300 text-sm leading-relaxed">Mentored 4 junior designers and established new collaborative workflows between engineering and design.</li>
+</ul>
+</div>
+<!-- Job 2 -->
+<div>
+<div class="flex justify-between items-baseline mb-1">
+<h4 class="text-lg font-bold text-slate-900 dark:text-white">UX Designer</h4>
+<span class="text-slate-500 text-sm font-medium italic">Mar 2018 – Dec 2020</span>
+</div>
+<p class="text-primary font-semibold text-sm mb-4">CloudScale Solutions</p>
+<ul class="space-y-3">
+<li class="bullet-point text-slate-600 dark:text-slate-300 text-sm leading-relaxed">Redesigned the flagship SaaS dashboard, resulting in a 15% reduction in customer support tickets.</li>
+<li class="bullet-point text-slate-600 dark:text-slate-300 text-sm leading-relaxed">Conducted 50+ user research sessions to identify pain points in the onboarding flow.</li>
+<li class="bullet-point text-slate-600 dark:text-slate-300 text-sm leading-relaxed">Collaborated closely with PMs to define product roadmaps based on qualitative user data.</li>
+</ul>
+</div>
+</div>
+</div>
+<!-- Education -->
+<div class="mb-12">
+<h3 class="text-primary text-xs font-bold tracking-[0.2em] mb-2">EDUCATION</h3>
+<div class="section-divider mb-8 opacity-30"></div>
+<div class="flex justify-between items-baseline">
+<div>
+<h4 class="text-lg font-bold text-slate-900 dark:text-white">BFA in Interaction Design</h4>
+<p class="text-slate-600 dark:text-slate-300 font-medium">California College of the Arts</p>
+</div>
+<span class="text-slate-500 text-sm font-medium italic">2014 – 2018</span>
+</div>
+</div>
+<!-- Skills -->
+<div class="mb-12">
+<h3 class="text-primary text-xs font-bold tracking-[0.2em] mb-2">SKILLS</h3>
+<div class="section-divider mb-6 opacity-30"></div>
+<div class="flex flex-wrap gap-2">
+<span class="px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-medium rounded-lg">Product Strategy</span>
+<span class="px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-medium rounded-lg">UI/UX Design</span>
+<span class="px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-medium rounded-lg">Design Systems</span>
+<span class="px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-medium rounded-lg">User Research</span>
+<span class="px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-medium rounded-lg">Figma &amp; FigJam</span>
+<span class="px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-medium rounded-lg">Prototyping</span>
+<span class="px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-medium rounded-lg">HTML/CSS</span>
+<span class="px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-medium rounded-lg">AI Integration</span>
+</div>
+</div>
+<!-- Footer / Final Touches -->
+<div class="mt-20 text-center opacity-20 hover:opacity-100 transition-opacity">
+<p class="text-[10px] text-slate-400 uppercase tracking-widest">Built with AI Resume Builder • 2024</p>
+</div>
+</div>
+</main>
+</div>
+</div>
+</body></html>

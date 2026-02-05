@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Modern Executive Template</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2463eb",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#111621",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen">
+<div class="layout-container flex h-full grow flex-col">
+<!-- Top Navigation Bar -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-10 py-3 sticky top-0 z-50">
+<div class="flex items-center gap-4 text-primary">
+<div class="size-6">
+<svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_6_330)">
+<path clip-rule="evenodd" d="M24 0.757355L47.2426 24L24 47.2426L0.757355 24L24 0.757355ZM21 35.7574V12.2426L9.24264 24L21 35.7574Z" fill="currentColor" fill-rule="evenodd"></path>
+</g>
+<defs>
+<clippath id="clip0_6_330"><rect fill="white" height="48" width="48"></rect></clippath>
+</defs>
+</svg>
+</div>
+<h2 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-tight">AI Resume Builder</h2>
+</div>
+<div class="flex flex-1 justify-end gap-8">
+<div class="flex items-center gap-9">
+<a class="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors" href="#">Templates</a>
+<a class="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors" href="#">My Resumes</a>
+<a class="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors" href="#">Tips</a>
+</div>
+<div class="flex gap-2">
+<button class="flex min-w-[120px] cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold tracking-tight hover:bg-blue-700 transition-colors">
+<span class="material-symbols-outlined mr-2 text-sm">download</span>
+<span class="truncate">Download PDF</span>
+</button>
+<button class="flex min-w-[84px] cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white text-sm font-bold tracking-tight hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+<span class="truncate">Save</span>
+</button>
+</div>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border border-slate-200 dark:border-slate-700" data-alt="User profile avatar placeholder" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDsCdUuzY76BEiIXe5mvRUMZTaFVJ3LgTY97yZeLvQEKsxvhwd89ar8IGHJdGZ-9hfEL0L9qgtDEne5Vbi84wUjxObzJpT5uBleh5O9mu7X6JYe8Jg8edW4u0KOQLPNkyJiKr9sna46-enWVFM_L7dR1CoBADUjCl488GYaHVqkRSNViD_IVYUBX9J4rLCobn56Sla2HfWwYH_A5Y0ZMoG1D1b0MdtsCQ53i_UiKsYu5B5iQhiEd0tCXGNFLmiVX8Lxa5HC28HHF0Q");'></div>
+</div>
+</header>
+<!-- Resume Content Area -->
+<main class="flex-1 flex justify-center py-10 px-4">
+<div class="bg-white dark:bg-slate-900 w-full max-w-[850px] shadow-xl min-h-[1100px] p-12 flex flex-col gap-8 rounded-lg border border-slate-200 dark:border-slate-800">
+<!-- Header Section -->
+<header class="flex flex-col gap-4">
+<div class="flex justify-between items-start">
+<div class="flex flex-col gap-1">
+<h1 class="text-slate-900 dark:text-white text-4xl font-extrabold tracking-tight">Alex Sterling</h1>
+<p class="text-primary text-xl font-semibold">Senior Product Strategy Manager</p>
+</div>
+<div class="flex flex-col items-end gap-1 text-sm text-slate-600 dark:text-slate-400">
+<div class="flex items-center gap-2">
+<span>New York, NY</span>
+<span class="material-symbols-outlined text-primary text-base">location_on</span>
+</div>
+<div class="flex items-center gap-2">
+<a class="hover:text-primary transition-colors" href="mailto:alex.sterling@email.com">alex.sterling@email.com</a>
+<span class="material-symbols-outlined text-primary text-base">mail</span>
+</div>
+<div class="flex items-center gap-2">
+<a class="hover:text-primary transition-colors" href="#">linkedin.com/in/alexsterling</a>
+<span class="material-symbols-outlined text-primary text-base">link</span>
+</div>
+</div>
+</div>
+<div class="h-px w-full bg-slate-200 dark:bg-slate-800 mt-4"></div>
+</header>
+<!-- Professional Summary -->
+<section class="flex flex-col gap-3">
+<h2 class="text-slate-900 dark:text-white text-lg font-bold uppercase tracking-widest flex items-center gap-2">
+                    Professional Summary
+                </h2>
+<p class="text-slate-700 dark:text-slate-300 text-base leading-relaxed">
+                    Dynamic Executive with 12+ years of experience leading cross-functional teams to deliver high-impact AI solutions. Proven track record in scaling product operations and driving multi-million dollar revenue growth through strategic innovation and user-centric design. Expert in navigating the intersection of emerging technologies and business viability.
+                </p>
+</section>
+<!-- Experience Section -->
+<section class="flex flex-col gap-6">
+<div class="flex flex-col gap-2">
+<h2 class="text-slate-900 dark:text-white text-lg font-bold uppercase tracking-widest">Experience</h2>
+<div class="h-px w-full bg-slate-200 dark:bg-slate-800"></div>
+</div>
+<!-- Job 1 -->
+<div class="flex flex-col gap-2">
+<div class="flex justify-between items-baseline">
+<h3 class="text-slate-900 dark:text-white font-bold text-lg">Senior Strategy Director</h3>
+<span class="text-slate-500 dark:text-slate-400 text-sm font-medium">2019 — Present</span>
+</div>
+<div class="flex justify-between items-baseline">
+<p class="text-primary font-semibold italic">NovaTech Global Solutions</p>
+<span class="text-slate-400 dark:text-slate-500 text-xs uppercase tracking-tighter">New York, NY</span>
+</div>
+<ul class="list-disc ml-5 flex flex-col gap-2 text-slate-700 dark:text-slate-300 text-sm leading-relaxed mt-2">
+<li>Directed the development and launch of a flagship AI-driven analytics platform, resulting in a 35% increase in enterprise customer acquisition within the first year.</li>
+<li>Spearheaded a cross-functional team of 45+ designers, engineers, and product managers to redefine the company's core technology roadmap.</li>
+<li>Reduced operational overhead by $2.4M annually through the implementation of automated data processing pipelines and strategic vendor renegotiations.</li>
+<li>Mentored a high-performing group of product managers, seeing 4 direct reports promoted to leadership roles within 24 months.</li>
+</ul>
+</div>
+<!-- Job 2 -->
+<div class="flex flex-col gap-2">
+<div class="flex justify-between items-baseline">
+<h3 class="text-slate-900 dark:text-white font-bold text-lg">Lead Product Manager</h3>
+<span class="text-slate-500 dark:text-slate-400 text-sm font-medium">2015 — 2019</span>
+</div>
+<div class="flex justify-between items-baseline">
+<p class="text-primary font-semibold italic">DataStream Systems Inc.</p>
+<span class="text-slate-400 dark:text-slate-500 text-xs uppercase tracking-tighter">San Francisco, CA</span>
+</div>
+<ul class="list-disc ml-5 flex flex-col gap-2 text-slate-700 dark:text-slate-300 text-sm leading-relaxed mt-2">
+<li>Managed the lifecycle of three B2B SaaS products from conception through sunset, maintaining a consistent 94% customer satisfaction rating.</li>
+<li>Pioneered the integration of machine learning models into the legacy reporting system, increasing predictive accuracy for clients by 60%.</li>
+<li>Collaborated directly with the CTO to secure $15M in Series B funding by demonstrating innovative product scalability and market fit.</li>
+</ul>
+</div>
+</section>
+<!-- Education Section -->
+<section class="flex flex-col gap-4">
+<div class="flex flex-col gap-2">
+<h2 class="text-slate-900 dark:text-white text-lg font-bold uppercase tracking-widest">Education</h2>
+<div class="h-px w-full bg-slate-200 dark:bg-slate-800"></div>
+</div>
+<div class="grid grid-cols-2 gap-8">
+<div class="flex flex-col gap-1">
+<h3 class="text-slate-900 dark:text-white font-bold">MBA in Strategic Management</h3>
+<p class="text-slate-600 dark:text-slate-400 text-sm">Columbia Business School</p>
+<p class="text-slate-400 dark:text-slate-500 text-xs italic">Graduated with Honors, 2015</p>
+</div>
+<div class="flex flex-col gap-1">
+<h3 class="text-slate-900 dark:text-white font-bold">B.S. in Computer Science</h3>
+<p class="text-slate-600 dark:text-slate-400 text-sm">Georgia Institute of Technology</p>
+<p class="text-slate-400 dark:text-slate-500 text-xs italic">Summa Cum Laude, 2011</p>
+</div>
+</div>
+</section>
+<!-- Skills Section -->
+<section class="flex flex-col gap-4">
+<div class="flex flex-col gap-2">
+<h2 class="text-slate-900 dark:text-white text-lg font-bold uppercase tracking-widest">Skills &amp; Expertise</h2>
+<div class="h-px w-full bg-slate-200 dark:bg-slate-800"></div>
+</div>
+<div class="flex flex-wrap gap-2">
+<span class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-3 py-1 rounded text-sm font-medium border border-slate-200 dark:border-slate-700">Strategic Roadmap Planning</span>
+<span class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-3 py-1 rounded text-sm font-medium border border-slate-200 dark:border-slate-700">AI/ML Integration</span>
+<span class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-3 py-1 rounded text-sm font-medium border border-slate-200 dark:border-slate-700">Agile Methodologies</span>
+<span class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-3 py-1 rounded text-sm font-medium border border-slate-200 dark:border-slate-700">Product Lifecycle Management</span>
+<span class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-3 py-1 rounded text-sm font-medium border border-slate-200 dark:border-slate-700">P&amp;L Management</span>
+<span class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-3 py-1 rounded text-sm font-medium border border-slate-200 dark:border-slate-700">Data Analytics</span>
+<span class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-3 py-1 rounded text-sm font-medium border border-slate-200 dark:border-slate-700">Stakeholder Management</span>
+<span class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-3 py-1 rounded text-sm font-medium border border-slate-200 dark:border-slate-700">Executive Leadership</span>
+</div>
+</section>
+</div>
+</main>
+<!-- Footer Status -->
+<footer class="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-4 px-10 flex justify-between items-center text-xs text-slate-400">
+<div class="flex items-center gap-4">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-xs text-green-500">check_circle</span> Changes saved</span>
+<span>Variant 1 of 3 (Modern Executive)</span>
+</div>
+<div class="flex items-center gap-6">
+<button class="hover:text-primary transition-colors">Help Center</button>
+<button class="hover:text-primary transition-colors">Terms of Service</button>
+</div>
+</footer>
+</div>
+</body></html>

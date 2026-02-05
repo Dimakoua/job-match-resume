@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AI Resume Builder - Basic Template</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0f3ea3",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#111621",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+                },
+            },
+        }
+    </script>
+<style>
+        .resume-page {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 20mm;
+            margin: auto;
+            background: white;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        .resume-body-text {
+            font-size: 10pt;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen">
+<div class="relative flex h-auto min-h-screen w-full flex-col bg-background-light dark:bg-background-dark">
+<div class="layout-container flex h-full grow flex-col">
+<!-- Navigation Header -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-slate-800 px-6 py-3 bg-white dark:bg-background-dark">
+<div class="flex items-center gap-4 text-primary dark:text-blue-400">
+<div class="size-6 flex items-center justify-center">
+<span class="material-symbols-outlined">description</span>
+</div>
+<h2 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">AI Resume Builder</h2>
+</div>
+<div class="flex flex-1 justify-end gap-8">
+<div class="flex items-center gap-9">
+<a class="text-slate-700 dark:text-slate-300 text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Templates</a>
+<a class="text-slate-700 dark:text-slate-300 text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">My Resumes</a>
+<a class="text-slate-700 dark:text-slate-300 text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Settings</a>
+</div>
+<button class="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-blue-800 transition-colors">
+<span class="truncate">Download PDF</span>
+</button>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border border-slate-200" data-alt="User profile avatar placeholder" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBHMbmOeh9au-mcDw1D53IJFDGf39xjF9z3udueEbQyKNP_cOv72HUvjxvcsMpkRKC0i6TbzjJh_VOJ86MPVbd-2zyueDzNUhlc56Gn3tjQrKpmTG5Si3EyNdtaglZ0tCpHG8P5nu1MCVHYwOb0Zms73mgnKoxKgpFQZcIDRaFNcOLPDJsHtgk2FvpRgfGyk7pcnMpCbQxYBOUm2snfjUf8pvg-aZeiUECENsxtSjdPmikNpvr0KqQojo0zxDw8VOX8d3gXEVglys8");'></div>
+</div>
+</header>
+<!-- Main Editor Area -->
+<main class="flex flex-1 overflow-hidden">
+<!-- Sidebar Navigation -->
+<aside class="w-64 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-background-dark flex flex-col p-4 gap-4">
+<div class="flex flex-wrap gap-1 text-xs mb-4">
+<a class="text-slate-500 hover:text-primary" href="#">Home</a>
+<span class="text-slate-400">/</span>
+<span class="text-slate-900 dark:text-white font-medium">Editor</span>
+</div>
+<div class="flex flex-col gap-1">
+<h1 class="text-slate-900 dark:text-white text-base font-bold mb-4">Resume Editor</h1>
+<nav class="flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800" href="#">
+<span class="material-symbols-outlined text-[20px]">person</span>
+<span class="text-sm font-medium">Personal Info</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-primary/10 text-primary" href="#">
+<span class="material-symbols-outlined text-[20px]">work</span>
+<span class="text-sm font-bold">Experience</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800" href="#">
+<span class="material-symbols-outlined text-[20px]">school</span>
+<span class="text-sm font-medium">Education</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800" href="#">
+<span class="material-symbols-outlined text-[20px]">construction</span>
+<span class="text-sm font-medium">Skills</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800" href="#">
+<span class="material-symbols-outlined text-[20px]">article</span>
+<span class="text-sm font-medium">Summary</span>
+</a>
+</nav>
+</div>
+<div class="mt-auto pt-4 border-t border-slate-200 dark:border-slate-800">
+<p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest mb-2">Current Style</p>
+<div class="p-3 bg-slate-50 dark:bg-slate-800 rounded border border-slate-200 dark:border-slate-700">
+<p class="text-sm font-bold text-slate-900 dark:text-white">Basic Classic</p>
+<p class="text-xs text-slate-500">ATS Optimized</p>
+</div>
+</div>
+</aside>
+<!-- Preview Area -->
+<section class="flex-1 bg-slate-100 dark:bg-slate-900/50 overflow-y-auto p-12">
+<!-- The Resume Template -->
+<div class="resume-page font-display text-black">
+<!-- Centered Header -->
+<div class="text-center mb-8">
+<h1 class="text-[24pt] font-bold tracking-tight uppercase mb-2">JONATHAN DOE</h1>
+<p class="resume-body-text text-gray-700">
+                                San Francisco, CA • (555) 012-3456 • jonathan.doe@example.com • linkedin.com/in/jdoe
+                            </p>
+</div>
+<!-- Professional Summary -->
+<div class="mb-6">
+<h2 class="text-sm font-bold tracking-[0.1em] uppercase border-b border-black pb-1 mb-2">Professional Summary</h2>
+<p class="resume-body-text text-justify">
+                                Experienced Project Manager with over 8 years of success in leading cross-functional teams and delivering complex software solutions. Expert in Agile methodologies, stakeholder management, and strategic planning. Proven track record of improving operational efficiency by 25% and reducing project turnaround time.
+                            </p>
+</div>
+<!-- Experience Section -->
+<div class="mb-6">
+<h2 class="text-sm font-bold tracking-[0.1em] uppercase border-b border-black pb-1 mb-3">Professional Experience</h2>
+<div class="mb-4">
+<div class="flex justify-between font-bold resume-body-text">
+<span>Senior Project Manager</span>
+<span>Jan 2020 – Present</span>
+</div>
+<div class="flex justify-between italic resume-body-text mb-1">
+<span>TechFlow Solutions</span>
+<span>San Francisco, CA</span>
+</div>
+<ul class="list-disc list-outside ml-5 resume-body-text">
+<li>Directed a team of 15 developers and designers to launch a flagship SaaS product, resulting in $2M ARR within the first year.</li>
+<li>Implemented new Scrum protocols that increased team velocity by 30% and improved sprint predictability.</li>
+<li>Managed a $500k annual budget, consistently maintaining costs 10% below projected estimates through strategic vendor negotiation.</li>
+</ul>
+</div>
+<div class="mb-4">
+<div class="flex justify-between font-bold resume-body-text">
+<span>Junior Project Manager</span>
+<span>Jun 2016 – Dec 2019</span>
+</div>
+<div class="flex justify-between italic resume-body-text mb-1">
+<span>CloudScale Systems</span>
+<span>Palo Alto, CA</span>
+</div>
+<ul class="list-disc list-outside ml-5 resume-body-text">
+<li>Assisted in the migration of legacy infrastructure to AWS, reducing server downtime by 40% and cutting hosting costs.</li>
+<li>Coordinated daily stand-ups and managed Jira backlogs for three concurrent engineering streams.</li>
+<li>Facilitated communication between technical teams and non-technical stakeholders to ensure alignment on KPIs.</li>
+</ul>
+</div>
+</div>
+<!-- Education Section -->
+<div class="mb-6">
+<h2 class="text-sm font-bold tracking-[0.1em] uppercase border-b border-black pb-1 mb-3">Education</h2>
+<div class="mb-2">
+<div class="flex justify-between font-bold resume-body-text">
+<span>Bachelor of Science in Business Administration</span>
+<span>Graduated May 2016</span>
+</div>
+<div class="flex justify-between italic resume-body-text">
+<span>University of California, Berkeley</span>
+<span>Berkeley, CA</span>
+</div>
+</div>
+</div>
+<!-- Skills Section -->
+<div class="mb-6">
+<h2 class="text-sm font-bold tracking-[0.1em] uppercase border-b border-black pb-1 mb-2">Skills</h2>
+<p class="resume-body-text">
+<strong>Management:</strong> Agile/Scrum, PMP Certified, Strategic Planning, Risk Management, Resource Allocation<br/>
+<strong>Technical:</strong> Jira, Confluence, Trello, SQL, Basic Python, AWS Infrastructure, Microsoft Project<br/>
+<strong>Soft Skills:</strong> Cross-functional Leadership, Conflict Resolution, Public Speaking, Client Relations
+                            </p>
+</div>
+</div>
+<!-- Footer Preview Tools -->
+<div class="max-w-[210mm] mx-auto flex justify-center gap-4 mt-8 no-print">
+<div class="flex items-center gap-2 bg-white dark:bg-background-dark shadow-sm px-4 py-2 rounded-full border border-slate-200 dark:border-slate-800">
+<button class="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded">
+<span class="material-symbols-outlined text-[20px]">zoom_out</span>
+</button>
+<span class="text-xs font-medium px-2">100%</span>
+<button class="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded">
+<span class="material-symbols-outlined text-[20px]">zoom_in</span>
+</button>
+</div>
+<button class="bg-white dark:bg-background-dark shadow-sm px-4 py-2 rounded-full border border-slate-200 dark:border-slate-800 flex items-center gap-2 hover:bg-slate-50 transition-colors">
+<span class="material-symbols-outlined text-[20px]">settings_backup_restore</span>
+<span class="text-xs font-medium">Reset Content</span>
+</button>
+</div>
+</section>
+</main>
+</div>
+</div>
+</body></html>

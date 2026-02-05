@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Classic Resume Template Style</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,700;1,400&amp;family=Noto+Serif:wght@400;700&amp;family=Noto+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2463eb",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#111621",
+                        "classic-slate": "#334155",
+                    },
+                    fontFamily: {
+                        "display": ["Noto Serif", "serif"],
+                        "serif-classic": ["Lora", "serif"],
+                        "sans": ["Noto Sans", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .resume-shadow {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-sans text-slate-900 dark:text-slate-100 min-h-screen">
+<div class="relative flex h-auto min-h-screen w-full flex-col bg-background-light dark:bg-background-dark group/design-root overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<!-- Top Navigation Bar -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-slate-800 px-10 py-3 bg-white dark:bg-slate-900">
+<div class="flex items-center gap-4 text-primary">
+<div class="size-6">
+<svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_6_330)">
+<path clip-rule="evenodd" d="M24 0.757355L47.2426 24L24 47.2426L0.757355 24L24 0.757355ZM21 35.7574V12.2426L9.24264 24L21 35.7574Z" fill="currentColor" fill-rule="evenodd"></path>
+</g>
+<defs>
+<clippath id="clip0_6_330"><rect fill="white" height="48" width="48"></rect></clippath>
+</defs>
+</svg>
+</div>
+<h2 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-tight font-display">AI Resume Builder</h2>
+</div>
+<div class="flex flex-1 justify-end gap-8">
+<div class="flex items-center gap-9">
+<a class="text-slate-700 dark:text-slate-300 text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Templates</a>
+<a class="text-slate-700 dark:text-slate-300 text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">My Resumes</a>
+<a class="text-slate-700 dark:text-slate-300 text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Tips</a>
+</div>
+<button class="flex min-w-[100px] cursor-pointer items-center justify-center rounded-lg h-10 px-5 bg-primary text-white text-sm font-bold leading-normal tracking-wide hover:bg-blue-700 transition-all">
+<span class="truncate">Export PDF</span>
+</button>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-slate-200 dark:border-slate-700" data-alt="User profile avatar circle" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAikOZ_pw1CZy-8PeZqsnKhNFfTOMSoKnG96lXyXVlIncYy_WcpbOPv4EmCQRQttgJIOSVD4XP4KB4uxK8eUnMhmaP-L5WR4thuTT7yw1vBRRiju5W04g6OzaSeFxoXSxFkVhrmid-0wGfIF6DVl1K7dmSGi2WNZbQgWSDcJS-gm5cJU4_vZJ2HdxzYZYcdUwQHMRZ574yQUNRrEcM7Kf1o95NysphcP284nNDpRWSnTYWdHMEVWOUlZKWwTvEvs_gr3fncm1G4fkY");'></div>
+</div>
+</header>
+<!-- Main Workspace -->
+<main class="flex flex-1 overflow-hidden">
+<!-- Sidebar Editor Controls -->
+<aside class="w-80 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col p-4">
+<div class="mb-6">
+<h1 class="text-slate-900 dark:text-white text-lg font-bold font-display">Resume Editor</h1>
+<p class="text-slate-500 text-xs font-medium uppercase tracking-wider">Senior Executive Role</p>
+</div>
+<nav class="flex flex-col gap-1">
+<div class="flex items-center gap-3 px-3 py-2.5 cursor-pointer rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+<span class="material-symbols-outlined text-slate-500">person</span>
+<p class="text-slate-700 dark:text-slate-300 text-sm font-medium">Contact Information</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2.5 cursor-pointer rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+<span class="material-symbols-outlined text-slate-500">work</span>
+<p class="text-slate-700 dark:text-slate-300 text-sm font-medium">Professional Experience</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2.5 cursor-pointer rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+<span class="material-symbols-outlined text-slate-500">school</span>
+<p class="text-slate-700 dark:text-slate-300 text-sm font-medium">Education</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2.5 cursor-pointer rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+<span class="material-symbols-outlined text-slate-500">construction</span>
+<p class="text-slate-700 dark:text-slate-300 text-sm font-medium">Skills &amp; Expertise</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/10 text-primary border border-primary/20">
+<span class="material-symbols-outlined">palette</span>
+<p class="text-sm font-bold">Classic Style</p>
+</div>
+</nav>
+<div class="mt-auto pt-6 border-t border-slate-200 dark:border-slate-800">
+<p class="text-xs text-slate-400 mb-2">AUTO-SAVE ENABLED</p>
+<div class="flex items-center gap-2 text-green-500">
+<span class="material-symbols-outlined text-xs">check_circle</span>
+<span class="text-[10px] font-bold">SAVED 2 MINS AGO</span>
+</div>
+</div>
+</aside>
+<!-- Preview Area -->
+<section class="flex-1 flex flex-col bg-slate-100 dark:bg-background-dark overflow-y-auto p-8">
+<!-- Breadcrumbs -->
+<div class="flex items-center gap-2 mb-6">
+<a class="text-slate-500 text-xs font-medium hover:text-primary" href="#">Templates</a>
+<span class="material-symbols-outlined text-[12px] text-slate-400">chevron_right</span>
+<span class="text-slate-900 dark:text-white text-xs font-bold">Classic Executive Style</span>
+</div>
+<div class="flex justify-between items-end mb-8">
+<div>
+<h2 class="text-slate-900 dark:text-white text-2xl font-bold font-display">Classic Template Preview</h2>
+<p class="text-slate-500 text-sm">Elegant Serif typography for senior professionals</p>
+</div>
+<div class="flex gap-2">
+<button class="flex items-center gap-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-4 py-2 rounded text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50">
+<span class="material-symbols-outlined text-sm">zoom_in</span> Zoom
+                            </button>
+<button class="flex items-center gap-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-4 py-2 rounded text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50">
+<span class="material-symbols-outlined text-sm">settings</span> Formatting
+                            </button>
+</div>
+</div>
+<!-- The Resume Preview (A4 Ratio) -->
+<div class="mx-auto w-[800px] bg-white dark:bg-slate-900 resume-shadow p-16 min-h-[1132px] font-serif-classic text-slate-800 dark:text-slate-200">
+<!-- Classic Header -->
+<div class="border-b-2 border-double border-slate-300 dark:border-slate-700 pb-8 mb-8">
+<div class="flex justify-between items-start">
+<div class="max-w-[70%]">
+<h1 class="text-4xl font-bold text-slate-900 dark:text-white mb-2 uppercase tracking-tight">Jonathan R. Executive</h1>
+<p class="text-lg italic text-slate-600 dark:text-slate-400">Senior Vice President of Global Operations</p>
+</div>
+<div class="text-right text-xs uppercase tracking-widest text-slate-500 dark:text-slate-400 leading-loose">
+<p>New York, NY</p>
+<p>+1 (555) 000-1111</p>
+<p class="lowercase">j.executive@email.com</p>
+<p>linkedin.com/in/jexecutive</p>
+</div>
+</div>
+</div>
+<!-- Professional Summary -->
+<div class="mb-10">
+<h3 class="text-sm font-bold uppercase tracking-widest text-primary border-l-4 border-primary pl-4 mb-4">Executive Profile</h3>
+<p class="leading-relaxed text-[15px] italic">
+                                Results-oriented executive with over 15 years of leadership in streamlining global operations and driving revenue growth. Expert in strategic planning, cross-functional leadership, and organizational transformation. Proven track record of delivering multi-million dollar efficiencies through innovative process optimization.
+                            </p>
+</div>
+<!-- Experience Section -->
+<div class="mb-10">
+<h3 class="text-sm font-bold uppercase tracking-widest text-primary border-l-4 border-primary pl-4 mb-6">Professional Experience</h3>
+<!-- Job 1 -->
+<div class="mb-8">
+<div class="flex justify-between items-baseline mb-1">
+<h4 class="text-lg font-bold text-slate-900 dark:text-white">Global Logistics Corporation</h4>
+<span class="text-xs font-bold text-slate-500 uppercase">2018 — Present</span>
+</div>
+<div class="flex justify-between items-baseline mb-3">
+<p class="font-bold italic text-slate-700 dark:text-slate-300">Vice President, Operations</p>
+<span class="text-xs text-slate-400 italic">New York, NY</span>
+</div>
+<ul class="list-disc list-outside ml-5 space-y-2 text-[14px] leading-relaxed">
+<li>Directed a global team of 250+ across 12 countries, overseeing a $45M operational budget.</li>
+<li>Implemented AI-driven supply chain forecasting, reducing overhead costs by 22% within the first year.</li>
+<li>Orchestrated the successful integration of three major acquisitions, harmonizing legacy systems into a unified ERP platform.</li>
+<li>Received "Executive of the Year" award for maintaining 99.8% on-time delivery metrics during global disruptions.</li>
+</ul>
+</div>
+<!-- Job 2 -->
+<div class="mb-8">
+<div class="flex justify-between items-baseline mb-1">
+<h4 class="text-lg font-bold text-slate-900 dark:text-white">Stratford Consulting Group</h4>
+<span class="text-xs font-bold text-slate-500 uppercase">2012 — 2018</span>
+</div>
+<div class="flex justify-between items-baseline mb-3">
+<p class="font-bold italic text-slate-700 dark:text-slate-300">Senior Director, Strategy</p>
+<span class="text-xs text-slate-400 italic">Chicago, IL</span>
+</div>
+<ul class="list-disc list-outside ml-5 space-y-2 text-[14px] leading-relaxed">
+<li>Led high-stakes strategic advisory for Fortune 500 clients in the manufacturing and logistics sectors.</li>
+<li>Architected market entry strategy for a client into the EMEA region, resulting in $12M in new annual recurring revenue.</li>
+<li>Optimized internal reporting structures, reducing decision-making latency by 40%.</li>
+</ul>
+</div>
+</div>
+<!-- Education Section -->
+<div class="mb-10">
+<h3 class="text-sm font-bold uppercase tracking-widest text-primary border-l-4 border-primary pl-4 mb-6">Academic Background</h3>
+<div class="flex justify-between items-baseline mb-1">
+<h4 class="text-lg font-bold text-slate-900 dark:text-white">Wharton School of Business</h4>
+<span class="text-xs font-bold text-slate-500 uppercase">2010 — 2012</span>
+</div>
+<p class="text-[14px] italic text-slate-700 dark:text-slate-300">Master of Business Administration (MBA), Finance &amp; Management</p>
+</div>
+<!-- Skills Section -->
+<div class="mb-10">
+<h3 class="text-sm font-bold uppercase tracking-widest text-primary border-l-4 border-primary pl-4 mb-4">Core Competencies</h3>
+<div class="grid grid-cols-2 gap-x-12 gap-y-2 text-[14px]">
+<div class="flex justify-between border-b border-slate-100 dark:border-slate-800 pb-1">
+<span>Strategic Operational Planning</span>
+<span class="text-xs font-bold text-primary italic uppercase">Expert</span>
+</div>
+<div class="flex justify-between border-b border-slate-100 dark:border-slate-800 pb-1">
+<span>P&amp;L Management &amp; Budgeting</span>
+<span class="text-xs font-bold text-primary italic uppercase">Expert</span>
+</div>
+<div class="flex justify-between border-b border-slate-100 dark:border-slate-800 pb-1">
+<span>Cross-Functional Leadership</span>
+<span class="text-xs font-bold text-primary italic uppercase">Advanced</span>
+</div>
+<div class="flex justify-between border-b border-slate-100 dark:border-slate-800 pb-1">
+<span>Regulatory Compliance</span>
+<span class="text-xs font-bold text-primary italic uppercase">Advanced</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Controls -->
+<div class="mt-8 mb-12 flex justify-center gap-4">
+<button class="flex items-center gap-2 bg-primary text-white px-8 py-3 rounded-xl font-bold shadow-lg hover:shadow-primary/20 transition-all">
+<span class="material-symbols-outlined">description</span>
+                            Apply This Style
+                        </button>
+<button class="flex items-center gap-2 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 px-8 py-3 rounded-xl font-bold border border-slate-200 dark:border-slate-700 hover:bg-slate-50 transition-all">
+<span class="material-symbols-outlined">print</span>
+                            Print Preview
+                        </button>
+</div>
+</section>
+</main>
+</div>
+</div>
+</body></html>

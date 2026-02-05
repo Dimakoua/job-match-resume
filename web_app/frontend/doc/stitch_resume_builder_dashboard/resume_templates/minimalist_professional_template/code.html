@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Minimalist Professional Template</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2463eb",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#111621",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        .resume-paper {
+            aspect-ratio: 1 / 1.414;
+            width: 100%;
+            max-width: 800px;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 transition-colors duration-200">
+<div class="relative flex h-auto min-h-screen w-full flex-col bg-background-light dark:bg-background-dark overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<!-- Top Navigation Bar -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-10 py-3 sticky top-0 z-50">
+<div class="flex items-center gap-4 text-slate-900 dark:text-white">
+<div class="size-6 text-primary">
+<span class="material-symbols-outlined text-2xl">description</span>
+</div>
+<h2 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">AI Resume Builder</h2>
+</div>
+<div class="flex flex-1 justify-end gap-8">
+<div class="flex items-center gap-9">
+<a class="text-slate-600 dark:text-slate-300 text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Templates</a>
+<a class="text-slate-600 dark:text-slate-300 text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">My Resumes</a>
+<a class="text-slate-600 dark:text-slate-300 text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Tips</a>
+</div>
+<div class="flex gap-2">
+<button class="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-blue-700">
+<span class="truncate">Download PDF</span>
+</button>
+<button class="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded h-10 px-4 bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-slate-200 dark:hover:bg-slate-700">
+<span class="truncate">Save</span>
+</button>
+</div>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border border-slate-200" data-alt="User profile avatar placeholder" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuD7OiSbyZjf18qBmox4Eb2cyTEJ5oAHJAfqhqOQCfx2VN-Qjuya32sT3biEViR4Lf4pHwP9sAPONr4JFgi5aoR9cCJTQbQy80nPqRRvSaag6B_24bbzWu7vPyp7erhot9pkyZ4fHA5rHMWjhSx8tJPdJuSmrrqrtvR9jJNdG0cUX8G0NyP40X7YeMg_-DOTj-lelvEMNfA9DGcYm4-sdtnvaXXIJSqoe0sNZW3o2PF-eTA6bxmVFwrxYQq1dAk-Ej4IeS9ZtCVHJrY");'></div>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col items-center py-12 px-4">
+<!-- Resume Canvas -->
+<div class="resume-paper bg-white dark:bg-slate-900 shadow-xl p-16 flex flex-col gap-10">
+<!-- Header Section -->
+<section class="flex flex-col gap-2">
+<h1 class="text-slate-900 dark:text-white text-4xl font-bold tracking-tight uppercase">Jonathan Doe</h1>
+<div class="flex flex-wrap gap-x-4 gap-y-1 text-slate-500 dark:text-slate-400 text-sm font-light">
+<span class="flex items-center gap-1">Product Designer</span>
+<span class="text-slate-300">•</span>
+<span>San Francisco, CA</span>
+<span class="text-slate-300">•</span>
+<span>jonathan.doe@email.com</span>
+<span class="text-slate-300">•</span>
+<span>+1 555 0123</span>
+</div>
+</section>
+<!-- Professional Summary -->
+<section class="flex flex-col gap-3">
+<h3 class="text-slate-900 dark:text-white text-xs font-semibold tracking-widest uppercase border-b border-slate-100 dark:border-slate-800 pb-2">Profile</h3>
+<p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed font-light">
+                        Strategic Product Designer with 8+ years of experience in building user-centric digital products. Expert in translating complex user requirements into elegant, minimalist interfaces. Proven track record of improving user engagement and conversion rates through data-driven design decisions and cross-functional collaboration.
+                    </p>
+</section>
+<!-- Experience Section -->
+<section class="flex flex-col gap-4">
+<h3 class="text-slate-900 dark:text-white text-xs font-semibold tracking-widest uppercase border-b border-slate-100 dark:border-slate-800 pb-2">Experience</h3>
+<div class="flex flex-col gap-6">
+<!-- Job 1 -->
+<div class="flex flex-col gap-1">
+<div class="flex justify-between items-baseline">
+<span class="text-slate-900 dark:text-white text-base font-medium">Senior Product Designer, TechCorp</span>
+<span class="text-slate-500 dark:text-slate-400 text-xs font-light">Jan 2021 — Present</span>
+</div>
+<ul class="list-none flex flex-col gap-2 mt-2">
+<li class="text-slate-600 dark:text-slate-400 text-sm font-light leading-relaxed flex gap-3">
+<span class="text-slate-300 mt-1.5 flex-shrink-0 size-1 bg-slate-300 rounded-full"></span>
+                                    Led the design system overhaul, reducing design-to-development handoff time by 30% across three product squads.
+                                </li>
+<li class="text-slate-600 dark:text-slate-400 text-sm font-light leading-relaxed flex gap-3">
+<span class="text-slate-300 mt-1.5 flex-shrink-0 size-1 bg-slate-300 rounded-full"></span>
+                                    Redesigned the core checkout flow, resulting in a 15% increase in conversion rates for enterprise customers.
+                                </li>
+</ul>
+</div>
+<!-- Job 2 -->
+<div class="flex flex-col gap-1">
+<div class="flex justify-between items-baseline">
+<span class="text-slate-900 dark:text-white text-base font-medium">Product Designer, Creative Wave</span>
+<span class="text-slate-500 dark:text-slate-400 text-xs font-light">Mar 2018 — Dec 2020</span>
+</div>
+<ul class="list-none flex flex-col gap-2 mt-2">
+<li class="text-slate-600 dark:text-slate-400 text-sm font-light leading-relaxed flex gap-3">
+<span class="text-slate-300 mt-1.5 flex-shrink-0 size-1 bg-slate-300 rounded-full"></span>
+                                    Collaborated with engineering teams to implement a mobile-first responsive framework for the flagship SaaS product.
+                                </li>
+<li class="text-slate-600 dark:text-slate-400 text-sm font-light leading-relaxed flex gap-3">
+<span class="text-slate-300 mt-1.5 flex-shrink-0 size-1 bg-slate-300 rounded-full"></span>
+                                    Conducted over 50 user research sessions to identify pain points in the onboarding experience.
+                                </li>
+</ul>
+</div>
+</div>
+</section>
+<!-- Education Section -->
+<section class="flex flex-col gap-4">
+<h3 class="text-slate-900 dark:text-white text-xs font-semibold tracking-widest uppercase border-b border-slate-100 dark:border-slate-800 pb-2">Education</h3>
+<div class="flex justify-between items-baseline">
+<div class="flex flex-col">
+<span class="text-slate-900 dark:text-white text-base font-medium">Bachelor of Fine Arts in Interaction Design</span>
+<span class="text-slate-500 dark:text-slate-400 text-sm font-light">California Institute of the Arts</span>
+</div>
+<span class="text-slate-500 dark:text-slate-400 text-xs font-light">2014 — 2018</span>
+</div>
+</section>
+<!-- Skills Section -->
+<section class="flex flex-col gap-4">
+<h3 class="text-slate-900 dark:text-white text-xs font-semibold tracking-widest uppercase border-b border-slate-100 dark:border-slate-800 pb-2">Expertise</h3>
+<div class="flex flex-wrap gap-x-8 gap-y-3">
+<div class="flex flex-col gap-1">
+<span class="text-slate-900 dark:text-white text-xs font-medium uppercase tracking-tighter">Design</span>
+<span class="text-slate-600 dark:text-slate-400 text-sm font-light">Product Strategy, UI/UX, Design Systems</span>
+</div>
+<div class="flex flex-col gap-1">
+<span class="text-slate-900 dark:text-white text-xs font-medium uppercase tracking-tighter">Tools</span>
+<span class="text-slate-600 dark:text-slate-400 text-sm font-light">Figma, Framer, Adobe Creative Suite</span>
+</div>
+<div class="flex flex-col gap-1">
+<span class="text-slate-900 dark:text-white text-xs font-medium uppercase tracking-tighter">Methods</span>
+<span class="text-slate-600 dark:text-slate-400 text-sm font-light">User Research, Prototyping, A/B Testing</span>
+</div>
+</div>
+</section>
+</div>
+<!-- Editor Tools Floating -->
+<div class="mt-12 flex gap-4 bg-white dark:bg-slate-900 p-2 rounded-full shadow-lg border border-slate-200 dark:border-slate-800">
+<button class="p-3 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full text-slate-600 dark:text-slate-400 transition-colors" title="Zoom In">
+<span class="material-symbols-outlined">zoom_in</span>
+</button>
+<button class="p-3 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full text-slate-600 dark:text-slate-400 transition-colors" title="Zoom Out">
+<span class="material-symbols-outlined">zoom_out</span>
+</button>
+<div class="w-px bg-slate-200 dark:bg-slate-800 self-stretch"></div>
+<button class="p-3 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full text-slate-600 dark:text-slate-400 transition-colors" title="Add Section">
+<span class="material-symbols-outlined">add_circle</span>
+</button>
+<button class="p-3 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full text-slate-600 dark:text-slate-400 transition-colors" title="Change Layout">
+<span class="material-symbols-outlined">dashboard_customize</span>
+</button>
+</div>
+</main>
+</div>
+</div>
+</body></html>
