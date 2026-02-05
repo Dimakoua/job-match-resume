@@ -6,6 +6,7 @@
  * Per technical_design.md §3.2D: "The Composable acts as the Controller."
  */
 import { ref, computed } from 'vue';
+import { useRoute } from 'vue-router';
 import { GetJobApplicationUseCase } from '../../core/application/job_application/GetJobApplicationUseCase.js';
 import { UpdateJobApplicationUseCase } from '../../core/application/job_application/UpdateJobApplicationUseCase.js';
 import { GenerateFromJDUseCase } from '../../core/application/ai/GenerateFromJDUseCase.js';
@@ -18,7 +19,9 @@ import { HttpResumeRepository } from '../../infrastructure/api/HttpResumeReposit
 import { HttpAIService } from '../../infrastructure/api/HttpAIService.js';
 import { useAuthStore } from '../stores/useAuthStore.js';
 
-export function useTailoringStudioController(applicationIdRef) {
+export function useTailoringStudioController() {
+  const route = useRoute();
+  const applicationIdRef = computed(() => route.params.id);
   // ===== Dependency Injection (DI) =====
   const jobApplicationRepository = new HttpJobApplicationRepository();
   const resumeRepository = new HttpResumeRepository();
@@ -61,6 +64,16 @@ export function useTailoringStudioController(applicationIdRef) {
   // AI Suggestions state
   const suggestions = ref([]);
   const isGeneratingSuggestions = ref(false);
+
+  // UI state for feedback
+  const appliedSuggestions = ref([]);
+  const lastAppliedSuggestion = ref(null);
+  const showGenerationModal = ref(false);
+  const selectedResumeId = ref(null);
+
+  // Job editing state
+  const isEditingJob = ref(false);
+  const editedJob = ref({});
 
   // Load settings from localStorage if available
   const savedSettings = localStorage.getItem('generationSettings');
@@ -526,7 +539,9 @@ export function useTailoringStudioController(applicationIdRef) {
       resume.value = tailoredResume;
 
       // Link the new resume to the application
-      await updateJobApplicationUseCase.execute(applicationIdRef.value, { resumeId: tailoredResume.id });
+      await updateJobApplicationUseCase.execute({
+        application: { ...job.value, resumeId: tailoredResume.id }
+      });
 
       // Recalculate ATS score
       await calculateAts();
@@ -751,6 +766,351 @@ Each suggestion should be:
     }
   };
 
+  // UI Methods
+  const handleGenerateClick = async () => {
+    await loadUserResumes();
+    selectedResumeId.value = resume.value?.id || (userResumes.value.length > 0 ? userResumes.value[0].id : null);
+    showGenerationModal.value = true;
+  };
+
+  const closeGenerationModal = () => {
+    showGenerationModal.value = false;
+  };
+
+  const startGeneration = async () => {
+    try {
+      await generateTailoredResume(generationSettings.value, selectedResumeId.value);
+      showGenerationModal.value = false;
+    } catch (err) {
+      console.error('Generation failed:', err);
+    }
+  };
+
+  const handleLinkResumeClick = async () => {
+    await loadUserResumes();
+    showLinkResumeModal.value = true;
+  };
+
+  const closeLinkResumeModal = () => {
+    showLinkResumeModal.value = false;
+  };
+
+  const selectResume = async (resumeId) => {
+    try {
+      await linkResumeToApplication(resumeId);
+      showLinkResumeModal.value = false;
+    } catch (err) {
+      console.error('Failed to link resume:', err);
+    }
+  };
+
+  const getStatusBadgeClass = (status) => {
+    switch (status) {
+      case 'saved': return 'bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-900/20 dark:text-amber-400';
+      case 'applied': return 'bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-900/20 dark:text-blue-400';
+      case 'interviewing': return 'bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-400';
+      case 'rejected': return 'bg-red-50 text-red-700 border border-red-200 dark:bg-red-900/20 dark:text-red-400';
+      default: return 'bg-gray-50 text-gray-700 border border-gray-200 dark:bg-gray-900/20 dark:text-gray-400';
+    }
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
+
+  // AI Suggestions Methods
+  const handleGenerateSuggestions = async () => {
+    try {
+      await generateSuggestions();
+    } catch (err) {
+      console.error('Failed to generate suggestions:', err);
+    }
+  };
+
+  const getSuggestionIcon = (type) => {
+    switch (type) {
+      case 'keywords': return 'label';
+      case 'experience': return 'work';
+      case 'summary': return 'description';
+      case 'education': return 'school';
+      default: return 'lightbulb';
+    }
+  };
+
+  const getSuggestionIconClass = (type) => {
+    switch (type) {
+      case 'keywords': return 'text-blue-500';
+      case 'experience': return 'text-green-500';
+      case 'summary': return 'text-purple-500';
+      case 'education': return 'text-orange-500';
+      default: return 'text-yellow-500';
+    }
+  };
+
+  const getSuggestionTypeClass = (type) => {
+    switch (type) {
+      case 'keywords': return 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400';
+      case 'experience': return 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400';
+      case 'summary': return 'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400';
+      case 'education': return 'bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400';
+      default: return 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400';
+    }
+  };
+
+  const getSuggestionCategoryLabel = (category) => {
+    switch (category) {
+      case 'keywords': return 'Keywords';
+      case 'summary': return 'Summary';
+      case 'experience': return 'Experience';
+      case 'skills': return 'Skills';
+      case 'education': return 'Education';
+      case 'quantify': return 'Quantify';
+      case 'ats': return 'ATS';
+      case 'impact': return 'Impact';
+      default: return 'General';
+    }
+  };
+
+  const applySuggestion = async (suggestion) => {
+    if (!resume.value) {
+      console.error('No resume available to apply suggestion');
+      return;
+    }
+
+    try {
+      // Mark suggestion as applied
+      suggestion.applied = true;
+      appliedSuggestions.value.push(suggestion);
+      lastAppliedSuggestion.value = suggestion;
+
+      // Parse and apply the suggestion based on category
+      switch (suggestion.category.toLowerCase()) {
+        case 'keywords':
+          await applyKeywordSuggestion(suggestion);
+          break;
+        case 'skills':
+          await applySkillsSuggestion(suggestion);
+          break;
+        case 'summary':
+          await applySummarySuggestion(suggestion);
+          break;
+        case 'experience':
+          await applyExperienceSuggestion(suggestion);
+          break;
+        case 'quantify':
+          await applyQuantifySuggestion(suggestion);
+          break;
+        case 'impact':
+          await applyImpactSuggestion(suggestion);
+          break;
+        default:
+          // For other suggestions, just mark as applied and show a message
+          console.log('Applied suggestion:', suggestion.text);
+          break;
+      }
+
+      // Auto-clear feedback after 3 seconds
+      setTimeout(() => {
+        if (lastAppliedSuggestion.value === suggestion) {
+          lastAppliedSuggestion.value = null;
+        }
+      }, 3000);
+
+    } catch (error) {
+      console.error('Failed to apply suggestion:', error);
+      suggestion.applied = false; // Reset if application failed
+      appliedSuggestions.value = appliedSuggestions.value.filter(s => s.id !== suggestion.id);
+    }
+  };
+
+  const applyKeywordSuggestion = async (suggestion) => {
+    // Extract keywords from the suggestion text
+    const keywordMatches = suggestion.text.match(/(?:add|include|incorporate|use)\s+(?:these\s+)?keywords?:?\s*([^.!?]+)|[""]([^""]+)[""]/gi);
+    const keywords = [];
+
+    if (keywordMatches) {
+      keywordMatches.forEach(match => {
+        const extracted = match.replace(/(?:add|include|incorporate|use)\s+(?:these\s+)?keywords?:?\s*/i, '').replace(/[""]/g, '');
+        keywords.push(...extracted.split(',').map(k => k.trim()).filter(k => k.length > 0));
+      });
+    }
+
+    if (keywords.length > 0) {
+      // Add keywords to the skills section
+      const skillsSection = resume.value.sections.skills || [];
+      const newSkills = [...new Set([...skillsSection, ...keywords])]; // Remove duplicates
+
+      await updateResume({
+        id: resume.value.id,
+        sections: {
+          ...resume.value.sections,
+          skills: newSkills
+        }
+      });
+
+      console.log('Added keywords to skills:', keywords);
+    }
+  };
+
+  const applySkillsSuggestion = async (suggestion) => {
+    // Extract skills from the suggestion text
+    const skillMatches = suggestion.text.match(/(?:add|include|highlight|emphasize)\s+(?:these\s+)?skills?:?\s*([^.!?]+)|[""]([^""]+)[""]/gi);
+    const skills = [];
+
+    if (skillMatches) {
+      skillMatches.forEach(match => {
+        const extracted = match.replace(/(?:add|include|highlight|emphasize)\s+(?:these\s+)?skills?:?\s*/i, '').replace(/[""]/g, '');
+        skills.push(...extracted.split(',').map(s => s.trim()).filter(s => s.length > 0));
+      });
+    }
+
+    if (skills.length > 0) {
+      const skillsSection = resume.value.sections.skills || [];
+      const newSkills = [...new Set([...skillsSection, ...skills])];
+
+      await updateResume({
+        id: resume.value.id,
+        sections: {
+          ...resume.value.sections,
+          skills: newSkills
+        }
+      });
+
+      console.log('Added skills:', skills);
+    }
+  };
+
+  const applySummarySuggestion = async (suggestion) => {
+    // For summary suggestions, we'll create an improved version
+    // This is more complex, so for now we'll just mark it as applied
+    // In a full implementation, this would use AI to generate an improved summary
+    console.log('Summary improvement suggestion applied:', suggestion.text);
+
+    // TODO: Implement AI-powered summary improvement
+    // const improvedSummary = await improveSection('summary', suggestion.text);
+    // await updateResume({
+    //   sections: {
+    //     ...resume.value.sections,
+    //     summary: improvedSummary
+    //   }
+    // });
+  };
+
+  const applyExperienceSuggestion = async (suggestion) => {
+    // For experience suggestions, mark as applied
+    // Full implementation would require more sophisticated parsing
+    console.log('Experience improvement suggestion applied:', suggestion.text);
+
+    // TODO: Implement experience section improvements
+    // This could involve:
+    // - Adding quantifiable achievements
+    // - Improving action verbs
+    // - Better formatting
+  };
+
+  const applyQuantifySuggestion = async (suggestion) => {
+    // For quantification suggestions, mark as applied
+    console.log('Quantification suggestion applied:', suggestion.text);
+
+    // TODO: Implement automatic quantification of achievements
+    // This would analyze experience descriptions and add metrics
+  };
+
+  const applyImpactSuggestion = async (suggestion) => {
+    // For impact suggestions, mark as applied
+    console.log('Impact improvement suggestion applied:', suggestion.text);
+
+    // TODO: Implement impact enhancement
+    // This could involve strengthening action verbs and achievements
+  };
+
+  const dismissSuggestion = (suggestion) => {
+    // Remove the suggestion from the list
+    const index = suggestions.value.findIndex(s => s.id === suggestion.id);
+    if (index > -1) {
+      suggestions.value.splice(index, 1);
+    }
+  };
+
+  const getAtsScoreTextColor = (score) => {
+    if (!score || score === 0) return 'text-gray-400';
+    if (score >= 80) return 'text-green-500';
+    if (score >= 60) return 'text-yellow-500';
+    return 'text-red-500';
+  };
+
+  const getAtsScoreBgColor = (score) => {
+    if (!score || score === 0) return 'bg-gray-300';
+    if (score >= 80) return 'bg-green-500';
+    if (score >= 60) return 'bg-yellow-500';
+    return 'bg-red-500';
+  };
+
+  // Job Editing Methods
+  const startEditingJob = () => {
+    if (!job.value) return;
+    isEditingJob.value = true;
+
+    // Load user resumes for the dropdown
+    loadUserResumes();
+
+    editedJob.value = {
+      position: job.value.position || '',
+      company: job.value.company || '',
+      jobDescription: job.value.jobDescription || '',
+      resumeId: job.value.resumeId || '',
+      status: job.value.status || 'saved',
+      appliedDate: job.value.appliedDate ? new Date(job.value.appliedDate).toISOString().split('T')[0] : '',
+      notes: job.value.notes || ''
+    };
+  };
+
+  const cancelEditingJob = () => {
+    isEditingJob.value = false;
+    editedJob.value = {};
+  };
+
+  const handleJobFormSubmit = async (formData) => {
+    if (!job.value) return;
+
+    try {
+      // Prepare the updated application object
+      const updatedApplication = {
+        ...job.value,
+        company: formData.company,
+        position: formData.position,
+        jobDescription: formData.jobDescription,
+        resumeId: formData.resumeId || null,
+        status: formData.status,
+        appliedDate: formData.appliedDate || null,
+        notes: formData.notes || null
+      };
+
+      // Use the update use case
+      const result = await updateJobApplicationUseCase.execute({
+        application: updatedApplication
+      });
+
+      // Update the local job object with the response
+      Object.assign(job.value, result);
+
+      isEditingJob.value = false;
+      editedJob.value = {};
+
+      // Show success feedback (you could add a toast notification here)
+      console.log('Job details updated successfully');
+    } catch (error) {
+      console.error('Failed to save job changes:', error);
+      // Show error feedback
+    }
+  };
+
   return {
     // State
     job,
@@ -772,6 +1132,16 @@ Each suggestion should be:
     // AI Suggestions
     suggestions,
     isGeneratingSuggestions,
+
+    // UI state for feedback
+    appliedSuggestions,
+    lastAppliedSuggestion,
+    showGenerationModal,
+    selectedResumeId,
+
+    // Job editing state
+    isEditingJob,
+    editedJob,
 
     // Computed
     jobKeywords,
@@ -798,6 +1168,30 @@ Each suggestion should be:
     toggleKeywordSelection,
     loadUserResumes,
     linkResumeToApplication,
-    generateSuggestions
+    generateSuggestions,
+
+    // UI Methods
+    handleGenerateClick,
+    closeGenerationModal,
+    startGeneration,
+    handleLinkResumeClick,
+    closeLinkResumeModal,
+    selectResume,
+    getStatusBadgeClass,
+    formatDate,
+    handleGenerateSuggestions,
+    getSuggestionIcon,
+    getSuggestionIconClass,
+    getSuggestionTypeClass,
+    getSuggestionCategoryLabel,
+    applySuggestion,
+    dismissSuggestion,
+    getAtsScoreTextColor,
+    getAtsScoreBgColor,
+
+    // Job Editing Methods
+    startEditingJob,
+    cancelEditingJob,
+    handleJobFormSubmit
   };
 }

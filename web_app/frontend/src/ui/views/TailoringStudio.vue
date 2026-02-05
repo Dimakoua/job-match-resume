@@ -109,6 +109,23 @@
                   Job Details
                 </h3>
                 <div class="flex items-center gap-2">
+                  <button v-if="!isEditingJob" @click="startEditingJob"
+                    class="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-primary bg-primary/10 hover:bg-primary/20 rounded-lg transition-colors">
+                    <span class="material-symbols-outlined text-sm">edit</span>
+                    Edit
+                  </button>
+                  <div v-else class="flex items-center gap-2">
+                    <button @click="cancelEditingJob"
+                      class="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 rounded-lg transition-colors">
+                      <span class="material-symbols-outlined text-sm">close</span>
+                      Cancel
+                    </button>
+                    <button @click="saveJobChanges"
+                      class="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-white bg-primary hover:bg-primary/90 rounded-lg transition-colors">
+                      <span class="material-symbols-outlined text-sm">save</span>
+                      Save
+                    </button>
+                  </div>
                   <span class="text-[10px] font-bold px-2 py-1 bg-blue-100 text-blue-800 rounded uppercase">Details</span>
                   <span v-if="jobKeywords.length > 0" class="text-[10px] font-bold px-2 py-1 bg-yellow-100 text-yellow-800 rounded uppercase">{{ jobKeywords.length }} Keywords</span>
                 </div>
@@ -124,22 +141,10 @@
                   <!-- Job Header -->
                   <div class="border-b border-gray-100 dark:border-white/10 pb-6">
                     <div class="flex items-start justify-between mb-4">
-                      <div>
-                        <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">{{ job.position }}</h1>
-                        <p class="text-lg text-gray-600 dark:text-gray-300 mb-1">{{ job.company }}</p>
-                        <div class="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
-                          <span v-if="job.location" class="flex items-center gap-1">
-                            <span class="material-symbols-outlined text-sm">location_on</span>
-                            {{ job.location }}
-                          </span>
-                          <span v-if="job.salary" class="flex items-center gap-1">
-                            <span class="material-symbols-outlined text-sm">attach_money</span>
-                            {{ job.salary }}
-                          </span>
-                          <span v-if="job.jobType" class="flex items-center gap-1">
-                            <span class="material-symbols-outlined text-sm">work</span>
-                            {{ job.jobType }}
-                          </span>
+                      <div class="flex-1">
+                        <div v-if="!isEditingJob" class="mb-2">
+                          <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ job.position }}</h1>
+                          <p class="text-lg text-gray-600 dark:text-gray-300">{{ job.company }}</p>
                         </div>
                       </div>
                       <div class="text-right">
@@ -159,7 +164,7 @@
                       <span class="material-symbols-outlined text-lg">description</span>
                       Job Description
                     </h2>
-                    <div class="bg-gray-50 dark:bg-background-dark/50 rounded-lg p-4">
+                    <div v-if="!isEditingJob" class="bg-gray-50 dark:bg-background-dark/50 rounded-lg p-4">
                       <p v-if="job.jobDescription" class="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">
                         {{ job.jobDescription }}
                       </p>
@@ -167,36 +172,20 @@
                     </div>
                   </div>
 
-                  <!-- Requirements & Skills -->
-                  <div v-if="job.requirements || jobKeywords.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div v-if="job.requirements">
-                      <h3 class="text-md font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-                        <span class="material-symbols-outlined text-lg">checklist</span>
-                        Requirements
-                      </h3>
-                      <div class="bg-gray-50 dark:bg-background-dark/50 rounded-lg p-4">
-                        <p class="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{{ job.requirements }}</p>
-                      </div>
-                    </div>
-
-                    <div v-if="jobKeywords.length > 0">
-                      <h3 class="text-md font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-                        <span class="material-symbols-outlined text-lg">lightbulb</span>
-                        Key Skills & Keywords
-                      </h3>
-                      <div class="bg-gray-50 dark:bg-background-dark/50 rounded-lg p-4">
-                        <div class="flex flex-wrap gap-2">
-                          <span v-for="keyword in jobKeywords" :key="keyword"
-                            class="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-primary/10 text-primary border border-primary/20">
-                            {{ keyword }}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
+                  <!-- Edit Form -->
+                  <div v-if="isEditingJob">
+                    <JobApplicationForm
+                      :initial-data="editedJob"
+                      :resumes="userResumes"
+                      :loading="false"
+                      submit-button-text="Save Changes"
+                      @submit="handleJobFormSubmit"
+                      @cancel="cancelEditingJob"
+                    />
                   </div>
 
                   <!-- Application Notes -->
-                  <div v-if="job.notes">
+                  <div v-if="job.notes && !isEditingJob">
                     <h3 class="text-md font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
                       <span class="material-symbols-outlined text-lg">note</span>
                       Application Notes
@@ -206,29 +195,7 @@
                     </div>
                   </div>
 
-                  <!-- Contact Information -->
-                  <div v-if="job.contactName || job.contactEmail || job.contactPhone">
-                    <h3 class="text-md font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-                      <span class="material-symbols-outlined text-lg">contact_mail</span>
-                      Contact Information
-                    </h3>
-                    <div class="bg-gray-50 dark:bg-background-dark/50 rounded-lg p-4">
-                      <div class="space-y-2 text-sm">
-                        <p v-if="job.contactName" class="flex items-center gap-2">
-                          <span class="material-symbols-outlined text-sm text-gray-500">person</span>
-                          <span class="text-gray-700 dark:text-gray-300">{{ job.contactName }}</span>
-                        </p>
-                        <p v-if="job.contactEmail" class="flex items-center gap-2">
-                          <span class="material-symbols-outlined text-sm text-gray-500">email</span>
-                          <a :href="`mailto:${job.contactEmail}`" class="text-primary hover:underline">{{ job.contactEmail }}</a>
-                        </p>
-                        <p v-if="job.contactPhone" class="flex items-center gap-2">
-                          <span class="material-symbols-outlined text-sm text-gray-500">phone</span>
-                          <a :href="`tel:${job.contactPhone}`" class="text-primary hover:underline">{{ job.contactPhone }}</a>
-                        </p>
-                      </div>
-                    </div>
-                  </div>
+
                 </div>
                 <div v-else class="flex items-center justify-center h-64">
                   <div class="text-center">
@@ -709,18 +676,10 @@ import { useTailoringStudioController } from '../composables/useTailoringStudioC
 import { useAuthStore } from '../stores/useAuthStore.js';
 import AppHeader from '../components/AppHeader.vue';
 import AppFooter from '../components/AppFooter.vue';
+import JobApplicationForm from '../components/JobApplicationForm.vue';
 
 const route = useRoute();
 const authStore = useAuthStore();
-
-// Get applicationId from route params
-const applicationId = computed(() => route.params.id);
-
-// UI state for feedback
-const appliedSuggestions = ref([]);
-const lastAppliedSuggestion = ref(null);
-const showGenerationModal = ref(false);
-const selectedResumeId = ref(null);
 
 // Use the controller composable
 const {
@@ -754,6 +713,16 @@ const {
   suggestions,
   isGeneratingSuggestions,
 
+  // UI state for feedback
+  appliedSuggestions,
+  lastAppliedSuggestion,
+  showGenerationModal,
+  selectedResumeId,
+
+  // Job editing state
+  isEditingJob,
+  editedJob,
+
   loadApplication,
   generateTailoredResume,
   improveSection,
@@ -761,310 +730,36 @@ const {
   switchSection,
   loadUserResumes,
   linkResumeToApplication,
-  generateSuggestions
-} = useTailoringStudioController(applicationId);
+  generateSuggestions,
+
+  // UI Methods
+  handleGenerateClick,
+  closeGenerationModal,
+  startGeneration,
+  handleLinkResumeClick,
+  closeLinkResumeModal,
+  selectResume,
+  getStatusBadgeClass,
+  formatDate,
+  handleGenerateSuggestions,
+  getSuggestionIcon,
+  getSuggestionIconClass,
+  getSuggestionTypeClass,
+  getSuggestionCategoryLabel,
+  applySuggestion,
+  dismissSuggestion,
+  getAtsScoreTextColor,
+  getAtsScoreBgColor,
+
+  // Job Editing Methods
+  startEditingJob,
+  cancelEditingJob,
+  handleJobFormSubmit
+} = useTailoringStudioController();
 
 onMounted(async () => {
-  if (applicationId.value) {
-    await loadApplication();
-  }
+  await loadApplication();
 });
-
-// UI Methods
-const handleGenerateClick = async () => {
-  await loadUserResumes();
-  selectedResumeId.value = resume.value?.id || (userResumes.value.length > 0 ? userResumes.value[0].id : null);
-  showGenerationModal.value = true;
-};
-
-const closeGenerationModal = () => {
-  showGenerationModal.value = false;
-};
-
-const startGeneration = async () => {
-  try {
-    await generateTailoredResume(generationSettings.value, selectedResumeId.value);
-    showGenerationModal.value = false;
-  } catch (err) {
-    console.error('Generation failed:', err);
-  }
-};
-
-const handleLinkResumeClick = async () => {
-  await loadUserResumes();
-  showLinkResumeModal.value = true;
-};
-
-const closeLinkResumeModal = () => {
-  showLinkResumeModal.value = false;
-};
-
-const selectResume = async (resumeId) => {
-  try {
-    await linkResumeToApplication(resumeId);
-    showLinkResumeModal.value = false;
-  } catch (err) {
-    console.error('Failed to link resume:', err);
-  }
-};
-
-const getStatusBadgeClass = (status) => {
-  switch (status) {
-    case 'saved': return 'bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-900/20 dark:text-amber-400';
-    case 'applied': return 'bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-900/20 dark:text-blue-400';
-    case 'interviewing': return 'bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-400';
-    case 'rejected': return 'bg-red-50 text-red-700 border border-red-200 dark:bg-red-900/20 dark:text-red-400';
-    default: return 'bg-gray-50 text-gray-700 border border-gray-200 dark:bg-gray-900/20 dark:text-gray-400';
-  }
-};
-
-const formatDate = (dateString) => {
-  if (!dateString) return '';
-  const date = new Date(dateString);
-  return date.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
-  });
-};
-
-// AI Suggestions Methods
-const handleGenerateSuggestions = async () => {
-  try {
-    await generateSuggestions();
-  } catch (err) {
-    console.error('Failed to generate suggestions:', err);
-  }
-};
-
-const getSuggestionIcon = (type) => {
-  switch (type) {
-    case 'keywords': return 'label';
-    case 'experience': return 'work';
-    case 'summary': return 'description';
-    case 'education': return 'school';
-    default: return 'lightbulb';
-  }
-};
-
-const getSuggestionIconClass = (type) => {
-  switch (type) {
-    case 'keywords': return 'text-blue-500';
-    case 'experience': return 'text-green-500';
-    case 'summary': return 'text-purple-500';
-    case 'education': return 'text-orange-500';
-    default: return 'text-yellow-500';
-  }
-};
-
-const getSuggestionTypeClass = (type) => {
-  switch (type) {
-    case 'keywords': return 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400';
-    case 'experience': return 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400';
-    case 'summary': return 'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400';
-    case 'education': return 'bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400';
-    default: return 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400';
-  }
-};
-
-const getSuggestionTypeLabel = (type) => {
-  switch (type) {
-    case 'keywords': return 'Keywords';
-    case 'experience': return 'Experience';
-    case 'summary': return 'Summary';
-    case 'education': return 'Education';
-    default: return 'General';
-  }
-};
-
-const getSuggestionCategoryLabel = (category) => {
-  switch (category) {
-    case 'keywords': return 'Keywords';
-    case 'summary': return 'Summary';
-    case 'experience': return 'Experience';
-    case 'skills': return 'Skills';
-    case 'education': return 'Education';
-    case 'quantify': return 'Quantify';
-    case 'ats': return 'ATS';
-    case 'impact': return 'Impact';
-    default: return 'General';
-  }
-};
-
-const applySuggestion = async (suggestion) => {
-  if (!resume.value) {
-    console.error('No resume available to apply suggestion');
-    return;
-  }
-
-  try {
-    // Mark suggestion as applied
-    suggestion.applied = true;
-    appliedSuggestions.value.push(suggestion);
-    lastAppliedSuggestion.value = suggestion;
-
-    // Parse and apply the suggestion based on category
-    switch (suggestion.category.toLowerCase()) {
-      case 'keywords':
-        await applyKeywordSuggestion(suggestion);
-        break;
-      case 'skills':
-        await applySkillsSuggestion(suggestion);
-        break;
-      case 'summary':
-        await applySummarySuggestion(suggestion);
-        break;
-      case 'experience':
-        await applyExperienceSuggestion(suggestion);
-        break;
-      case 'quantify':
-        await applyQuantifySuggestion(suggestion);
-        break;
-      case 'impact':
-        await applyImpactSuggestion(suggestion);
-        break;
-      default:
-        // For other suggestions, just mark as applied and show a message
-        console.log('Applied suggestion:', suggestion.text);
-        break;
-    }
-
-    // Auto-clear feedback after 3 seconds
-    setTimeout(() => {
-      if (lastAppliedSuggestion.value === suggestion) {
-        lastAppliedSuggestion.value = null;
-      }
-    }, 3000);
-
-  } catch (error) {
-    console.error('Failed to apply suggestion:', error);
-    suggestion.applied = false; // Reset if application failed
-    appliedSuggestions.value = appliedSuggestions.value.filter(s => s.id !== suggestion.id);
-  }
-};
-
-const applyKeywordSuggestion = async (suggestion) => {
-  // Extract keywords from the suggestion text
-  const keywordMatches = suggestion.text.match(/(?:add|include|incorporate|use)\s+(?:these\s+)?keywords?:?\s*([^.!?]+)|[""]([^""]+)[""]/gi);
-  const keywords = [];
-
-  if (keywordMatches) {
-    keywordMatches.forEach(match => {
-      const extracted = match.replace(/(?:add|include|incorporate|use)\s+(?:these\s+)?keywords?:?\s*/i, '').replace(/[""]/g, '');
-      keywords.push(...extracted.split(',').map(k => k.trim()).filter(k => k.length > 0));
-    });
-  }
-
-  if (keywords.length > 0) {
-    // Add keywords to the skills section
-    const skillsSection = resume.value.sections.skills || [];
-    const newSkills = [...new Set([...skillsSection, ...keywords])]; // Remove duplicates
-
-    await updateResume({
-      id: resume.value.id,
-      sections: {
-        ...resume.value.sections,
-        skills: newSkills
-      }
-    });
-
-    console.log('Added keywords to skills:', keywords);
-  }
-};
-
-const applySkillsSuggestion = async (suggestion) => {
-  // Extract skills from the suggestion text
-  const skillMatches = suggestion.text.match(/(?:add|include|highlight|emphasize)\s+(?:these\s+)?skills?:?\s*([^.!?]+)|[""]([^""]+)[""]/gi);
-  const skills = [];
-
-  if (skillMatches) {
-    skillMatches.forEach(match => {
-      const extracted = match.replace(/(?:add|include|highlight|emphasize)\s+(?:these\s+)?skills?:?\s*/i, '').replace(/[""]/g, '');
-      skills.push(...extracted.split(',').map(s => s.trim()).filter(s => s.length > 0));
-    });
-  }
-
-  if (skills.length > 0) {
-    const skillsSection = resume.value.sections.skills || [];
-    const newSkills = [...new Set([...skillsSection, ...skills])];
-
-    await updateResume({
-      id: resume.value.id,
-      sections: {
-        ...resume.value.sections,
-        skills: newSkills
-      }
-    });
-
-    console.log('Added skills:', skills);
-  }
-};
-
-const applySummarySuggestion = async (suggestion) => {
-  // For summary suggestions, we'll create an improved version
-  // This is more complex, so for now we'll just mark it as applied
-  // In a full implementation, this would use AI to generate an improved summary
-  console.log('Summary improvement suggestion applied:', suggestion.text);
-
-  // TODO: Implement AI-powered summary improvement
-  // const improvedSummary = await improveSection('summary', suggestion.text);
-  // await updateResume({
-  //   sections: {
-  //     ...resume.value.sections,
-  //     summary: improvedSummary
-  //   }
-  // });
-};
-
-const applyExperienceSuggestion = async (suggestion) => {
-  // For experience suggestions, mark as applied
-  // Full implementation would require more sophisticated parsing
-  console.log('Experience improvement suggestion applied:', suggestion.text);
-
-  // TODO: Implement experience section improvements
-  // This could involve:
-  // - Adding quantifiable achievements
-  // - Improving action verbs
-  // - Better formatting
-};
-
-const applyQuantifySuggestion = async (suggestion) => {
-  // For quantification suggestions, mark as applied
-  console.log('Quantification suggestion applied:', suggestion.text);
-
-  // TODO: Implement automatic quantification of achievements
-  // This would analyze experience descriptions and add metrics
-};
-
-const applyImpactSuggestion = async (suggestion) => {
-  // For impact suggestions, mark as applied
-  console.log('Impact improvement suggestion applied:', suggestion.text);
-
-  // TODO: Implement impact enhancement
-  // This could involve strengthening action verbs and achievements
-};
-
-const dismissSuggestion = (suggestion) => {
-  // Remove the suggestion from the list
-  const index = suggestions.value.findIndex(s => s.id === suggestion.id);
-  if (index > -1) {
-    suggestions.value.splice(index, 1);
-  }
-};
-
-const getAtsScoreTextColor = (score) => {
-  if (!score || score === 0) return 'text-gray-400';
-  if (score >= 80) return 'text-green-500';
-  if (score >= 60) return 'text-yellow-500';
-  return 'text-red-500';
-};
-
-const getAtsScoreBgColor = (score) => {
-  if (!score || score === 0) return 'bg-gray-300';
-  if (score >= 80) return 'bg-green-500';
-  if (score >= 60) return 'bg-yellow-500';
-  return 'bg-red-500';
-};
 </script>
 
 <style scoped>
