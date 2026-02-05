@@ -319,10 +319,98 @@
                 <span class="text-[10px] font-bold px-2 py-1 bg-green-100 text-green-800 rounded uppercase">AI Powered</span>
               </div>
               <div class="p-6 overflow-y-auto">
-                <div class="text-center py-12">
+                <!-- Generate Suggestions Button -->
+                <div v-if="!job || !resume" class="text-center py-12">
                   <span class="material-symbols-outlined text-6xl text-gray-300 mb-4">lightbulb</span>
-                  <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">AI Suggestions Coming Soon</h3>
-                  <p class="text-gray-500 dark:text-gray-400 text-sm">Get personalized recommendations to improve your resume match for this job.</p>
+                  <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">AI Suggestions</h3>
+                  <p class="text-gray-500 dark:text-gray-400 text-sm">Link a resume to this job application to get personalized AI recommendations.</p>
+                </div>
+
+                <div v-else-if="suggestions.length === 0 && !isGeneratingSuggestions" class="text-center py-12">
+                  <span class="material-symbols-outlined text-6xl text-blue-300 mb-4">auto_awesome</span>
+                  <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Ready for AI Analysis</h3>
+                  <p class="text-gray-500 dark:text-gray-400 text-sm mb-6">Get personalized recommendations to improve your resume match for this job.</p>
+                  <button @click="handleGenerateSuggestions"
+                    class="flex items-center gap-2 rounded-lg h-10 px-6 bg-primary text-white text-sm font-semibold mx-auto hover:bg-primary/90 transition-colors">
+                    <span class="material-symbols-outlined text-sm">auto_awesome</span>
+                    Generate Suggestions
+                  </button>
+                </div>
+
+                <!-- Loading State -->
+                <div v-else-if="isGeneratingSuggestions" class="text-center py-12">
+                  <div class="animate-spin mb-4"><span class="material-symbols-outlined text-6xl text-blue-400">auto_awesome</span></div>
+                  <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Analyzing Your Resume</h3>
+                  <p class="text-gray-500 dark:text-gray-400 text-sm">AI is generating personalized suggestions...</p>
+                </div>
+
+                <!-- Suggestions List -->
+                <div v-else-if="suggestions.length > 0" class="space-y-4">
+                  <div class="flex items-center justify-between mb-6">
+                    <div>
+                      <h3 class="text-lg font-semibold text-gray-900 dark:text-white">AI-Powered Recommendations</h3>
+                      <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Personalized suggestions to improve your resume match</p>
+                    </div>
+                    <button @click="handleGenerateSuggestions"
+                      :disabled="isGeneratingSuggestions"
+                      class="flex items-center gap-2 rounded-lg h-8 px-3 bg-primary text-white text-xs font-medium hover:bg-primary/90 disabled:opacity-50 transition-colors">
+                      <span class="material-symbols-outlined text-sm">refresh</span>
+                      {{ isGeneratingSuggestions ? 'Analyzing...' : 'Refresh' }}
+                    </button>
+                  </div>
+
+                  <div class="space-y-3">
+                    <div v-for="suggestion in suggestions" :key="suggestion.id"
+                      class="bg-gradient-to-r from-gray-50 to-white dark:from-background-dark/50 dark:to-background-dark/30 rounded-lg p-4 border border-gray-200 dark:border-white/10 hover:border-primary/30 transition-colors">
+                      <div class="flex items-start gap-3">
+                        <div class="flex-shrink-0 mt-1">
+                          <span :class="['material-symbols-outlined text-sm', getSuggestionIconClass(suggestion.type)]">
+                            {{ getSuggestionIcon(suggestion.type) }}
+                          </span>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                          <div class="flex items-center gap-2 mb-2">
+                            <span :class="['inline-flex items-center px-2 py-1 rounded-md text-xs font-medium', getSuggestionTypeClass(suggestion.type)]">
+                              {{ getSuggestionCategoryLabel(suggestion.category) }}
+                            </span>
+                            <span class="text-xs text-gray-500 dark:text-gray-400">AI Recommendation</span>
+                          </div>
+                          <p class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{{ suggestion.text }}</p>
+                          <div class="flex items-center justify-between mt-3">
+                            <div class="flex items-center gap-2">
+                              <button @click="applySuggestion(suggestion)"
+                                class="flex items-center gap-1 text-xs text-primary hover:text-primary/80 font-medium transition-colors">
+                                <span class="material-symbols-outlined text-sm">check_circle</span>
+                                Apply Suggestion
+                              </button>
+                              <button @click="dismissSuggestion(suggestion)"
+                                class="flex items-center gap-1 text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 font-medium transition-colors">
+                                <span class="material-symbols-outlined text-sm">close</span>
+                                Dismiss
+                              </button>
+                            </div>
+                            <div v-if="suggestion.applied" class="flex items-center gap-1 text-xs text-green-600 dark:text-green-400 font-medium">
+                              <span class="material-symbols-outlined text-sm">check_circle</span>
+                              Applied
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="mt-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                    <div class="flex items-start gap-3">
+                      <span class="material-symbols-outlined text-blue-500 mt-0.5">lightbulb</span>
+                      <div>
+                        <h4 class="text-sm font-medium text-blue-900 dark:text-blue-100 mb-1">How to Use These Suggestions</h4>
+                        <p class="text-xs text-blue-700 dark:text-blue-300 leading-relaxed">
+                          Click "Apply Suggestion" to mark recommendations as implemented, or switch to the Editor tab to manually incorporate changes.
+                          Each suggestion is tailored to improve your ATS score and job match potential.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -499,13 +587,19 @@ const {
   userResumes,
   isLoadingResumes,
   showLinkResumeModal,
+
+  // AI Suggestions
+  suggestions,
+  isGeneratingSuggestions,
+
   loadApplication,
   generateTailoredResume,
   improveSection,
   updateResume,
   switchSection,
   loadUserResumes,
-  linkResumeToApplication
+  linkResumeToApplication,
+  generateSuggestions
 } = useTailoringStudioController(applicationId);
 
 // Modal state
@@ -571,6 +665,92 @@ const formatDate = (dateString) => {
     month: 'short',
     day: 'numeric'
   });
+};
+
+// AI Suggestions Methods
+const handleGenerateSuggestions = async () => {
+  try {
+    await generateSuggestions();
+  } catch (err) {
+    console.error('Failed to generate suggestions:', err);
+  }
+};
+
+const getSuggestionIcon = (type) => {
+  switch (type) {
+    case 'keywords': return 'label';
+    case 'experience': return 'work';
+    case 'summary': return 'description';
+    case 'education': return 'school';
+    default: return 'lightbulb';
+  }
+};
+
+const getSuggestionIconClass = (type) => {
+  switch (type) {
+    case 'keywords': return 'text-blue-500';
+    case 'experience': return 'text-green-500';
+    case 'summary': return 'text-purple-500';
+    case 'education': return 'text-orange-500';
+    default: return 'text-yellow-500';
+  }
+};
+
+const getSuggestionTypeClass = (type) => {
+  switch (type) {
+    case 'keywords': return 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400';
+    case 'experience': return 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400';
+    case 'summary': return 'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400';
+    case 'education': return 'bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400';
+    default: return 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400';
+  }
+};
+
+const getSuggestionTypeLabel = (type) => {
+  switch (type) {
+    case 'keywords': return 'Keywords';
+    case 'experience': return 'Experience';
+    case 'summary': return 'Summary';
+    case 'education': return 'Education';
+    default: return 'General';
+  }
+};
+
+const getSuggestionCategoryLabel = (category) => {
+  switch (category) {
+    case 'keywords': return 'Keywords';
+    case 'summary': return 'Summary';
+    case 'experience': return 'Experience';
+    case 'skills': return 'Skills';
+    case 'education': return 'Education';
+    case 'quantify': return 'Quantify';
+    case 'ats': return 'ATS';
+    case 'impact': return 'Impact';
+    default: return 'General';
+  }
+};
+
+const applySuggestion = async (suggestion) => {
+  // Mark suggestion as applied
+  suggestion.applied = true;
+
+  // For now, just show a toast or notification
+  // In the future, this could automatically apply the suggestion to the resume
+  console.log('Applied suggestion:', suggestion.text);
+
+  // TODO: Implement actual suggestion application logic
+  // This could involve:
+  // 1. Automatically updating resume sections
+  // 2. Adding keywords to specific sections
+  // 3. Improving text content
+};
+
+const dismissSuggestion = (suggestion) => {
+  // Remove the suggestion from the list
+  const index = suggestions.value.findIndex(s => s.id === suggestion.id);
+  if (index > -1) {
+    suggestions.value.splice(index, 1);
+  }
 };
 </script>
 

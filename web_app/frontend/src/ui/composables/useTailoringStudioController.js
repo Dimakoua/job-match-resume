@@ -58,6 +58,10 @@ export function useTailoringStudioController(applicationIdRef) {
   const isLoadingResumes = ref(false);
   const showLinkResumeModal = ref(false);
 
+  // AI Suggestions state
+  const suggestions = ref([]);
+  const isGeneratingSuggestions = ref(false);
+
   // Load settings from localStorage if available
   const savedSettings = localStorage.getItem('generationSettings');
   if (savedSettings) {
@@ -359,8 +363,17 @@ export function useTailoringStudioController(applicationIdRef) {
     }
   };
 
-  const switchSection = (section) => {
+  const switchSection = async (section) => {
     activeSection.value = section;
+
+    // Auto-generate suggestions when switching to suggestions tab
+    if (section === 'suggestions' && suggestions.value.length === 0 && job.value?.jobDescription && resume.value && !isGeneratingSuggestions.value) {
+      try {
+        await generateSuggestions();
+      } catch (err) {
+        console.error('Failed to auto-generate suggestions:', err);
+      }
+    }
   };
 
   const toggleKeywordSelection = (keyword) => {
@@ -423,6 +436,111 @@ export function useTailoringStudioController(applicationIdRef) {
     }
   };
 
+  const generateSuggestions = async () => {
+    if (!job.value?.jobDescription || !resume.value) {
+      throw new Error('Job description and resume are required for suggestions');
+    }
+
+    isGeneratingSuggestions.value = true;
+    error.value = null;
+
+    try {
+      const prompt = `You are an expert resume consultant and ATS specialist. Analyze this job description and current resume, then provide 6-8 specific, actionable suggestions to improve the resume's match for this position.
+
+JOB DESCRIPTION:
+${job.value.jobDescription}
+
+CURRENT RESUME:
+${resumeText.value}
+
+Provide suggestions in this EXACT format (one per line, starting with category):
+
+KEYWORDS: Add these specific keywords to your resume: [list 3-5 relevant keywords from job description]
+SUMMARY: [One specific improvement for the professional summary]
+EXPERIENCE: [One specific way to enhance work experience descriptions]
+SKILLS: [Specific skills to highlight or add]
+EDUCATION: [If applicable, improvements for education section]
+QUANTIFY: [How to add quantifiable achievements]
+ATS: [ATS-specific optimization tips]
+IMPACT: [How to make achievements more impactful]
+
+Each suggestion should be:
+- Specific and actionable
+- Focused on improving job match
+- ATS-friendly
+- Professional in tone
+- Limited to one clear recommendation per category`;
+
+      const response = await improveTextUseCase.execute(prompt);
+
+      // Parse the AI response - improveText returns { originalText, variations }
+      // Each variation should contain suggestions, so we'll combine and parse them
+      let suggestionText = '';
+      if (response.variations && Array.isArray(response.variations)) {
+        suggestionText = response.variations.join('\n\n');
+      } else if (response.improvedText) {
+        // Fallback for different response format
+        suggestionText = response.improvedText;
+      } else {
+        throw new Error('Unexpected response format from AI service');
+      }
+
+      // Parse the AI response into structured suggestions
+      const suggestionLines = suggestionText.split('\n').filter(line => line.trim());
+
+      suggestions.value = suggestionLines
+        .filter(line => {
+          const trimmed = line.trim();
+          return trimmed.includes(':') &&
+                 (trimmed.toUpperCase().startsWith('KEYWORDS:') ||
+                  trimmed.toUpperCase().startsWith('SUMMARY:') ||
+                  trimmed.toUpperCase().startsWith('EXPERIENCE:') ||
+                  trimmed.toUpperCase().startsWith('SKILLS:') ||
+                  trimmed.toUpperCase().startsWith('EDUCATION:') ||
+                  trimmed.toUpperCase().startsWith('QUANTIFY:') ||
+                  trimmed.toUpperCase().startsWith('ATS:') ||
+                  trimmed.toUpperCase().startsWith('IMPACT:'));
+        })
+        .map((line, index) => {
+          const trimmed = line.trim();
+          const colonIndex = trimmed.indexOf(':');
+          const category = trimmed.substring(0, colonIndex).toLowerCase();
+          const text = trimmed.substring(colonIndex + 1).trim();
+
+          return {
+            id: `suggestion-${index}`,
+            text: text,
+            type: getSuggestionTypeFromCategory(category),
+            category: category,
+            applied: false
+          };
+        })
+        .filter(suggestion => suggestion.text.length > 0)
+        .slice(0, 8); // Limit to 8 suggestions
+
+    } catch (err) {
+      error.value = 'Failed to generate suggestions. Please try again.';
+      console.error('Error generating suggestions:', err);
+      suggestions.value = [];
+    } finally {
+      isGeneratingSuggestions.value = false;
+    }
+  };
+
+  const getSuggestionTypeFromCategory = (category) => {
+    switch (category.toLowerCase()) {
+      case 'keywords': return 'keywords';
+      case 'summary': return 'summary';
+      case 'experience': return 'experience';
+      case 'skills': return 'skills';
+      case 'education': return 'education';
+      case 'quantify': return 'experience';
+      case 'ats': return 'general';
+      case 'impact': return 'experience';
+      default: return 'general';
+    }
+  };
+
   return {
     // State
     job,
@@ -441,6 +559,10 @@ export function useTailoringStudioController(applicationIdRef) {
     isLoadingResumes,
     showLinkResumeModal,
 
+    // AI Suggestions
+    suggestions,
+    isGeneratingSuggestions,
+
     // Computed
     jobKeywords,
     resumeText,
@@ -457,6 +579,7 @@ export function useTailoringStudioController(applicationIdRef) {
     switchSection,
     toggleKeywordSelection,
     loadUserResumes,
-    linkResumeToApplication
+    linkResumeToApplication,
+    generateSuggestions
   };
 }
