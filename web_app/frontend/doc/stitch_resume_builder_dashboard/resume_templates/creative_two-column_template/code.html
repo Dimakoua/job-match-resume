@@ -1,0 +1,233 @@
+<html class="light"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&amp;family=Noto+Serif:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#7c3bed",
+                        "background-light": "#f7f6f8",
+                        "background-dark": "#171121",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"],
+                        "serif": ["Noto Serif", "serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen">
+<div class="layout-container flex h-full grow flex-col">
+<!-- Top Navigation Bar -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-slate-800 bg-white dark:bg-background-dark px-10 py-3 sticky top-0 z-50">
+<div class="flex items-center gap-4 text-primary">
+<div class="size-6">
+<svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_6_330)">
+<path clip-rule="evenodd" d="M24 0.757355L47.2426 24L24 47.2426L0.757355 24L24 0.757355ZM21 35.7574V12.2426L9.24264 24L21 35.7574Z" fill="currentColor" fill-rule="evenodd"></path>
+</g>
+<defs>
+<clippath id="clip0_6_330"><rect fill="white" height="48" width="48"></rect></clippath>
+</defs>
+</svg>
+</div>
+<h2 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">AI Resume Builder</h2>
+</div>
+<div class="flex flex-1 justify-end gap-8">
+<nav class="flex items-center gap-9">
+<a class="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors" href="#">Templates</a>
+<a class="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors" href="#">My Resumes</a>
+<a class="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors" href="#">Tips</a>
+</nav>
+<div class="flex gap-2">
+<button class="flex min-w-[84px] cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold hover:bg-primary/90 transition-colors">
+<span class="truncate">Download PDF</span>
+</button>
+<button class="flex min-w-[84px] cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white text-sm font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+<span class="truncate">Save</span>
+</button>
+</div>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border border-slate-200 dark:border-slate-700" data-alt="User profile photo avatar" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuD3DuQfHbAoBsLDOLsCPaIumPBlpEUi8fY78AWMjF6m3TjX0iRQcng6wbT_aCSSG5r29WhmWLni7SFL3MltjHDPfjJKO9nDgOVVnYhiwRRrTsHHFUZ3ChgAZGeA51e_PPMSremVvHA-BKobUueffeCq3tUp7xEY80FWqYAsyMW2Z0YoRh1QcV8TdQDcLL-UKLGHIW1TvERoADarwWoObhAbi5QgiX7UqFAj7niIo5NN92C86TZlyOwKOwbztw94qfPMsHkTv2nLKUU");'></div>
+</div>
+</header>
+<!-- Resume Workspace -->
+<main class="flex-1 flex justify-center py-10 px-4">
+<div class="max-w-[1000px] w-full bg-white dark:bg-slate-900 shadow-2xl rounded-xl overflow-hidden flex flex-col md:flex-row min-h-[1200px]">
+<!-- Left Column (1/3 Sidebar) -->
+<aside class="w-full md:w-1/3 bg-slate-50 dark:bg-slate-800/50 p-8 flex flex-col gap-10 border-r border-slate-100 dark:border-slate-800">
+<!-- Profile Section -->
+<div class="flex flex-col items-center text-center gap-4">
+<div class="size-40 rounded-2xl bg-primary/10 overflow-hidden border-4 border-white dark:border-slate-800 shadow-lg rotate-3 hover:rotate-0 transition-transform duration-300">
+<div class="w-full h-full bg-cover bg-center" data-alt="Professional creative male portrait" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCmNAwPuLGujTeIPStQTy3arSLcd5q3wWDhHBeHAKH4lSwqhNajBv1Zub6g--wxo_d-JMsiY8ubhfFiAeoloQ-M62V2XgwWg5Era4iJSFysJjnyPxEcc_T23veArr80o5FIuSpUYPiGAxyszXYEnSdWI8Tam7OuvG5X0sGre6dO1hkhjJMeiR_mysnp_qXKNvvBsFvqz_a38mOJPR-auAhy4ZnD6UGJMZmmJyD-POXWHrjUdQhkoAOau_MsPM0KMJ6ECPiTwD_8-RE");'></div>
+</div>
+<div class="mt-4">
+<h1 class="text-3xl font-black text-slate-900 dark:text-white leading-tight">JULIAN<br/>VAUGHN</h1>
+<p class="text-primary font-bold tracking-widest text-xs uppercase mt-2">Senior Art Director</p>
+</div>
+</div>
+<!-- Contact Section -->
+<div class="flex flex-col gap-4">
+<h3 class="text-slate-900 dark:text-white font-bold text-sm uppercase tracking-wider border-b border-primary/20 pb-2">Contact</h3>
+<div class="flex flex-col gap-3">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-xl">mail</span>
+<span class="text-sm text-slate-600 dark:text-slate-400">julian.v@studio.com</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-xl">phone_iphone</span>
+<span class="text-sm text-slate-600 dark:text-slate-400">+1 (555) 012-3456</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-xl">location_on</span>
+<span class="text-sm text-slate-600 dark:text-slate-400">Brooklyn, NY</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-xl">language</span>
+<span class="text-sm text-slate-600 dark:text-slate-400">www.vaughn.design</span>
+</div>
+</div>
+</div>
+<!-- Skills Section -->
+<div class="flex flex-col gap-6">
+<h3 class="text-slate-900 dark:text-white font-bold text-sm uppercase tracking-wider border-b border-primary/20 pb-2">Core Skills</h3>
+<div class="space-y-4">
+<div>
+<div class="flex justify-between mb-1">
+<span class="text-xs font-bold text-slate-700 dark:text-slate-300">UI/UX Design</span>
+<span class="text-xs font-bold text-primary">95%</span>
+</div>
+<div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-1.5">
+<div class="bg-primary h-1.5 rounded-full" style="width: 95%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between mb-1">
+<span class="text-xs font-bold text-slate-700 dark:text-slate-300">Brand Identity</span>
+<span class="text-xs font-bold text-primary">90%</span>
+</div>
+<div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-1.5">
+<div class="bg-primary h-1.5 rounded-full" style="width: 90%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between mb-1">
+<span class="text-xs font-bold text-slate-700 dark:text-slate-300">Motion Graphics</span>
+<span class="text-xs font-bold text-primary">85%</span>
+</div>
+<div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-1.5">
+<div class="bg-primary h-1.5 rounded-full" style="width: 85%"></div>
+</div>
+</div>
+</div>
+<div class="flex flex-wrap gap-2 mt-2">
+<span class="px-3 py-1 bg-primary text-white text-[10px] font-bold rounded-full uppercase">Figma</span>
+<span class="px-3 py-1 bg-primary/10 text-primary text-[10px] font-bold rounded-full uppercase dark:bg-primary/20">After Effects</span>
+<span class="px-3 py-1 bg-primary text-white text-[10px] font-bold rounded-full uppercase">React</span>
+<span class="px-3 py-1 bg-primary/10 text-primary text-[10px] font-bold rounded-full uppercase dark:bg-primary/20">Tailwind</span>
+</div>
+</div>
+</aside>
+<!-- Right Column (2/3 Main Content) -->
+<article class="w-full md:w-2/3 p-10 flex flex-col gap-12 bg-white dark:bg-slate-900">
+<!-- Profile Summary -->
+<section>
+<h2 class="text-2xl font-black text-slate-900 dark:text-white mb-4 flex items-center gap-3">
+<span class="size-2 bg-primary rounded-full"></span>
+                            Profile
+                        </h2>
+<p class="font-serif text-slate-600 dark:text-slate-400 leading-relaxed text-lg italic">
+                            Award-winning Art Director with over 8 years of experience in creating digital-first brand experiences. Expert in blending high-end aesthetics with functional user interfaces for global tech brands. Passionate about mentoring junior talent and pushing the boundaries of interactive storytelling.
+                        </p>
+</section>
+<!-- Experience Section -->
+<section>
+<h2 class="text-2xl font-black text-slate-900 dark:text-white mb-6 flex items-center gap-3">
+<span class="size-2 bg-primary rounded-full"></span>
+                            Experience
+                        </h2>
+<div class="space-y-8">
+<!-- Job 1 -->
+<div class="relative pl-6 border-l-2 border-slate-100 dark:border-slate-800">
+<div class="absolute -left-[9px] top-0 size-4 bg-primary rounded-full ring-4 ring-white dark:ring-slate-900"></div>
+<div class="flex flex-wrap justify-between items-start mb-2">
+<div>
+<h4 class="text-lg font-bold text-slate-900 dark:text-white leading-tight">Senior Art Director</h4>
+<p class="text-primary font-semibold text-sm">Lumina Creative Agency</p>
+</div>
+<span class="text-xs font-bold bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded text-slate-500">2020 — PRESENT</span>
+</div>
+<ul class="font-serif text-slate-600 dark:text-slate-400 space-y-2 text-sm leading-relaxed list-disc ml-4">
+<li>Directed visual strategy for 15+ Fortune 500 client campaigns, resulting in a 40% increase in brand engagement.</li>
+<li>Led a multi-disciplinary team of 12 designers, illustrators, and developers.</li>
+<li>Pioneered the agency's new design system framework, reducing production time by 25%.</li>
+</ul>
+</div>
+<!-- Job 2 -->
+<div class="relative pl-6 border-l-2 border-slate-100 dark:border-slate-800">
+<div class="absolute -left-[9px] top-0 size-4 bg-slate-200 dark:bg-slate-700 rounded-full ring-4 ring-white dark:ring-slate-900"></div>
+<div class="flex flex-wrap justify-between items-start mb-2">
+<div>
+<h4 class="text-lg font-bold text-slate-900 dark:text-white leading-tight">Visual UI Designer</h4>
+<p class="text-primary font-semibold text-sm">Starlight Interactive</p>
+</div>
+<span class="text-xs font-bold bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded text-slate-500">2017 — 2020</span>
+</div>
+<ul class="font-serif text-slate-600 dark:text-slate-400 space-y-2 text-sm leading-relaxed list-disc ml-4">
+<li>Crafted pixel-perfect interfaces for mobile applications with over 2 million active monthly users.</li>
+<li>Collaborated with engineering teams to ensure design fidelity across all platforms.</li>
+<li>Developed motion prototypes that improved stakeholder buy-in during concept pitches.</li>
+</ul>
+</div>
+</div>
+</section>
+<!-- Projects Section -->
+<section>
+<h2 class="text-2xl font-black text-slate-900 dark:text-white mb-6 flex items-center gap-3">
+<span class="size-2 bg-primary rounded-full"></span>
+                            Recent Projects
+                        </h2>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<div class="group p-4 rounded-xl border border-slate-100 dark:border-slate-800 hover:border-primary/30 transition-all hover:bg-slate-50 dark:hover:bg-slate-800/30">
+<h4 class="font-bold text-slate-900 dark:text-white mb-1 group-hover:text-primary transition-colors">NeoBank Rebrand</h4>
+<p class="text-xs font-serif text-slate-500 italic mb-2">Lead Designer</p>
+<p class="text-xs text-slate-600 dark:text-slate-400 leading-snug">Complete visual overhaul for a fintech startup, including mobile app, marketing site, and physical debit cards.</p>
+</div>
+<div class="group p-4 rounded-xl border border-slate-100 dark:border-slate-800 hover:border-primary/30 transition-all hover:bg-slate-50 dark:hover:bg-slate-800/30">
+<h4 class="font-bold text-slate-900 dark:text-white mb-1 group-hover:text-primary transition-colors">Aether OS</h4>
+<p class="text-xs font-serif text-slate-500 italic mb-2">UI Architect</p>
+<p class="text-xs text-slate-600 dark:text-slate-400 leading-snug">Design system and core interface components for a new privacy-focused operating system concept.</p>
+</div>
+</div>
+</section>
+<!-- Education -->
+<section>
+<h2 class="text-2xl font-black text-slate-900 dark:text-white mb-6 flex items-center gap-3">
+<span class="size-2 bg-primary rounded-full"></span>
+                            Education
+                        </h2>
+<div class="flex justify-between items-center">
+<div>
+<h4 class="font-bold text-slate-900 dark:text-white">BFA in Graphic Design</h4>
+<p class="text-sm text-slate-600 dark:text-slate-400">Rhode Island School of Design</p>
+</div>
+<span class="text-xs font-bold text-primary italic">Graduated 2017</span>
+</div>
+</section>
+</article>
+</div>
+</main>
+<!-- Floating Action Button for Mobile Customization -->
+<button class="fixed bottom-8 right-8 size-14 bg-primary text-white rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition-transform md:hidden">
+<span class="material-symbols-outlined">palette</span>
+</button>
+</div>
+</body></html>

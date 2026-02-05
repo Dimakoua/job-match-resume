@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Technical Engineering Template - AI Resume Builder</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#4211d4",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#151022",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"],
+                        "mono": ["JetBrains Mono", "monospace"]
+                    },
+                    borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+                },
+            },
+        }
+    </script>
+<style>
+        .resume-container {
+            font-family: 'Inter', sans-serif;
+        }
+        .resume-header {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .ats-optimized {
+            line-height: 1.4;
+            letter-spacing: -0.01em;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen">
+<div class="relative flex h-auto min-h-screen w-full flex-col bg-background-light dark:bg-background-dark group/design-root overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<!-- Top Navigation Bar -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-slate-800 px-10 py-3 bg-white dark:bg-slate-900">
+<div class="flex items-center gap-4 text-primary">
+<div class="size-6">
+<svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path clip-rule="evenodd" d="M24 0.757355L47.2426 24L24 47.2426L0.757355 24L24 0.757355ZM21 35.7574V12.2426L9.24264 24L21 35.7574Z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+</div>
+<h2 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-tight">AI Resume Builder</h2>
+</div>
+<div class="flex flex-1 justify-end gap-8">
+<div class="flex items-center gap-9">
+<a class="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors" href="#">Templates</a>
+<a class="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors" href="#">My Resumes</a>
+<a class="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors" href="#">Tips</a>
+</div>
+<button class="flex min-w-[120px] cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold shadow-sm hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined mr-2 text-sm">picture_as_pdf</span>
+<span class="truncate">Export PDF</span>
+</button>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border border-slate-200 dark:border-slate-700" data-alt="User profile avatar circle" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAGSfgEzMc62spxNPEhy_Xj516lw2TpHe7lYk9iZBszcPZALfukHvsLT-K1rYs4h-JOr0nKwMK1hhFjjxNc8GwUtE0PsM3alLHYJVVl7muc3-yCj993-IPBSK-KMbejqU4vHwPwsCVcNUZxxn3R-IMQEeFIsAkWjq8-2mo4_QcT8_9nZhOS_gMTohvhyy5orOC9ez6V5by-_vlJ2hZz8UAgC2cFrDzfF2IeaSJiN-WDpRlIvTfkUtZjKPq8OlyPNx7C1rNn0T-K_bA");'></div>
+</div>
+</header>
+<main class="flex flex-1 flex-row">
+<!-- Sidebar Controls -->
+<aside class="w-72 border-r border-slate-200 dark:border-slate-800 p-6 flex flex-col gap-6 bg-white dark:bg-slate-900">
+<div class="flex flex-col">
+<h1 class="text-slate-900 dark:text-white text-base font-bold">Technical Template</h1>
+<p class="text-primary text-xs font-semibold uppercase tracking-wider">Variant 2 of 3</p>
+</div>
+<nav class="flex flex-col gap-1">
+<div class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg cursor-pointer transition-colors">
+<span class="material-symbols-outlined text-lg">person</span>
+<p class="text-sm font-medium">Personal Info</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg bg-primary/10 text-primary cursor-pointer">
+<span class="material-symbols-outlined text-lg">work</span>
+<p class="text-sm font-bold">Experience</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg cursor-pointer">
+<span class="material-symbols-outlined text-lg">build</span>
+<p class="text-sm font-medium">Skills</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg cursor-pointer">
+<span class="material-symbols-outlined text-lg">code</span>
+<p class="text-sm font-medium">Projects</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg cursor-pointer">
+<span class="material-symbols-outlined text-lg">school</span>
+<p class="text-sm font-medium">Education</p>
+</div>
+</nav>
+<div class="mt-auto p-4 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
+<p class="text-xs text-slate-500 dark:text-slate-400 mb-2">ATS Score</p>
+<div class="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
+<div class="bg-green-500 h-full w-[94%]"></div>
+</div>
+<p class="text-xs font-bold text-green-600 dark:text-green-400 mt-2">94% - Excellent</p>
+</div>
+</aside>
+<!-- Editor / Preview Area -->
+<div class="flex-1 overflow-y-auto p-8 bg-background-light dark:bg-background-dark">
+<div class="max-w-[850px] mx-auto shadow-2xl">
+<!-- Resume Sheet -->
+<div class="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 p-12 min-h-[1100px] flex flex-col gap-6 resume-container ats-optimized">
+<!-- Header -->
+<div class="border-b-2 border-slate-900 dark:border-slate-100 pb-4">
+<h1 class="resume-header text-4xl font-black uppercase tracking-tighter">Alex Rivera</h1>
+<p class="resume-header text-lg font-medium text-primary mt-1">Senior Software Engineer | Backend &amp; Distributed Systems</p>
+<div class="flex flex-wrap gap-x-4 gap-y-1 mt-3 text-sm font-medium text-slate-600 dark:text-slate-400">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-base">mail</span> alex.rivera@email.dev</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-base">location_on</span> San Francisco, CA</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-base">link</span> github.com/arivera</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-base">link</span> linkedin.com/in/arivera</span>
+</div>
+</div>
+<!-- Summary -->
+<section>
+<p class="text-sm">
+                                    Performance-driven Senior Software Engineer with 8+ years of experience in architecting scalable microservices and high-throughput data pipelines. Expert in Go, Python, and cloud-native infrastructure. Proven track record of optimizing system latency by 40% and managing distributed teams.
+                                </p>
+</section>
+<!-- Technical Skills (Top-level grid for engineers) -->
+<section>
+<h2 class="resume-header text-xs font-bold uppercase tracking-widest text-slate-500 border-b border-slate-200 dark:border-slate-800 pb-1 mb-3">Technical Skills</h2>
+<div class="grid grid-cols-3 gap-4">
+<div>
+<h3 class="resume-header text-[11px] font-bold text-slate-900 dark:text-slate-100 uppercase">Languages</h3>
+<p class="text-sm mt-1">Go, Python, Rust, TypeScript, C++, SQL (PostgreSQL), Bash</p>
+</div>
+<div>
+<h3 class="resume-header text-[11px] font-bold text-slate-900 dark:text-slate-100 uppercase">Frameworks</h3>
+<p class="text-sm mt-1">gRPC, Gin, Django, React, Node.js, TensorFlow, PyTorch</p>
+</div>
+<div>
+<h3 class="resume-header text-[11px] font-bold text-slate-900 dark:text-slate-100 uppercase">Tools &amp; Infra</h3>
+<p class="text-sm mt-1">AWS, Docker, Kubernetes, Terraform, Redis, Kafka, Jenkins</p>
+</div>
+</div>
+</section>
+<!-- Professional Experience -->
+<section class="flex flex-col gap-6">
+<h2 class="resume-header text-xs font-bold uppercase tracking-widest text-slate-500 border-b border-slate-200 dark:border-slate-800 pb-1 mb-1">Professional Experience</h2>
+<!-- Entry 1 -->
+<div class="flex flex-col gap-2">
+<div class="flex justify-between items-baseline">
+<h3 class="font-bold text-base resume-header uppercase">Senior Software Engineer | TechFlow Systems</h3>
+<span class="resume-header text-sm font-medium">Jan 2021 — Present</span>
+</div>
+<ul class="list-disc list-inside text-sm text-slate-700 dark:text-slate-300 space-y-1">
+<li>Architected and deployed a real-time analytics engine processing 500k+ events/sec using Go and Apache Kafka.</li>
+<li>Reduced infrastructure costs by 35% through container orchestration optimization and spot instance implementation in AWS.</li>
+<li>Led a team of 5 backend engineers, implementing TDD practices and reducing production bugs by 22%.</li>
+</ul>
+<p class="text-[11px] font-mono font-medium text-blue-600 dark:text-blue-400">
+<span class="font-bold uppercase mr-1">Technologies used:</span> Go, Kubernetes, Kafka, Prometheus, AWS, PostgreSQL
+                                    </p>
+</div>
+<!-- Entry 2 -->
+<div class="flex flex-col gap-2">
+<div class="flex justify-between items-baseline">
+<h3 class="font-bold text-base resume-header uppercase">Software Engineer III | CloudScale Labs</h3>
+<span class="resume-header text-sm font-medium">July 2018 — Dec 2020</span>
+</div>
+<ul class="list-disc list-inside text-sm text-slate-700 dark:text-slate-300 space-y-1">
+<li>Developed internal CI/CD tooling in Python that reduced deployment time from 45 minutes to 8 minutes.</li>
+<li>Implemented OAuth2 and JWT-based security layers for a suite of 15 microservices.</li>
+<li>Optimized database queries for a legacy monolith, reducing average API response time from 1.2s to 300ms.</li>
+</ul>
+<p class="text-[11px] font-mono font-medium text-blue-600 dark:text-blue-400">
+<span class="font-bold uppercase mr-1">Technologies used:</span> Python, Django, Docker, Redis, Jenkins, Terraform
+                                    </p>
+</div>
+</section>
+<!-- Selected Projects -->
+<section class="flex flex-col gap-4">
+<h2 class="resume-header text-xs font-bold uppercase tracking-widest text-slate-500 border-b border-slate-200 dark:border-slate-800 pb-1 mb-1">Selected Projects</h2>
+<div class="grid grid-cols-2 gap-6">
+<div class="flex flex-col gap-1">
+<h3 class="font-bold text-sm resume-header uppercase underline decoration-primary/30 underline-offset-4">Distributed KV Store</h3>
+<p class="text-xs text-slate-700 dark:text-slate-300">Custom implementation of Raft consensus algorithm for a distributed key-value store. Built for high availability and strong consistency.</p>
+<p class="text-[10px] font-mono text-blue-600 dark:text-blue-400">Rust, gRPC, Protobuf</p>
+</div>
+<div class="flex flex-col gap-1">
+<h3 class="font-bold text-sm resume-header uppercase underline decoration-primary/30 underline-offset-4">ML Data Pipeline</h3>
+<p class="text-xs text-slate-700 dark:text-slate-300">Automated ETL pipeline processing genomic data for research. Integrated with AWS S3 and Lambda for serverless scaling.</p>
+<p class="text-[10px] font-mono text-blue-600 dark:text-blue-400">Python, Spark, Airflow</p>
+</div>
+</div>
+</section>
+<!-- Education -->
+<section>
+<h2 class="resume-header text-xs font-bold uppercase tracking-widest text-slate-500 border-b border-slate-200 dark:border-slate-800 pb-1 mb-3">Education</h2>
+<div class="flex justify-between items-baseline">
+<div>
+<h3 class="font-bold text-sm resume-header uppercase">B.S. Computer Science | Stanford University</h3>
+<p class="text-xs italic text-slate-600 dark:text-slate-400">Relevant Coursework: Distributed Systems, Operating Systems, Compilers</p>
+</div>
+<span class="resume-header text-sm font-medium">Graduated 2018</span>
+</div>
+</section>
+</div>
+</div>
+</div>
+<!-- Right Sidebar: Quick Actions -->
+<aside class="w-16 border-l border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col items-center py-6 gap-6">
+<button class="size-10 flex items-center justify-center rounded-lg text-slate-400 hover:text-primary hover:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined">zoom_in</span>
+</button>
+<button class="size-10 flex items-center justify-center rounded-lg text-slate-400 hover:text-primary hover:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined">zoom_out</span>
+</button>
+<div class="w-8 h-px bg-slate-200 dark:bg-slate-800"></div>
+<button class="size-10 flex items-center justify-center rounded-lg text-slate-400 hover:text-primary hover:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined">palette</span>
+</button>
+<button class="size-10 flex items-center justify-center rounded-lg text-slate-400 hover:text-primary hover:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</aside>
+</main>
+</div>
+</div>
+</body></html>
