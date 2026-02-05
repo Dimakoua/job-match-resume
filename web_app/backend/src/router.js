@@ -13,7 +13,10 @@ import { logger } from './utils/logger.js';
 
 // ==================== MIDDLEWARE ====================
 
-const apiRateLimit = rateLimitMiddleware({
+// Check if we're in development environment
+const isDevelopment = typeof process !== 'undefined' && process.env.NODE_ENV === 'development';
+
+const apiRateLimit = isDevelopment ? null : rateLimitMiddleware({
   level: 'STANDARD',
   excludePaths: ['/api/health', '/']
 });
@@ -36,7 +39,7 @@ const corsHeaders = {
 // ==================== ROUTER ====================
 
 const router = AutoRouter({
-  before: [correlationIdMiddleware, apiRateLimit],
+  before: [correlationIdMiddleware, ...(apiRateLimit ? [apiRateLimit] : [])],
   finally: [(response) => {
     // Clear correlation ID after request
     logger.clearCorrelationId();
