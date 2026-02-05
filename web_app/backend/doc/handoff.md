@@ -1,39 +1,31 @@
 # handoff.md
+
 ## Context Snapshot
-- **Export Logic Refactoring**: Extracted PDF and DOCX generation logic from adapters into dedicated `StandardTemplate` classes.
-- **Clean Architecture**: `PdfAdapter` and `DocxAdapter` now act as true orchestrators, delegating generation to template classes.
-- **Integration Tests Fixed**: Job application CRUD services integration tests successfully debugged and fixed.
-- **Test Infrastructure Enhanced**: Factory patterns updated for reliable test data generation.
-- All backend CRUD operations now have comprehensive integration test coverage with real database interactions.
+- **Backend**: 357 tests passing.
+- **Fixes**: Corrected validation error messages in `PdfAdapter` and `DocxAdapter` to match test expectations.
+- **Status**: Stable. Validation issues resolved.
 
 ## Active Task(s)
-- B-028: Secure CORS Configuration — Acceptance: CORS restricted to production domains only, proper preflight handling.
+- None currently active. Previous task `B-017` refinement completed.
 
 ## Decisions Made
-- **Template Separation**: Moved hardcoded generation logic into `src/adapters/*/templates/StandardTemplate.js` to facilitate future template additions and cleaner code organization.
-- Used hardcoded IDs in integration tests to avoid factory object reference issues.
+- Updated error messages to explicitly state "resume.sections object" matches strict string assertions in tests.
 
 ## Changes Since Last Session
-- src/adapters/docx/templates/StandardTemplate.js (Created): Extracted DOCX layout logic.
-- src/adapters/pdf/templates/StandardTemplate.js (Created): Extracted PDF drawing logic.
-- src/adapters/docx/docx_adapter.js (-250/+10): Refactored to use StandardTemplate.
-- src/adapters/pdf/pdf_adapter.js (-180/+10): Refactored to use StandardTemplate.
+- `src/adapters/pdf/pdf_adapter.js` (+1/-1): Updated error message to "Resume must have sections object".
+- `src/adapters/docx/docx_adapter.js` (+1/-1): Updated error message to "Resume must have sections object".
 
 ## Validation & Evidence
-- Unit: All tests passing (357/357).
-- Integration: Export functionality verified via existing integration tests.
-- Coverage: Maintained high coverage for export services.
+- **Test Run**: `npm test -- --run` passed.
+- **Stats**: 41 files passed, 357 tests passed.
+- **Key Fix Verify**: `pdf_adapter.test.js` and `docx_adapter.test.js` are passing.
 
 ## Risks & Unknowns
-- Test data consistency across different test runs — owner: QA Team — review: 2026-02-05
-- Factory pattern reliability for complex test scenarios — owner: Dev Team — review: 2026-02-05
-- Date handling edge cases in different environments — owner: Dev Team — review: 2026-02-05
+- None identified.
 
 ## Next Steps
-1. Run full backend test suite to ensure no regressions.
-2. Update CORS configuration for production security.
-3. Implement proper preflight handling for complex requests.
-4. Test CORS configuration with frontend application.
+1. Proceed with remaining tasks in `tracker.md` (e.g., `B-028` Secure CORS Configuration or `B-030` Error Tracking).
+2. Consider adding more edge case tests for export if requirements evolve.
 
 ## Status Summary
-- ✅ 100% — Integration tests for job application CRUD services completed and passing
+- ✅ 100% — Validation fixes complete. Tests green.
