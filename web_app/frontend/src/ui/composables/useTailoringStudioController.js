@@ -82,12 +82,133 @@ export function useTailoringStudioController(applicationIdRef) {
 
   const resumeText = computed(() => {
     if (!resume.value?.sections) return '';
-    return resume.value.sections.map(section => section.content || '').join('\n\n');
+
+    // Handle array format (AI generated resumes)
+    if (Array.isArray(resume.value.sections)) {
+      return resume.value.sections.map(section => section.content || '').join('\n\n');
+    }
+
+    // Handle flat Builder format (existing resumes)
+    const sections = resume.value.sections;
+    let text = '';
+
+    if (sections.summary) text += sections.summary + '\n\n';
+    if (sections.experience && Array.isArray(sections.experience)) {
+      text += sections.experience.map(exp =>
+        `${exp.title} at ${exp.company}\n${exp.description || ''}`
+      ).join('\n\n') + '\n\n';
+    }
+    if (sections.education && Array.isArray(sections.education)) {
+      text += sections.education.map(edu =>
+        `${edu.degree} in ${edu.field} from ${edu.school}`
+      ).join('\n\n') + '\n\n';
+    }
+    if (sections.skills && Array.isArray(sections.skills)) {
+      text += 'Skills: ' + sections.skills.join(', ') + '\n\n';
+    }
+    if (sections.certifications && Array.isArray(sections.certifications)) {
+      text += sections.certifications.map(cert =>
+        `${cert.name} from ${cert.issuer}`
+      ).join('\n\n') + '\n\n';
+    }
+    if (sections.projects && Array.isArray(sections.projects)) {
+      text += sections.projects.map(proj =>
+        `${proj.name}: ${proj.description}`
+      ).join('\n\n') + '\n\n';
+    }
+
+    return text.trim();
   });
 
   const atsScorePercent = computed(() => {
     if (!atsScore.value) return null;
     return Math.min(Math.round(atsScore.value * 100), 100);
+  });
+
+  const displaySections = computed(() => {
+    if (!resume.value?.sections) return [];
+
+    // If already in array format (AI generated), return as is
+    if (Array.isArray(resume.value.sections)) {
+      return resume.value.sections;
+    }
+
+    // Transform flat Builder format to array format for display
+    const sections = resume.value.sections;
+    const result = [];
+
+    // Personal Info
+    if (sections.firstName || sections.lastName || sections.email || sections.phone || sections.location) {
+      result.push({
+        title: 'Personal Information',
+        content: [
+          sections.firstName && sections.lastName ? `${sections.firstName} ${sections.lastName}` : '',
+          sections.title || '',
+          sections.email || '',
+          sections.phone || '',
+          sections.location || '',
+          sections.linkedin || ''
+        ].filter(Boolean).join('\n')
+      });
+    }
+
+    // Summary
+    if (sections.summary) {
+      result.push({
+        title: 'Professional Summary',
+        content: sections.summary
+      });
+    }
+
+    // Experience
+    if (sections.experience && Array.isArray(sections.experience) && sections.experience.length > 0) {
+      result.push({
+        title: 'Work Experience',
+        content: sections.experience.map(exp =>
+          `${exp.title} at ${exp.company}\n${exp.location ? exp.location + '\n' : ''}${exp.startDate} - ${exp.endDate}\n${exp.description || ''}`
+        ).join('\n\n')
+      });
+    }
+
+    // Education
+    if (sections.education && Array.isArray(sections.education) && sections.education.length > 0) {
+      result.push({
+        title: 'Education',
+        content: sections.education.map(edu =>
+          `${edu.degree} in ${edu.field}\n${edu.school}${edu.location ? ', ' + edu.location : ''}\n${edu.startDate} - ${edu.endDate}${edu.gpa ? '\nGPA: ' + edu.gpa : ''}`
+        ).join('\n\n')
+      });
+    }
+
+    // Skills
+    if (sections.skills && Array.isArray(sections.skills) && sections.skills.length > 0) {
+      result.push({
+        title: 'Skills',
+        content: sections.skills.join(', ')
+      });
+    }
+
+    // Certifications
+    if (sections.certifications && Array.isArray(sections.certifications) && sections.certifications.length > 0) {
+      result.push({
+        title: 'Certifications',
+        content: sections.certifications.map(cert =>
+          `${cert.name} from ${cert.issuer}${cert.date ? ' (' + cert.date + ')' : ''}${cert.link ? '\n' + cert.link : ''}`
+        ).join('\n\n')
+      });
+    }
+
+    // Projects
+    if (sections.projects && Array.isArray(sections.projects) && sections.projects.length > 0) {
+      result.push({
+        title: 'Projects',
+        content: sections.projects.map(proj =>
+          `${proj.name}${proj.link ? ' (' + proj.link + ')' : ''}\n${proj.description || ''}`
+        ).join('\n\n')
+      });
+    }
+
+    return result;
   });
 
   // ===== Methods =====
@@ -324,6 +445,7 @@ export function useTailoringStudioController(applicationIdRef) {
     jobKeywords,
     resumeText,
     atsScorePercent,
+    displaySections,
 
     // Methods
     loadApplication,

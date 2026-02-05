@@ -141,8 +141,8 @@
                   <div class="text-center mb-8">
                     <h2 class="text-2xl font-bold uppercase tracking-widest">{{ resume.title || 'Resume' }}</h2>
                   </div>
-                  <div v-if="resume.sections && resume.sections.length > 0" class="space-y-6">
-                    <div v-for="(section, idx) in resume.sections" :key="idx" class="mb-6">
+                  <div v-if="displaySections && displaySections.length > 0" class="space-y-6">
+                    <div v-for="(section, idx) in displaySections" :key="idx" class="mb-6">
                       <h4 class="text-xs font-bold text-primary uppercase mb-2 border-b border-gray-100 dark:border-white/5 pb-1">{{ section.title }}</h4>
                       <p class="text-xs text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">{{ section.content }}</p>
                     </div>
@@ -335,6 +335,7 @@ const {
   jobKeywords,
   resumeText,
   atsScorePercent,
+  displaySections,
   generationSettings,
   userResumes,
   isLoadingResumes,
