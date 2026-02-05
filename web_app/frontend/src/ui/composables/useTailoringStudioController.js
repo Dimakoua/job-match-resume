@@ -330,7 +330,7 @@ export function useTailoringStudioController(applicationIdRef) {
     }
   };
 
-  const generateTailoredResume = async (settings = null) => {
+  const generateTailoredResume = async (settings = null, selectedResumeId = null) => {
     if (!job.value?.jobDescription) {
       throw new Error('No job description available');
     }
@@ -347,15 +347,186 @@ export function useTailoringStudioController(applicationIdRef) {
       // Use provided settings or fall back to current state
       const genSettings = settings || generationSettings.value;
 
+      let baseResume = resume.value;
+      if (selectedResumeId && selectedResumeId !== resume.value?.id) {
+        // Fetch the selected resume
+        const resumes = await listResumesUseCase.execute(userId);
+        baseResume = resumes.find(r => r.id === selectedResumeId);
+      }
+
+      // Get comprehensive user data for the base resume
+      const getResumeText = (resumeObj) => {
+        if (!resumeObj?.sections) return '';
+
+        // Handle array format (AI generated resumes)
+        if (Array.isArray(resumeObj.sections)) {
+          return resumeObj.sections.map(section => section.content || '').join('\n\n');
+        }
+
+        // Handle flat Builder format (existing resumes)
+        const sections = resumeObj.sections;
+        let text = '';
+
+        // Personal Information
+        const personalInfo = [];
+        if (sections.firstName || sections.lastName) {
+          personalInfo.push(`Name: ${sections.firstName || ''} ${sections.lastName || ''}`.trim());
+        }
+        if (sections.title) personalInfo.push(`Title: ${sections.title}`);
+        if (sections.email) personalInfo.push(`Email: ${sections.email}`);
+        if (sections.phone) personalInfo.push(`Phone: ${sections.phone}`);
+        if (sections.location) personalInfo.push(`Location: ${sections.location}`);
+        if (sections.linkedin) personalInfo.push(`LinkedIn: ${sections.linkedin}`);
+        if (sections.website) personalInfo.push(`Website: ${sections.website}`);
+
+        if (personalInfo.length > 0) {
+          text += 'PERSONAL INFORMATION\n' + personalInfo.join('\n') + '\n\n';
+        }
+
+        // Professional Summary
+        if (sections.summary) {
+          text += 'PROFESSIONAL SUMMARY\n' + sections.summary + '\n\n';
+        }
+
+        // Work Experience
+        if (sections.experience && Array.isArray(sections.experience) && sections.experience.length > 0) {
+          text += 'WORK EXPERIENCE\n';
+          text += sections.experience.map(exp => {
+            let expText = `${exp.title} at ${exp.company}`;
+            if (exp.location) expText += ` (${exp.location})`;
+            if (exp.startDate || exp.endDate) {
+              expText += `\n${exp.startDate || ''} - ${exp.endDate || 'Present'}`;
+            }
+            if (exp.description) expText += `\n${exp.description}`;
+            return expText;
+          }).join('\n\n') + '\n\n';
+        }
+
+        // Education
+        if (sections.education && Array.isArray(sections.education) && sections.education.length > 0) {
+          text += 'EDUCATION\n';
+          text += sections.education.map(edu => {
+            let eduText = `${edu.degree} in ${edu.field}`;
+            if (edu.school) eduText += ` from ${edu.school}`;
+            if (edu.location) eduText += ` (${edu.location})`;
+            if (edu.startDate || edu.endDate) {
+              eduText += `\n${edu.startDate || ''} - ${edu.endDate || ''}`;
+            }
+            if (edu.gpa) eduText += `\nGPA: ${edu.gpa}`;
+            return eduText;
+          }).join('\n\n') + '\n\n';
+        }
+
+        // Skills
+        if (sections.skills && Array.isArray(sections.skills) && sections.skills.length > 0) {
+          text += 'SKILLS\n' + sections.skills.join(', ') + '\n\n';
+        }
+
+        // Certifications
+        if (sections.certifications && Array.isArray(sections.certifications) && sections.certifications.length > 0) {
+          text += 'CERTIFICATIONS\n';
+          text += sections.certifications.map(cert => {
+            let certText = cert.name;
+            if (cert.issuer) certText += ` from ${cert.issuer}`;
+            if (cert.date) certText += ` (${cert.date})`;
+            if (cert.link) certText += `\n${cert.link}`;
+            return certText;
+          }).join('\n\n') + '\n\n';
+        }
+
+        // Projects
+        if (sections.projects && Array.isArray(sections.projects) && sections.projects.length > 0) {
+          text += 'PROJECTS\n';
+          text += sections.projects.map(proj => {
+            let projText = proj.name;
+            if (proj.link) projText += ` (${proj.link})`;
+            if (proj.description) projText += `\n${proj.description}`;
+            return projText;
+          }).join('\n\n') + '\n\n';
+        }
+
+        // Custom Sections - exclude standard fields and UI/metadata
+        const standardSections = [
+          'firstName', 'lastName', 'title', 'email', 'phone', 'location', 'linkedin', 'website', 
+          'summary', 'experience', 'education', 'skills', 'certifications', 'projects',
+          // Exclude UI/metadata fields
+          'visibleSections', 'visible', 'layout', 'template', 'margins', 'sectionSpacing',
+          'style', 'headingFont', 'bodyFont', 'fontSize', 'lineHeight', 'accentColor',
+          'theme', 'color', 'font', 'spacing', 'required'
+        ];
+        const customSections = Object.keys(sections).filter(key => !standardSections.includes(key) && sections[key]);
+
+        for (const customKey of customSections) {
+          const customSection = sections[customKey];
+          if (customSection === null || customSection === undefined || (Array.isArray(customSection) && customSection.length === 0) || (typeof customSection === 'object' && !Array.isArray(customSection) && Object.keys(customSection).length === 0)) {
+            continue; // Skip empty sections
+          }
+
+          // Format the key name as title (e.g., 'awards' -> 'AWARDS')
+          const sectionTitle = customKey.replace(/([A-Z])/g, ' $1').toUpperCase().trim();
+          text += `${sectionTitle}\n`;
+
+          if (Array.isArray(customSection)) {
+            // Handle array of objects
+            if (customSection.length > 0 && typeof customSection[0] === 'object' && customSection[0] !== null) {
+              text += customSection.map(item => {
+                const entries = Object.entries(item || {})
+                  .map(([k, v]) => {
+                    if (v === null || v === undefined) return '';
+                    if (Array.isArray(v)) return `${k}: ${v.join(', ')}`;
+                    return `${k}: ${v}`;
+                  })
+                  .filter(Boolean);
+                return entries.join('\n');
+              }).join('\n\n');
+              if (text.endsWith('\n')) {
+                text += '\n';
+              } else {
+                text += '\n\n';
+              }
+            } else {
+              // Handle simple array
+              text += customSection
+                .filter(v => v !== null && v !== undefined)
+                .map(v => typeof v === 'object' ? JSON.stringify(v) : String(v))
+                .join(', ') + '\n\n';
+            }
+          } else if (typeof customSection === 'object') {
+            // Handle object with key-value pairs
+            const entries = Object.entries(customSection || {})
+              .map(([k, v]) => {
+                if (v === null || v === undefined) return '';
+                if (Array.isArray(v)) return `${k}: ${v.join(', ')}`;
+                if (typeof v === 'object') return `${k}: ${JSON.stringify(v)}`;
+                return `${k}: ${v}`;
+              })
+              .filter(Boolean);
+            if (entries.length > 0) {
+              text += entries.join('\n') + '\n\n';
+            }
+          } else {
+            // Handle simple string/number/boolean value
+            text += String(customSection) + '\n\n';
+          }
+        }
+
+        return text.trim();
+      };
+
+      const userData = baseResume ? getResumeText(baseResume) : '';
+
       // Generate tailored resume from job description
       const tailoredResume = await generateFromJDUseCase.execute(
         job.value.jobDescription,
-        { userId },
-        resume.value?.templateId || 'professional',
+        userData,
+        baseResume?.templateId || 'professional',
         genSettings
       );
 
       resume.value = tailoredResume;
+
+      // Link the new resume to the application
+      await updateJobApplicationUseCase.execute(applicationIdRef.value, { resumeId: tailoredResume.id });
 
       // Recalculate ATS score
       await calculateAts();

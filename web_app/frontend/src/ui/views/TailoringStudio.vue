@@ -565,6 +565,20 @@
           </div>
 
           <div class="space-y-6">
+            <!-- Resume Selection -->
+            <div>
+              <label class="block text-sm font-medium mb-3">Base Resume</label>
+              <div v-if="userResumes.length === 0" class="p-3 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg">
+                <p class="text-sm text-gray-600 dark:text-gray-400">You need to create a resume first before generating a tailored version.</p>
+              </div>
+              <select v-else v-model="selectedResumeId" class="w-full p-3 border border-gray-200 dark:border-white/10 rounded-lg bg-white dark:bg-background-dark text-gray-900 dark:text-white">
+                <option v-for="userResume in userResumes" :key="userResume.id" :value="userResume.id">
+                  {{ userResume.title }}
+                </option>
+              </select>
+              <p v-if="userResumes.length > 0" class="text-xs text-gray-500 dark:text-gray-400 mt-1">Select the resume to tailor for this job application</p>
+            </div>
+
             <!-- Tone Selection -->
             <div>
               <label class="block text-sm font-medium mb-3">Resume Tone</label>
@@ -622,13 +636,13 @@
               Cancel
             </button>
             <button @click="startGeneration"
-              :disabled="isGenerating"
+              :disabled="isGenerating || !selectedResumeId"
               class="flex-1 px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed">
               <span v-if="isGenerating" class="flex items-center justify-center gap-2">
                 <div class="animate-spin"><span class="material-symbols-outlined text-sm">hourglass_empty</span></div>
                 Generating...
               </span>
-              <span v-else>Generate Resume</span>
+              <span v-else>Generate Tailored Resume</span>
             </button>
           </div>
         </div>
@@ -706,6 +720,7 @@ const applicationId = computed(() => route.params.id);
 const appliedSuggestions = ref([]);
 const lastAppliedSuggestion = ref(null);
 const showGenerationModal = ref(false);
+const selectedResumeId = ref(null);
 
 // Use the controller composable
 const {
@@ -756,7 +771,9 @@ onMounted(async () => {
 });
 
 // UI Methods
-const handleGenerateClick = () => {
+const handleGenerateClick = async () => {
+  await loadUserResumes();
+  selectedResumeId.value = resume.value?.id || (userResumes.value.length > 0 ? userResumes.value[0].id : null);
   showGenerationModal.value = true;
 };
 
@@ -766,7 +783,7 @@ const closeGenerationModal = () => {
 
 const startGeneration = async () => {
   try {
-    await generateTailoredResume(generationSettings.value);
+    await generateTailoredResume(generationSettings.value, selectedResumeId.value);
     showGenerationModal.value = false;
   } catch (err) {
     console.error('Generation failed:', err);

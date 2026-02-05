@@ -45,13 +45,21 @@ export class GeminiAdapter {
     }
 
     try {
-      // Clean the text - sometimes Gemini adds markdown formatting
-      const cleanedText = text
-        .replace(/```json\s*/g, '')
-        .replace(/```\s*$/g, '')
-        .trim();
+      let jsonText = text;
 
-      return JSON.parse(cleanedText);
+      // Try to extract JSON from markdown code blocks first
+      const jsonBlockMatch = text.match(/```(?:json)?\s*\n?([\s\S]*?)\n?```/);
+      if (jsonBlockMatch && jsonBlockMatch[1]) {
+        jsonText = jsonBlockMatch[1].trim();
+      } else {
+        // Fallback: try to find JSON object pattern
+        const jsonMatch = text.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          jsonText = jsonMatch[0];
+        }
+      }
+
+      return JSON.parse(jsonText);
     } catch (parseError) {
       throw new Error(`Failed to parse JSON response from Gemini: ${parseError.message}. Raw response: ${text}`);
     }
