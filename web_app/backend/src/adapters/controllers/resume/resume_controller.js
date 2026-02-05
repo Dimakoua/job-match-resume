@@ -12,6 +12,10 @@ const generateFromJDSchema = z.object({
   jobDescription: z.string().min(1, 'Job description is required'),
   userData: z.string().min(1, 'User data is required'),
   templateId: z.string().optional(),
+  generationSettings: z.object({
+    tone: z.enum(['professional', 'formal', 'creative', 'concise']).optional(),
+    targetAtsScore: z.number().min(0).max(100).optional(),
+  }).optional(),
 });
 
 const improveTextSchema = z.object({

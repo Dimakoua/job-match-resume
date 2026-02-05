@@ -140,9 +140,55 @@
   - AI generation completes without errors
   - UI responsive on desktop/tablet/mobile
 
+## F-052 — [feature] Implement Generation Settings Logic ✅ 100%
+- Scope: Add logic to collect and use tone of voice and target ATS score from the generation modal.
+- Acceptance:
+  - Modal state tracks selected tone and ATS score
+  - Settings passed to AI generation API
+  - Backend accepts and uses tone/ATS parameters
+  - Generation respects user preferences
+- Status: ✅ 100% — Modal state implemented, backend updated to accept parameters, generation logic wired
+
+## F-053 — [feature] Resume Edit & Save in Tailoring Studio
+- Scope: Enable in-line editing of resume sections within TailoringStudio with backend sync.
+- Acceptance:
+  - User can edit individual resume sections
+  - Changes sync to backend (debounced)
+  - Undo/redo buttons functional
+  - Local draft saved to localStorage
+
+## F-054 — [feature] Keyword Highlighting & ATS Suggestions
+- Scope: Highlight job keywords in resume and show specific ATS improvement suggestions.
+- Acceptance:
+  - Keywords from job description highlighted in resume preview
+  - AI suggests where to add/improve keywords
+  - Visual indicators for matched keywords
+
+## F-055 — [feature] Resume Download from Tailoring Studio
+- Scope: Add PDF/DOCX download button in TailoringStudio with tailored version.
+- Acceptance:
+  - Download button exports current tailored resume
+  - Supports both PDF and DOCX formats
+  - Filename includes job company name
+
+## F-056 — [feature] Save Tailored Resume as New Version
+- Scope: Allow user to save the tailored resume as a new version/variant.
+- Acceptance:
+  - "Save as New Version" button available
+  - Creates copy linked to job application
+  - Version history maintained
+
+## F-057 — [integration] End-to-End Testing
+- Scope: Test complete user workflow from SavedJobs → TailoringStudio → Resume Download.
+- Acceptance:
+  - All data loads correctly from backend
+  - ATS scores calculate accurately
+  - AI generation completes without errors
+  - UI responsive on desktop/tablet/mobile
+
 ---
 
-## Completed Tasks
+## Backlog (Next Phase)
 
 ## F-003 — [infra] Pinia Store Setup
 - Scope: Add Pinia store and basic state for auth and resume.
@@ -327,11 +373,12 @@
 ## Status Summary
 - ✅ 100% — F-045: Saved Jobs View complete
 - ✅ 100% — F-046: Tailoring Studio Screen complete with full Clean Architecture implementation
-- 🔵 0% — F-047: Resume editing in TailoringStudio (backlog)
-- 🔵 0% — F-048: Keyword highlighting (backlog)
-- 🔵 0% — F-049: Download from Tailoring Studio (backlog)
-- 🔵 0% — F-050: Save tailored version (backlog)
-- 🔵 0% — F-051: End-to-end testing (backlog)
+- ✅ 100% — F-052: Generation Settings Logic complete
+- 🔵 0% — F-053: Resume editing in TailoringStudio (backlog)
+- 🔵 0% — F-054: Keyword highlighting (backlog)
+- 🔵 0% — F-055: Download from Tailoring Studio (backlog)
+- 🔵 0% — F-056: Save tailored version (backlog)
+- 🔵 0% — F-057: End-to-end testing (backlog)
 
 ## Status
 - Update status and completion % after each session per methodology.md §5–6

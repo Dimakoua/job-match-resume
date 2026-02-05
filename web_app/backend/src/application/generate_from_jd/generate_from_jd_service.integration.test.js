@@ -165,6 +165,13 @@ Skills: JavaScript, React, Node.js, Python, AWS, Docker, Kubernetes`
 
     // Verify AI adapter was called
     expect(mockAiAdapter.generateJSON).toHaveBeenCalledTimes(1);
+    const [systemPrompt, userPrompt] = mockAiAdapter.generateJSON.mock.calls[0];
+
+    // Verify prompts contain default generation settings
+    expect(systemPrompt).toContain('professional, clear language');
+    expect(systemPrompt).toContain('at least 95% keyword match');
+    expect(userPrompt).toContain('at least 95% keyword alignment');
+    expect(userPrompt).toContain('Senior Software Engineer position requiring');
 
     // Verify resume was created and saved
     expect(result).toBeDefined();
@@ -302,6 +309,13 @@ Skills: Figma, Sketch, Adobe Creative Suite, InVision`,
 
     // Verify AI adapter was called
     expect(mockAiAdapter.generateJSON).toHaveBeenCalledTimes(1);
+    const [systemPrompt, userPrompt] = mockAiAdapter.generateJSON.mock.calls[0];
+
+    // Verify prompts contain default generation settings
+    expect(systemPrompt).toContain('professional, clear language');
+    expect(systemPrompt).toContain('at least 95% keyword match');
+    expect(userPrompt).toContain('at least 95% keyword alignment');
+    expect(userPrompt).toContain('UX Designer position requiring');
 
     // Verify resume was created and saved with specified template
     expect(result).toBeDefined();
@@ -429,4 +443,147 @@ Skills: Figma, Sketch, Adobe Creative Suite, InVision`,
     const count = await db.prepare('SELECT COUNT(*) as count FROM resumes WHERE user_id = ?').bind('user-777').first();
     expect(count.count).toBe(2);
   });
-});
+
+  it("should use default generation settings when not provided", async () => {
+    // Create a user
+    const user = await factory.insert('user', {
+      id: 'user-default-settings',
+      email: 'default@example.com',
+      name: 'Default Settings User',
+      passwordHash: 'hashed'
+    });
+
+    // Mock AI response
+    const mockAiResponse = {
+      sections: [
+        { type: 'personal_info', title: 'Personal Information', content: { name: 'Test' } },
+        { type: 'summary', title: 'Professional Summary', content: 'Test summary' },
+        { type: 'experience', title: 'Work Experience', content: [] },
+        { type: 'education', title: 'Education', content: [] },
+        { type: 'skills', title: 'Skills', content: { technical: [], soft: [], tools: [] } }
+      ]
+    };
+
+    mockAiAdapter.generateJSON.mockResolvedValue(mockAiResponse);
+
+    const command = {
+      userId: 'user-default-settings',
+      jobDescription: 'Test job description',
+      userData: 'Test user data'
+      // No generationSettings provided
+    };
+
+    await service.execute(command);
+
+    // Verify AI adapter was called with prompts containing default settings
+    expect(mockAiAdapter.generateJSON).toHaveBeenCalledTimes(1);
+    const [systemPrompt, userPrompt] = mockAiAdapter.generateJSON.mock.calls[0];
+
+    // Check that system prompt contains default tone and ATS score
+    expect(systemPrompt).toContain('professional, clear language');
+    expect(systemPrompt).toContain('at least 95% keyword match');
+    expect(userPrompt).toContain('at least 95% keyword alignment');
+  });
+
+  it("should use custom generation settings when provided", async () => {
+    // Create a user
+    const user = await factory.insert('user', {
+      id: 'user-custom-settings',
+      email: 'custom@example.com',
+      name: 'Custom Settings User',
+      passwordHash: 'hashed'
+    });
+
+    // Mock AI response
+    const mockAiResponse = {
+      sections: [
+        { type: 'personal_info', title: 'Personal Information', content: { name: 'Test' } },
+        { type: 'summary', title: 'Professional Summary', content: 'Test summary' },
+        { type: 'experience', title: 'Work Experience', content: [] },
+        { type: 'education', title: 'Education', content: [] },
+        { type: 'skills', title: 'Skills', content: { technical: [], soft: [], tools: [] } }
+      ]
+    };
+
+    mockAiAdapter.generateJSON.mockResolvedValue(mockAiResponse);
+
+    const command = {
+      userId: 'user-custom-settings',
+      jobDescription: 'Test job description',
+      userData: 'Test user data',
+      generationSettings: {
+        tone: 'creative',
+        targetAtsScore: 85
+      }
+    };
+
+    await service.execute(command);
+
+    // Verify AI adapter was called with prompts containing custom settings
+    expect(mockAiAdapter.generateJSON).toHaveBeenCalledTimes(1);
+    const [systemPrompt, userPrompt] = mockAiAdapter.generateJSON.mock.calls[0];
+
+    // Check that system prompt contains custom tone and ATS score
+    expect(systemPrompt).toContain('creative, engaging language');
+    expect(systemPrompt).toContain('at least 85% keyword match');
+    expect(userPrompt).toContain('at least 85% keyword alignment');
+  });
+
+  it("should handle different tone settings correctly", async () => {
+    // Create a user
+    const user = await factory.insert('user', {
+      id: 'user-tone-test',
+      email: 'tone@example.com',
+      name: 'Tone Test User',
+      passwordHash: 'hashed'
+    });
+
+    // Mock AI response
+    const mockAiResponse = {
+      sections: [
+        { type: 'personal_info', title: 'Personal Information', content: { name: 'Test' } },
+        { type: 'summary', title: 'Professional Summary', content: 'Test summary' },
+        { type: 'experience', title: 'Work Experience', content: [] },
+        { type: 'education', title: 'Education', content: [] },
+        { type: 'skills', title: 'Skills', content: { technical: [], soft: [], tools: [] } }
+      ]
+    };
+
+    mockAiAdapter.generateJSON.mockResolvedValue(mockAiResponse);
+
+    const tones = ['formal', 'creative', 'concise', 'professional'];
+
+    for (const tone of tones) {
+      mockAiAdapter.generateJSON.mockClear();
+
+      const command = {
+        userId: 'user-tone-test',
+        jobDescription: 'Test job description',
+        userData: 'Test user data',
+        generationSettings: {
+          tone: tone,
+          targetAtsScore: 90
+        }
+      };
+
+      await service.execute(command);
+
+      const [systemPrompt] = mockAiAdapter.generateJSON.mock.calls[0];
+
+      // Verify tone-specific instructions are included
+      switch (tone) {
+        case 'formal':
+          expect(systemPrompt).toContain('formal, traditional business language');
+          break;
+        case 'creative':
+          expect(systemPrompt).toContain('creative, engaging language');
+          break;
+        case 'concise':
+          expect(systemPrompt).toContain('extremely concise');
+          break;
+        case 'professional':
+          expect(systemPrompt).toContain('professional, clear language');
+          break;
+      }
+    }
+  });});

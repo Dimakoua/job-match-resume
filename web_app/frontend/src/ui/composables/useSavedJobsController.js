@@ -36,8 +36,6 @@ export function useSavedJobsController(selectedListIdRef = null) {
   // UI State
   const searchQuery = ref('');
   const activeFilter = ref('all');
-  const showGenerateTailoringModal = ref(false);
-  const selectedJobForTailoring = ref(null);
   const createListModal = ref({
     show: false,
     name: '',
@@ -190,16 +188,6 @@ export function useSavedJobsController(selectedListIdRef = null) {
     }
   };
 
-  const openGenerateTailoringModal = (job) => {
-    selectedJobForTailoring.value = job;
-    showGenerateTailoringModal.value = true;
-  };
-
-  const closeGenerateTailoringModal = () => {
-    showGenerateTailoringModal.value = false;
-    selectedJobForTailoring.value = null;
-  };
-
   const resetCreateListModal = () => {
     createListModal.value = {
       show: false,
@@ -221,8 +209,6 @@ export function useSavedJobsController(selectedListIdRef = null) {
     error,
     searchQuery,
     activeFilter,
-    showGenerateTailoringModal,
-    selectedJobForTailoring,
     createListModal,
 
     // Computed
@@ -236,8 +222,6 @@ export function useSavedJobsController(selectedListIdRef = null) {
     loadAllApplications,
     updateApplicationStatus,
     getStatusClass,
-    openGenerateTailoringModal,
-    closeGenerateTailoringModal,
     resetCreateListModal,
     openCreateListModal
   };

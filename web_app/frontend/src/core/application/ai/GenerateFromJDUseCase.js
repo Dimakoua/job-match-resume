@@ -7,9 +7,9 @@ export class GenerateFromJDUseCase {
     this.resumeRepo = resumeRepo;
   }
 
-  async execute(jobDescription, userData, templateId = null) {
+  async execute(jobDescription, userData, templateId = null, generationSettings = null) {
     // 1. Call AI Service
-    const data = await this.aiService.generateFromJD(jobDescription, userData, templateId);
+    const data = await this.aiService.generateFromJD(jobDescription, userData, templateId, generationSettings);
     
     // 2. Create Domain Entity
     const resume = new Resume(data.id, data.title, data.templateId, data.sections);

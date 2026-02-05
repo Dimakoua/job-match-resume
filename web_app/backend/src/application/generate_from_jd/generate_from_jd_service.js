@@ -37,9 +37,9 @@ export class GenerateFromJDService {
     // Generate ID
     const id = crypto.randomUUID();
 
-    // Construct AI prompt
-    const systemPrompt = this._buildSystemPrompt();
-    const userPrompt = this._buildUserPrompt(command.jobDescription, command.userData);
+    // Construct AI prompt with generation settings
+    const systemPrompt = this._buildSystemPrompt(command.generationSettings);
+    const userPrompt = this._buildUserPrompt(command.jobDescription, command.userData, command.generationSettings);
 
     // Generate resume content using AI
     const aiResponse = await this.aiAdapter.generateJSON(systemPrompt, userPrompt);
@@ -59,12 +59,35 @@ export class GenerateFromJDService {
     return resume;
   }
 
-  _buildSystemPrompt() {
+  _buildSystemPrompt(generationSettings = null) {
+    const tone = generationSettings?.tone || 'professional';
+    const targetAtsScore = generationSettings?.targetAtsScore || 95;
+
+    let toneInstruction = '';
+    switch (tone) {
+      case 'formal':
+        toneInstruction = 'Use formal, traditional business language. Avoid contractions and casual expressions.';
+        break;
+      case 'creative':
+        toneInstruction = 'Use creative, engaging language while maintaining professionalism. Incorporate industry-specific terminology.';
+        break;
+      case 'concise':
+        toneInstruction = 'Be extremely concise. Use short sentences and bullet points. Focus on quantifiable achievements.';
+        break;
+      case 'professional':
+      default:
+        toneInstruction = 'Use professional, clear language that balances formality with approachability.';
+        break;
+    }
+
     return `You are an expert resume writer. You will be given two inputs:
 1. A job description (the target role)
 2. The user's current resume/CV data
 
 Your task: Tailor the user's ACTUAL experience and skills to match the job requirements. Do NOT invent fictional content. Use only the information provided by the user, but reframe and optimize it to align with the job description.
+
+TONE INSTRUCTIONS: ${toneInstruction}
+TARGET ATS SCORE: Aim for at least ${targetAtsScore}% keyword match with the job description. Prioritize including relevant keywords naturally in the content.
 
 Return the resume as a JSON object with the following structure:
 {
@@ -166,7 +189,9 @@ Guidelines:
 - If the user's data is incomplete, work with what's provided`;
   }
 
-  _buildUserPrompt(jobDescription, userData) {
+  _buildUserPrompt(jobDescription, userData, generationSettings = null) {
+    const targetAtsScore = generationSettings?.targetAtsScore || 95;
+
     return `JOB DESCRIPTION:
 ${jobDescription}
 
@@ -177,7 +202,9 @@ ${userData}
 
 ---
 
-Please tailor the user's resume to match this job description. Reframe their experience and skills to highlight relevance to the role. Use their actual data - do not invent fictional experience.`;
+Please tailor the user's resume to match this job description. Reframe their experience and skills to highlight relevance to the role. Use their actual data - do not invent fictional experience.
+
+TARGET OPTIMIZATION: Ensure the resume achieves at least ${targetAtsScore}% keyword alignment with the job description. Incorporate relevant keywords naturally throughout the content.`;
   }
 
   _validateAndTransformResponse(aiResponse) {

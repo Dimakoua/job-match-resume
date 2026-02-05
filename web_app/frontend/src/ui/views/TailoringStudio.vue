@@ -165,12 +165,94 @@
       </div>
     </main>
 
+    <!-- Generation Settings Modal -->
+    <div v-if="showGenerationModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+      <div class="bg-white dark:bg-background-dark rounded-xl shadow-2xl max-w-md w-full mx-4">
+        <div class="p-6">
+          <div class="flex items-center justify-between mb-6">
+            <h3 class="text-lg font-bold">AI Generation Settings</h3>
+            <button @click="closeGenerationModal" class="p-1 hover:bg-gray-100 dark:hover:bg-white/10 rounded">
+              <span class="material-symbols-outlined">close</span>
+            </button>
+          </div>
+
+          <div class="space-y-6">
+            <!-- Tone Selection -->
+            <div>
+              <label class="block text-sm font-medium mb-3">Resume Tone</label>
+              <div class="grid grid-cols-2 gap-3">
+                <button @click="generationSettings.tone = 'professional'"
+                  :class="['p-3 rounded-lg border text-sm font-medium transition-colors',
+                    generationSettings.tone === 'professional'
+                      ? 'border-primary bg-primary/10 text-primary'
+                      : 'border-gray-200 dark:border-white/10 hover:border-primary/50']">
+                  Professional
+                </button>
+                <button @click="generationSettings.tone = 'formal'"
+                  :class="['p-3 rounded-lg border text-sm font-medium transition-colors',
+                    generationSettings.tone === 'formal'
+                      ? 'border-primary bg-primary/10 text-primary'
+                      : 'border-gray-200 dark:border-white/10 hover:border-primary/50']">
+                  Formal
+                </button>
+                <button @click="generationSettings.tone = 'creative'"
+                  :class="['p-3 rounded-lg border text-sm font-medium transition-colors',
+                    generationSettings.tone === 'creative'
+                      ? 'border-primary bg-primary/10 text-primary'
+                      : 'border-gray-200 dark:border-white/10 hover:border-primary/50']">
+                  Creative
+                </button>
+                <button @click="generationSettings.tone = 'concise'"
+                  :class="['p-3 rounded-lg border text-sm font-medium transition-colors',
+                    generationSettings.tone === 'concise'
+                      ? 'border-primary bg-primary/10 text-primary'
+                      : 'border-gray-200 dark:border-white/10 hover:border-primary/50']">
+                  Concise
+                </button>
+              </div>
+            </div>
+
+            <!-- Target ATS Score -->
+            <div>
+              <label class="block text-sm font-medium mb-3">Target ATS Score</label>
+              <div class="space-y-2">
+                <input v-model.number="generationSettings.targetAtsScore"
+                  type="range" min="70" max="100" step="5"
+                  class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-white/10">
+                <div class="flex justify-between text-xs text-gray-500">
+                  <span>70%</span>
+                  <span class="font-medium">{{ generationSettings.targetAtsScore }}%</span>
+                  <span>100%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex gap-3 mt-8">
+            <button @click="closeGenerationModal"
+              class="flex-1 px-4 py-2 border border-gray-200 dark:border-white/10 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-white/5">
+              Cancel
+            </button>
+            <button @click="startGeneration"
+              :disabled="isGenerating"
+              class="flex-1 px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed">
+              <span v-if="isGenerating" class="flex items-center justify-center gap-2">
+                <div class="animate-spin"><span class="material-symbols-outlined text-sm">hourglass_empty</span></div>
+                Generating...
+              </span>
+              <span v-else>Generate Resume</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <AppFooter></AppFooter>
   </div>
 </template>
 
 <script setup>
-import { computed, onMounted } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { useTailoringStudioController } from '../composables/useTailoringStudioController.js';
 import { useAuthStore } from '../stores/useAuthStore.js';
@@ -197,12 +279,16 @@ const {
   jobKeywords,
   resumeText,
   atsScorePercent,
+  generationSettings,
   loadApplication,
   generateTailoredResume,
   improveSection,
   updateResume,
   switchSection
 } = useTailoringStudioController(applicationId);
+
+// Modal state
+const showGenerationModal = ref(false);
 
 onMounted(async () => {
   if (applicationId.value) {
@@ -211,9 +297,18 @@ onMounted(async () => {
 });
 
 // UI Methods
-const handleGenerateClick = async () => {
+const handleGenerateClick = () => {
+  showGenerationModal.value = true;
+};
+
+const closeGenerationModal = () => {
+  showGenerationModal.value = false;
+};
+
+const startGeneration = async () => {
   try {
-    await generateTailoredResume();
+    await generateTailoredResume(generationSettings.value);
+    showGenerationModal.value = false;
   } catch (err) {
     console.error('Generation failed:', err);
   }

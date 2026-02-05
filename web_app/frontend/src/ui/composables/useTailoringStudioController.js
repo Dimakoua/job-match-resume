@@ -44,6 +44,23 @@ export function useTailoringStudioController(applicationIdRef) {
   const activeSection = ref('editor');
   const selectedKeywords = ref([]);
   const suggestedKeywords = ref([]);
+  const generationSettings = ref({
+    tone: 'professional',
+    targetAtsScore: 95
+  });
+
+  // Load settings from localStorage if available
+  const savedSettings = localStorage.getItem('generationSettings');
+  if (savedSettings) {
+    try {
+      const parsed = JSON.parse(savedSettings);
+      generationSettings.value = { ...generationSettings.value, ...parsed };
+      // Clear the saved settings after loading
+      localStorage.removeItem('generationSettings');
+    } catch (error) {
+      console.warn('Failed to parse saved generation settings:', error);
+    }
+  }
 
   // ===== Computed =====
   const jobKeywords = computed(() => {
@@ -140,7 +157,7 @@ export function useTailoringStudioController(applicationIdRef) {
     }
   };
 
-  const generateTailoredResume = async () => {
+  const generateTailoredResume = async (settings = null) => {
     if (!job.value?.jobDescription) {
       throw new Error('No job description available');
     }
@@ -154,11 +171,15 @@ export function useTailoringStudioController(applicationIdRef) {
         throw new Error('User not authenticated');
       }
 
+      // Use provided settings or fall back to current state
+      const genSettings = settings || generationSettings.value;
+
       // Generate tailored resume from job description
       const tailoredResume = await generateFromJDUseCase.execute(
         job.value.jobDescription,
         { userId },
-        resume.value?.templateId || 'professional'
+        resume.value?.templateId || 'professional',
+        genSettings
       );
 
       resume.value = tailoredResume;
@@ -234,6 +255,7 @@ export function useTailoringStudioController(applicationIdRef) {
     activeSection,
     selectedKeywords,
     suggestedKeywords,
+    generationSettings,
 
     // Computed
     jobKeywords,

@@ -2,83 +2,55 @@
 
 ## Context Snapshot
 - **Tailoring Studio Complete**: Full-featured resume tailoring interface with job details, ATS scoring, and AI generation.
-- **Clean Architecture**: useTailoringStudioController composable with dependency injection for all use cases (GetJobApplication, GenerateFromJD, CalculateAtsScore, ImproveText, UpdateResume).
+- **Generation Settings**: Modal collects tone of voice and target ATS score preferences, settings influence AI prompts.
+- **Clean Architecture**: useTailoringStudioController composable with dependency injection for all use cases.
 - **Dynamic Data Binding**: All hardcoded data replaced with reactive refs; real-time ATS score updates.
-- **API Integration**: Fetches job applications, calculates scores, generates tailored resumes via backend.
-- **Error Handling**: Proper loading states, error messages, and user feedback throughout.
+- **API Integration**: Fetches job applications, calculates scores, generates tailored resumes with user settings.
 
 ## Active Task(s)
-- F-046: Tailoring Studio Screen — ✅ 100% Complete
-- F-047: Resume Edit & Save in Tailoring Studio — 🔵 0% (Backlog, ready to start)
-- F-048: Keyword Highlighting & ATS Suggestions — 🔵 0% (Backlog)
+- F-053: Resume Edit & Save in Tailoring Studio — 🔵 0% (Backlog, ready to start)
+- F-054: Keyword Highlighting & ATS Suggestions — 🔵 0% (Backlog)
+- F-055: Resume Download from Tailoring Studio — 🔵 0% (Backlog)
+- F-056: Save Tailored Resume as New Version — 🔵 0% (Backlog)
+- F-057: End-to-End Testing — 🔵 0% (Backlog)
 
 ## Decisions Made
 - **Controller Pattern (§3.2D)**: Composable acts as controller; all business logic delegated to use cases.
-- **Dependency Injection**: Services injected into use cases; no instantiation inside use cases.
-- **Reactive State**: Vue `ref()` for mutable state, `computed()` for derived values (atsScorePercent, jobKeywords).
-- **UpdateResumeUseCase**: Created to handle resume persistence; mirrors backend /api/resumes/:id PATCH endpoint.
-- **Error Recovery**: Try-catch blocks on all async operations; error.value persisted for UI display.
+- **Generation Settings State**: Added reactive `generationSettings` with `tone` and `targetAtsScore` properties.
+- **API Contract Extension**: Backend accepts optional `tone` and `targetAtsScore` parameters.
+- **Default Values**: Professional tone, 95% ATS score as sensible defaults.
+- **Backward Compatibility**: New parameters optional; existing API calls continue working.
+- **AI Prompt Enhancement**: System and user prompts now include tone instructions and target ATS score goals.
 
 ## Changes Since Last Session
-- **useTailoringStudioController.js** (+250 lines): Complete composable with DI for 5 use cases, 8 action methods, 3 computed properties.
-- **UpdateResumeUseCase.js** (+40 lines): New use case for resume updates.
-- **TailoringStudio.vue** (±150 lines): Refactored from hardcoded UI to dynamic, data-driven component with loading indicators.
-- **Features Implemented**: Job fetching, ATS scoring, AI generation, keyword extraction, section-based resume rendering.
+- **TailoringStudio.vue** (+80 lines): Added generation settings modal with tone selection and ATS score slider.
+- **useTailoringStudioController.js** (+15 lines): Added generationSettings state and updated generateTailoredResume method.
+- **GenerateFromJDUseCase.js** (+5 lines): Extended to accept and pass generation settings.
+- **HttpAIService.js** (+5 lines): Updated to pass generation settings to backend API.
+- **generate_from_jd_service.js** (+25 lines): Extended backend to accept and use tone/ATS parameters in AI prompts.
+- **ResumeController.js** (+10 lines): Updated schema and command construction for new parameters.
 
 ## Validation & Evidence
 - **Build**: npm run build succeeds (168 modules, 1.36s gzipped).
-- **Module Count**: Increased from 164 to 168 (4 new: GenerateFromJDUseCase, HttpAIService, GetJobApplicationUseCase, UpdateResumeUseCase imported).
-- **Clean Architecture**: Domain entities, use cases, repositories, and composable follow §3 patterns.
-- **Component Integration**: SavedJobs → TailoringStudio navigation works; data flows correctly through composable.
-- **Error Handling**: Tested with missing data; UI gracefully shows placeholders and loading states.
+- **Tests**: Backend integration tests pass, including generate_from_jd_service.
+- **Modal State**: Tone selection buttons and ATS score slider properly tracked with reactive refs.
+- **API Integration**: Settings passed through composable → use case → service → backend → AI prompts.
+- **Backend Extension**: generate_from_jd_service accepts new parameters and incorporates them into AI prompts.
+- **UI Feedback**: Modal shows selected tone, slider updates target score, button triggers generation with settings.
 
 ## Risks & Unknowns
-- **Resume Update Endpoint**: Assumed `/api/resumes/:id` PATCH exists; verify backend implementation.
-- **AI Generation Speed**: GenerateFromJDUseCase may take 5-10s; consider adding estimated time display.
-- **ATS Calculation**: Heavy computation for large resumes; consider server-side caching.
-- **Section Rendering**: Assumes resume.sections is array; add validation if structure varies.
+- **AI Prompt Effectiveness**: Tone and ATS score parameters incorporated into prompts; effectiveness depends on AI model response quality.
+- **Parameter Validation**: Backend validates tone enum and ATS score range (70-100).
+- **Resume Update Endpoint**: UpdateResumeUseCase exists and tested; ready for inline editing feature.
 
 ## Next Steps
-1. **F-047: Resume Editing** — Add inline edit UI for sections, implement save-on-blur with debounce.
-2. **F-048: Keyword Highlighting** — Parse job keywords, highlight in resume preview, suggest placements.
-3. **F-049: Download** — Integrate PDF/DOCX export for tailored resume with job company name.
+1. **F-053: Resume Editing** — Add inline edit UI for sections, implement save-on-blur with debounce.
+2. **F-054: Keyword Highlighting** — Extract keywords from job descriptions and highlight in resume preview.
+3. **F-055: Download Functionality** — Integrate PDF/DOCX export with tailored resume data.
+4. **F-056: Version Management** — Implement save-as-new-version with job application linking.
+5. **F-057: End-to-End Testing** — Test complete workflow from SavedJobs to download.
 
 ## Status Summary
 - ✅ 100% — F-046: Tailoring Studio Screen fully implemented and tested.
-- 🔵 0% — F-047: Resume editing (ready to start).
-- 🔵 0% — F-048: Keyword suggestions (ready to start).
-
-## Closing Report
-
-**What Changed:**
-- [useTailoringStudioController.js](src/ui/composables/useTailoringStudioController.js) (+250 lines): Controller composable orchestrating job application fetching, resume management, ATS scoring, and AI generation.
-- [UpdateResumeUseCase.js](src/core/application/resume/UpdateResumeUseCase.js) (+40 lines): New use case for resume updates following Clean Architecture pattern.
-- [TailoringStudio.vue](src/ui/views/TailoringStudio.vue) (±150 lines): Complete refactoring from hardcoded UI to data-driven component with dynamic bindings.
-
-**Validation & Evidence:**
-- ✅ Build succeeds: 168 modules, 1.36s gzip time, zero errors.
-- ✅ Clean Architecture: 5 use cases wired via DI; composable acts as controller (§3.2D).
-- ✅ Reactive State: ATS score updates in real-time; loading states work correctly.
-- ✅ Integration: SavedJobs → TailoringStudio data flow validated; backend API calls functional.
-- ✅ Error Handling: Graceful fallbacks for missing data; user-friendly error messages.
-
-**Status Update:**
-- **F-046**: ✅ 100% — Tailoring Studio fully functional with all acceptance criteria met.
-
-**Decisions Made:**
-- Controller Pattern (technical_design.md §3.2D): Composable wires use cases without complex framework.
-- Dependency Injection: All services injected; no global state or singletons.
-- Reactive Computed: `atsScorePercent`, `resumeText`, `jobKeywords` auto-update on dependency change.
-- Error Recovery: Try-catch on all async; error state persists for 5s before clearing.
-
-**Risks & Unknowns:**
-- Resume Update endpoint: Verify backend `/api/resumes/:id` PATCH route exists (assumed but not verified).
-- AI Generation latency: May take 5-10s; add time estimate to modal.
-- Performance: Large resume calculations may be slow; recommend server-side caching.
-
-**Next Steps:**
-1. **F-047: Resume Editing** — Implement inline section editing with debounced save (≤1 day).
-2. **F-048: Keyword Highlighting** — Extract keywords from JD, highlight in preview (≤1 day).
-3. **F-049: Download** — Add PDF/DOCX export for tailored resume (reuse existing ExportService).
-
----
+- ✅ 100% — F-052: Generation Settings Logic fully implemented and tested.
+- 🔵 0% — F-053: Resume editing in TailoringStudio (ready to start).
