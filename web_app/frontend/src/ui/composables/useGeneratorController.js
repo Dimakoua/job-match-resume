@@ -9,6 +9,7 @@ import { HttpAIService } from '../../infrastructure/api/HttpAIService.js'
 import { HttpResumeRepository } from '../../infrastructure/api/HttpResumeRepository.js'
 import { GenerateFromJDUseCase } from '../../core/application/ai/GenerateFromJDUseCase.js'
 import { ListTemplatesUseCase } from '../../core/application/editor/ListTemplatesUseCase.js'
+import { filterSupportedTemplates } from '../../ui/components/resume-templates/resumeTemplateFactory.js'
 
 export function useGeneratorController() {
   const router = useRouter()
@@ -31,7 +32,9 @@ export function useGeneratorController() {
   // ===== Actions =====
   const fetchTemplates = async () => {
     try {
-      templates.value = await listTemplatesUseCase.execute()
+      const allTemplates = await listTemplatesUseCase.execute()
+      // Filter to only show templates that have frontend components
+      templates.value = filterSupportedTemplates(allTemplates)
     } catch (err) {
       console.error('Failed to load templates:', err)
       // Fallback to minimal set if API fails

@@ -5,41 +5,46 @@ import {
   ResumeTemplateProfessional
 } from './index.js'
 
+// Configuration: which backend templates have frontend components
+const SUPPORTED_TEMPLATES = {
+  'basic': ResumeTemplateBasic,
+  'classic': ResumeTemplateBasic, // Maps to same component as basic
+  'modern': ResumeTemplateModern,
+  'minimal': ResumeTemplateMinimal,
+  'professional': ResumeTemplateProfessional
+}
+
 /**
  * Factory function to get the appropriate resume template component
- * @param {string} template - The template name ('basic', 'modern', 'minimal', 'professional', 'classic')
+ * @param {string} template - The template ID from backend
  * @returns {Component} The Vue component for the specified template
  */
 export function getResumeTemplate(template) {
-  switch (template) {
-    case 'basic':
-    case 'classic':
-      return ResumeTemplateBasic
-    case 'modern':
-      return ResumeTemplateModern
-    case 'minimal':
-      return ResumeTemplateMinimal
-    case 'professional':
-      return ResumeTemplateProfessional
-    default:
-      // Default to basic/classic template
-      return ResumeTemplateBasic
-  }
+  return SUPPORTED_TEMPLATES[template] || ResumeTemplateBasic
 }
 
 /**
- * Get all available template names
- * @returns {string[]} Array of available template names
+ * Get all templates supported by the frontend
+ * @returns {string[]} Array of supported template IDs
  */
-export function getAvailableTemplates() {
-  return ['basic', 'classic', 'modern', 'minimal', 'professional']
+export function getSupportedTemplateIds() {
+  return Object.keys(SUPPORTED_TEMPLATES)
 }
 
 /**
- * Check if a template is supported
- * @param {string} template - The template name to check
- * @returns {boolean} True if the template is supported
+ * Check if a template is supported by the frontend
+ * @param {string} templateId - The template ID to check
+ * @returns {boolean} True if the template has a frontend component
  */
-export function isTemplateSupported(template) {
-  return getAvailableTemplates().includes(template)
+export function isTemplateSupported(templateId) {
+  return templateId in SUPPORTED_TEMPLATES
+}
+
+/**
+ * Filter backend templates to only include supported ones
+ * @param {Array} backendTemplates - Array of template objects from backend
+ * @returns {Array} Filtered array of supported templates
+ */
+export function filterSupportedTemplates(backendTemplates) {
+  return backendTemplates.filter(template => isTemplateSupported(template.id))
 }
