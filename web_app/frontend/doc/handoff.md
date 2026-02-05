@@ -22,7 +22,7 @@
 - Added route /saved-jobs/:listId for SavedJobs view.
 
 ## Validation & Evidence
-- Build: npm run build succeeds (162 modules, 781ms); JobApplicationView component updated with ATS score.
+- Build: npm run build succeeds (164 modules, 1.41s); Both components compile without errors.
 - Clean Architecture: Domain entities, use cases, repository, and controller properly separated.
 - UI Components: JobApplicationView and JobApplicationCard match design patterns from existing components.
 - Status Indicators: Visual status badges with proper color coding implemented.

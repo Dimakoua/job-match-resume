@@ -26,7 +26,7 @@
                             <p class="text-sm font-medium leading-normal">Archive</p>
                         </a>
                     </nav>
-                    <button @click="createListModal.show = true"
+                    <button @click="openCreateListModal"
                         class="flex items-center justify-center gap-2 rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold mt-auto">
                         <span class="material-symbols-outlined text-sm">add</span>
                         <span class="truncate">New List</span>
@@ -72,7 +72,7 @@
                                     class="size-14 bg-[#f8f9fc] dark:bg-gray-900 rounded-lg flex items-center justify-center border border-[#e7ebf3] dark:border-gray-700 overflow-hidden">
                                     <span class="material-symbols-outlined text-gray-400">corporate_fare</span>
                                 </div>
-                                <div class="flex h-6 items-center justify-center rounded-full px-3" :class="statusClass(job.status)">
+                                <div class="flex h-6 items-center justify-center rounded-full px-3" :class="getStatusClass(job.status)">
                                     <select v-model="job.status" @change.stop="updateStatus(job)" @click.stop class="bg-transparent border-0 text-[10px] font-bold uppercase tracking-wider outline-none cursor-pointer appearance-none">
                                         <option value="saved">Saved</option>
                                         <option value="applied">Applied</option>
@@ -248,10 +248,9 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watchEffect } from 'vue';
+import { computed, onMounted, watchEffect } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { useJobSearchListController } from '../composables/useJobSearchListController.js';
-import { useJobApplicationController } from '../composables/useJobApplicationController.js';
+import { useSavedJobsController } from '../composables/useSavedJobsController.js';
 import { useAuthStore } from '../stores/useAuthStore.js';
 import AppHeader from '../components/AppHeader.vue';
 import AppFooter from '../components/AppFooter.vue';
@@ -261,133 +260,56 @@ const route = useRoute();
 const router = useRouter();
 const authStore = useAuthStore();
 
-const {
-lists: jobSearchLists,
-isLoading: listsLoading,
-loadLists: loadJobSearchLists,
-createList: createJobSearchList,
-} = useJobSearchListController();
-
-const {
-applications,
-loading: appsLoading,
-loadApplications,
-updateApplication,
-} = useJobApplicationController();
-
-// Reactive
-const searchQuery = ref('');
-const activeFilter = ref('all');
-const showGenerateTailoringModal = ref(false);
-const selectedJobForTailoring = ref(null);
-const createListModal = ref({
-  show: false,
-  name: '',
-  description: ''
-});
-const selectedListId = computed(() => route.params.listId);
-const allApplicationsRef = ref([]);
-
-const filters = [
-{ key: 'all', label: 'All Jobs' },
-{ key: 'highMatch', label: 'Matching > 90%' },
-{ key: 'recent', label: 'Recently Added' },
-{ key: 'saved', label: 'Saved' },
-{ key: 'applied', label: 'Applied' },
-];
-
 // Computed
+const selectedListId = computed(() => route.params.listId);
 const selectedList = computed(() => {
-return jobSearchLists.value.find(list => list.id === selectedListId.value);
+  return jobSearchLists.value.find(list => list.id === selectedListId.value);
 });
 
-const allApplications = computed(() => allApplicationsRef.value);
-
-const filteredJobs = computed(() => {
-let filtered = allApplications.value;
-
-// Filter by selected list
-if (selectedListId.value) {
-    filtered = filtered.filter(job => job.jobSearchListId === selectedListId.value);
-}
-
-// Search filter
-if (searchQuery.value) {
-    filtered = filtered.filter(job =>
-        job.position.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-        job.company.toLowerCase().includes(searchQuery.value.toLowerCase())
-    );
-}
-
-// Active filter - adjust for all statuses
-if (activeFilter.value === 'highMatch') {
-    filtered = filtered.filter(job => (job.matchScore || 0) > 90);
-} else if (activeFilter.value === 'recent') {
-    // Assuming recent logic
-    filtered = filtered.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
-} else if (activeFilter.value === 'saved') {
-    filtered = filtered.filter(job => job.status === 'saved');
-} else if (activeFilter.value === 'applied') {
-    filtered = filtered.filter(job => job.status === 'applied');
-}
-
-return filtered;
-});
-
-// Load all applications for all lists
-const loadAllApplications = async () => {
-  allApplicationsRef.value = [];
-  for (const list of jobSearchLists.value) {
-    try {
-      const controller = useJobApplicationController();
-      await controller.loadApplications(list.id, authStore.user.id);
-      allApplicationsRef.value.push(...controller.applications.value);
-    } catch (error) {
-      console.error('Failed to load applications for list', list.id, error);
-    }
-  }
-};
+// Use the controller composable
+const {
+  jobSearchLists,
+  applications,
+  isLoadingLists,
+  isLoadingApps,
+  error,
+  searchQuery,
+  activeFilter,
+  showGenerateTailoringModal,
+  selectedJobForTailoring,
+  createListModal,
+  filters,
+  filteredJobs,
+  loadJobSearchLists,
+  createJobSearchList,
+  loadApplications,
+  updateApplicationStatus,
+  getStatusClass,
+  openGenerateTailoringModal,
+  closeGenerateTailoringModal,
+  resetCreateListModal,
+  openCreateListModal
+} = useSavedJobsController(selectedListId);
 
 // Methods
 const selectList = (listId) => {
-router.push(`/saved-jobs/${listId}`);
-};
-
-const statusClass = (status) => {
-switch (status) {
-  case 'saved': return 'bg-gray-100 text-gray-700';
-  case 'applied': return 'bg-blue-100 text-blue-700';
-  case 'interviewing': return 'bg-green-100 text-green-700';
-  case 'rejected': return 'bg-red-100 text-red-700';
-  default: return 'bg-gray-100 text-gray-700';
-}
+  router.push(`/saved-jobs/${listId}`);
 };
 
 const updateStatus = async (job) => {
-try {
-  await updateApplication(job.id, { status: job.status }, job);
-  // The composable already updates the local applications array
-} catch (error) {
-  console.error('Failed to update status:', error);
-}
+  try {
+    await updateApplicationStatus(job.id, job.status, job);
+  } catch (error) {
+    console.error('Failed to update status:', error);
+  }
 };
 
 const editApplication = (job) => {
-router.push(`/job-applications/${job.jobSearchListId}/${job.id}/edit`);
+  router.push(`/job-applications/${job.jobSearchListId}/${job.id}/edit`);
 };
 
 const openTailoringStudio = (job) => {
-router.push(`/tailoring/${job.id}`);
-};
-
-const openGenerateTailoringModal = (job) => {
-selectedJobForTailoring.value = job;
-showGenerateTailoringModal.value = true;
-};
-
-const closeGenerateTailoringModal = () => {
-showGenerateTailoringModal.value = false;
-selectedJobForTailoring.value = null;
+  router.push(`/tailoring/${job.id}`);
 };
 
 const startGeneration = async () => {
@@ -404,32 +326,36 @@ const startGeneration = async () => {
 };
 
 const addJobManually = () => {
-router.push(`/job-applications/${selectedListId.value}/create`);
+  router.push(`/job-applications/${selectedListId.value}/create`);
 };
 
 const handleCreateListSubmit = async () => {
   try {
     await createJobSearchList(createListModal.value.name, createListModal.value.description);
-    createListModal.value = { show: false, name: '', description: '' };
+    resetCreateListModal();
     await loadJobSearchLists();
-    await loadAllApplications();
+    if (selectedListId.value) {
+      await loadApplications(selectedListId.value);
+    }
   } catch (err) {
     console.error('Failed to create list:', err);
   }
 };
 
 watchEffect(async () => {
-    if (selectedListId.value) {
-        // Applications are already loaded
-    } else if (jobSearchLists.value.length > 0) {
-        // Default to first list
-        router.replace(`/saved-jobs/${jobSearchLists.value[0].id}`);
-    }
+  if (selectedListId.value) {
+    await loadApplications(selectedListId.value);
+  } else if (jobSearchLists.value.length > 0) {
+    // Default to first list
+    router.replace(`/saved-jobs/${jobSearchLists.value[0].id}`);
+  }
 });
 
 onMounted(async () => {
   await loadJobSearchLists();
-  await loadAllApplications();
+  if (selectedListId.value) {
+    await loadApplications(selectedListId.value);
+  }
 });
 </script>
 
