@@ -402,6 +402,7 @@
 
             <!-- ATS Analysis Section -->
             <div v-if="activeSection === 'analysis'" class="flex flex-col gap-6 overflow-y-auto no-scrollbar pb-6">
+              <!-- Overall Score & Key Metrics -->
               <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 bg-white dark:bg-background-dark border border-[#e7ebf3] dark:border-white/10 rounded-xl p-6 shadow-sm">
                 <div class="lg:col-span-1 flex flex-col items-center justify-center border-r border-[#e7ebf3] dark:border-white/10 pr-6">
                   <div class="relative size-32 flex items-center justify-center">
@@ -418,34 +419,114 @@
                 <div class="lg:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-8 pl-2">
                   <div class="flex flex-col justify-center">
                     <div class="flex items-center justify-between mb-2">
-                      <span class="text-sm font-medium text-[#4d6599]">Skill Relevance</span>
+                      <span class="text-sm font-medium text-[#4d6599]">Keyword Match</span>
                       <span class="text-sm font-bold">{{ atsSkillRelevance || '--' }}%</span>
                     </div>
                     <div class="w-full h-1.5 bg-gray-100 dark:bg-white/5 rounded-full overflow-hidden">
                       <div class="h-full bg-primary" :style="{ width: (atsSkillRelevance || 0) + '%' }"></div>
                     </div>
-                    <p class="text-[10px] mt-2 text-[#4d6599]">Strong overlap in core competencies</p>
+                    <p class="text-[10px] mt-2 text-[#4d6599]">{{ atsMetadata?.matchedCount || 0 }} of {{ atsMetadata?.totalKeywords || 0 }} keywords matched</p>
                   </div>
                   <div class="flex flex-col justify-center">
                     <div class="flex items-center justify-between mb-2">
-                      <span class="text-sm font-medium text-[#4d6599]">Format Score</span>
-                      <span class="text-sm font-bold">{{ atsFormatScore || '--' }}%</span>
+                      <span class="text-sm font-medium text-[#4d6599]">Resume Keywords</span>
+                      <span class="text-sm font-bold">{{ atsResumeKeywords.length }}</span>
                     </div>
                     <div class="w-full h-1.5 bg-gray-100 dark:bg-white/5 rounded-full overflow-hidden">
-                      <div class="h-full bg-warning" :style="{ width: (atsFormatScore || 0) + '%' }"></div>
+                      <div class="h-full bg-blue-500" :style="{ width: Math.min((atsResumeKeywords.length / 50) * 100, 100) + '%' }"></div>
                     </div>
-                    <p class="text-[10px] mt-2 text-[#4d6599]">Minor adjustments needed in layout</p>
+                    <p class="text-[10px] mt-2 text-[#4d6599]">Keywords found in your resume</p>
                   </div>
                   <div class="flex flex-col justify-center">
                     <div class="flex items-center justify-between mb-2">
-                      <span class="text-sm font-medium text-[#4d6599]">Keyword Density</span>
-                      <span class="text-sm font-bold">{{ atsKeywordDensity || '--' }}%</span>
+                      <span class="text-sm font-medium text-[#4d6599]">Job Keywords</span>
+                      <span class="text-sm font-bold">{{ atsJobKeywords.length }}</span>
                     </div>
                     <div class="w-full h-1.5 bg-gray-100 dark:bg-white/5 rounded-full overflow-hidden">
-                      <div class="h-full bg-danger" :style="{ width: (atsKeywordDensity || 0) + '%' }"></div>
+                      <div class="h-full bg-green-500" :style="{ width: Math.min((atsJobKeywords.length / 20) * 100, 100) + '%' }"></div>
                     </div>
-                    <p class="text-[10px] mt-2 text-[#4d6599]">Lacking critical technical terms</p>
+                    <p class="text-[10px] mt-2 text-[#4d6599]">Keywords required by job</p>
                   </div>
+                </div>
+              </div>
+
+              <!-- Document Statistics -->
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white dark:bg-background-dark border border-[#e7ebf3] dark:border-white/10 rounded-xl p-6 shadow-sm">
+                  <div class="flex items-center gap-3 mb-4">
+                    <div class="p-2 bg-blue-100 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-lg">
+                      <span class="material-symbols-outlined">description</span>
+                    </div>
+                    <div>
+                      <h3 class="text-lg font-bold">Resume Analysis</h3>
+                      <p class="text-sm text-[#4d6599] dark:text-gray-400">Content breakdown</p>
+                    </div>
+                  </div>
+                  <div class="space-y-3">
+                    <div class="flex justify-between items-center py-2 border-b border-gray-100 dark:border-white/5">
+                      <span class="text-sm text-gray-600 dark:text-gray-400">Total Length</span>
+                      <span class="text-sm font-medium">{{ atsMetadata?.resumeLength || 0 }} characters</span>
+                    </div>
+                    <div class="flex justify-between items-center py-2 border-b border-gray-100 dark:border-white/5">
+                      <span class="text-sm text-gray-600 dark:text-gray-400">Keywords Found</span>
+                      <span class="text-sm font-medium">{{ atsResumeKeywords.length }}</span>
+                    </div>
+                    <div class="flex justify-between items-center py-2">
+                      <span class="text-sm text-gray-600 dark:text-gray-400">Match Rate</span>
+                      <span class="text-sm font-medium">{{ atsMetadata?.matchRate ? Math.round(atsMetadata.matchRate * 100) : 0 }}%</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="bg-white dark:bg-background-dark border border-[#e7ebf3] dark:border-white/10 rounded-xl p-6 shadow-sm">
+                  <div class="flex items-center gap-3 mb-4">
+                    <div class="p-2 bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400 rounded-lg">
+                      <span class="material-symbols-outlined">work</span>
+                    </div>
+                    <div>
+                      <h3 class="text-lg font-bold">Job Requirements</h3>
+                      <p class="text-sm text-[#4d6599] dark:text-gray-400">What the job asks for</p>
+                    </div>
+                  </div>
+                  <div class="space-y-3">
+                    <div class="flex justify-between items-center py-2 border-b border-gray-100 dark:border-white/5">
+                      <span class="text-sm text-gray-600 dark:text-gray-400">Total Length</span>
+                      <span class="text-sm font-medium">{{ atsMetadata?.jobDescriptionLength || 0 }} characters</span>
+                    </div>
+                    <div class="flex justify-between items-center py-2 border-b border-gray-100 dark:border-white/5">
+                      <span class="text-sm text-gray-600 dark:text-gray-400">Keywords Required</span>
+                      <span class="text-sm font-medium">{{ atsJobKeywords.length }}</span>
+                    </div>
+                    <div class="flex justify-between items-center py-2">
+                      <span class="text-sm text-gray-600 dark:text-gray-400">Critical Keywords</span>
+                      <span class="text-sm font-medium">{{ atsMissedKeywords.length }} missing</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Resume Keywords Cloud -->
+              <div class="bg-white dark:bg-background-dark border border-[#e7ebf3] dark:border-white/10 rounded-xl p-6 shadow-sm">
+                <div class="flex items-center gap-3 mb-6">
+                  <div class="p-2 bg-purple-100 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 rounded-lg">
+                    <span class="material-symbols-outlined">tag</span>
+                  </div>
+                  <div>
+                    <h3 class="text-lg font-bold">Resume Keywords</h3>
+                    <p class="text-sm text-[#4d6599] dark:text-gray-400">Keywords detected in your resume</p>
+                  </div>
+                </div>
+                <div v-if="atsResumeKeywords.length > 0" class="flex flex-wrap gap-2">
+                  <span v-for="keyword in atsResumeKeywords.slice(0, 50)" :key="keyword"
+                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-100 dark:bg-purple-900/20 text-purple-800 dark:text-purple-200">
+                    {{ keyword }}
+                  </span>
+                  <span v-if="atsResumeKeywords.length > 50" class="text-xs text-gray-500 dark:text-gray-400 px-2">
+                    +{{ atsResumeKeywords.length - 50 }} more
+                  </span>
+                </div>
+                <div v-else class="text-center py-8 text-gray-400">
+                  <p>No keywords detected in your resume</p>
                 </div>
               </div>
               <div class="flex flex-col bg-white dark:bg-background-dark border border-[#e7ebf3] dark:border-white/10 rounded-xl overflow-hidden shadow-sm">
@@ -511,6 +592,60 @@
                       <span class="material-symbols-outlined text-sm">add</span>
                       Auto-insert
                     </button>
+                  </div>
+                </div>
+              </div>
+              <!-- Optimization Tips -->
+              <div class="bg-white dark:bg-background-dark border border-[#e7ebf3] dark:border-white/10 rounded-xl p-6 shadow-sm">
+                <div class="flex items-center gap-3 mb-6">
+                  <div class="p-2 bg-primary/10 text-primary rounded-lg">
+                    <span class="material-symbols-outlined">lightbulb</span>
+                  </div>
+                  <div>
+                    <h3 class="text-lg font-bold">ATS Optimization Tips</h3>
+                    <p class="text-sm text-[#4d6599]">Actionable recommendations to improve your ATS score</p>
+                  </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div class="p-4 rounded-xl border border-[#e7ebf3] dark:border-white/10 bg-gradient-to-r from-primary/5 to-transparent">
+                    <div class="flex items-start gap-3">
+                      <span class="material-symbols-outlined text-primary mt-0.5">priority_high</span>
+                      <div>
+                        <h4 class="text-sm font-bold mb-1">Add Missing Keywords</h4>
+                        <p class="text-xs text-[#4d6599] mb-2">Incorporate {{ atsMissedKeywords.length }} critical keywords from the job description into your resume sections.</p>
+                        <button class="text-xs font-bold text-primary hover:underline">View suggestions →</button>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="p-4 rounded-xl border border-[#e7ebf3] dark:border-white/10 bg-gradient-to-r from-success/5 to-transparent">
+                    <div class="flex items-start gap-3">
+                      <span class="material-symbols-outlined text-success mt-0.5">check_circle</span>
+                      <div>
+                        <h4 class="text-sm font-bold mb-1">Keyword Balance</h4>
+                        <p class="text-xs text-[#4d6599] mb-2">Your resume has good keyword coverage with {{ atsMatchedKeywords.length }}/{{ atsJobKeywords.length }} matches.</p>
+                        <button class="text-xs font-bold text-success hover:underline">Optimize placement →</button>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="p-4 rounded-xl border border-[#e7ebf3] dark:border-white/10 bg-gradient-to-r from-warning/5 to-transparent">
+                    <div class="flex items-start gap-3">
+                      <span class="material-symbols-outlined text-warning mt-0.5">format_size</span>
+                      <div>
+                        <h4 class="text-sm font-bold mb-1">Document Length</h4>
+                        <p class="text-xs text-[#4d6599] mb-2">Consider optimizing document length for better parsing. Current: {{ atsMetadata?.wordCount || 0 }} words.</p>
+                        <button class="text-xs font-bold text-warning hover:underline">Length tips →</button>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="p-4 rounded-xl border border-[#e7ebf3] dark:border-white/10 bg-gradient-to-r from-info/5 to-transparent">
+                    <div class="flex items-start gap-3">
+                      <span class="material-symbols-outlined text-info mt-0.5">auto_fix_high</span>
+                      <div>
+                        <h4 class="text-sm font-bold mb-1">Auto-Enhance</h4>
+                        <p class="text-xs text-[#4d6599] mb-2">Use AI to automatically improve keyword integration and formatting.</p>
+                        <button class="text-xs font-bold text-info hover:underline">Enhance now →</button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -705,6 +840,8 @@ const {
   atsMatchedKeywords,
   atsMissedKeywords,
   atsJobKeywords,
+  atsResumeKeywords,
+  atsMetadata,
   atsSkillRelevance,
   atsFormatScore,
   atsKeywordDensity,

@@ -165,6 +165,18 @@ export function useTailoringStudioController() {
     return atsScore.value.jobDescriptionKeywords || [];
   });
 
+  const atsResumeKeywords = computed(() => {
+    if (!atsScore.value) return [];
+    if (typeof atsScore.value === 'number') return [];
+    return atsScore.value.resumeKeywords || [];
+  });
+
+  const atsMetadata = computed(() => {
+    if (!atsScore.value) return null;
+    if (typeof atsScore.value === 'number') return null;
+    return atsScore.value.metadata || null;
+  });
+
   // Sub-scores (mocked for now, can be replaced with backend values if available)
   const atsSkillRelevance = computed(() => {
     // Example: percent of matched keywords
@@ -177,8 +189,8 @@ export function useTailoringStudioController() {
   const atsFormatScore = computed(() => 78); // Placeholder
   const atsKeywordDensity = computed(() => {
     if (!atsScore.value || typeof atsScore.value === 'number') return null;
-    const resumeCount = atsScore.value.resumeKeywordCount || 0;
-    const jobCount = atsScore.value.jobKeywordCount || 0;
+    const resumeCount = atsScore.value.metadata?.resumeKeywordCount || 0;
+    const jobCount = atsScore.value.metadata?.jobKeywordCount || 0;
     if (!resumeCount || !jobCount) return null;
     return Math.round((resumeCount / jobCount) * 100);
   });
@@ -331,7 +343,7 @@ export function useTailoringStudioController() {
         resumeText: resumeText.value,
         jobDescription: job.value.jobDescription
       });
-      atsScore.value = result.score || 0;
+      atsScore.value = result; // Store the entire result object, not just the score
 
       // Extract suggested keywords
       if (result.keywords) {
@@ -599,6 +611,15 @@ export function useTailoringStudioController() {
         await generateSuggestions();
       } catch (err) {
         console.error('Failed to auto-generate suggestions:', err);
+      }
+    }
+
+    // Auto-calculate ATS score when switching to analysis tab
+    if (section === 'analysis' && !atsScore.value && job.value?.jobDescription && resume.value && !isCalculatingAts.value) {
+      try {
+        await calculateAts();
+      } catch (err) {
+        console.error('Failed to auto-calculate ATS score:', err);
       }
     }
   };
@@ -1096,6 +1117,8 @@ export function useTailoringStudioController() {
     atsMatchedKeywords,
     atsMissedKeywords,
     atsJobKeywords,
+    atsResumeKeywords,
+    atsMetadata,
     atsSkillRelevance,
     atsFormatScore,
     atsKeywordDensity,

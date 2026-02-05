@@ -57,6 +57,7 @@ export class CalculateAtsScoreService {
       metadata: {
         resumeLength: command.resumeText.length,
         jobDescriptionLength: command.jobDescription.length,
+        wordCount: command.resumeText.split(/\s+/).filter(word => word.length > 0).length,
         matchRate: jobKeywords.length > 0 
           ? Math.round((matchedKeywords.length / jobKeywords.length) * 100) / 100 
           : 0,
