@@ -9,6 +9,7 @@
       :layout="layout"
       :style="style"
       :sections="sections"
+      :classes="classes"
     />
   </div>
 </template>
@@ -61,5 +62,29 @@ const previewStyle = computed(() => ({
   minWidth: '600px',
   fontFamily: fontFamilies[props.style.bodyFont],
   padding: `${props.layout.margins}px`
+}))
+
+const classes = computed(() => ({
+  sectionHeaderClass: 'uppercase text-sm font-bold tracking-widest border-l-4 pl-4 mb-4',
+  sectionHeaderStyle: { color: props.style.accentColor, fontFamily: fontFamilies[props.style.headingFont] },
+  bodyTextClass: 'text-gray-700 whitespace-pre-wrap',
+  experienceItemClass: 'mb-4',
+  experienceHeaderClass: 'flex justify-between items-baseline mb-0.5',
+  companyNameClass: 'font-bold text-xs',
+  jobTitleClass: 'text-[10px] font-semibold mb-1',
+  dateClass: 'text-[9px] text-gray-500 font-medium italic',
+  educationItemClass: 'mb-3',
+  educationHeaderClass: 'flex justify-between items-baseline',
+  schoolNameClass: 'font-bold text-xs',
+  degreeClass: 'text-[10px] font-semibold',
+  projectItemClass: 'mb-3',
+  projectHeaderClass: 'flex justify-between items-baseline mb-0.5',
+  projectNameClass: 'font-bold text-xs',
+  projectLinkClass: 'text-[9px] text-primary hover:underline font-medium',
+  certificationItemClass: 'flex justify-between items-baseline mb-1',
+  certificationNameClass: 'font-bold text-xs',
+  certificationIssuerClass: 'text-[10px] text-gray-600',
+  skillsContainerClass: 'flex flex-wrap gap-1.5',
+  skillTagClass: 'px-2 py-0.5 text-[9px] font-semibold rounded'
 }))
 </script>

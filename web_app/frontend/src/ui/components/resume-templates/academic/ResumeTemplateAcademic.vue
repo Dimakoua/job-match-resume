@@ -12,16 +12,18 @@
       :resume="resume"
       :style="style"
       :layout="layout"
-      :customSections="customSections"
+      :sections="customSections"
+      :classes="classes"
     />
   </div>
 </template>
 
 <script setup>
+import { computed } from 'vue'
 import ResumeHeaderAcademic from './ResumeHeaderAcademic.vue'
 import ResumeSections from '../ResumeSections.vue'
 
-defineProps({
+const props = defineProps({
   resume: {
     type: Object,
     required: true
@@ -39,6 +41,39 @@ defineProps({
     default: () => []
   }
 })
+
+const fontFamilies = {
+  'inter': "'Inter', sans-serif",
+  'playfair': "'Playfair Display', serif",
+  'roboto': "'Roboto', sans-serif",
+  'lora': "'Lora', serif",
+  'open-sans': "'Open Sans', sans-serif",
+  'roboto-mono': "'Roboto Mono', monospace"
+}
+
+const classes = computed(() => ({
+  sectionHeaderClass: 'text-lg font-bold uppercase tracking-widest inline-block pb-1 mb-8',
+  sectionHeaderStyle: { fontFamily: fontFamilies[props.style.headingFont] },
+  bodyTextClass: 'text-black whitespace-pre-wrap',
+  experienceItemClass: 'flex justify-between items-start mb-6',
+  experienceHeaderClass: '',
+  companyNameClass: 'font-bold',
+  jobTitleClass: 'italic',
+  dateClass: 'text-sm shrink-0',
+  educationItemClass: 'flex justify-between items-start mb-4',
+  educationHeaderClass: '',
+  schoolNameClass: 'font-bold',
+  degreeClass: 'italic',
+  projectItemClass: 'flex gap-4 items-start mb-4',
+  projectHeaderClass: '',
+  projectNameClass: 'text-sm font-bold',
+  projectLinkClass: 'text-sm text-gray-600',
+  certificationItemClass: 'flex gap-4 items-start mb-4',
+  certificationNameClass: 'text-sm font-bold',
+  certificationIssuerClass: 'text-sm',
+  skillsContainerClass: 'space-y-4',
+  skillTagClass: 'text-sm'
+}))
 </script>
 
 <style scoped>
