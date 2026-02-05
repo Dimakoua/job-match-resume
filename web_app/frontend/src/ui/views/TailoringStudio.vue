@@ -586,6 +586,11 @@ const authStore = useAuthStore();
 // Get applicationId from route params
 const applicationId = computed(() => route.params.id);
 
+// UI state for feedback
+const appliedSuggestions = ref([]);
+const lastAppliedSuggestion = ref(null);
+const showGenerationModal = ref(false);
+
 // Use the controller composable
 const {
   job,
@@ -619,10 +624,6 @@ const {
   linkResumeToApplication,
   generateSuggestions
 } = useTailoringStudioController(applicationId);
-
-// UI state for feedback
-const appliedSuggestions = ref([]);
-const lastAppliedSuggestion = ref(null);
 
 onMounted(async () => {
   if (applicationId.value) {
@@ -819,6 +820,7 @@ const applyKeywordSuggestion = async (suggestion) => {
     const newSkills = [...new Set([...skillsSection, ...keywords])]; // Remove duplicates
 
     await updateResume({
+      id: resume.value.id,
       sections: {
         ...resume.value.sections,
         skills: newSkills
@@ -846,6 +848,7 @@ const applySkillsSuggestion = async (suggestion) => {
     const newSkills = [...new Set([...skillsSection, ...skills])];
 
     await updateResume({
+      id: resume.value.id,
       sections: {
         ...resume.value.sections,
         skills: newSkills
