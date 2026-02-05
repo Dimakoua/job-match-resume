@@ -1,5 +1,6 @@
 import {
   ResumeTemplateBasic,
+  ResumeTemplateClassic,
   ResumeTemplateModern,
   ResumeTemplateMinimal,
   ResumeTemplateProfessional
@@ -8,7 +9,7 @@ import {
 // Configuration: which backend templates have frontend components
 const SUPPORTED_TEMPLATES = {
   'basic': ResumeTemplateBasic,
-  'classic': ResumeTemplateBasic, // Maps to same component as basic
+  'classic': ResumeTemplateClassic,
   'modern': ResumeTemplateModern,
   'minimal': ResumeTemplateMinimal,
   'professional': ResumeTemplateProfessional

@@ -1,41 +1,40 @@
 <template>
   <!-- Summary -->
   <div v-if="resume.summary && isSectionVisible('summary')" :style="{ marginBottom: `${layout.sectionSpacing}px` }">
-    <h3 class="text-xs font-bold uppercase tracking-[0.2em] text-gray-400 mb-2 border-b border-gray-100 pb-1" :style="{ fontFamily: fontFamilies[style.headingFont] }">Profile</h3>
-    <p :style="bodyStyle" class="text-gray-700 whitespace-pre-wrap">{{ resume.summary }}</p>
+    <h3 :class="sectionHeaderClass" :style="sectionHeaderStyle">Profile</h3>
+    <p :style="bodyStyle" :class="bodyTextClass">{{ resume.summary }}</p>
   </div>
 
   <!-- Experience -->
   <div v-if="filledExperiences.length > 0 && isSectionVisible('experience')" :style="{ marginBottom: `${layout.sectionSpacing}px` }">
-    <h3 class="text-xs font-bold uppercase tracking-[0.2em] text-gray-400 mb-3 border-b border-gray-100 pb-1" :style="{ fontFamily: fontFamilies[style.headingFont] }">Experience</h3>
+    <h3 :class="sectionHeaderClass" :style="sectionHeaderStyle">Experience</h3>
     <div
       v-for="(exp, index) in filledExperiences"
       :key="index"
-      class="mb-4"
-      :class="{ 'opacity-60': index > 0 }"
+      :class="experienceItemClass"
     >
-      <div class="flex justify-between items-baseline mb-0.5">
-        <h4 class="font-bold text-xs">{{ exp.company }}</h4>
-        <span class="text-[9px] text-gray-500 font-medium italic">
+      <div :class="experienceHeaderClass">
+        <h4 :class="companyNameClass">{{ exp.company }}</h4>
+        <span :class="dateClass">
           {{ exp.startDate }}{{ exp.startDate && exp.endDate ? ' — ' : '' }}{{ exp.endDate }}
         </span>
       </div>
-      <p v-if="exp.title" class="text-[10px] font-semibold mb-1" :style="{ color: style.accentColor }">{{ exp.title }}</p>
-      <p v-if="exp.description" :style="bodyStyle" class="text-gray-600 whitespace-pre-wrap">{{ exp.description }}</p>
+      <p v-if="exp.title" :class="jobTitleClass" :style="{ color: style.accentColor }">{{ exp.title }}</p>
+      <p v-if="exp.description" :style="bodyStyle" :class="bodyTextClass">{{ exp.description }}</p>
     </div>
   </div>
 
   <!-- Education -->
   <div v-if="resume.education && resume.education.length > 0 && isSectionVisible('education')" :style="{ marginBottom: `${layout.sectionSpacing}px` }">
-    <h3 class="text-xs font-bold uppercase tracking-[0.2em] text-gray-400 mb-3 border-b border-gray-100 pb-1" :style="{ fontFamily: fontFamilies[style.headingFont] }">Education</h3>
-    <div v-for="(edu, index) in resume.education" :key="index" class="mb-3">
-      <div class="flex justify-between items-baseline">
-        <h4 class="font-bold text-xs">{{ edu.school }}</h4>
-        <span class="text-[9px] text-gray-500 font-medium italic">
+    <h3 :class="sectionHeaderClass" :style="sectionHeaderStyle">Education</h3>
+    <div v-for="(edu, index) in resume.education" :key="index" :class="educationItemClass">
+      <div :class="educationHeaderClass">
+        <h4 :class="schoolNameClass">{{ edu.school }}</h4>
+        <span :class="dateClass">
           {{ edu.startDate }}{{ edu.startDate && edu.endDate ? ' — ' : '' }}{{ edu.endDate }}
         </span>
       </div>
-      <p class="text-[10px] font-semibold" :style="{ color: style.accentColor }">
+      <p :class="degreeClass" :style="{ color: style.accentColor }">
         {{ edu.degree }}{{ edu.degree && edu.field ? ', ' : '' }}{{ edu.field }}
       </p>
     </div>
@@ -43,36 +42,36 @@
 
   <!-- Projects -->
   <div v-if="resume.projects && resume.projects.length > 0 && isSectionVisible('projects')" :style="{ marginBottom: `${layout.sectionSpacing}px` }">
-    <h3 class="text-xs font-bold uppercase tracking-[0.2em] text-gray-400 mb-3 border-b border-gray-100 pb-1" :style="{ fontFamily: fontFamilies[style.headingFont] }">Projects</h3>
-    <div v-for="(project, index) in resume.projects" :key="index" class="mb-3">
-      <div class="flex justify-between items-baseline mb-0.5">
-        <h4 class="font-bold text-xs">{{ project.name }}</h4>
-        <a v-if="project.link" :href="project.link" target="_blank" class="text-[9px] text-primary hover:underline font-medium">Link</a>
+    <h3 :class="sectionHeaderClass" :style="sectionHeaderStyle">Projects</h3>
+    <div v-for="(project, index) in resume.projects" :key="index" :class="projectItemClass">
+      <div :class="projectHeaderClass">
+        <h4 :class="projectNameClass">{{ project.name }}</h4>
+        <a v-if="project.link" :href="project.link" target="_blank" :class="projectLinkClass">Link</a>
       </div>
-      <p v-if="project.description" :style="bodyStyle" class="text-gray-600 whitespace-pre-wrap">{{ project.description }}</p>
+      <p v-if="project.description" :style="bodyStyle" :class="bodyTextClass">{{ project.description }}</p>
     </div>
   </div>
 
   <!-- Certifications -->
   <div v-if="resume.certifications && resume.certifications.length > 0 && isSectionVisible('certifications')" :style="{ marginBottom: `${layout.sectionSpacing}px` }">
-    <h3 class="text-xs font-bold uppercase tracking-[0.2em] text-gray-400 mb-3 border-b border-gray-100 pb-1" :style="{ fontFamily: fontFamilies[style.headingFont] }">Certifications</h3>
-    <div v-for="(cert, index) in resume.certifications" :key="index" class="flex justify-between items-baseline mb-1">
+    <h3 :class="sectionHeaderClass" :style="sectionHeaderStyle">Certifications</h3>
+    <div v-for="(cert, index) in resume.certifications" :key="index" :class="certificationItemClass">
       <div>
-        <span class="font-bold text-xs">{{ cert.name }}</span>
-        <span v-if="cert.issuer" class="text-[10px] text-gray-600"> • {{ cert.issuer }}</span>
+        <span :class="certificationNameClass">{{ cert.name }}</span>
+        <span v-if="cert.issuer" :class="certificationIssuerClass"> • {{ cert.issuer }}</span>
       </div>
-      <span class="text-[9px] text-gray-500">{{ cert.date }}</span>
+      <span :class="dateClass">{{ cert.date }}</span>
     </div>
   </div>
 
   <!-- Skills -->
   <div v-if="resume.skills && resume.skills.length > 0 && isSectionVisible('skills')" :style="{ marginBottom: `${layout.sectionSpacing}px` }">
-    <h3 class="text-xs font-bold uppercase tracking-[0.2em] text-gray-400 mb-3 border-b border-gray-100 pb-1" :style="{ fontFamily: fontFamilies[style.headingFont] }">Expertise</h3>
-    <div class="flex flex-wrap gap-1.5">
+    <h3 :class="sectionHeaderClass" :style="sectionHeaderStyle">Expertise</h3>
+    <div :class="skillsContainerClass">
       <span
         v-for="(skill, index) in resume.skills"
         :key="index"
-        class="px-2 py-0.5 text-[9px] font-semibold rounded"
+        :class="skillTagClass"
         :style="{ backgroundColor: style.accentColor + '15', color: style.accentColor }"
       >
         {{ skill }}
@@ -83,8 +82,8 @@
   <!-- Custom Sections -->
   <template v-for="customSection in (customSections || [])" :key="customSection?.id || 'unknown'">
     <div v-if="customSection?.id && isSectionVisible(customSection.id) && resume.customSections?.[customSection.id]" :style="{ marginBottom: `${layout.sectionSpacing}px` }">
-      <h3 class="text-xs font-bold uppercase tracking-[0.2em] text-gray-400 mb-2 border-b border-gray-100 pb-1 capitalize" :style="{ fontFamily: fontFamilies[style.headingFont] }">{{ customSection.label }}</h3>
-      <p :style="bodyStyle" class="text-gray-700 whitespace-pre-wrap">{{ resume.customSections[customSection.id] }}</p>
+      <h3 :class="sectionHeaderClass" :style="sectionHeaderStyle" class="capitalize">{{ customSection.label }}</h3>
+      <p :style="bodyStyle" :class="bodyTextClass">{{ resume.customSections[customSection.id] }}</p>
     </div>
   </template>
 
@@ -150,6 +149,253 @@ const bodyStyle = computed(() => ({
   lineHeight: props.style.lineHeight,
   fontFamily: fontFamilies[props.style.bodyFont]
 }))
+
+// Template-specific styling classes
+const sectionHeaderClass = computed(() => {
+  const base = 'uppercase'
+  switch (props.layout.template) {
+    case 'basic':
+      return `${base} text-sm font-bold tracking-[0.1em] border-b border-black pb-1 mb-2`
+    case 'classic':
+      return `${base} text-sm font-bold tracking-widest border-l-4 pl-4 mb-4`
+    case 'modern':
+      return `${base} text-lg font-bold tracking-widest mb-2`
+    case 'minimal':
+      return `${base} text-xs font-semibold tracking-widest border-b border-slate-100 pb-2`
+    case 'professional':
+      return `${base} text-sm font-bold tracking-widest border-l-4 pl-4 mb-4`
+    default:
+      return `${base} text-xs font-bold tracking-[0.2em] text-gray-400 mb-2 border-b border-gray-100 pb-1`
+  }
+})
+
+const sectionHeaderStyle = computed(() => {
+  switch (props.layout.template) {
+    case 'classic':
+    case 'professional':
+      return { color: props.style.accentColor, fontFamily: fontFamilies[props.style.headingFont] }
+    case 'modern':
+      return { fontFamily: fontFamilies[props.style.headingFont] }
+    default:
+      return { fontFamily: fontFamilies[props.style.headingFont] }
+  }
+})
+
+const bodyTextClass = computed(() => {
+  switch (props.layout.template) {
+    case 'basic':
+      return 'text-justify'
+    case 'modern':
+      return 'text-slate-700 leading-relaxed'
+    case 'minimal':
+      return 'text-slate-600 font-light leading-relaxed'
+    default:
+      return 'text-gray-700 whitespace-pre-wrap'
+  }
+})
+
+// Experience styling
+const experienceItemClass = computed(() => {
+  switch (props.layout.template) {
+    case 'modern':
+      return 'flex flex-col gap-2 mb-6'
+    case 'minimal':
+      return 'flex flex-col gap-1 mb-4'
+    default:
+      return 'mb-4'
+  }
+})
+
+const experienceHeaderClass = computed(() => {
+  switch (props.layout.template) {
+    case 'modern':
+      return 'flex justify-between items-baseline'
+    case 'minimal':
+      return 'flex justify-between items-baseline'
+    default:
+      return 'flex justify-between items-baseline mb-0.5'
+  }
+})
+
+const companyNameClass = computed(() => {
+  switch (props.layout.template) {
+    case 'modern':
+      return 'text-slate-900 font-bold text-lg'
+    case 'minimal':
+      return 'text-slate-900 font-medium text-base'
+    default:
+      return 'font-bold text-xs'
+  }
+})
+
+const jobTitleClass = computed(() => {
+  switch (props.layout.template) {
+    case 'modern':
+      return 'text-primary font-semibold italic'
+    case 'minimal':
+      return 'text-slate-500 font-light text-xs'
+    default:
+      return 'text-[10px] font-semibold mb-1'
+  }
+})
+
+const dateClass = computed(() => {
+  switch (props.layout.template) {
+    case 'modern':
+      return 'text-slate-500 text-sm font-medium'
+    case 'minimal':
+      return 'text-slate-500 text-xs font-light'
+    default:
+      return 'text-[9px] text-gray-500 font-medium italic'
+  }
+})
+
+// Education styling
+const educationItemClass = computed(() => {
+  switch (props.layout.template) {
+    case 'modern':
+      return 'mb-4'
+    case 'minimal':
+      return 'flex justify-between items-baseline mb-4'
+    default:
+      return 'mb-3'
+  }
+})
+
+const educationHeaderClass = computed(() => {
+  switch (props.layout.template) {
+    case 'modern':
+      return 'flex justify-between items-baseline'
+    case 'minimal':
+      return '' // Handled by parent flex
+    default:
+      return 'flex justify-between items-baseline'
+  }
+})
+
+const schoolNameClass = computed(() => {
+  switch (props.layout.template) {
+    case 'modern':
+      return 'text-slate-900 font-bold'
+    case 'minimal':
+      return 'text-slate-900 font-medium text-base'
+    default:
+      return 'font-bold text-xs'
+  }
+})
+
+const degreeClass = computed(() => {
+  switch (props.layout.template) {
+    case 'modern':
+      return 'text-slate-600 text-sm'
+    case 'minimal':
+      return 'text-slate-500 text-sm font-light'
+    default:
+      return 'text-[10px] font-semibold'
+  }
+})
+
+// Projects styling
+const projectItemClass = computed(() => {
+  switch (props.layout.template) {
+    case 'modern':
+      return 'flex flex-col gap-2 mb-4'
+    case 'minimal':
+      return 'mb-4'
+    default:
+      return 'mb-3'
+  }
+})
+
+const projectHeaderClass = computed(() => {
+  switch (props.layout.template) {
+    case 'modern':
+      return 'flex justify-between items-baseline'
+    case 'minimal':
+      return 'flex justify-between items-baseline'
+    default:
+      return 'flex justify-between items-baseline mb-0.5'
+  }
+})
+
+const projectNameClass = computed(() => {
+  switch (props.layout.template) {
+    case 'modern':
+      return 'text-slate-900 font-bold text-lg'
+    case 'minimal':
+      return 'text-slate-900 font-medium text-base'
+    default:
+      return 'font-bold text-xs'
+  }
+})
+
+const projectLinkClass = computed(() => {
+  switch (props.layout.template) {
+    case 'modern':
+      return 'text-slate-500 text-sm'
+    case 'minimal':
+      return 'text-slate-500 text-xs'
+    default:
+      return 'text-[9px] text-primary hover:underline font-medium'
+  }
+})
+
+// Certifications styling
+const certificationItemClass = computed(() => {
+  switch (props.layout.template) {
+    case 'modern':
+      return 'flex justify-between items-baseline mb-2'
+    case 'minimal':
+      return 'mb-2'
+    default:
+      return 'flex justify-between items-baseline mb-1'
+  }
+})
+
+const certificationNameClass = computed(() => {
+  switch (props.layout.template) {
+    case 'modern':
+      return 'text-slate-900 font-bold text-base'
+    case 'minimal':
+      return 'text-slate-900 font-medium text-sm'
+    default:
+      return 'font-bold text-xs'
+  }
+})
+
+const certificationIssuerClass = computed(() => {
+  switch (props.layout.template) {
+    case 'modern':
+      return 'text-slate-600 text-sm'
+    case 'minimal':
+      return 'text-slate-500 text-xs'
+    default:
+      return 'text-[10px] text-gray-600'
+  }
+})
+
+// Skills styling
+const skillsContainerClass = computed(() => {
+  switch (props.layout.template) {
+    case 'modern':
+      return 'flex flex-wrap gap-2'
+    case 'minimal':
+      return 'flex flex-wrap gap-x-8 gap-y-3'
+    default:
+      return 'flex flex-wrap gap-1.5'
+  }
+})
+
+const skillTagClass = computed(() => {
+  switch (props.layout.template) {
+    case 'modern':
+      return 'px-3 py-1 text-sm font-medium rounded'
+    case 'minimal':
+      return 'text-xs font-medium uppercase tracking-tighter'
+    default:
+      return 'px-2 py-0.5 text-[9px] font-semibold rounded'
+  }
+})
 
 // Filter out empty experience entries
 const filledExperiences = computed(() => {
