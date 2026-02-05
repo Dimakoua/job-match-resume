@@ -595,60 +595,6 @@
                   </div>
                 </div>
               </div>
-              <!-- Optimization Tips -->
-              <div class="bg-white dark:bg-background-dark border border-[#e7ebf3] dark:border-white/10 rounded-xl p-6 shadow-sm">
-                <div class="flex items-center gap-3 mb-6">
-                  <div class="p-2 bg-primary/10 text-primary rounded-lg">
-                    <span class="material-symbols-outlined">lightbulb</span>
-                  </div>
-                  <div>
-                    <h3 class="text-lg font-bold">ATS Optimization Tips</h3>
-                    <p class="text-sm text-[#4d6599]">Actionable recommendations to improve your ATS score</p>
-                  </div>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div class="p-4 rounded-xl border border-[#e7ebf3] dark:border-white/10 bg-gradient-to-r from-primary/5 to-transparent">
-                    <div class="flex items-start gap-3">
-                      <span class="material-symbols-outlined text-primary mt-0.5">priority_high</span>
-                      <div>
-                        <h4 class="text-sm font-bold mb-1">Add Missing Keywords</h4>
-                        <p class="text-xs text-[#4d6599] mb-2">Incorporate {{ atsMissedKeywords.length }} critical keywords from the job description into your resume sections.</p>
-                        <button class="text-xs font-bold text-primary hover:underline">View suggestions →</button>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="p-4 rounded-xl border border-[#e7ebf3] dark:border-white/10 bg-gradient-to-r from-success/5 to-transparent">
-                    <div class="flex items-start gap-3">
-                      <span class="material-symbols-outlined text-success mt-0.5">check_circle</span>
-                      <div>
-                        <h4 class="text-sm font-bold mb-1">Keyword Balance</h4>
-                        <p class="text-xs text-[#4d6599] mb-2">Your resume has good keyword coverage with {{ atsMatchedKeywords.length }}/{{ atsJobKeywords.length }} matches.</p>
-                        <button class="text-xs font-bold text-success hover:underline">Optimize placement →</button>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="p-4 rounded-xl border border-[#e7ebf3] dark:border-white/10 bg-gradient-to-r from-warning/5 to-transparent">
-                    <div class="flex items-start gap-3">
-                      <span class="material-symbols-outlined text-warning mt-0.5">format_size</span>
-                      <div>
-                        <h4 class="text-sm font-bold mb-1">Document Length</h4>
-                        <p class="text-xs text-[#4d6599] mb-2">Consider optimizing document length for better parsing. Current: {{ atsMetadata?.wordCount || 0 }} words.</p>
-                        <button class="text-xs font-bold text-warning hover:underline">Length tips →</button>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="p-4 rounded-xl border border-[#e7ebf3] dark:border-white/10 bg-gradient-to-r from-info/5 to-transparent">
-                    <div class="flex items-start gap-3">
-                      <span class="material-symbols-outlined text-info mt-0.5">auto_fix_high</span>
-                      <div>
-                        <h4 class="text-sm font-bold mb-1">Auto-Enhance</h4>
-                        <p class="text-xs text-[#4d6599] mb-2">Use AI to automatically improve keyword integration and formatting.</p>
-                        <button class="text-xs font-bold text-info hover:underline">Enhance now →</button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
         </div>
