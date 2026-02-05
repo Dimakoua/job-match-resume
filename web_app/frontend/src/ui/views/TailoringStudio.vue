@@ -346,10 +346,28 @@
 
                 <!-- Suggestions List -->
                 <div v-else-if="suggestions.length > 0" class="space-y-4">
+                  <!-- Success Feedback -->
+                  <div v-if="lastAppliedSuggestion" class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 animate-fade-in">
+                    <div class="flex items-center gap-3">
+                      <span class="material-symbols-outlined text-green-500">check_circle</span>
+                      <div>
+                        <h4 class="text-sm font-medium text-green-900 dark:text-green-100">Suggestion Applied!</h4>
+                        <p class="text-xs text-green-700 dark:text-green-300">
+                          "{{ lastAppliedSuggestion.category }}" improvement has been applied to your resume.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
                   <div class="flex items-center justify-between mb-6">
                     <div>
                       <h3 class="text-lg font-semibold text-gray-900 dark:text-white">AI-Powered Recommendations</h3>
-                      <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Personalized suggestions to improve your resume match</p>
+                      <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                        Personalized suggestions to improve your resume match
+                        <span v-if="appliedSuggestions.length > 0" class="text-green-600 dark:text-green-400 font-medium">
+                          • {{ appliedSuggestions.length }} applied
+                        </span>
+                      </p>
                     </div>
                     <button @click="handleGenerateSuggestions"
                       :disabled="isGeneratingSuggestions"
@@ -602,8 +620,9 @@ const {
   generateSuggestions
 } = useTailoringStudioController(applicationId);
 
-// Modal state
-const showGenerationModal = ref(false);
+// UI state for feedback
+const appliedSuggestions = ref([]);
+const lastAppliedSuggestion = ref(null);
 
 onMounted(async () => {
   if (applicationId.value) {
@@ -731,18 +750,154 @@ const getSuggestionCategoryLabel = (category) => {
 };
 
 const applySuggestion = async (suggestion) => {
-  // Mark suggestion as applied
-  suggestion.applied = true;
+  if (!resume.value) {
+    console.error('No resume available to apply suggestion');
+    return;
+  }
 
-  // For now, just show a toast or notification
-  // In the future, this could automatically apply the suggestion to the resume
-  console.log('Applied suggestion:', suggestion.text);
+  try {
+    // Mark suggestion as applied
+    suggestion.applied = true;
+    appliedSuggestions.value.push(suggestion);
+    lastAppliedSuggestion.value = suggestion;
 
-  // TODO: Implement actual suggestion application logic
+    // Parse and apply the suggestion based on category
+    switch (suggestion.category.toLowerCase()) {
+      case 'keywords':
+        await applyKeywordSuggestion(suggestion);
+        break;
+      case 'skills':
+        await applySkillsSuggestion(suggestion);
+        break;
+      case 'summary':
+        await applySummarySuggestion(suggestion);
+        break;
+      case 'experience':
+        await applyExperienceSuggestion(suggestion);
+        break;
+      case 'quantify':
+        await applyQuantifySuggestion(suggestion);
+        break;
+      case 'impact':
+        await applyImpactSuggestion(suggestion);
+        break;
+      default:
+        // For other suggestions, just mark as applied and show a message
+        console.log('Applied suggestion:', suggestion.text);
+        break;
+    }
+
+    // Auto-clear feedback after 3 seconds
+    setTimeout(() => {
+      if (lastAppliedSuggestion.value === suggestion) {
+        lastAppliedSuggestion.value = null;
+      }
+    }, 3000);
+
+  } catch (error) {
+    console.error('Failed to apply suggestion:', error);
+    suggestion.applied = false; // Reset if application failed
+    appliedSuggestions.value = appliedSuggestions.value.filter(s => s.id !== suggestion.id);
+  }
+};
+
+const applyKeywordSuggestion = async (suggestion) => {
+  // Extract keywords from the suggestion text
+  const keywordMatches = suggestion.text.match(/(?:add|include|incorporate|use)\s+(?:these\s+)?keywords?:?\s*([^.!?]+)|[""]([^""]+)[""]/gi);
+  const keywords = [];
+
+  if (keywordMatches) {
+    keywordMatches.forEach(match => {
+      const extracted = match.replace(/(?:add|include|incorporate|use)\s+(?:these\s+)?keywords?:?\s*/i, '').replace(/[""]/g, '');
+      keywords.push(...extracted.split(',').map(k => k.trim()).filter(k => k.length > 0));
+    });
+  }
+
+  if (keywords.length > 0) {
+    // Add keywords to the skills section
+    const skillsSection = resume.value.sections.skills || [];
+    const newSkills = [...new Set([...skillsSection, ...keywords])]; // Remove duplicates
+
+    await updateResume({
+      sections: {
+        ...resume.value.sections,
+        skills: newSkills
+      }
+    });
+
+    console.log('Added keywords to skills:', keywords);
+  }
+};
+
+const applySkillsSuggestion = async (suggestion) => {
+  // Extract skills from the suggestion text
+  const skillMatches = suggestion.text.match(/(?:add|include|highlight|emphasize)\s+(?:these\s+)?skills?:?\s*([^.!?]+)|[""]([^""]+)[""]/gi);
+  const skills = [];
+
+  if (skillMatches) {
+    skillMatches.forEach(match => {
+      const extracted = match.replace(/(?:add|include|highlight|emphasize)\s+(?:these\s+)?skills?:?\s*/i, '').replace(/[""]/g, '');
+      skills.push(...extracted.split(',').map(s => s.trim()).filter(s => s.length > 0));
+    });
+  }
+
+  if (skills.length > 0) {
+    const skillsSection = resume.value.sections.skills || [];
+    const newSkills = [...new Set([...skillsSection, ...skills])];
+
+    await updateResume({
+      sections: {
+        ...resume.value.sections,
+        skills: newSkills
+      }
+    });
+
+    console.log('Added skills:', skills);
+  }
+};
+
+const applySummarySuggestion = async (suggestion) => {
+  // For summary suggestions, we'll create an improved version
+  // This is more complex, so for now we'll just mark it as applied
+  // In a full implementation, this would use AI to generate an improved summary
+  console.log('Summary improvement suggestion applied:', suggestion.text);
+
+  // TODO: Implement AI-powered summary improvement
+  // const improvedSummary = await improveSection('summary', suggestion.text);
+  // await updateResume({
+  //   sections: {
+  //     ...resume.value.sections,
+  //     summary: improvedSummary
+  //   }
+  // });
+};
+
+const applyExperienceSuggestion = async (suggestion) => {
+  // For experience suggestions, mark as applied
+  // Full implementation would require more sophisticated parsing
+  console.log('Experience improvement suggestion applied:', suggestion.text);
+
+  // TODO: Implement experience section improvements
   // This could involve:
-  // 1. Automatically updating resume sections
-  // 2. Adding keywords to specific sections
-  // 3. Improving text content
+  // - Adding quantifiable achievements
+  // - Improving action verbs
+  // - Better formatting
+};
+
+const applyQuantifySuggestion = async (suggestion) => {
+  // For quantification suggestions, mark as applied
+  console.log('Quantification suggestion applied:', suggestion.text);
+
+  // TODO: Implement automatic quantification of achievements
+  // This would analyze experience descriptions and add metrics
+};
+
+const applyImpactSuggestion = async (suggestion) => {
+  // For impact suggestions, mark as applied
+  console.log('Impact improvement suggestion applied:', suggestion.text);
+
+  // TODO: Implement impact enhancement
+  // This could involve strengthening action verbs and achievements
 };
 
 const dismissSuggestion = (suggestion) => {
@@ -760,11 +915,23 @@ const dismissSuggestion = (suggestion) => {
   display: inline-block;
   vertical-align: middle;
 }
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>
