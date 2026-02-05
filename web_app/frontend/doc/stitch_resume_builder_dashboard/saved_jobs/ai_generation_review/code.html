@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#2463eb",
+              "background-light": "#f8fafc","background-dark": "#0f172a",
+            },
+            fontFamily: {
+              "display": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .resume-page {
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            aspect-ratio: 1 / 1.414;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-background-dark font-display text-slate-900">
+<div class="relative flex h-screen w-full flex-col overflow-hidden">
+<header class="flex items-center justify-between whitespace-nowrap border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-8 py-3 shrink-0 z-50">
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-3 text-slate-900 dark:text-white">
+<div class="size-8 flex items-center justify-center bg-primary rounded-lg text-white">
+<span class="material-symbols-outlined">rocket_launch</span>
+</div>
+<h2 class="text-lg font-bold leading-tight tracking-tight">JobSync</h2>
+</div>
+<div class="h-6 w-px bg-slate-200 mx-2"></div>
+<div class="flex flex-col">
+<h1 class="text-sm font-semibold text-slate-900 dark:text-white">AI Generation Review Studio</h1>
+<p class="text-[11px] text-slate-500 font-medium">Tailoring for Senior Product Designer at TechGlobal</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="flex items-center justify-center gap-2 rounded-lg h-10 px-4 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 text-sm font-semibold hover:bg-slate-50 transition-colors">
+<span class="material-symbols-outlined text-lg">refresh</span>
+<span>Regenerate with Different Tone</span>
+</button>
+<button class="flex items-center justify-center gap-2 rounded-lg h-10 px-5 bg-primary text-white text-sm font-bold shadow-sm hover:bg-primary/90 transition-colors">
+<span class="material-symbols-outlined text-lg">check_circle</span>
+<span>Accept and Open in Editor</span>
+</button>
+</div>
+</header>
+<div class="flex flex-1 overflow-hidden relative">
+<main class="flex w-full h-full overflow-hidden">
+<section class="flex-1 overflow-y-auto p-8 flex flex-col items-center bg-slate-100/50">
+<div class="mb-4 flex items-center gap-2 text-slate-500">
+<span class="material-symbols-outlined text-sm">history</span>
+<span class="text-xs font-bold uppercase tracking-wider">Original Resume</span>
+</div>
+<div class="resume-page w-full max-w-[600px] bg-white p-10 text-[11px] leading-relaxed text-slate-700">
+<div class="text-center border-b pb-4 mb-4">
+<h2 class="text-xl font-bold text-slate-900 uppercase tracking-tight">Alex Rivera</h2>
+<p>San Francisco, CA • alex.rivera@email.com • (555) 123-4567</p>
+</div>
+<div class="mb-4">
+<h3 class="font-bold border-b mb-1 uppercase text-slate-900">Summary</h3>
+<p>Product Designer with 5 years of experience in mobile and web applications. Skilled in Figma, research, and collaborative environments.</p>
+</div>
+<div class="mb-4">
+<h3 class="font-bold border-b mb-1 uppercase text-slate-900">Experience</h3>
+<div class="mb-3">
+<div class="flex justify-between font-bold text-slate-800">
+<span>Design Studio Co.</span>
+<span>2020 — Present</span>
+</div>
+<p class="italic mb-1">Product Designer</p>
+<ul class="list-disc pl-4 space-y-1">
+<li>Designed various features for client mobile apps.</li>
+<li>Collaborated with engineering teams on implementation.</li>
+<li>Conducted user testing sessions to gather feedback.</li>
+</ul>
+</div>
+<div>
+<div class="flex justify-between font-bold text-slate-800">
+<span>StartUp Inc.</span>
+<span>2018 — 2020</span>
+</div>
+<p class="italic mb-1">Junior Designer</p>
+<ul class="list-disc pl-4 space-y-1">
+<li>Supported senior designers on major project launches.</li>
+<li>Created marketing assets and landing pages.</li>
+</ul>
+</div>
+</div>
+<div>
+<h3 class="font-bold border-b mb-1 uppercase text-slate-900">Skills</h3>
+<p>Figma, Adobe Creative Suite, HTML/CSS, Prototyping, User Research.</p>
+</div>
+</div>
+</section>
+<aside class="w-72 bg-white border-x border-slate-200 z-10 flex flex-col shrink-0 shadow-xl overflow-y-auto">
+<div class="p-4 border-b border-slate-100 flex items-center gap-2 bg-slate-50/50">
+<span class="material-symbols-outlined text-primary text-xl">analytics</span>
+<h3 class="text-sm font-bold text-slate-800">Key Improvements</h3>
+</div>
+<div class="p-4 space-y-4">
+<div class="p-3 rounded-lg border border-violet-100 bg-violet-50/50">
+<div class="flex items-start gap-2 mb-1">
+<span class="material-symbols-outlined text-violet-600 text-lg">search</span>
+<span class="text-xs font-bold text-violet-800 uppercase">Keywords Added</span>
+</div>
+<p class="text-xs text-slate-600 leading-snug">Added 5 missing keywords including "Design Systems" and "Cross-functional Leadership".</p>
+</div>
+<div class="p-3 rounded-lg border border-violet-100 bg-violet-50/50">
+<div class="flex items-start gap-2 mb-1">
+<span class="material-symbols-outlined text-violet-600 text-lg">trending_up</span>
+<span class="text-xs font-bold text-violet-800 uppercase">Impact Metrics</span>
+</div>
+<p class="text-xs text-slate-600 leading-snug">Quantified 3 experience bullets with conversion and engagement data.</p>
+</div>
+<div class="p-3 rounded-lg border border-violet-100 bg-violet-50/50">
+<div class="flex items-start gap-2 mb-1">
+<span class="material-symbols-outlined text-violet-600 text-lg">auto_fix_high</span>
+<span class="text-xs font-bold text-violet-800 uppercase">Summary Rewrite</span>
+</div>
+<p class="text-xs text-slate-600 leading-snug">Optimized professional summary to align with the "Senior" role requirements.</p>
+</div>
+<div class="p-3 rounded-lg border border-slate-100 bg-slate-50/50">
+<div class="flex items-start gap-2 mb-1">
+<span class="material-symbols-outlined text-slate-500 text-lg">list_alt</span>
+<span class="text-xs font-bold text-slate-700 uppercase">Skills Reordered</span>
+</div>
+<p class="text-xs text-slate-600 leading-snug">Prioritized skills mentioned in the job description.</p>
+</div>
+</div>
+<div class="mt-auto p-4 bg-slate-50 border-t border-slate-100">
+<div class="flex items-center justify-between mb-2">
+<span class="text-xs font-medium text-slate-500">Match Score Boost</span>
+<span class="text-sm font-bold text-green-600">+24%</span>
+</div>
+<div class="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
+<div class="bg-green-500 h-full w-[88%]"></div>
+</div>
+</div>
+</aside>
+<section class="flex-1 overflow-y-auto p-8 flex flex-col items-center bg-slate-100/50">
+<div class="mb-4 flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined text-sm">auto_awesome</span>
+<span class="text-xs font-bold uppercase tracking-wider">AI-Tailored Version</span>
+</div>
+<div class="resume-page w-full max-w-[600px] bg-white p-10 text-[11px] leading-relaxed text-slate-700">
+<div class="text-center border-b pb-4 mb-4">
+<h2 class="text-xl font-bold text-slate-900 uppercase tracking-tight">Alex Rivera</h2>
+<p>San Francisco, CA • alex.rivera@email.com • (555) 123-4567</p>
+</div>
+<div class="mb-4">
+<h3 class="font-bold border-b mb-1 uppercase text-slate-900">Summary</h3>
+<p class="bg-violet-100/70 p-1 rounded-sm">Strategic Senior Product Designer with 5+ years of experience leading end-to-end design for high-scale B2B SaaS and consumer mobile platforms. Expert in scaling design systems and driving cross-functional collaboration to deliver user-centric solutions that meet complex business objectives.</p>
+</div>
+<div class="mb-4">
+<h3 class="font-bold border-b mb-1 uppercase text-slate-900">Experience</h3>
+<div class="mb-3">
+<div class="flex justify-between font-bold text-slate-800">
+<span>Design Studio Co.</span>
+<span>2020 — Present</span>
+</div>
+<p class="italic mb-1">Senior Product Designer</p>
+<ul class="list-disc pl-4 space-y-1">
+<li class="bg-violet-100/70 p-0.5 rounded-sm">Spearheaded the redesign of core mobile features, resulting in a 25% increase in daily active users (DAU) and improved retention metrics.</li>
+<li>Collaborated with engineering teams on implementation using Agile methodologies.</li>
+<li class="bg-violet-100/70 p-0.5 rounded-sm">Developed and maintained a comprehensive Design System in Figma, reducing front-end development time by 30% across 3 product lines.</li>
+<li>Conducted user testing sessions to gather feedback and iterate on high-fidelity prototypes.</li>
+</ul>
+</div>
+<div>
+<div class="flex justify-between font-bold text-slate-800">
+<span>StartUp Inc.</span>
+<span>2018 — 2020</span>
+</div>
+<p class="italic mb-1">Junior Designer</p>
+<ul class="list-disc pl-4 space-y-1">
+<li>Supported senior designers on major project launches for national retailers.</li>
+<li class="bg-violet-100/70 p-0.5 rounded-sm">Increased landing page conversion rates by 12% through data-driven A/B testing and UI optimizations.</li>
+</ul>
+</div>
+</div>
+<div>
+<h3 class="font-bold border-b mb-1 uppercase text-slate-900">Skills</h3>
+<p><span class="bg-violet-100/70 p-0.5 rounded-sm font-semibold">Design Systems, Cross-functional Leadership, Data-Driven Design,</span> Figma, Adobe Creative Suite, HTML/CSS, Prototyping, User Research.</p>
+</div>
+</div>
+</section>
+</main>
+</div>
+</div>
+
+</body></html>
