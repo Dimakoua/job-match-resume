@@ -87,10 +87,6 @@
                                 <p class="text-[#4d6599] dark:text-gray-400 text-sm font-medium">{{ job.company
                                 }}</p>
                             </div>
-                            <div class="flex items-center gap-2">
-                                <span class="text-xs font-bold text-primary bg-primary/10 px-2 py-1 rounded">Match
-                                    Score: 85%</span>
-                            </div>
                             <div class="flex gap-2" @click.stop>
                                 <button @click="editApplication(job)"
                                     class="flex items-center justify-center gap-1 rounded px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs hover:bg-gray-200 dark:hover:bg-gray-600">

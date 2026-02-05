@@ -45,7 +45,6 @@ export function useSavedJobsController(selectedListIdRef = null) {
   // ===== Computed =====
   const filters = computed(() => [
     { key: 'all', label: 'All Jobs' },
-    { key: 'highMatch', label: 'Matching > 90%' },
     { key: 'recent', label: 'Recently Added' },
     { key: 'saved', label: 'Saved' },
     { key: 'applied', label: 'Applied' },
@@ -68,9 +67,7 @@ export function useSavedJobsController(selectedListIdRef = null) {
     }
 
     // Active filter
-    if (activeFilter.value === 'highMatch') {
-      filtered = filtered.filter(job => (job.matchScore || 0) > 90);
-    } else if (activeFilter.value === 'recent') {
+    if (activeFilter.value === 'recent') {
       filtered = filtered.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
     } else if (activeFilter.value === 'saved') {
       filtered = filtered.filter(job => job.status === 'saved');
