@@ -233,30 +233,25 @@
                     </h3>
                     <span v-if="resume?.title" class="text-[10px] text-[#4d6599] italic">{{ resume.title }}</span>
                   </div>
-                  <div class="flex gap-2">
-                    <button class="p-1 hover:bg-gray-100 dark:hover:bg-white/10 rounded"><span class="material-symbols-outlined text-lg">undo</span></button>
-                    <button class="p-1 hover:bg-gray-100 dark:hover:bg-white/10 rounded"><span class="material-symbols-outlined text-lg">redo</span></button>
-                    <button class="p-1 hover:bg-gray-100 dark:hover:bg-white/10 rounded"><span class="material-symbols-outlined text-lg">download</span></button>
-                  </div>
                 </div>
                 <div class="p-8 overflow-y-auto bg-gray-50 dark:bg-background-dark/30 flex-1">
                   <!-- Resume Content -->
                   <div v-if="isLoadingResume" class="flex items-center justify-center h-full">
                     <p class="text-gray-400">Loading resume...</p>
                   </div>
-                  <div v-else-if="resume" class="bg-white dark:bg-background-dark p-10 shadow-lg border border-gray-100 dark:border-white/5">
-                    <div class="text-center mb-8">
-                      <h2 class="text-2xl font-bold uppercase tracking-widest">{{ resume.title || 'Resume' }}</h2>
-                    </div>
-                    <div v-if="displaySections && displaySections.length > 0" class="space-y-6">
-                      <div v-for="(section, idx) in displaySections" :key="idx" class="mb-6">
-                        <h4 class="text-xs font-bold text-primary uppercase mb-2 border-b border-gray-100 dark:border-white/5 pb-1">{{ section.title }}</h4>
-                        <p class="text-xs text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">{{ section.content }}</p>
-                      </div>
-                    </div>
-                    <div v-else class="text-center py-8 text-gray-400">
-                      <p>No resume sections available. Generate a tailored resume to see content here.</p>
-                    </div>
+                  <div v-else-if="resume" class="flex-1 overflow-y-auto">
+                    <ResumePreview
+                      :resume="resumePreviewData"
+                      :layout="{ template: 'classic', margins: 24, sectionSpacing: 16 }"
+                      :style="{ 
+                        headingFont: 'inter', 
+                        bodyFont: 'inter', 
+                        fontSize: 10, 
+                        lineHeight: 1.4, 
+                        accentColor: '#2463eb' 
+                      }"
+                      :sections="[]"
+                    />
                   </div>
                   <div v-else class="flex items-center justify-center h-full">
                     <div class="text-center">
@@ -758,6 +753,7 @@ import { useAuthStore } from '../stores/useAuthStore.js';
 import AppHeader from '../components/AppHeader.vue';
 import AppFooter from '../components/AppFooter.vue';
 import JobApplicationForm from '../components/JobApplicationForm.vue';
+import ResumePreview from '../components/ResumePreview.vue';
 
 const route = useRoute();
 const authStore = useAuthStore();
@@ -777,6 +773,7 @@ const {
   resumeText,
   atsScorePercent,
   displaySections,
+  resumePreviewData,
   generationSettings,
   userResumes,
   isLoadingResumes,

@@ -281,6 +281,34 @@ export function useTailoringStudioController() {
     return result;
   });
 
+  const resumePreviewData = computed(() => {
+    if (!resume.value) return {};
+
+    // If resume already has the expected structure, return as is
+    if (resume.value.firstName || resume.value.experience) {
+      return resume.value;
+    }
+
+    // Transform from sections format to ResumePreview format
+    const sections = resume.value.sections || {};
+    return {
+      firstName: sections.firstName || '',
+      lastName: sections.lastName || '',
+      title: sections.title || resume.value.title || '',
+      email: sections.email || '',
+      phone: sections.phone || '',
+      location: sections.location || '',
+      linkedin: sections.linkedin || '',
+      summary: sections.summary || '',
+      experience: sections.experience || [],
+      education: sections.education || [],
+      projects: sections.projects || [],
+      certifications: sections.certifications || [],
+      skills: sections.skills || [],
+      customSections: sections.customSections || {}
+    };
+  });
+
   // ===== Methods =====
   const loadApplication = async () => {
     if (!applicationIdRef?.value) return;
@@ -1112,6 +1140,7 @@ export function useTailoringStudioController() {
     resumeText,
     atsScorePercent,
     displaySections,
+    resumePreviewData,
 
     // ATS Analysis
     atsMatchedKeywords,
