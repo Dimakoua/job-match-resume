@@ -27,6 +27,11 @@ const calculateAtsScoreSchema = z.object({
   jobDescription: z.string().min(1, 'Job description is required').max(50000, 'Job description must be less than 50,000 characters'),
 });
 
+const generateSuggestionsSchema = z.object({
+  jobDescription: z.string().min(1, 'Job description is required').max(10000, 'Job description must be less than 10,000 characters'),
+  resumeText: z.string().min(1, 'Resume text is required').max(10000, 'Resume text must be less than 10,000 characters'),
+});
+
 const updateResumeSchema = z.object({
   title: z.string().min(1, 'Title is required').optional(),
   templateId: z.string().nullable().optional(),
@@ -44,6 +49,7 @@ export class ResumeController extends BaseController {
     this.listTemplatesService = deps.listTemplatesService;
     this.generateFromJDService = deps.generateFromJDService;
     this.improveTextService = deps.improveTextService;
+    this.generateSuggestionsService = deps.generateSuggestionsService;
     this.exportResumeService = deps.exportResumeService;
     this.calculateAtsScoreService = deps.calculateAtsScoreService;
   }
@@ -223,6 +229,47 @@ export class ResumeController extends BaseController {
 
       if (error.message && error.message.includes('AI')) {
         return this.errorResponse('AI_ERROR', 'Failed to improve text', 500);
+      }
+
+      return this.errorResponse('INTERNAL_ERROR', 'An unexpected error occurred', 500);
+    }
+  }
+
+  async generateSuggestions(request) {
+    try {
+      const userId = await this.authenticate(request);
+
+      const body = await request.json();
+
+      // Validate input
+      const validationResult = generateSuggestionsSchema.safeParse(body);
+      if (!validationResult.success) {
+        return this.validationErrorResponse(validationResult.error.issues);
+      }
+
+      const command = {
+        ...validationResult.data,
+        userId,
+      };
+
+      // Execute generate suggestions
+      const result = await this.generateSuggestionsService.execute(command);
+
+      return this.successResponse({
+        success: true,
+        data: {
+          suggestions: result
+        },
+      });
+    } catch (error) {
+      // If authenticate threw a Response, return it
+      if (error instanceof Response) {
+        return error;
+      }
+      console.error('Generate suggestions error:', error);
+
+      if (error.message && error.message.includes('AI')) {
+        return this.errorResponse('AI_ERROR', 'Failed to generate suggestions', 500);
       }
 
       return this.errorResponse('INTERNAL_ERROR', 'An unexpected error occurred', 500);

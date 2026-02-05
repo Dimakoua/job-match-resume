@@ -50,6 +50,16 @@ export function setupResumeRoutes(router) {
     return controller.improveText(request);
   });
 
+  // Generate AI suggestions for resume improvement
+  // Usage: POST /api/resumes/generate-suggestions
+  // Headers: Authorization: Bearer <jwt>
+  // Body: { "jobDescription": "Job posting text...", "resumeText": "Current resume text..." }
+  // Returns: { "success": true, "data": { "suggestions": [{ "category": "keywords", "text": "Add these keywords..." }, ...] } }
+  router.post('/api/resumes/generate-suggestions', async (request, env, ctx) => {
+    const { controller } = createController(env, ResumeController, [env.JWT_SECRET]);
+    return controller.generateSuggestions(request);
+  });
+
   // Calculate ATS score
   // Usage: POST /api/resumes/calculate-ats-score
   // Headers: Authorization: Bearer <jwt>

@@ -11,6 +11,7 @@ import { GetJobApplicationUseCase } from '../../core/application/job_application
 import { UpdateJobApplicationUseCase } from '../../core/application/job_application/UpdateJobApplicationUseCase.js';
 import { GenerateFromJDUseCase } from '../../core/application/ai/GenerateFromJDUseCase.js';
 import { ImproveTextUseCase } from '../../core/application/ai/ImproveTextUseCase.js';
+import { GenerateSuggestionsUseCase } from '../../core/application/ai/GenerateSuggestionsUseCase.js';
 import { CalculateAtsScoreUseCase } from '../../core/application/resume/CalculateAtsScoreUseCase.js';
 import { UpdateResumeUseCase } from '../../core/application/resume/UpdateResumeUseCase.js';
 import { ListResumesUseCase } from '../../core/application/resume/ListResumesUseCase.js';
@@ -31,6 +32,7 @@ export function useTailoringStudioController() {
   const updateJobApplicationUseCase = new UpdateJobApplicationUseCase(jobApplicationRepository);
   const generateFromJDUseCase = new GenerateFromJDUseCase(aiService, resumeRepository);
   const improveTextUseCase = new ImproveTextUseCase(aiService);
+  const generateSuggestionsUseCase = new GenerateSuggestionsUseCase(aiService);
   const calculateAtsScoreUseCase = new CalculateAtsScoreUseCase(resumeRepository);
   const updateResumeUseCase = new UpdateResumeUseCase(resumeRepository);
   const listResumesUseCase = new ListResumesUseCase(resumeRepository);
@@ -670,78 +672,19 @@ export function useTailoringStudioController() {
     error.value = null;
 
     try {
-      const prompt = `You are an expert resume consultant and ATS specialist. Analyze this job description and current resume, then provide 6-8 specific, actionable suggestions to improve the resume's match for this position.
+      const suggestionsData = await generateSuggestionsUseCase.execute(
+        job.value.jobDescription,
+        resumeText.value
+      );
 
-JOB DESCRIPTION:
-${job.value.jobDescription}
-
-CURRENT RESUME:
-${resumeText.value}
-
-Provide suggestions in this EXACT format (one per line, starting with category):
-
-KEYWORDS: Add these specific keywords to your resume: [list 3-5 relevant keywords from job description]
-SUMMARY: [One specific improvement for the professional summary]
-EXPERIENCE: [One specific way to enhance work experience descriptions]
-SKILLS: [Specific skills to highlight or add]
-EDUCATION: [If applicable, improvements for education section]
-QUANTIFY: [How to add quantifiable achievements]
-ATS: [ATS-specific optimization tips]
-IMPACT: [How to make achievements more impactful]
-
-Each suggestion should be:
-- Specific and actionable
-- Focused on improving job match
-- ATS-friendly
-- Professional in tone
-- Limited to one clear recommendation per category`;
-
-      const response = await improveTextUseCase.execute(prompt);
-
-      // Parse the AI response - improveText returns { originalText, variations }
-      // Each variation should contain suggestions, so we'll combine and parse them
-      let suggestionText = '';
-      if (response.variations && Array.isArray(response.variations)) {
-        suggestionText = response.variations.join('\n\n');
-      } else if (response.improvedText) {
-        // Fallback for different response format
-        suggestionText = response.improvedText;
-      } else {
-        throw new Error('Unexpected response format from AI service');
-      }
-
-      // Parse the AI response into structured suggestions
-      const suggestionLines = suggestionText.split('\n').filter(line => line.trim());
-
-      suggestions.value = suggestionLines
-        .filter(line => {
-          const trimmed = line.trim();
-          return trimmed.includes(':') &&
-                 (trimmed.toUpperCase().startsWith('KEYWORDS:') ||
-                  trimmed.toUpperCase().startsWith('SUMMARY:') ||
-                  trimmed.toUpperCase().startsWith('EXPERIENCE:') ||
-                  trimmed.toUpperCase().startsWith('SKILLS:') ||
-                  trimmed.toUpperCase().startsWith('EDUCATION:') ||
-                  trimmed.toUpperCase().startsWith('QUANTIFY:') ||
-                  trimmed.toUpperCase().startsWith('ATS:') ||
-                  trimmed.toUpperCase().startsWith('IMPACT:'));
-        })
-        .map((line, index) => {
-          const trimmed = line.trim();
-          const colonIndex = trimmed.indexOf(':');
-          const category = trimmed.substring(0, colonIndex).toLowerCase();
-          const text = trimmed.substring(colonIndex + 1).trim();
-
-          return {
-            id: `suggestion-${index}`,
-            text: text,
-            type: getSuggestionTypeFromCategory(category),
-            category: category,
-            applied: false
-          };
-        })
-        .filter(suggestion => suggestion.text.length > 0)
-        .slice(0, 8); // Limit to 8 suggestions
+      // Assuming the backend returns suggestions in the expected format
+      suggestions.value = suggestionsData.map((suggestion, index) => ({
+        id: `suggestion-${index}`,
+        text: suggestion.text,
+        type: getSuggestionTypeFromCategory(suggestion.category),
+        category: suggestion.category,
+        applied: false
+      }));
 
     } catch (err) {
       error.value = 'Failed to generate suggestions. Please try again.';

@@ -15,4 +15,12 @@ export class HttpAIService {
     const response = await axios.post('/api/resumes/improve-text', { text })
     return response.data.data
   }
+
+  async generateSuggestions(jobDescription, resumeText) {
+    const response = await axios.post('/api/resumes/generate-suggestions', { 
+      jobDescription, 
+      resumeText 
+    })
+    return response.data.data.suggestions
+  }
 }
