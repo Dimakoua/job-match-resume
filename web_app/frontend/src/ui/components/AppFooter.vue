@@ -4,7 +4,7 @@
     <div class="flex gap-6">
       <router-link to="/privacy" class="hover:text-primary transition-colors">Privacy Policy</router-link>
       <router-link to="/terms" class="hover:text-primary transition-colors">Terms of Service</router-link>
-      <a href="#" class="hover:text-primary transition-colors">Help Center</a>
+      <router-link to="/help" class="hover:text-primary transition-colors">Help Center</router-link>
     </div>
   </footer>
 </template>

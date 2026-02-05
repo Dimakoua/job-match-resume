@@ -27,8 +27,9 @@
 ## Changes Since Last Session
 - **TailoringStudio.vue** (+120 lines): Added resume selection dropdown to generation modal; pre-selects linked resume or first available.
 - **useTailoringStudioController.js** (+220 lines): Enhanced generateTailoredResume() with comprehensive resume data extraction including custom sections; filters UI metadata.
-- **gemini_adapter.js** (+25 lines): Fixed JSON extraction from markdown code blocks; improved error handling for edge cases.
-
+- **gemini_adapter.js** (+25 lines): Fixed JSON extraction from markdown code blocks; improved error handling for edge cases.- **Help.vue** (+150 lines): Created comprehensive Help Center page with getting started guide, builder usage, AI features, troubleshooting, and contact information.
+- **router/index.js** (+1 line): Added /help route for Help Center page.
+- **AppFooter.vue** (+1 line): Updated Help Center link from placeholder to router-link.
 ## Validation & Evidence
 - **Build**: npm run build succeeds (169 modules, 13.29 KB gzipped).
 - **Resume Selection**: Modal loads all user resumes, pre-selects linked resume, handles empty state gracefully.
@@ -36,6 +37,7 @@
 - **API Integration**: Comprehensive userData passed as string to backend API; generation settings included.
 - **JSON Parsing**: Gemini adapter successfully extracts JSON from markdown code blocks; error messages include raw response for debugging.
 - **Application Linking**: Generated resume automatically linked to job application; maintains one-resume-per-application constraint.
+- **Help Center**: Help.vue renders correctly, route navigates properly, footer link functional, build includes Help component.
 
 ## Risks & Unknowns
 - **Gemini JSON Parsing**: Regex may miss edge cases with nested markdown; fallback pattern matching added as safety net.

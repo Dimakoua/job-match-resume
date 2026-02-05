@@ -111,7 +111,14 @@
   - Comprehensive resume data (including custom sections) sent as formatted string, excluding UI metadata
 - Status: ✅ 100% — Modal state implemented, resume selection dropdown added, comprehensive userData extraction, backend Gemini adapter fixed for JSON parsing from markdown.
 
----
+## F-058 — [feature] Implement Help Center Page ✅ 100%
+- Scope: Create a comprehensive Help Center page with FAQs, guides, and support information.
+- Acceptance:
+  - Help.vue component created with getting started, builder usage, AI features, troubleshooting
+  - Route /help added to router
+  - Footer link updated from placeholder to router-link
+  - Page follows same design pattern as Privacy/Terms pages
+- Status: ✅ 100% — Help Center page implemented, route added, footer updated, build passes
 
 ## Active Tasks
 
