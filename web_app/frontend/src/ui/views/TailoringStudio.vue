@@ -17,10 +17,10 @@
               <span class="text-xs font-semibold text-[#4d6599] uppercase tracking-wider">ATS Match Score</span>
               <div class="flex items-center gap-2">
                 <div class="w-32 h-2 bg-[#e7ebf3] dark:bg-white/10 rounded-full overflow-hidden">
-                  <div v-if="atsScorePercent" class="bg-green-500 h-full transition-all duration-500" :style="{ width: atsScorePercent + '%' }"></div>
+                  <div v-if="atsScorePercent" :class="['h-full transition-all duration-500', getAtsScoreBgColor(atsScorePercent)]" :style="{ width: atsScorePercent + '%' }"></div>
                   <div v-else class="bg-gray-300 h-full w-1/3"></div>
                 </div>
-                <span v-if="atsScorePercent" class="text-lg font-bold text-green-500">{{ atsScorePercent }}%</span>
+                <span v-if="atsScorePercent" :class="['text-lg font-bold', getAtsScoreTextColor(atsScorePercent)]">{{ atsScorePercent }}%</span>
                 <span v-else class="text-lg font-bold text-gray-400">--</span>
               </div>
             </div>
@@ -440,10 +440,10 @@
                   <div class="relative size-32 flex items-center justify-center">
                     <svg class="size-full" viewBox="0 0 100 100">
                       <circle class="text-gray-100 dark:text-white/5" cx="50" cy="50" fill="transparent" r="42" stroke="currentColor" stroke-width="8"></circle>
-                      <circle class="text-success" cx="50" cy="50" fill="transparent" r="42" stroke="currentColor" :stroke-dasharray="264" :stroke-dashoffset="264 - (atsScorePercent ? atsScorePercent * 2.64 : 0)" stroke-linecap="round" stroke-width="8"></circle>
+                      <circle :class="getAtsScoreTextColor(atsScorePercent)" cx="50" cy="50" fill="transparent" r="42" stroke="currentColor" :stroke-dasharray="264" :stroke-dashoffset="264 - (atsScorePercent ? atsScorePercent * 2.64 : 0)" stroke-linecap="round" stroke-width="8"></circle>
                     </svg>
                     <div class="absolute inset-0 flex flex-col items-center justify-center">
-                      <span class="text-3xl font-bold text-success">{{ atsScorePercent || '--' }}%</span>
+                      <span :class="['text-3xl font-bold', getAtsScoreTextColor(atsScorePercent)]">{{ atsScorePercent || '--' }}%</span>
                       <span class="text-[10px] uppercase font-bold text-[#4d6599]">Match Score</span>
                     </div>
                   </div>
@@ -1033,6 +1033,20 @@ const dismissSuggestion = (suggestion) => {
   if (index > -1) {
     suggestions.value.splice(index, 1);
   }
+};
+
+const getAtsScoreTextColor = (score) => {
+  if (!score || score === 0) return 'text-gray-400';
+  if (score >= 80) return 'text-green-500';
+  if (score >= 60) return 'text-yellow-500';
+  return 'text-red-500';
+};
+
+const getAtsScoreBgColor = (score) => {
+  if (!score || score === 0) return 'bg-gray-300';
+  if (score >= 80) return 'bg-green-500';
+  if (score >= 60) return 'bg-yellow-500';
+  return 'bg-red-500';
 };
 </script>
 
