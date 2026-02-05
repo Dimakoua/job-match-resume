@@ -1088,7 +1088,7 @@ Each suggestion should be:
         jobDescription: formData.jobDescription,
         resumeId: formData.resumeId || null,
         status: formData.status,
-        appliedDate: formData.appliedDate || null,
+        appliedDate: formData.appliedDate ? new Date(formData.appliedDate) : null,
         notes: formData.notes || null
       };
 
