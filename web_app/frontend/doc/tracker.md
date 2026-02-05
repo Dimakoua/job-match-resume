@@ -83,6 +83,10 @@
 - Scope: Show the correct number of applications for each job search list.
 - Acceptance: Each job search list card displays the actual application count instead of hardcoded "0".
 
+## F-045 — [feature] Implement Saved Jobs View ✅ 100%
+- Scope: Create Vue component for saved jobs list with search, filters, job cards, and tailoring modal.
+- Acceptance: SavedJobs.vue created, route added, matches design, includes generate tailoring modal.
+
 ---
 
 ## Completed Tasks

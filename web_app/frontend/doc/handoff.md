@@ -17,10 +17,9 @@
 - Added ATS score calculation on-demand in JobApplicationCard for applications with linked resumes.
 
 ## Changes Since Last Session
-- Fixed UpdateJobApplicationUseCase to accept application object instead of individual fields.
-- Status dropdown in JobApplicationCard now functional with backend integration.
-- Updated tracker.md to mark F-041 as completed.
-- Added ATS score display in JobApplicationCard with on-demand calculation.
+- Replaced JobApplicationView.vue with SavedJobs screen, integrated with job search lists and applications APIs.
+- Updated SavedJobs.vue with API integration for lists and saved applications.
+- Added route /saved-jobs/:listId for SavedJobs view.
 
 ## Validation & Evidence
 - Build: npm run build succeeds (162 modules, 781ms); JobApplicationView component updated with ATS score.
@@ -39,7 +38,7 @@
 2. Consider optimizing ATS score calculation (e.g., cache scores in application model).
 
 ## Status Summary
-- ✅ 100% — F-042: ATS Score Display complete, job application tracking fully functional.
+- ✅ 100% — F-045: Saved Jobs View complete, new screen implemented with modal.
 ## Status Summary
 - ✅ 100% — F-039 complete; job search list management fully functional with create, rename, delete operations. F-040 active for job application view.
 

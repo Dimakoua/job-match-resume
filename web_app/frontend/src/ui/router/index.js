@@ -12,9 +12,9 @@ const routes = [
   { path: '/dashboard', name: 'Dashboard', component: () => import('../views/Dashboard.vue'), meta: { requiresAuth: true } },
   { path: '/builder', name: 'Builder', component: () => import('../views/Builder.vue'), meta: { requiresAuth: true } },
   { path: '/generator', name: 'Generator', component: () => import('../views/Generator.vue'), meta: { requiresAuth: true } },
-  { path: '/job-applications/:listId', name: 'JobApplicationView', component: () => import('../views/JobApplicationView.vue'), meta: { requiresAuth: true } },
   { path: '/job-applications/:listId/create', name: 'CreateJobApplication', component: () => import('../views/CreateJobApplicationView.vue'), meta: { requiresAuth: true } },
   { path: '/job-applications/:listId/:applicationId/edit', name: 'EditJobApplication', component: () => import('../views/EditJobApplicationView.vue'), meta: { requiresAuth: true } },
+  { path: '/saved-jobs/:listId?', name: 'SavedJobs', component: () => import('../views/SavedJobs.vue'), meta: { requiresAuth: true } },
 ]
 
 const router = createRouter({
