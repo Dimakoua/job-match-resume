@@ -3,7 +3,10 @@ import {
   ResumeTemplateClassic,
   ResumeTemplateModern,
   ResumeTemplateMinimal,
-  ResumeTemplateProfessional
+  ResumeTemplateProfessional,
+  ResumeTemplateAcademic,
+  ResumeTemplateCreative,
+  ResumeTemplateTechnical
 } from './index.js'
 
 // Configuration: which backend templates have frontend components
@@ -12,7 +15,10 @@ const SUPPORTED_TEMPLATES = {
   'classic': ResumeTemplateClassic,
   'modern': ResumeTemplateModern,
   'minimal': ResumeTemplateMinimal,
-  'professional': ResumeTemplateProfessional
+  'professional': ResumeTemplateProfessional,
+  'academic': ResumeTemplateAcademic,
+  'creative': ResumeTemplateCreative,
+  'technical': ResumeTemplateTechnical
 }
 
 /**
