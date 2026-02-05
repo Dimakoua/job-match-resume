@@ -372,7 +372,7 @@ const handleCreateJobSearchList = () => {
 }
 
 const handleViewList = (list) => {
-  router.push(`/job-applications/${list.id}`)
+  router.push(`/saved-jobs/${list.id}`)
 }
 
 const handleEditList = (list) => {
