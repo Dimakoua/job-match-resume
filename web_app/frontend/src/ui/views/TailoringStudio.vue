@@ -80,16 +80,23 @@
                 <div class="size-8 rounded-full border-2 border-white dark:border-background-dark bg-gray-200 flex items-center justify-center text-[10px] font-bold">JD</div>
                 <div class="size-8 rounded-full border-2 border-white dark:border-background-dark bg-primary flex items-center justify-center text-[10px] font-bold text-white">{{ resume ? 'CV' : 'N/A' }}</div>
               </div>
-              <button v-if="!isGenerating" @click="handleGenerateClick"
-                class="flex items-center gap-2 cursor-pointer rounded-lg h-9 px-4 bg-primary text-white text-sm font-medium hover:bg-primary/90 shadow-md transition-all">
-                <span class="material-symbols-outlined text-sm">auto_awesome</span>
-                <span class="truncate">Generate Tailored Resume</span>
-              </button>
-              <button v-else disabled
-                class="flex items-center gap-2 cursor-wait rounded-lg h-9 px-4 bg-primary/50 text-white text-sm font-medium">
-                <div class="animate-spin"><span class="material-symbols-outlined text-sm">hourglass_empty</span></div>
-                <span>Generating...</span>
-              </button>
+              <div class="flex gap-2">
+                <button v-if="!isGenerating" @click="handleLinkResumeClick"
+                  class="flex items-center gap-2 cursor-pointer rounded-lg h-9 px-4 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-600">
+                  <span class="material-symbols-outlined text-sm">link</span>
+                  <span class="truncate">Link Resume</span>
+                </button>
+                <button v-if="!isGenerating" @click="handleGenerateClick"
+                  class="flex items-center gap-2 cursor-pointer rounded-lg h-9 px-4 bg-primary text-white text-sm font-medium hover:bg-primary/90 shadow-md transition-all">
+                  <span class="material-symbols-outlined text-sm">auto_awesome</span>
+                  <span class="truncate">Generate Tailored Resume</span>
+                </button>
+                <button v-else disabled
+                  class="flex items-center gap-2 cursor-wait rounded-lg h-9 px-4 bg-primary/50 text-white text-sm font-medium">
+                  <div class="animate-spin"><span class="material-symbols-outlined text-sm">hourglass_empty</span></div>
+                  <span>Generating...</span>
+                </button>
+              </div>
             </div>
           </div>
           <!-- Split Screen View -->
@@ -246,6 +253,55 @@
         </div>
       </div>
     </div>
+    <!-- Link Resume Modal -->
+    <div v-if="showLinkResumeModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+      <div class="bg-white dark:bg-background-dark rounded-xl shadow-2xl max-w-lg w-full mx-4 max-h-[80vh] overflow-hidden">
+        <div class="p-6">
+          <div class="flex items-center justify-between mb-6">
+            <h3 class="text-lg font-bold">Link Existing Resume</h3>
+            <button @click="closeLinkResumeModal" class="p-1 hover:bg-gray-100 dark:hover:bg-white/10 rounded">
+              <span class="material-symbols-outlined">close</span>
+            </button>
+          </div>
+
+          <div v-if="isLoadingResumes" class="flex items-center justify-center py-8">
+            <div class="animate-spin"><span class="material-symbols-outlined text-2xl">hourglass_empty</span></div>
+            <span class="ml-2">Loading your resumes...</span>
+          </div>
+
+          <div v-else-if="userResumes.length === 0" class="text-center py-8">
+            <span class="material-symbols-outlined text-4xl text-gray-400 mb-4">description</span>
+            <p class="text-gray-600 dark:text-gray-400 mb-4">You don't have any resumes yet.</p>
+            <button @click="closeLinkResumeModal" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90">
+              Create Your First Resume
+            </button>
+          </div>
+
+          <div v-else class="space-y-3 max-h-96 overflow-y-auto">
+            <div v-for="userResume in userResumes" :key="userResume.id"
+              @click="selectResume(userResume.id)"
+              class="p-4 border border-gray-200 dark:border-white/10 rounded-lg cursor-pointer hover:border-primary hover:bg-primary/5 transition-colors">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h4 class="font-medium text-gray-900 dark:text-white">{{ userResume.title }}</h4>
+                  <p class="text-sm text-gray-500 dark:text-gray-400">
+                    Updated {{ new Date(userResume.updatedAt).toLocaleDateString() }}
+                  </p>
+                </div>
+                <span class="material-symbols-outlined text-primary">chevron_right</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex gap-3 mt-6">
+            <button @click="closeLinkResumeModal"
+              class="flex-1 px-4 py-2 border border-gray-200 dark:border-white/10 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-white/5">
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <AppFooter></AppFooter>
   </div>
@@ -280,11 +336,16 @@ const {
   resumeText,
   atsScorePercent,
   generationSettings,
+  userResumes,
+  isLoadingResumes,
+  showLinkResumeModal,
   loadApplication,
   generateTailoredResume,
   improveSection,
   updateResume,
-  switchSection
+  switchSection,
+  loadUserResumes,
+  linkResumeToApplication
 } = useTailoringStudioController(applicationId);
 
 // Modal state
@@ -311,6 +372,24 @@ const startGeneration = async () => {
     showGenerationModal.value = false;
   } catch (err) {
     console.error('Generation failed:', err);
+  }
+};
+
+const handleLinkResumeClick = async () => {
+  await loadUserResumes();
+  showLinkResumeModal.value = true;
+};
+
+const closeLinkResumeModal = () => {
+  showLinkResumeModal.value = false;
+};
+
+const selectResume = async (resumeId) => {
+  try {
+    await linkResumeToApplication(resumeId);
+    showLinkResumeModal.value = false;
+  } catch (err) {
+    console.error('Failed to link resume:', err);
   }
 };
 

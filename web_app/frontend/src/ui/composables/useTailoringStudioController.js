@@ -7,10 +7,12 @@
  */
 import { ref, computed } from 'vue';
 import { GetJobApplicationUseCase } from '../../core/application/job_application/GetJobApplicationUseCase.js';
+import { UpdateJobApplicationUseCase } from '../../core/application/job_application/UpdateJobApplicationUseCase.js';
 import { GenerateFromJDUseCase } from '../../core/application/ai/GenerateFromJDUseCase.js';
 import { ImproveTextUseCase } from '../../core/application/ai/ImproveTextUseCase.js';
 import { CalculateAtsScoreUseCase } from '../../core/application/resume/CalculateAtsScoreUseCase.js';
 import { UpdateResumeUseCase } from '../../core/application/resume/UpdateResumeUseCase.js';
+import { ListResumesUseCase } from '../../core/application/resume/ListResumesUseCase.js';
 import { HttpJobApplicationRepository } from '../../infrastructure/api/HttpJobApplicationRepository.js';
 import { HttpResumeRepository } from '../../infrastructure/api/HttpResumeRepository.js';
 import { HttpAIService } from '../../infrastructure/api/HttpAIService.js';
@@ -23,10 +25,12 @@ export function useTailoringStudioController(applicationIdRef) {
   const aiService = new HttpAIService();
 
   const getJobApplicationUseCase = new GetJobApplicationUseCase(jobApplicationRepository);
+  const updateJobApplicationUseCase = new UpdateJobApplicationUseCase(jobApplicationRepository);
   const generateFromJDUseCase = new GenerateFromJDUseCase(aiService, resumeRepository);
   const improveTextUseCase = new ImproveTextUseCase(aiService);
   const calculateAtsScoreUseCase = new CalculateAtsScoreUseCase(resumeRepository);
   const updateResumeUseCase = new UpdateResumeUseCase(resumeRepository);
+  const listResumesUseCase = new ListResumesUseCase(resumeRepository);
 
   const authStore = useAuthStore();
 
@@ -48,6 +52,11 @@ export function useTailoringStudioController(applicationIdRef) {
     tone: 'professional',
     targetAtsScore: 95
   });
+
+  // Resume linking state
+  const userResumes = ref([]);
+  const isLoadingResumes = ref(false);
+  const showLinkResumeModal = ref(false);
 
   // Load settings from localStorage if available
   const savedSettings = localStorage.getItem('generationSettings');
@@ -242,6 +251,57 @@ export function useTailoringStudioController(applicationIdRef) {
     }
   };
 
+  const loadUserResumes = async () => {
+    isLoadingResumes.value = true;
+    error.value = null;
+
+    try {
+      userResumes.value = await listResumesUseCase.execute();
+    } catch (err) {
+      error.value = 'Failed to load resumes. Please try again.';
+      console.error('Error loading user resumes:', err);
+    } finally {
+      isLoadingResumes.value = false;
+    }
+  };
+
+  const linkResumeToApplication = async (resumeId) => {
+    if (!job.value) {
+      throw new Error('No job application loaded');
+    }
+
+    error.value = null;
+
+    try {
+      const userId = authStore.user?.id;
+      if (!userId) {
+        throw new Error('User not authenticated');
+      }
+
+      // Update the job application with the linked resume
+      const updatedApplication = { ...job.value, resumeId };
+      const savedApplication = await updateJobApplicationUseCase.execute({
+        application: updatedApplication
+      });
+
+      job.value = savedApplication;
+
+      // Load the linked resume
+      await loadResume();
+
+      // Calculate ATS score
+      if (job.value.jobDescription) {
+        await calculateAts();
+      }
+
+      return savedApplication;
+    } catch (err) {
+      error.value = 'Failed to link resume. Please try again.';
+      console.error('Error linking resume:', err);
+      throw err;
+    }
+  };
+
   return {
     // State
     job,
@@ -256,6 +316,9 @@ export function useTailoringStudioController(applicationIdRef) {
     selectedKeywords,
     suggestedKeywords,
     generationSettings,
+    userResumes,
+    isLoadingResumes,
+    showLinkResumeModal,
 
     // Computed
     jobKeywords,
@@ -270,6 +333,8 @@ export function useTailoringStudioController(applicationIdRef) {
     improveSection,
     updateResume,
     switchSection,
-    toggleKeywordSelection
+    toggleKeywordSelection,
+    loadUserResumes,
+    linkResumeToApplication
   };
 }
