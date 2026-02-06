@@ -11,6 +11,7 @@ describe("PdfAdapter", () => {
         userId: "user-456",
         title: "Software Engineer Resume",
         sections: {
+          layout: { template: "professional" },
           firstName: "John",
           lastName: "Doe",
           email: "john@example.com",
@@ -70,6 +71,9 @@ describe("PdfAdapter", () => {
         userId: "user-456",
         title: "Basic Resume",
         sections: {
+          layout: {
+            template: "modern"
+          },
           firstName: "Jane",
           lastName: "Smith",
           email: "jane@example.com"
@@ -90,6 +94,9 @@ describe("PdfAdapter", () => {
         userId: "user-456",
         title: "Incomplete Resume",
         sections: {
+          layout: {
+            template: "modern"
+          },
           firstName: "Bob",
           lastName: "Johnson"
         }
@@ -106,6 +113,9 @@ describe("PdfAdapter", () => {
         userId: "user-456",
         title: "Resume with Empty Arrays",
         sections: {
+          layout: {
+            template: "modern"
+          },
           firstName: "Alice",
           lastName: "Brown",
           experience: [],
@@ -125,6 +135,9 @@ describe("PdfAdapter", () => {
         userId: "user-456",
         title: "Resume with Multiple Jobs",
         sections: {
+          layout: {
+            template: "modern"
+          },
           firstName: "Charlie",
           lastName: "Davis",
           experience: [
@@ -161,6 +174,9 @@ describe("PdfAdapter", () => {
         userId: "user-456",
         title: "Resume with Multiple Degrees",
         sections: {
+          layout: {
+            template: "modern"
+          },
           firstName: "Diana",
           lastName: "Evans",
           education: [
@@ -189,6 +205,9 @@ describe("PdfAdapter", () => {
         userId: "user-456",
         title: "Resume with Skills",
         sections: {
+          layout: {
+            template: "modern"
+          },
           firstName: "Eve",
           lastName: "Frank",
           skills: ["JavaScript", "TypeScript", "React", "Vue.js", "Python", "Java", "C++"]
@@ -206,6 +225,9 @@ describe("PdfAdapter", () => {
         userId: "user-456",
         title: "Resume with New Experience Structure",
         sections: {
+          layout: {
+            template: "modern"
+          },
           firstName: "Grace",
           lastName: "Hopper",
           experience: [
@@ -240,6 +262,9 @@ describe("PdfAdapter", () => {
         userId: "user-456",
         title: "Resume with New Education Structure",
         sections: {
+          layout: {
+            template: "modern"
+          },
           firstName: "Helen",
           lastName: "Keller",
           education: [
@@ -274,6 +299,9 @@ describe("PdfAdapter", () => {
         userId: "user-456",
         title: "Resume with Certifications",
         sections: {
+          layout: {
+            template: "modern"
+          },
           firstName: "Ian",
           lastName: "Johnson",
           certifications: [
@@ -307,6 +335,9 @@ describe("PdfAdapter", () => {
         userId: "user-456",
         title: "Resume with Projects",
         sections: {
+          layout: {
+            template: "modern"
+          },
           firstName: "Jack",
           lastName: "Kim",
           projects: [
@@ -335,6 +366,9 @@ describe("PdfAdapter", () => {
         userId: "user-456",
         title: "Resume with Old Structure",
         sections: {
+          layout: {
+            template: "modern"
+          },
           firstName: "Kevin",
           lastName: "Lee",
           experience: [
@@ -368,6 +402,9 @@ describe("PdfAdapter", () => {
         userId: "user-456",
         title: "Very Long Resume",
         sections: {
+          layout: {
+            template: "modern"
+          },
           firstName: "Long",
           lastName: "Resume",
           summary: longDescription,

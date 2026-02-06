@@ -1,5 +1,7 @@
 import { ModernTemplate } from './templates/ModernTemplate.js';
 import { BasicTemplate } from './templates/BasicTemplate.js';
+import { ProfessionalTemplate } from './templates/ProfessionalTemplate.js';
+import { AcademicTemplate } from './templates/AcademicTemplate.js';
 
 export class TemplateFactory {
   /**
@@ -16,6 +18,11 @@ export class TemplateFactory {
         return new BasicTemplate();
       case 'modern':
       case 'standard': // legacy fallback
+        return new ModernTemplate();
+      case 'professional':
+        return new ProfessionalTemplate();
+      case 'academic':
+        return new AcademicTemplate();
       default:
         // For now, default to ModernTemplate for all until others are implemented
         return new ModernTemplate();
