@@ -1,9 +1,10 @@
 import { ModernTemplate } from './templates/ModernTemplate.js';
+import { BasicTemplate } from './templates/BasicTemplate.js';
 
 export class TemplateFactory {
   /**
    * Creates a template instance based on the template ID
-   * @param {string} templateId - The ID of the template (e.g., 'modern', 'classic')
+   * @param {string} templateId - The ID of the template (e.g., 'modern', 'basic')
    * @returns {Object} - The template instance
    */
   create(templateId) {
@@ -11,6 +12,8 @@ export class TemplateFactory {
     const id = (templateId || 'modern').toLowerCase();
 
     switch (id) {
+      case 'basic':
+        return new BasicTemplate();
       case 'modern':
       case 'standard': // legacy fallback
       default:

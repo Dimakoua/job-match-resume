@@ -13,7 +13,7 @@ export class PdfAdapter {
   async generateBuffer(resume) {
     if (!resume) throw new Error('Resume data is required');
     if (!resume.sections) throw new Error('Resume must have sections object');
-    const templateId = resume.style?.template || 'modern';
+    const templateId = resume.sections.layout.template || 'modern';
     const template = this.factory.create(templateId);
     return template.generate(resume);
   }
