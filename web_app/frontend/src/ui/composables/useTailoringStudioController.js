@@ -1087,12 +1087,47 @@ export function useTailoringStudioController() {
     }
   };
 
+  // TODO: need to be teste
   const applyImpactSuggestion = async (suggestion) => {
-    // For impact suggestions, mark as applied
-    console.log('Impact improvement suggestion applied:', suggestion.text);
+    const experiences = resume.value.sections.experience || [];
 
-    // TODO: Implement impact enhancement
-    // This could involve strengthening action verbs and achievements
+    if (!Array.isArray(experiences) || experiences.length === 0) {
+      console.log('No experience entries to enhance impact');
+      return;
+    }
+
+    const enhancedExperiences = await Promise.all(
+      experiences.map(async (exp) => {
+        if (!exp.description || exp.description.trim().length === 0) {
+          return exp; // No description to enhance
+        }
+
+        const prompt = `Strengthen the action verbs and enhance the impact of achievements in this work experience description based on the following suggestion: "${suggestion.text}". Use powerful action verbs and make accomplishments more compelling. Current description: "${exp.description}"`;
+
+        try {
+          const enhancedDescription = await improveTextUseCase.execute(prompt);
+          return { ...exp, description: enhancedDescription };
+        } catch (error) {
+          console.error('Failed to enhance experience description impact:', error);
+          return exp; // Return original if enhancement fails
+        }
+      })
+    );
+
+    try {
+      await updateResume({
+        id: resume.value.id,
+        sections: {
+          ...resume.value.sections,
+          experience: enhancedExperiences
+        }
+      });
+
+      console.log('Experience descriptions enhanced with stronger impact');
+    } catch (error) {
+      console.error('Failed to update resume with enhanced experience:', error);
+      throw error;
+    }
   };
 
   const dismissSuggestion = (suggestion) => {
