@@ -60,6 +60,16 @@ export function setupResumeRoutes(router) {
     return controller.generateSuggestions(request);
   });
 
+  // Parse resume text into structured data
+  // Usage: POST /api/resumes/parse-text
+  // Headers: Authorization: Bearer <jwt>
+  // Body: { "text": "Raw resume text to parse..." }
+  // Returns: { "success": true, "data": { "firstName": "...", "lastName": "...", "experience": [...], ... } }
+  router.post('/api/resumes/parse-text', async (request, env, ctx) => {
+    const { controller } = createController(env, ResumeController, [env.JWT_SECRET]);
+    return controller.parseResumeText(request);
+  });
+
   // Calculate ATS score
   // Usage: POST /api/resumes/calculate-ats-score
   // Headers: Authorization: Bearer <jwt>

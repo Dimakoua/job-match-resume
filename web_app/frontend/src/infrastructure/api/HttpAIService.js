@@ -23,4 +23,9 @@ export class HttpAIService {
     })
     return response.data.data.suggestions
   }
+
+  async parseResumeText(text) {
+    const response = await axios.post('/api/resumes/parse-text', { text })
+    return response.data.data
+  }
 }

@@ -32,6 +32,10 @@ const generateSuggestionsSchema = z.object({
   resumeText: z.string().min(1, 'Resume text is required').max(10000, 'Resume text must be less than 10,000 characters'),
 });
 
+const parseResumeTextSchema = z.object({
+  text: z.string().min(1, 'Text is required').max(50000, 'Text must be less than 50,000 characters'),
+});
+
 const updateResumeSchema = z.object({
   title: z.string().min(1, 'Title is required').optional(),
   templateId: z.string().nullable().optional(),
@@ -50,6 +54,7 @@ export class ResumeController extends BaseController {
     this.generateFromJDService = deps.generateFromJDService;
     this.improveTextService = deps.improveTextService;
     this.generateSuggestionsService = deps.generateSuggestionsService;
+    this.parseResumeTextService = deps.parseResumeTextService;
     this.exportResumeService = deps.exportResumeService;
     this.calculateAtsScoreService = deps.calculateAtsScoreService;
   }
@@ -270,6 +275,45 @@ export class ResumeController extends BaseController {
 
       if (error.message && error.message.includes('AI')) {
         return this.errorResponse('AI_ERROR', 'Failed to generate suggestions', 500);
+      }
+
+      return this.errorResponse('INTERNAL_ERROR', 'An unexpected error occurred', 500);
+    }
+  }
+
+  async parseResumeText(request) {
+    try {
+      const userId = await this.authenticate(request);
+
+      const body = await request.json();
+
+      // Validate input
+      const validationResult = parseResumeTextSchema.safeParse(body);
+      if (!validationResult.success) {
+        return this.validationErrorResponse(validationResult.error.issues);
+      }
+
+      const command = {
+        ...validationResult.data,
+        userId,
+      };
+
+      // Execute parse resume text
+      const result = await this.parseResumeTextService.execute(command);
+
+      return this.successResponse({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      // If authenticate threw a Response, return it
+      if (error instanceof Response) {
+        return error;
+      }
+      console.error('Parse resume text error:', error);
+
+      if (error.message && error.message.includes('AI')) {
+        return this.errorResponse('AI_ERROR', 'Failed to parse resume text', 500);
       }
 
       return this.errorResponse('INTERNAL_ERROR', 'An unexpected error occurred', 500);

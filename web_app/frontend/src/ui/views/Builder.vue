@@ -8,6 +8,7 @@
       :is-syncing="isSyncing"
       @save="handleSave"
       @download="(format) => handleDownload(format)"
+      @upload-pdf="handleUploadPdf"
     />
 
     <div class="flex flex-1 overflow-hidden">
@@ -156,6 +157,42 @@
         </div>
       </div>
     </div>
+
+    <!-- PDF Upload Modal -->
+    <div v-if="uploadModal.show" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+      <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-lg w-full mx-4 overflow-hidden">
+        <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+          <div class="flex items-center gap-3">
+            <div class="h-10 w-10 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="size-5 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14,2 14,8 20,8"/>
+              </svg>
+            </div>
+            <div>
+              <h3 class="text-lg font-bold">Upload PDF Resume</h3>
+              <p class="text-sm text-gray-500">Parsing your resume...</p>
+            </div>
+          </div>
+        </div>
+        <div class="p-6">
+          <div v-if="uploadModal.loading" class="flex flex-col items-center py-8">
+            <div class="h-8 w-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mb-4"></div>
+            <p class="text-sm text-gray-500">Extracting text from PDF...</p>
+            <p class="text-xs text-gray-400 mt-2">This may take a few moments</p>
+          </div>
+          <div v-else-if="uploadModal.error" class="text-center py-4">
+            <p class="text-red-500 text-sm">{{ uploadModal.error }}</p>
+            <button 
+              @click="uploadModal.show = false"
+              class="mt-4 px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded-lg text-sm font-semibold"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -182,11 +219,13 @@ const {
   layoutSettings,
   styleSettings,
   aiModal,
+  uploadModal,
   resumeTitle,
   handleSave,
   handleDownload,
   handleAiEnhance,
   applyAiEnhancement,
+  handleUploadPdf,
   zoomIn,
   zoomOut,
   history,

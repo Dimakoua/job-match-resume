@@ -16,8 +16,12 @@ import { HttpAIService } from '../../infrastructure/api/HttpAIService.js'
 import { HttpResumeRepository } from '../../infrastructure/api/HttpResumeRepository.js'
 import { ExportService } from '../../infrastructure/api/ExportService.js'
 import { DownloadResumeUseCase } from '../../core/application/export/DownloadResumeUseCase.js'
+import * as pdfjsLib from 'pdfjs-dist'
 
 export function useBuilderController() {
+  // Configure PDF.js worker
+  pdfjsLib.GlobalWorkerOptions.workerSrc = '/node_modules/pdfjs-dist/build/pdf.worker.mjs'
+
   const route = useRoute()
   const router = useRouter()
 
@@ -91,6 +95,12 @@ export function useBuilderController() {
     result: null,
     allVariations: [],
     selectedVariation: 0,
+    error: null
+  })
+
+  const uploadModal = ref({
+    show: false,
+    loading: false,
     error: null
   })
 
@@ -334,6 +344,71 @@ export function useBuilderController() {
     aiModal.value.show = false
   }
 
+  // ===== Event Handlers: PDF Upload =====
+  const handleUploadPdf = async (file) => {
+    uploadModal.value.show = true
+    uploadModal.value.loading = true
+    uploadModal.value.error = null
+
+    try {
+      // Extract text from PDF
+      const text = await extractTextFromPdf(file)
+      
+      // Parse the text using AI
+      const parsedData = await aiService.parseResumeText(text)
+      
+      // Update resume data
+      resumeData.value = { ...defaultResumeData, ...parsedData }
+      
+      uploadModal.value.loading = false
+      uploadModal.value.show = false
+      
+      // Mark as unsaved
+      markUnsaved()
+    } catch (error) {
+      console.error('PDF upload failed:', error)
+      uploadModal.value.error = 'Failed to parse PDF. Please try again.'
+      uploadModal.value.loading = false
+    }
+  }
+
+  const extractTextFromPdf = async (file) => {
+    const reader = new FileReader()
+    return new Promise((resolve, reject) => {
+      reader.onload = async (e) => {
+        try {
+          const pdfData = new Uint8Array(e.target.result)
+          const pdfDoc = await pdfjsLib.getDocument(pdfData).promise
+          const totalPages = pdfDoc.numPages
+
+          let textContent = ''
+
+          // Create an array of promises for each page
+          const pagePromises = []
+
+          for (let i = 1; i <= totalPages; i++) {
+            pagePromises.push(pdfDoc.getPage(i).then(async page => {
+              const text = await page.getTextContent()
+              return text.items.map(item => item.str).join(' ')
+            }))
+          }
+
+          // Wait for all pages to be processed
+          const allText = await Promise.all(pagePromises)
+
+          // Combine all pages' text
+          textContent = allText.join('\n')
+
+          resolve(textContent)
+        } catch (error) {
+          reject(error)
+        }
+      }
+      reader.onerror = () => reject(new Error('Failed to read file'))
+      reader.readAsArrayBuffer(file)
+    })
+  }
+
   // ===== Zoom Controls =====
   const zoomIn = () => {
     if (zoom.value < 1.5) {
@@ -442,12 +517,14 @@ export function useBuilderController() {
     layoutSettings,
     styleSettings,
     aiModal,
+    uploadModal,
     resumeTitle,
     // Handlers
     handleSave,
     handleDownload,
     handleAiEnhance,
     applyAiEnhancement,
+    handleUploadPdf,
     zoomIn,
     zoomOut,
     // History

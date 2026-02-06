@@ -15,6 +15,7 @@ import { ListTemplatesService } from './application/list_templates/list_template
 import { GenerateFromJDService } from './application/generate_from_jd/generate_from_jd_service.js';
 import { ImproveTextService } from './application/improve_text/improve_text_service.js';
 import { GenerateSuggestionsService } from './application/generate_suggestions/generate_suggestions_service.js';
+import { ParseResumeTextService } from './application/parse_resume_text/parse_resume_text_service.js';
 import { ExportResumeService } from './application/export_resume/export_resume_service.js';
 import { CalculateAtsScoreService } from './application/calculate_ats_score/calculate_ats_score_service.js';
 import { CreateJobSearchListService } from './application/job_search_list/create_job_search_list_service.js';
@@ -101,6 +102,7 @@ export function createDependencies(env) {
   const generateFromJDService = new GenerateFromJDService(aiAdapter, resumeRepository, templateRepository);
   const improveTextService = new ImproveTextService(aiAdapter);
   const generateSuggestionsService = new GenerateSuggestionsService(aiAdapter);
+  const parseResumeTextService = new ParseResumeTextService(aiAdapter);
   const exportResumeService = new ExportResumeService(resumeRepository, pdfAdapter, docxAdapter);
   const calculateAtsScoreService = new CalculateAtsScoreService();
   const createJobSearchListService = new CreateJobSearchListService(jobSearchListRepository);
@@ -139,6 +141,7 @@ export function createDependencies(env) {
     generateFromJDService,
     improveTextService,
     generateSuggestionsService,
+    parseResumeTextService,
     exportResumeService,
     calculateAtsScoreService,
     createJobSearchListService,

@@ -22,6 +22,26 @@
         <router-link to="/dashboard" class="text-sm font-medium hover:text-primary transition-colors">Dashboard</router-link>
       </nav>
       <div class="flex gap-2">
+        <!-- Upload PDF button -->
+        <div class="relative">
+          <input
+            ref="fileInput"
+            type="file"
+            accept=".pdf"
+            @change="handleFileUpload"
+            class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+          />
+          <button 
+            @click="$refs.fileInput.click()"
+            class="flex min-w-[84px] cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-gray-100 dark:bg-gray-800 text-[#0e121b] dark:text-white text-sm font-bold hover:bg-gray-200 dark:hover:bg-gray-700 transition-all"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="mr-1 size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14,2 14,8 20,8"/>
+            </svg>
+            <span>Upload PDF</span>
+          </button>
+        </div>
         <button 
           @click="$emit('save')"
           :disabled="isSaving || isSaved"
@@ -114,11 +134,12 @@ const props = defineProps({
   }
 })
 
-defineEmits(['download', 'save'])
+const emit = defineEmits(['download', 'save', 'uploadPdf'])
 
 const router = useRouter()
 const authStore = useAuthStore()
 
+const fileInput = ref(null)
 const showUserMenu = ref(false)
 
 const userName = computed(() => authStore.user?.name || 'User')
@@ -132,10 +153,13 @@ const userInitials = computed(() => {
   return name.substring(0, 2).toUpperCase()
 })
 
-const handleSignOut = () => {
-  showUserMenu.value = false
-  authStore.logout()
-  router.push('/login')
+const handleFileUpload = (event) => {
+  const file = event.target.files[0]
+  if (file && file.type === 'application/pdf') {
+    emit('uploadPdf', file)
+  }
+  // Reset the input
+  event.target.value = ''
 }
 
 const handleClickOutside = (event) => {
