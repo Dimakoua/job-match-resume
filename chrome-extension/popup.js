@@ -145,9 +145,6 @@ async function optimizeResume() {
 
         generateDocx(result);
         displayATSScore(result.ATSCompatibilityScore,);
-        
-        // Show floating save button if user is logged in
-        showFloatingSaveBtn();
     } catch (error) {
         showMessage('error', 'An error occurred while optimizing the resume.', 3000);
     } finally {
@@ -416,7 +413,6 @@ async function handleLogout() {
     document.getElementById('loginSection').classList.remove('hidden');
     document.getElementById('showLoginForm').textContent = 'account_circle';
     document.getElementById('showLoginForm').title = 'Login';
-    hideFloatingSaveBtn();
     showMessage('success', 'Logged out successfully!');
 }
 
@@ -495,18 +491,8 @@ async function handleGoogleSignIn() {
         showMessage('error', 'Google sign-in failed. Please try again.');
     }
 }
-function showFloatingSaveBtn() {
-    checkLoginStatus().then(isLoggedIn => {
-        if (isLoggedIn) {
-            document.getElementById('floatingSaveBtn').classList.remove('hidden');
-        }
-    });
-}
 
-function hideFloatingSaveBtn() {
-    document.getElementById('floatingSaveBtn').classList.add('hidden');
-}
-
+// Job Saving Functions
 function showJobSaveForm() {
     const jobDescription = document.getElementById('jobDescription').value;
     document.getElementById('jobDescriptionSave').value = jobDescription;
@@ -589,6 +575,42 @@ async function saveJob() {
     }
 }
 
+// Check for pending job save from floating button
+async function checkForPendingJobSave() {
+    try {
+        const result = await chrome.storage.session.get(['jobDescriptionForSave']);
+        if (result.jobDescriptionForSave) {
+            // Clear the stored job description
+            await chrome.storage.session.remove(['jobDescriptionForSave']);
+            
+            // Check if user is logged in
+            const isLoggedIn = await checkLoginStatus();
+            if (isLoggedIn) {
+                // Pre-fill and show job save form
+                document.getElementById('jobDescriptionSave').value = result.jobDescriptionForSave;
+                
+                // Try to extract company and position
+                const extracted = extractJobDetails(result.jobDescriptionForSave);
+                document.getElementById('jobCompany').value = extracted.company;
+                document.getElementById('jobPosition').value = extracted.position;
+                
+                // Show job save form
+                document.getElementById('MainForm').classList.add('hidden');
+                document.getElementById('AISettingsForm').classList.add('hidden');
+                document.getElementById('LoginForm').classList.add('hidden');
+                document.getElementById('atsScore').classList.add('hidden');
+                document.getElementById('JobSaveForm').classList.remove('hidden');
+            } else {
+                // Show login prompt
+                showMessage('info', 'Please log in to save jobs to your dashboard.');
+                toggleLoginForm();
+            }
+        }
+    } catch (error) {
+        console.error('Error checking for pending job save:', error);
+    }
+}
+
 // Event listener for Save button
 document.addEventListener('DOMContentLoaded', function () {
     // Load saved settings on page load
@@ -599,6 +621,9 @@ document.addEventListener('DOMContentLoaded', function () {
     
     // Initialize Google Sign-In
     initializeGoogleSignIn();
+
+    // Check if we should show job save form
+    checkForPendingJobSave();
 
     const saveAISettingsBtn = document.getElementById('saveAISettings');
     const showAISettingsForm = document.getElementById('showAISettingsForm');
@@ -615,7 +640,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const backToLogin = document.getElementById('backToLogin');
 
     // Job saving related
-    const floatingSaveBtn = document.getElementById('floatingSaveBtn');
     const saveJobBtn = document.getElementById('saveJobBtn');
     const cancelSaveJob = document.getElementById('cancelSaveJob');
 
@@ -634,7 +658,6 @@ document.addEventListener('DOMContentLoaded', function () {
     backToLogin.addEventListener('click', () => toggleSignup(false));
 
     // Job saving events
-    floatingSaveBtn.addEventListener('click', showJobSaveForm);
     saveJobBtn.addEventListener('click', saveJob);
     cancelSaveJob.addEventListener('click', hideJobSaveForm);
 });

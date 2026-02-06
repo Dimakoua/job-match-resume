@@ -238,6 +238,14 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
         });
     }
 
+    if (message.action === "openPopupAndShowJobSave") {
+        // Store the job description for the popup
+        chrome.storage.session.set({ jobDescriptionForSave: message.jobDescription });
+        
+        // Open the popup
+        chrome.action.openPopup();
+    }
+
     return true;
 });
 
