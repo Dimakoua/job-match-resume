@@ -16,8 +16,9 @@
 
         <div id="header" class="header-container">
             <h2>AI Resume Optimizer</h2>
-            <div class="ats-container">
-                <span id="showAISettingsForm" class="settings-icon material-symbols-outlined">settings</span>
+            <div class="header-actions">
+                <span id="showLoginForm" class="settings-icon material-symbols-outlined" title="Login">account_circle</span>
+                <span id="showAISettingsForm" class="settings-icon material-symbols-outlined" title="AI Settings">settings</span>
             </div>
         </div>
 
@@ -33,11 +34,61 @@
             </div>
 
             <div class="input-field">
-                <label for="userToken">API Key</label>
+                <label for="userToken">AI API Key</label>
                 <input id="userToken" type="password" placeholder="Enter AI token">
             </div>
 
             <button class="btn grey" id="saveAISettings">Save</button>
+        </section>
+
+        <!-- Login Form -->
+        <section id="LoginForm" class="hidden">
+            <div id="loginSection">
+                <div class="input-field">
+                    <label for="loginEmail">Email</label>
+                    <input id="loginEmail" type="email" placeholder="Enter your email">
+                </div>
+
+                <div class="input-field">
+                    <label for="loginPassword">Password</label>
+                    <input id="loginPassword" type="password" placeholder="Enter your password">
+                </div>
+
+                <button class="btn" id="loginBtn">Login</button>
+                
+                <div class="divider">
+                    <span>or</span>
+                </div>
+                
+                <div id="googleSignInBtn" class="google-signin-btn"></div>
+                
+                <button class="btn grey" id="showSignupForm">Sign Up</button>
+            </div>
+
+            <div id="signupSection" class="hidden">
+                <div class="input-field">
+                    <label for="signupName">Name</label>
+                    <input id="signupName" type="text" placeholder="Enter your name">
+                </div>
+
+                <div class="input-field">
+                    <label for="signupEmail">Email</label>
+                    <input id="signupEmail" type="email" placeholder="Enter your email">
+                </div>
+
+                <div class="input-field">
+                    <label for="signupPassword">Password</label>
+                    <input id="signupPassword" type="password" placeholder="Enter your password">
+                </div>
+
+                <button class="btn" id="signupBtn">Sign Up</button>
+                <button class="btn grey" id="backToLogin">Back to Login</button>
+            </div>
+
+            <div id="userProfile" class="hidden">
+                <p>Welcome, <span id="userName"></span>!</p>
+                <button class="btn grey" id="logoutBtn">Logout</button>
+            </div>
         </section>
 
         <!-- Resume Upload Section -->
@@ -64,6 +115,35 @@
 
         </section>
 
+        <!-- Job Saving Form -->
+        <section id="JobSaveForm" class="hidden">
+            <h3>Save Job to Dashboard</h3>
+            <div class="input-field">
+                <label for="jobCompany">Company</label>
+                <input id="jobCompany" type="text" placeholder="Company name">
+            </div>
+
+            <div class="input-field">
+                <label for="jobPosition">Position</label>
+                <input id="jobPosition" type="text" placeholder="Job position">
+            </div>
+
+            <div class="input-field">
+                <label for="jobUrl">Job URL (optional)</label>
+                <input id="jobUrl" type="url" placeholder="https://...">
+            </div>
+
+            <div class="input-field">
+                <label for="jobDescriptionSave">Job Description</label>
+                <textarea id="jobDescriptionSave" placeholder="Job description will be auto-filled" rows="6"></textarea>
+            </div>
+
+            <div class="ats-container">
+                <button class="btn" id="saveJobBtn">Save Job</button>
+                <button class="btn grey" id="cancelSaveJob">Cancel</button>
+            </div>
+        </section>
+
         <section id="atsScore" class="ats-score-container hidden">
             <div class="progress-container">
                 <svg class="progress-ring" width="120" height="120">
@@ -73,6 +153,11 @@
                 <div class="progress-text">0/100</div>
             </div>
         </section>
+    </div>
+
+    <!-- Floating Save Job Button -->
+    <div id="floatingSaveBtn" class="floating-btn hidden">
+        <span class="material-symbols-outlined">bookmark_add</span>
     </div>
 
     <!-- Message Box Container -->
