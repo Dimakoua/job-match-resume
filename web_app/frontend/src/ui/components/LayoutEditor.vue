@@ -174,6 +174,12 @@ const layouts = [
     description: 'Standard CV format',
     previewClass: 'underline'
   },
+  { 
+    id: 'classic', 
+    name: 'Classic', 
+    description: 'Traditional with double borders',
+    previewClass: 'border-b-2 border-primary pb-1'
+  },
 ]
 
 const selectLayout = (id) => {

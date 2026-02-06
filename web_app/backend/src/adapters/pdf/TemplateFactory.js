@@ -2,6 +2,7 @@ import { ModernTemplate } from './templates/ModernTemplate.js';
 import { BasicTemplate } from './templates/BasicTemplate.js';
 import { ProfessionalTemplate } from './templates/ProfessionalTemplate.js';
 import { AcademicTemplate } from './templates/AcademicTemplate.js';
+import { ClassicTemplate } from './templates/ClassicTemplate.js';
 
 export class TemplateFactory {
   /**
@@ -23,6 +24,8 @@ export class TemplateFactory {
         return new ProfessionalTemplate();
       case 'academic':
         return new AcademicTemplate();
+      case 'classic':
+        return new ClassicTemplate();
       default:
         // For now, default to ModernTemplate for all until others are implemented
         return new ModernTemplate();
