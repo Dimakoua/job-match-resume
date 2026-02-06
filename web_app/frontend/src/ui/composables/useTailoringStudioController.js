@@ -604,7 +604,8 @@ export function useTailoringStudioController() {
     }
 
     try {
-      const improved = await improveTextUseCase.execute(text);
+      const result = await improveTextUseCase.execute(text);
+      const improved = result.variations && result.variations.length > 0 ? result.variations[0] : result.originalText;
       return improved;
     } catch (err) {
       console.error('Error improving text:', err);
@@ -975,7 +976,8 @@ export function useTailoringStudioController() {
     const prompt = `Improve this professional summary based on the following suggestion: "${suggestion.text}". Current summary: "${currentSummary}"`;
 
     try {
-      const improvedSummary = await improveTextUseCase.execute(prompt);
+      const result = await improveTextUseCase.execute(prompt);
+      const improvedSummary = result.variations && result.variations.length > 0 ? result.variations[0] : result.originalText;
 
       await updateResume({
         id: resume.value.id,
@@ -1010,7 +1012,8 @@ export function useTailoringStudioController() {
         const prompt = `Improve this work experience description based on the following suggestion: "${suggestion.text}". Current description: "${exp.description}"`;
 
         try {
-          const improvedDescription = await improveTextUseCase.execute(prompt);
+          const result = await improveTextUseCase.execute(prompt);
+          const improvedDescription = result.variations && result.variations.length > 0 ? result.variations[0] : result.originalText;
           return { ...exp, description: improvedDescription };
         } catch (error) {
           console.error('Failed to improve experience description:', error);
@@ -1053,7 +1056,8 @@ export function useTailoringStudioController() {
         const prompt = `Add quantifiable metrics and specific numbers to this work experience description based on the following suggestion: "${suggestion.text}". Make achievements measurable with percentages, numbers, or concrete results. Current description: "${exp.description}"`;
 
         try {
-          const quantifiedDescription = await improveTextUseCase.execute(prompt);
+          const result = await improveTextUseCase.execute(prompt);
+          const quantifiedDescription = result.variations && result.variations.length > 0 ? result.variations[0] : result.originalText;
           return { ...exp, description: quantifiedDescription };
         } catch (error) {
           console.error('Failed to quantify experience description:', error);
@@ -1096,7 +1100,8 @@ export function useTailoringStudioController() {
         const prompt = `Strengthen the action verbs and enhance the impact of achievements in this work experience description based on the following suggestion: "${suggestion.text}". Use powerful action verbs and make accomplishments more compelling. Current description: "${exp.description}"`;
 
         try {
-          const enhancedDescription = await improveTextUseCase.execute(prompt);
+          const result = await improveTextUseCase.execute(prompt);
+          const enhancedDescription = result.variations && result.variations.length > 0 ? result.variations[0] : result.originalText;
           return { ...exp, description: enhancedDescription };
         } catch (error) {
           console.error('Failed to enhance experience description impact:', error);
