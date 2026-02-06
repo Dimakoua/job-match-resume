@@ -978,20 +978,27 @@ export function useTailoringStudioController() {
     }
   };
 
+  // TODO: need to be tested
   const applySummarySuggestion = async (suggestion) => {
-    // For summary suggestions, we'll create an improved version
-    // This is more complex, so for now we'll just mark it as applied
-    // In a full implementation, this would use AI to generate an improved summary
-    console.log('Summary improvement suggestion applied:', suggestion.text);
+    const currentSummary = resume.value.sections.summary || '';
+    const prompt = `Improve this professional summary based on the following suggestion: "${suggestion.text}". Current summary: "${currentSummary}"`;
 
-    // TODO: Implement AI-powered summary improvement
-    // const improvedSummary = await improveSection('summary', suggestion.text);
-    // await updateResume({
-    //   sections: {
-    //     ...resume.value.sections,
-    //     summary: improvedSummary
-    //   }
-    // });
+    try {
+      const improvedSummary = await improveTextUseCase.execute(prompt);
+
+      await updateResume({
+        id: resume.value.id,
+        sections: {
+          ...resume.value.sections,
+          summary: improvedSummary
+        }
+      });
+
+      console.log('Summary improved:', improvedSummary);
+    } catch (error) {
+      console.error('Failed to improve summary:', error);
+      throw error;
+    }
   };
 
   const applyExperienceSuggestion = async (suggestion) => {
