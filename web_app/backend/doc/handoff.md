@@ -1,22 +1,23 @@
 # handoff.md
 
 ## Context Snapshot
-- **Backend**: 357 tests passing. Basic template implementation complete for PDF and DOCX exports.
-- **New Feature**: Added "Basic" template option with simple, clean layout (no colors, basic fonts, centered headers).
+- **Backend**: 357 tests passing. Minimal template implementation complete for PDF and DOCX exports.
+- **New Feature**: Added "Minimal" template option with clean, minimal typography (centered header, uppercase section headers, light fonts).
 - **Status**: Stable. All tests passing, new templates integrated successfully.
 
 ## Active Task(s)
-- None currently active. Previous task `T-???` Basic template implementation completed.
+- None currently active. Minimal template implementation completed.
 
 ## Decisions Made
-- Implemented BasicTemplate classes for both PDF and DOCX with minimal styling (Arial/Helvetica fonts, no accent colors, centered headers, uppercase section headers).
-- Updated TemplateFactory classes to support 'basic' template ID, maintaining factory pattern consistency.
+- Implemented MinimalTemplate classes for both PDF and DOCX with clean, minimal design matching Vue component ResumeTemplateMinimal.vue.
+- Updated TemplateFactory classes to support 'minimal' template ID, maintaining factory pattern consistency.
+- Minimal template features: centered header with name/title/contact, uppercase section headers with subtle borders, light typography, and simple section layouts.
 
 ## Changes Since Last Session
-- `src/adapters/pdf/templates/BasicTemplate.js` (+150 lines): New BasicTemplate class for PDF generation.
-- `src/adapters/docx/templates/BasicTemplate.js` (+150 lines): New BasicTemplate class for DOCX generation.
-- `src/adapters/pdf/TemplateFactory.js` (+3/-0): Added import and case for BasicTemplate.
-- `src/adapters/docx/TemplateFactory.js` (+3/-0): Added import and case for BasicTemplate.
+- `src/adapters/pdf/templates/MinimalTemplate.js` (+200 lines): New MinimalTemplate class for PDF generation with centered layout.
+- `src/adapters/docx/templates/MinimalTemplate.js` (+250 lines): New MinimalTemplate class for DOCX generation with clean typography.
+- `src/adapters/pdf/TemplateFactory.js` (+2/-0): Added import and case for MinimalTemplate.
+- `src/adapters/docx/TemplateFactory.js` (+2/-0): Added import and case for MinimalTemplate.
 
 ## Validation & Evidence
 - **Test Run**: `npm test -- --run` passed all 357 tests.
@@ -27,9 +28,9 @@
 - None identified. Templates follow existing patterns and are fully tested.
 
 ## Next Steps
-1. Update frontend to support 'basic' template selection if needed.
-2. Test actual resume exports with template: 'basic' in production.
-3. Proceed with remaining tasks in `tracker.md`.
+1. Update frontend to support 'minimal' template selection if needed.
+2. Test actual resume exports with template: 'minimal' in production.
+3. All major templates now implemented: Academic, Professional, Technical, Classic, Creative, Minimal.
 
 ## Status Summary
-- ✅ 100% — Basic template implementation complete. Tests green.
+- ✅ 100% — Minimal template implementation complete. Tests green.
