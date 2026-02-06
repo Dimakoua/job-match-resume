@@ -1044,12 +1044,47 @@ export function useTailoringStudioController() {
     }
   };
 
+  // TODO: need to be tested
   const applyQuantifySuggestion = async (suggestion) => {
-    // For quantification suggestions, mark as applied
-    console.log('Quantification suggestion applied:', suggestion.text);
+    const experiences = resume.value.sections.experience || [];
 
-    // TODO: Implement automatic quantification of achievements
-    // This would analyze experience descriptions and add metrics
+    if (!Array.isArray(experiences) || experiences.length === 0) {
+      console.log('No experience entries to quantify');
+      return;
+    }
+
+    const quantifiedExperiences = await Promise.all(
+      experiences.map(async (exp) => {
+        if (!exp.description || exp.description.trim().length === 0) {
+          return exp; // No description to quantify
+        }
+
+        const prompt = `Add quantifiable metrics and specific numbers to this work experience description based on the following suggestion: "${suggestion.text}". Make achievements measurable with percentages, numbers, or concrete results. Current description: "${exp.description}"`;
+
+        try {
+          const quantifiedDescription = await improveTextUseCase.execute(prompt);
+          return { ...exp, description: quantifiedDescription };
+        } catch (error) {
+          console.error('Failed to quantify experience description:', error);
+          return exp; // Return original if quantification fails
+        }
+      })
+    );
+
+    try {
+      await updateResume({
+        id: resume.value.id,
+        sections: {
+          ...resume.value.sections,
+          experience: quantifiedExperiences
+        }
+      });
+
+      console.log('Experience descriptions quantified with metrics');
+    } catch (error) {
+      console.error('Failed to update resume with quantified experience:', error);
+      throw error;
+    }
   };
 
   const applyImpactSuggestion = async (suggestion) => {
