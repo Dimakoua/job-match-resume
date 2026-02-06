@@ -25,7 +25,9 @@ function loadSettings() {
 
 function setupView({ aiModel, userToken }) {
     if(!aiModel || !userToken) {
-        toggleAISettings();
+        showView(VIEWS.AI_SETTINGS);
+    } else {
+        showView(VIEWS.MAIN);
     }
 }
 
@@ -44,26 +46,71 @@ function loadCV() {
     }
 }
 
-function toggleAISettings() {
-    const AISettingsForm = document.getElementById('AISettingsForm');
-    const mainForm = document.getElementById('MainForm');
-    const atsScore = document.getElementById('atsScore');
+// Centralized view management
+const VIEWS = {
+    MAIN: 'MainForm',
+    AI_SETTINGS: 'AISettingsForm',
+    LOGIN: 'LoginForm',
+    JOB_SAVE: 'JobSaveForm',
+    ATS_SCORE: 'atsScore'
+};
 
-    AISettingsForm.classList.toggle('hidden');
-    mainForm.classList.toggle('hidden');
-    atsScore.classList.add('hidden');
+function showView(viewName) {
+    // Hide all views
+    Object.values(VIEWS).forEach(viewId => {
+        document.getElementById(viewId).classList.add('hidden');
+    });
+
+    // Hide header elements that should only show in certain views
+    const header = document.getElementById('header');
+    const history = document.getElementById('history');
+    
+    if (viewName === VIEWS.ATS_SCORE) {
+        header.classList.add('hidden');
+        history.classList.remove('hidden');
+    } else {
+        header.classList.remove('hidden');
+        history.classList.add('hidden');
+    }
+
+    // Show the requested view
+    document.getElementById(viewName).classList.remove('hidden');
+}
+
+function toggleAISettings() {
+    const aiSettingsForm = document.getElementById('AISettingsForm');
+    
+    if (aiSettingsForm.classList.contains('hidden')) {
+        // Show AI settings
+        showView(VIEWS.AI_SETTINGS);
+    } else {
+        // Go back to main form
+        showView(VIEWS.MAIN);
+    }
 }
 
 function toggleATSResul() {
-    const mainForm = document.getElementById('MainForm');
     const atsScore = document.getElementById('atsScore');
-    const header = document.getElementById('header');
-    const history = document.getElementById('history');
+    
+    if (atsScore.classList.contains('hidden')) {
+        // Show ATS score
+        showView(VIEWS.ATS_SCORE);
+    } else {
+        // Go back to main form
+        showView(VIEWS.MAIN);
+    }
+}
 
-    mainForm.classList.toggle('hidden');
-    atsScore.classList.toggle('hidden');
-    header.classList.toggle('hidden');
-    history.classList.toggle('hidden');
+function toggleLoginForm() {
+    const loginForm = document.getElementById('LoginForm');
+    
+    if (loginForm.classList.contains('hidden')) {
+        // Show login form
+        showView(VIEWS.LOGIN);
+    } else {
+        // Go back to main form
+        showView(VIEWS.MAIN);
+    }
 }
 
 // Function to save settings to localStorage
@@ -502,18 +549,12 @@ function showJobSaveForm() {
     document.getElementById('jobCompany').value = extracted.company;
     document.getElementById('jobPosition').value = extracted.position;
 
-    // Hide other forms and show job save form
-    document.getElementById('MainForm').classList.add('hidden');
-    document.getElementById('AISettingsForm').classList.add('hidden');
-    document.getElementById('LoginForm').classList.add('hidden');
-    document.getElementById('atsScore').classList.add('hidden');
-    document.getElementById('JobSaveForm').classList.remove('hidden');
-    hideFloatingSaveBtn();
+    // Show job save form
+    showView(VIEWS.JOB_SAVE);
 }
 
 function hideJobSaveForm() {
-    document.getElementById('JobSaveForm').classList.add('hidden');
-    document.getElementById('MainForm').classList.remove('hidden');
+    showView(VIEWS.MAIN);
 }
 
 function extractJobDetails(jobDescription) {
@@ -595,15 +636,11 @@ async function checkForPendingJobSave() {
                 document.getElementById('jobPosition').value = extracted.position;
                 
                 // Show job save form
-                document.getElementById('MainForm').classList.add('hidden');
-                document.getElementById('AISettingsForm').classList.add('hidden');
-                document.getElementById('LoginForm').classList.add('hidden');
-                document.getElementById('atsScore').classList.add('hidden');
-                document.getElementById('JobSaveForm').classList.remove('hidden');
+                showView(VIEWS.JOB_SAVE);
             } else {
                 // Show login prompt
                 showMessage('info', 'Please log in to save jobs to your dashboard.');
-                toggleLoginForm();
+                showView(VIEWS.LOGIN);
             }
         }
     } catch (error) {
