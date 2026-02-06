@@ -1001,16 +1001,47 @@ export function useTailoringStudioController() {
     }
   };
 
+  // TODO: need to be tested
   const applyExperienceSuggestion = async (suggestion) => {
-    // For experience suggestions, mark as applied
-    // Full implementation would require more sophisticated parsing
-    console.log('Experience improvement suggestion applied:', suggestion.text);
+    const experiences = resume.value.sections.experience || [];
 
-    // TODO: Implement experience section improvements
-    // This could involve:
-    // - Adding quantifiable achievements
-    // - Improving action verbs
-    // - Better formatting
+    if (!Array.isArray(experiences) || experiences.length === 0) {
+      console.log('No experience entries to improve');
+      return;
+    }
+
+    const improvedExperiences = await Promise.all(
+      experiences.map(async (exp) => {
+        if (!exp.description || exp.description.trim().length === 0) {
+          return exp; // No description to improve
+        }
+
+        const prompt = `Improve this work experience description based on the following suggestion: "${suggestion.text}". Current description: "${exp.description}"`;
+
+        try {
+          const improvedDescription = await improveTextUseCase.execute(prompt);
+          return { ...exp, description: improvedDescription };
+        } catch (error) {
+          console.error('Failed to improve experience description:', error);
+          return exp; // Return original if improvement fails
+        }
+      })
+    );
+
+    try {
+      await updateResume({
+        id: resume.value.id,
+        sections: {
+          ...resume.value.sections,
+          experience: improvedExperiences
+        }
+      });
+
+      console.log('Experience descriptions improved');
+    } catch (error) {
+      console.error('Failed to update resume with improved experience:', error);
+      throw error;
+    }
   };
 
   const applyQuantifySuggestion = async (suggestion) => {
