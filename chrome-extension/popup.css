@@ -1,17 +1,25 @@
 /* Global styles */
 * {
     box-sizing: border-box;
-    font-family: 'Arial', sans-serif;
 }
 
 body {
-    background-color: #f4f6f9;
+    background-color: #f6f6f8;
+    font-family: 'Inter', sans-serif;
     width: 350px;
+    color: #0e121b;
 }
 
 .container {
     background: #fff;
     padding: 20px;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Material Symbols */
+.material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
 }
 
 /* Header */
@@ -19,58 +27,89 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-bottom: 20px;
 }
 
-.ats-score-container{
+.header-container h2 {
+    font-weight: 700;
+    font-size: 1.125rem;
+}
+
+.ats-score-container {
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
 .input-field {
-    margin-bottom: 15px;
+    margin-bottom: 20px;
 }
 
 .input-field label {
-    font-size: 14px;
-    color: #666;
+    font-size: 0.875rem;
+    color: #4d6599;
+    font-weight: 500;
+    margin-bottom: 4px;
+    display: block;
 }
 
 .input-field input,
 .input-field select,
 .input-field textarea {
     width: 100%;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 14px;
+    padding: 10px 12px;
+    border: 1px solid #e7ebf3;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    background: #fff;
+    transition: border-color 0.2s;
+}
+
+.input-field input:focus,
+.input-field select:focus,
+.input-field textarea:focus {
+    outline: none;
+    border-color: #2463eb;
+    box-shadow: 0 0 0 3px rgba(36, 99, 235, 0.1);
 }
 
 .btn {
     width: 100%;
-    padding: 10px;
-    background-color: #5c6bc0;
+    padding: 12px;
+    background-color: #2463eb;
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 0.5rem;
     cursor: pointer;
-    margin-top: 10px;
+    font-weight: 600;
+    font-size: 0.875rem;
+    transition: background-color 0.2s;
 }
 
 .btn:hover {
-    background-color: #3f51b5;
+    background-color: #1d4ed8;
 }
 
-.settings-icon {
-    width: 25px;
-    height: 25px;
-    cursor: pointer;
+.btn.grey {
+    background-color: #6b7280;
 }
 
+.btn.grey:hover {
+    background-color: #4b5563;
+}
+
+.settings-icon,
 .back-icon {
-    width: 25px;
-    height: 25px;
+    width: 24px;
+    height: 24px;
     cursor: pointer;
+    color: #4d6599;
+    transition: color 0.2s;
+}
+
+.settings-icon:hover,
+.back-icon:hover {
+    color: #2463eb;
 }
 
 .ats-container {
@@ -78,7 +117,6 @@ body {
     align-items: center;
     justify-content: center;
     gap: 10px;
-    /* Adds space between the icon and ATS score */
 }
 
 .ats-score-circle {
@@ -91,22 +129,41 @@ body {
     text-align: center;
     font-weight: bold;
     color: white;
-    background-color: #4CAF50;
-    /* Default green for high score */
+    background-color: #10b981;
 }
 
 .ats-score-circle.low {
-    background-color: #f44336;
-    /* Red for low score */
+    background-color: #ef4444;
 }
 
 .ats-score-circle.medium {
-    background-color: #ff9800;
-    /* Orange for medium score */
+    background-color: #f59e0b;
 }
 
 .hidden {
     display: none;
+}
+
+/* Progress Ring */
+.progress-ring circle {
+    transition: stroke-dasharray 0.3s ease;
+}
+
+.progress-background {
+    stroke: #e7ebf3;
+}
+
+.progress-circle {
+    stroke: #2463eb;
+    stroke-linecap: round;
+    transform-origin: center;
+    transform: rotate(-90deg);
+}
+
+.progress-text {
+    font-weight: 700;
+    font-size: 1.125rem;
+    color: #0e121b;
 }
 
 /* Message box container */
@@ -124,12 +181,11 @@ body {
 
 /* Success message styling */
 .success-message {
-    background-color: #4CAF50;
-    /* Green */
+    background-color: #10b981;
     color: white;
-    padding: 10px;
-    border-radius: 5px;
-    font-weight: bold;
+    padding: 12px 16px;
+    border-radius: 0.5rem;
+    font-weight: 600;
     text-align: center;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     animation: slide-in 0.5s ease-out;
@@ -137,12 +193,11 @@ body {
 
 /* Error message styling */
 .error-message {
-    background-color: #f44336;
-    /* Red */
+    background-color: #ef4444;
     color: white;
-    padding: 10px;
-    border-radius: 5px;
-    font-weight: bold;
+    padding: 12px 16px;
+    border-radius: 0.5rem;
+    font-weight: 600;
     text-align: center;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     animation: slide-in 0.5s ease-out;
@@ -181,7 +236,7 @@ body {
     width: 120px;
     height: 22px;
     border-radius: 40px;
-    color: #514b82;
+    color: #2463eb;
     border: 2px solid;
     position: relative;
 }
