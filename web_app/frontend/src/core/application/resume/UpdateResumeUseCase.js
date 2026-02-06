@@ -31,7 +31,7 @@ export class UpdateResumeUseCase {
     }
 
     // Update the resume
-    const updated = await this.resumeRepository.update(command.resume);
+    const updated = await this.resumeRepository.update(command.resume.id, command.resume);
 
     return updated;
   }
