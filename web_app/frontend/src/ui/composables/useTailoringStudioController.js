@@ -633,15 +633,6 @@ export function useTailoringStudioController() {
   const switchSection = async (section) => {
     activeSection.value = section;
 
-    // Auto-generate suggestions when switching to suggestions tab
-    if (section === 'suggestions' && suggestions.value.length === 0 && job.value?.jobDescription && resume.value && !isGeneratingSuggestions.value) {
-      try {
-        await generateSuggestions();
-      } catch (err) {
-        console.error('Failed to auto-generate suggestions:', err);
-      }
-    }
-
     // Auto-calculate ATS score when switching to analysis tab
     if (section === 'analysis' && !atsScore.value && job.value?.jobDescription && resume.value && !isCalculatingAts.value) {
       try {
