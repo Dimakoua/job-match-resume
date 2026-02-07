@@ -2,7 +2,7 @@
   <!-- Summary -->
   <div v-if="resume.summary && isSectionVisible('summary')" :style="{ marginBottom: `${layout.sectionSpacing}px` }">
     <h3 :class="classes.sectionHeaderClass" :style="classes.sectionHeaderStyle">Profile</h3>
-    <p :style="bodyStyle" :class="classes.bodyTextClass">{{ resume.summary }}</p>
+    <p :style="{ ...bodyStyle, whiteSpace: 'pre-wrap' }" :class="classes.bodyTextClass">{{ resume.summary }}</p>
   </div>
 
   <!-- Experience -->
@@ -47,7 +47,7 @@
             <li v-for="line in exp.description.split('\n')" :key="line">{{ line }}</li>
           </ul>
         </span>
-        <span v-else>{{ exp.description }}</span>
+        <span v-else :style="{ whiteSpace: 'pre-wrap' }">{{ exp.description }}</span>
       </p>
       <p v-if="layout.template === 'technical'" class="text-[11px] font-mono font-medium text-blue-600">
         <span class="font-bold uppercase mr-1">Technologies used:</span> {{ exp.technologies || 'Not specified' }}
