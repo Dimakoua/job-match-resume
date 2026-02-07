@@ -95,9 +95,9 @@
     </div>
 
     <!-- AI Enhancement Modal -->
-    <div v-if="aiModal.show" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-lg w-full mx-4 overflow-hidden">
-        <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+    <div v-if="aiModal.show" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+      <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-hidden flex flex-col">
+        <div class="p-6 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
           <div class="flex items-center gap-3">
             <div class="h-10 w-10 rounded-full bg-violet-100 dark:bg-violet-900 flex items-center justify-center">
               <svg xmlns="http://www.w3.org/2000/svg" class="size-5 text-violet-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -112,7 +112,7 @@
             </div>
           </div>
         </div>
-        <div class="p-6">
+        <div class="flex-1 overflow-y-auto p-6">
           <div v-if="aiModal.loading" class="flex flex-col items-center py-8">
             <div class="h-8 w-8 border-2 border-violet-600 border-t-transparent rounded-full animate-spin mb-4"></div>
             <p class="text-sm text-gray-500">AI is enhancing your content...</p>
@@ -130,7 +130,7 @@
             <div v-else class="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg text-sm leading-relaxed mb-4">
               {{ aiModal.result }}
             </div>
-            <div class="flex gap-3">
+            <div class="flex gap-3 flex-shrink-0">
               <button 
                 @click="applyAiEnhancement"
                 class="flex-1 px-4 py-2.5 bg-violet-600 text-white rounded-lg text-sm font-semibold hover:bg-violet-700 transition-colors"
