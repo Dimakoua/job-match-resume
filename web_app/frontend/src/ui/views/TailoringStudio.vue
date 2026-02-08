@@ -254,7 +254,7 @@
                         lineHeight: 1.4, 
                         accentColor: '#2463eb' 
                       }"
-                      :sections="[]"
+                      :sections="defaultSections"
                       :keywordsToHighlight="atsJobKeywords"
                     />
                   </div>
@@ -1116,6 +1116,7 @@ const {
   activeSection,
   atsScorePercent,
   resumePreviewData,
+  defaultSections,
   generationSettings,
   userResumes,
   isLoadingResumes,

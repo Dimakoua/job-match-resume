@@ -573,6 +573,16 @@ export function useTailoringStudioController() {
     };
   });
 
+  const defaultSections = computed(() => {
+    // If resume has visibleSections config, use it
+    if (resume.value?.sections?.visibleSections && Array.isArray(resume.value.sections.visibleSections)) {
+      return resume.value.sections.visibleSections;
+    }
+    
+    // Otherwise, default to showing all sections
+    return [];
+  });
+
   // ===== Methods =====
   const loadApplication = async () => {
     if (!applicationIdRef?.value || applicationIdRef.value === 'undefined') return;
@@ -1661,6 +1671,7 @@ export function useTailoringStudioController() {
     atsScorePercent,
     displaySections,
     resumePreviewData,
+    defaultSections,
 
     // ATS Analysis
     atsMatchedKeywords,
