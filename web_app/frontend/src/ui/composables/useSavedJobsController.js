@@ -58,6 +58,7 @@ export function useSavedJobsController(selectedListIdRef = null) {
     { key: 'recent', label: 'Recently Added' },
     { key: 'saved', label: 'Saved' },
     { key: 'applied', label: 'Applied' },
+    { key: 'interviewing', label: 'Interviewing' },
   ]);
 
   const filteredJobs = computed(() => {
@@ -83,6 +84,8 @@ export function useSavedJobsController(selectedListIdRef = null) {
       filtered = filtered.filter(job => job.status === 'saved');
     } else if (activeFilter.value === 'applied') {
       filtered = filtered.filter(job => job.status === 'applied');
+    } else if (activeFilter.value === 'interviewing') {
+      filtered = filtered.filter(job => job.status === 'interviewing');
     }
 
     return filtered;
