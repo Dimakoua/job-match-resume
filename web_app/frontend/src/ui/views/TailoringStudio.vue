@@ -552,11 +552,11 @@
                   </h3>
                   <div class="flex gap-4">
                     <div class="flex items-center gap-2">
-                      <div class="size-2 rounded-full bg-success"></div>
+                      <div class="size-2 rounded-full bg-green-500"></div>
                       <span class="text-[10px] font-medium">Matched</span>
                     </div>
                     <div class="flex items-center gap-2">
-                      <div class="size-2 rounded-full bg-danger"></div>
+                      <div class="size-2 rounded-full bg-red-500"></div>
                       <span class="text-[10px] font-medium">Missing</span>
                     </div>
                   </div>
@@ -567,9 +567,9 @@
                       <span class="text-xs font-bold uppercase tracking-wider text-[#4d6599]">Required Keywords (Job Description)</span>
                     </div>
                     <div class="p-6 space-y-4">
-                      <div v-for="keyword in atsJobKeywords" :key="keyword" class="flex items-center justify-between p-3 rounded-lg border" :class="atsMatchedKeywords.includes(keyword) ? 'border-success/20 bg-success/5' : 'border-danger/20 bg-danger/5'">
-                        <span class="text-sm font-medium">{{ keyword }}</span>
-                        <span class="material-symbols-outlined" :class="atsMatchedKeywords.includes(keyword) ? 'text-success' : 'text-danger'">{{ atsMatchedKeywords.includes(keyword) ? 'check_circle' : 'cancel' }}</span>
+                      <div v-for="keyword in atsJobKeywords" :key="keyword" class="flex items-center justify-between p-3 rounded-lg border" :class="atsMatchedKeywords.includes(keyword) ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'">
+                        <span class="text-sm font-medium" :class="atsMatchedKeywords.includes(keyword) ? 'text-green-600' : 'text-red-600'">{{ keyword }}</span>
+                        <span class="material-symbols-outlined" :class="atsMatchedKeywords.includes(keyword) ? 'text-green-600' : 'text-red-600'">{{ atsMatchedKeywords.includes(keyword) ? 'check_circle' : 'cancel' }}</span>
                       </div>
                     </div>
                   </div>
@@ -579,9 +579,9 @@
                     </div>
                     <div class="p-6 space-y-4">
                       <div v-for="keyword in atsJobKeywords" :key="keyword + '-presence'" class="flex items-center justify-between p-3">
-                        <span class="text-sm" v-if="atsMatchedKeywords.includes(keyword)">Found in <span class="font-bold">Experience, Skills</span></span>
-                        <span class="text-sm text-danger italic" v-else>Not found in any section</span>
-                        <span class="text-xs font-bold" :class="atsMatchedKeywords.includes(keyword) ? 'text-success' : 'text-danger'">{{ atsMatchedKeywords.includes(keyword) ? '1 Occurrence' : '0 Occurrences' }}</span>
+                        <span class="text-sm text-green-600" v-if="atsMatchedKeywords.includes(keyword)">Found in <span class="font-bold">Experience, Skills</span></span>
+                        <span class="text-sm text-red-600 italic" v-else>Not found in any section</span>
+                        <span class="text-xs font-bold" :class="atsMatchedKeywords.includes(keyword) ? 'text-green-600' : 'text-red-600'">{{ atsMatchedKeywords.includes(keyword) ? '1 Occurrence' : '0 Occurrences' }}</span>
                       </div>
                     </div>
                   </div>
@@ -589,7 +589,7 @@
               </div>
               <div class="bg-white dark:bg-background-dark border border-[#e7ebf3] dark:border-white/10 rounded-xl p-6 shadow-sm">
                 <div class="flex items-center gap-3 mb-6">
-                  <div class="p-2 bg-danger/10 text-danger rounded-lg">
+                  <div class="p-2 bg-red-100 text-red-600 rounded-lg">
                     <span class="material-symbols-outlined">report</span>
                   </div>
                   <div>
