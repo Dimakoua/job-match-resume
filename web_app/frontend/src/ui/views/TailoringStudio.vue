@@ -234,7 +234,7 @@
                     <span v-if="resume?.title" class="text-[10px] text-[#4d6599] italic">{{ resume.title }}</span>
                   </div>
                 </div>
-                <div class="p-8 overflow-y-auto bg-gray-50 dark:bg-background-dark/30 flex-1">
+                <div class="p-2 overflow-y-auto bg-gray-50 dark:bg-background-dark/30 flex-1">
                   <!-- Resume Content -->
                   <div v-if="isLoadingResume" class="flex items-center justify-center h-full">
                     <p class="text-gray-400">Loading resume...</p>
