@@ -37,7 +37,7 @@ export class ClassicTemplate {
       const headerText = text.charAt(0).toUpperCase() + text.slice(1); // Capitalize first letter only
       return new Paragraph({
         text: headerText,
-        spacing: { before: 150, after: 100 },
+        spacing: { before: 50, after: 100 },
         alignment: AlignmentType.CENTER,
         run: {
           font: headingFontFamily,

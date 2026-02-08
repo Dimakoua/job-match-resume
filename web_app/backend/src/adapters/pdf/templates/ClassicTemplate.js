@@ -339,7 +339,7 @@ export class ClassicTemplate {
         currentY -= 10;
       }
 
-      currentY -= 20; // Space between sections
+      currentY -= 5; // Space between sections
     }
 
     // Save and return PDF
