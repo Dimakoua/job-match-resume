@@ -51,6 +51,11 @@
               <span class="material-symbols-outlined text-xl">auto_fix_high</span>
               <p class="text-sm font-medium">AI Suggestions</p>
             </button>
+            <button @click="switchSection('notes')"
+              :class="['flex items-center gap-3 px-3 py-2 rounded-lg transition-colors', activeSection === 'notes' ? 'bg-primary/10 text-primary' : 'hover:bg-primary/10']">
+              <span class="material-symbols-outlined text-xl">note</span>
+              <p class="text-sm font-medium">Notes</p>
+            </button>
             <button @click="switchSection('analysis')"
               :class="['flex items-center gap-3 px-3 py-2 rounded-lg transition-colors', activeSection === 'analysis' ? 'bg-primary/10 text-primary' : 'hover:bg-primary/10']">
               <span class="material-symbols-outlined text-xl">analytics</span>
@@ -180,17 +185,6 @@
                       @submit="handleJobFormSubmit"
                       @cancel="cancelEditingJob"
                     />
-                  </div>
-
-                  <!-- Application Notes -->
-                  <div v-if="job.notes && !isEditingJob">
-                    <h3 class="text-md font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-                      <span class="material-symbols-outlined text-lg">note</span>
-                      Application Notes
-                    </h3>
-                    <div class="bg-gray-50 dark:bg-background-dark/50 rounded-lg p-4">
-                      <p class="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{{ job.notes }}</p>
-                    </div>
                   </div>
 
 
@@ -391,6 +385,114 @@
                           Click "Apply Suggestion" to mark recommendations as implemented, or switch to the Editor tab to manually incorporate changes.
                           Each suggestion is tailored to improve your ATS score and job match potential.
                         </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Notes Section -->
+            <div v-if="activeSection === 'notes'" class="bg-white dark:bg-background-dark/50 border border-[#e7ebf3] dark:border-white/10 rounded-xl flex flex-col overflow-hidden">
+              <div class="p-6 border-b border-[#e7ebf3] dark:border-white/10">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <h3 class="text-lg font-bold flex items-center gap-2">
+                      <span class="material-symbols-outlined text-xl">note</span>
+                      Application Notes
+                    </h3>
+                    <p class="text-sm text-[#4d6599] dark:text-gray-400 mt-1">Keep track of interview details, follow-ups, and important information</p>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-[10px] font-bold px-2 py-1 bg-blue-100 text-blue-800 rounded uppercase">Notes</span>
+                  </div>
+                </div>
+              </div>
+              <div class="flex-1 p-6 overflow-y-auto">
+                <div class="max-w-4xl">
+                  <!-- Notes Header -->
+                  <div class="mb-6">
+                    <div class="flex items-center justify-between mb-4">
+                      <h4 class="text-md font-semibold text-gray-900 dark:text-white">Application Notes</h4>
+                      <button v-if="!isEditingNotes" @click="startEditingNotes"
+                        class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-primary bg-primary/10 hover:bg-primary/20 rounded-lg transition-colors">
+                        <span class="material-symbols-outlined text-sm">{{ job.notes ? 'edit' : 'add' }}</span>
+                        {{ job.notes ? 'Edit Notes' : 'Add Notes' }}
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Notes Display -->
+                  <div v-if="!isEditingNotes" class="bg-gray-50 dark:bg-background-dark/50 rounded-lg p-6 min-h-64">
+                    <div v-if="job.notes" class="prose prose-sm dark:prose-invert max-w-none">
+                      <p class="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">{{ job.notes }}</p>
+                    </div>
+                    <div v-else class="text-center py-12">
+                      <span class="material-symbols-outlined text-4xl text-gray-300 mb-4">note</span>
+                      <h4 class="text-lg font-medium text-gray-900 dark:text-white mb-2">No Notes Yet</h4>
+                      <p class="text-sm text-gray-500 dark:text-gray-400 mb-6 max-w-md mx-auto">
+                        Add notes to keep track of interview details, follow-up actions, contact information, and other important information about this job application.
+                      </p>
+                      <button @click="startEditingNotes"
+                        class="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white text-sm font-medium rounded-lg hover:bg-primary/90 transition-colors">
+                        <span class="material-symbols-outlined text-sm">add</span>
+                        Add Your First Note
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Notes Editing -->
+                  <div v-else class="bg-gray-50 dark:bg-background-dark/50 rounded-lg p-6">
+                    <div class="mb-4">
+                      <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">Application Notes</label>
+                      <p class="text-xs text-gray-500 dark:text-gray-400">Use this space to track interview details, follow-up actions, contact information, and any other relevant notes.</p>
+                    </div>
+                    <textarea
+                      v-model="editedNotes"
+                      placeholder="Example:
+• Interview scheduled for [date/time]
+• Contact: [name] - [email/phone]
+• Key requirements discussed: [list]
+• Follow-up needed: [action items]
+• Personal notes: [additional thoughts]"
+                      class="w-full min-h-80 p-4 border border-gray-200 dark:border-white/10 rounded-lg bg-white dark:bg-background-dark text-gray-900 dark:text-white text-sm resize-vertical focus:ring-2 focus:ring-primary focus:border-transparent"
+                      maxlength="2000"
+                    ></textarea>
+                    <div class="flex items-center justify-between mt-4">
+                      <div class="flex items-center gap-4">
+                        <span class="text-xs text-gray-500 dark:text-gray-400">{{ editedNotes.length }}/2000 characters</span>
+                        <div class="flex items-center gap-1 text-xs text-gray-400">
+                          <span class="material-symbols-outlined text-sm">info</span>
+                          <span>Supports line breaks and formatting</span>
+                        </div>
+                      </div>
+                      <div class="flex gap-2">
+                        <button @click="cancelEditingNotes"
+                          class="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 rounded-lg transition-colors">
+                          Cancel
+                        </button>
+                        <button @click="saveNotes"
+                          class="px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary/90 rounded-lg transition-colors">
+                          <span class="material-symbols-outlined text-sm mr-1">save</span>
+                          Save Notes
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Quick Tips -->
+                  <div class="mt-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                    <div class="flex items-start gap-3">
+                      <span class="material-symbols-outlined text-blue-500 mt-0.5">lightbulb</span>
+                      <div>
+                        <h4 class="text-sm font-medium text-blue-900 dark:text-blue-100 mb-1">Tips for Better Note-Taking</h4>
+                        <ul class="text-xs text-blue-700 dark:text-blue-300 space-y-1">
+                          <li>• Record interview dates, times, and interviewer names</li>
+                          <li>• Note key requirements or skills discussed</li>
+                          <li>• Track follow-up actions and deadlines</li>
+                          <li>• Include contact information for future reference</li>
+                          <li>• Add personal impressions or reminders</li>
+                        </ul>
                       </div>
                     </div>
                   </div>
@@ -801,6 +903,8 @@ const {
   userResumes,
   isLoadingResumes,
   showLinkResumeModal,
+  isEditingNotes,
+  editedNotes,
 
   // ATS Analysis
   atsMatchedKeywords,
@@ -853,7 +957,12 @@ const {
   // Job Editing Methods
   startEditingJob,
   cancelEditingJob,
-  handleJobFormSubmit
+  handleJobFormSubmit,
+
+  //Notes
+  startEditingNotes,
+  cancelEditingNotes,
+  saveNotes
 } = useTailoringStudioController();
 
 const handleEditResume = () => {

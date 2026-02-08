@@ -77,6 +77,10 @@ export function useTailoringStudioController() {
   const isEditingJob = ref(false);
   const editedJob = ref({});
 
+  // Notes editing state
+  const isEditingNotes = ref(false);
+  const editedNotes = ref('');
+
   // Load settings from localStorage if available
   const savedSettings = localStorage.getItem('generationSettings');
   if (savedSettings) {
@@ -1256,6 +1260,43 @@ export function useTailoringStudioController() {
     }
   };
 
+  // Notes Editing Methods
+  const startEditingNotes = () => {
+    if (!job.value) return;
+    isEditingNotes.value = true;
+    editedNotes.value = job.value.notes || '';
+  };
+
+  const cancelEditingNotes = () => {
+    isEditingNotes.value = false;
+    editedNotes.value = '';
+  };
+
+  const saveNotes = async () => {
+    if (!job.value) return;
+
+    try {
+      const updatedApplication = {
+        ...job.value,
+        notes: editedNotes.value.trim() || null
+      };
+
+      const result = await updateJobApplicationUseCase.execute({
+        application: updatedApplication
+      });
+
+      // Update the local job object
+      Object.assign(job.value, result);
+
+      isEditingNotes.value = false;
+      editedNotes.value = '';
+
+      console.log('Notes updated successfully');
+    } catch (error) {
+      console.error('Failed to save notes:', error);
+    }
+  };
+
   return {
     // State
     job,
@@ -1287,6 +1328,10 @@ export function useTailoringStudioController() {
     // Job editing state
     isEditingJob,
     editedJob,
+
+    // Notes editing state
+    isEditingNotes,
+    editedNotes,
 
     // Computed
     resumeText,
@@ -1340,6 +1385,11 @@ export function useTailoringStudioController() {
     // Job Editing Methods
     startEditingJob,
     cancelEditingJob,
-    handleJobFormSubmit
+    handleJobFormSubmit,
+
+    // Notes Editing Methods
+    startEditingNotes,
+    cancelEditingNotes,
+    saveNotes
   };
 }
