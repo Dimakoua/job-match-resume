@@ -1,6 +1,6 @@
 <template>
   <div
-    class="bg-white shadow-2xl rounded-sm flex flex-col text-[#222] p-4"
+    class="bg-white flex flex-col text-[#222] p-2"
     :style="previewStyle"
   >
     <ResumeHeaderClassic :resume="resume" :style="style" />
@@ -61,30 +61,31 @@ const previewStyle = computed(() => ({
   aspectRatio: '1 / 1.414',
   minWidth: '600px',
   fontFamily: fontFamilies[props.style.bodyFont],
-  padding: `${props.layout.margins}px`
+  padding: '24px 32px',
+  boxSizing: 'border-box'
 }))
 
 const classes = computed(() => ({
-  sectionHeaderClass: 'uppercase text-sm font-bold tracking-widest border-l-4 pl-4 mb-4',
-  sectionHeaderStyle: { color: props.style.accentColor, fontFamily: fontFamilies[props.style.headingFont] },
-  bodyTextClass: 'text-gray-700 whitespace-pre-wrap',
-  experienceItemClass: 'mb-4',
+  sectionHeaderClass: 'text-center font-semibold text-[12pt] mb-2',
+  sectionHeaderStyle: { fontFamily: fontFamilies[props.style.headingFont], color: '#222' },
+  bodyTextClass: 'text-gray-800 text-[10pt] whitespace-pre-wrap',
+  experienceItemClass: 'mb-2',
   experienceHeaderClass: 'flex justify-between items-baseline mb-0.5',
-  companyNameClass: 'font-bold text-xs',
-  jobTitleClass: 'text-[10px] font-semibold mb-1',
-  dateClass: 'text-[9px] text-gray-500 font-medium italic',
-  educationItemClass: 'mb-3',
+  companyNameClass: 'font-bold text-[10pt]',
+  jobTitleClass: 'italic text-[10pt] mb-1',
+  dateClass: 'text-[9pt] text-gray-500 font-medium',
+  educationItemClass: 'mb-1',
   educationHeaderClass: 'flex justify-between items-baseline',
-  schoolNameClass: 'font-bold text-xs',
-  degreeClass: 'text-[10px] font-semibold',
-  projectItemClass: 'mb-3',
+  schoolNameClass: 'font-bold text-[10pt]',
+  degreeClass: 'text-[10pt]',
+  projectItemClass: 'mb-1',
   projectHeaderClass: 'flex justify-between items-baseline mb-0.5',
-  projectNameClass: 'font-bold text-xs',
-  projectLinkClass: 'text-[9px] text-primary hover:underline font-medium',
-  certificationItemClass: 'flex justify-between items-baseline mb-1',
-  certificationNameClass: 'font-bold text-xs',
-  certificationIssuerClass: 'text-[10px] text-gray-600',
-  skillsContainerClass: 'flex flex-wrap gap-1.5',
-  skillTagClass: 'px-2 py-0.5 text-[9px] font-semibold rounded'
+  projectNameClass: 'font-bold text-[10pt]',
+  projectLinkClass: 'text-[9pt] text-primary hover:underline font-medium',
+  certificationItemClass: 'mb-1',
+  certificationNameClass: 'font-bold text-[10pt]',
+  certificationIssuerClass: 'text-[10pt] text-gray-600',
+  skillsContainerClass: 'flex flex-wrap gap-1',
+  skillTagClass: 'px-2 py-0.5 text-[9pt] font-semibold rounded'
 }))
 </script>

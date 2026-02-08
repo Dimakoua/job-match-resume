@@ -1,17 +1,16 @@
 <template>
-  <header class="border-b-2 border-double border-gray-300 pb-8 mb-8" :style="{ borderColor: style.accentColor }">
-    <div class="flex justify-between items-start">
-      <div class="max-w-[70%]">
-        <h1 class="text-4xl font-bold text-gray-900 mb-2 uppercase tracking-tight" :style="{ fontFamily: fontFamilies[style.headingFont] }">
-          {{ resume.firstName || 'Your' }} {{ resume.lastName || 'Name' }}
-        </h1>
-        <p class="text-lg italic text-gray-600" :style="{ fontFamily: fontFamilies[style.bodyFont] }" v-html="resume.title || 'Professional Title'"></p>
-      </div>
-      <div class="text-right text-xs uppercase tracking-widest text-gray-500 leading-loose" :style="contactStyle">
-        <p v-if="resume.location">{{ resume.location }}</p>
-        <p v-if="resume.phone">{{ resume.phone }}</p>
-        <p v-if="resume.email" class="lowercase">{{ resume.email }}</p>
-        <p v-if="resume.linkedin">{{ resume.linkedin }}</p>
+  <header class="pb-4 mb-4">
+    <div class="flex flex-col items-center text-center">
+      <h1 class="font-bold text-[18pt] text-gray-900 mb-1" :style="{ fontFamily: fontFamilies[style.headingFont] }">
+        {{ resume.firstName || 'Your' }} {{ resume.lastName || 'Name' }}
+      </h1>
+      <p class="text-[12pt] text-gray-700 mb-2" :style="{ fontFamily: fontFamilies[style.bodyFont] }" v-html="resume.title || 'Professional Title'"></p>
+      <div class="text-[10pt] text-gray-600 flex flex-wrap justify-center gap-2">
+        <span v-if="resume.location">{{ resume.location }}</span>
+        <span v-if="resume.phone">| {{ resume.phone }}</span>
+        <span v-if="resume.email">| {{ resume.email }}</span>
+        <span v-if="resume.github">| <a :href="resume.github" target="_blank" class="underline">GitHub</a></span>
+        <span v-if="resume.linkedin">| <a :href="resume.linkedin" target="_blank" class="underline">LinkedIn</a></span>
       </div>
     </div>
   </header>
@@ -46,7 +45,5 @@ const fontFamilies = {
   'roboto-mono': "'Roboto Mono', monospace"
 }
 
-const contactStyle = computed(() => ({
-  fontSize: `${props.style.fontSize - 1}px`
-}))
+// ...existing code...
 </script>

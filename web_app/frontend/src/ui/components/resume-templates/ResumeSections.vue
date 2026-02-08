@@ -5,12 +5,7 @@
     <div v-if="resume.summary">
       <p :style="{ ...bodyStyle, whiteSpace: 'pre-wrap' }" :class="classes.bodyTextClass" v-html="resume.summary"></p>
     </div>
-    <div v-else class="border-2 border-dashed border-gray-200 rounded-lg p-6 text-center text-gray-400">
-      <svg class="w-8 h-8 mx-auto mb-2 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-      </svg>
-      <p class="text-sm">Add a professional summary</p>
-    </div>
+    <!-- No placeholder for empty summary -->
   </div>
 
   <!-- Experience -->
@@ -63,12 +58,7 @@
         </p>
       </div>
     </div>
-    <div v-else class="border-2 border-dashed border-gray-200 rounded-lg p-6 text-center text-gray-400">
-      <svg class="w-8 h-8 mx-auto mb-2 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m8 0V8a2 2 0 01-2 2H8a2 2 0 01-2-2V6m8 0H8m0 0V4"></path>
-      </svg>
-      <p class="text-sm">Add your work experience</p>
-    </div>
+    <!-- No placeholder for empty experience -->
   </div>
 
   <!-- Education -->
@@ -102,12 +92,7 @@
         <p v-else :class="classes.degreeClass" :style="{ color: style.accentColor }" v-html="edu.degree + (edu.degree && edu.field ? ', ' : '') + edu.field"></p>
       </div>
     </div>
-    <div v-else class="border-2 border-dashed border-gray-200 rounded-lg p-6 text-center text-gray-400">
-      <svg class="w-8 h-8 mx-auto mb-2 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 14l9-5-9-5-9 5 9 5z M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path>
-      </svg>
-      <p class="text-sm">Add your educational background</p>
-    </div>
+    <!-- No placeholder for empty education -->
   </div>
 
   <!-- Projects -->
@@ -168,12 +153,7 @@
         </div>
       </div>
     </div>
-    <div v-else class="border-2 border-dashed border-gray-200 rounded-lg p-6 text-center text-gray-400">
-      <svg class="w-8 h-8 mx-auto mb-2 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-      </svg>
-      <p class="text-sm">Add your projects and achievements</p>
-    </div>
+    <!-- No placeholder for empty projects -->
   </div>
 
   <!-- Certifications -->
@@ -188,12 +168,7 @@
         <span :class="classes.dateClass">{{ cert.date }}</span>
       </div>
     </div>
-    <div v-else class="border-2 border-dashed border-gray-200 rounded-lg p-6 text-center text-gray-400">
-      <svg class="w-8 h-8 mx-auto mb-2 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-      </svg>
-      <p class="text-sm">Add your certifications and credentials</p>
-    </div>
+    <!-- No placeholder for empty certifications -->
   </div>
 
   <!-- Skills -->
@@ -250,12 +225,7 @@
         ></span>
       </div>
     </div>
-    <div v-else class="border-2 border-dashed border-gray-200 rounded-lg p-6 text-center text-gray-400">
-      <svg class="w-8 h-8 mx-auto mb-2 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-      </svg>
-      <p class="text-sm">Add your skills and expertise</p>
-    </div>
+    <!-- No placeholder for empty skills -->
   </div>
 
   <!-- Custom Sections -->
