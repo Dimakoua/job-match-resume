@@ -5,7 +5,7 @@
         <h1 class="text-4xl font-bold text-gray-900 mb-2 uppercase tracking-tight" :style="{ fontFamily: fontFamilies[style.headingFont] }">
           {{ resume.firstName || 'Your' }} {{ resume.lastName || 'Name' }}
         </h1>
-        <p class="text-lg italic text-gray-600" :style="{ fontFamily: fontFamilies[style.bodyFont] }">{{ resume.title || 'Professional Title' }}</p>
+        <p class="text-lg italic text-gray-600" :style="{ fontFamily: fontFamilies[style.bodyFont] }" v-html="resume.title || 'Professional Title'"></p>
       </div>
       <div class="text-right text-xs uppercase tracking-widest text-gray-500 leading-loose" :style="contactStyle">
         <p v-if="resume.location">{{ resume.location }}</p>

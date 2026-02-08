@@ -253,6 +253,7 @@
                         accentColor: '#2463eb' 
                       }"
                       :sections="[]"
+                      :keywordsToHighlight="atsJobKeywords"
                     />
                   </div>
                   <div v-else class="flex items-center justify-center h-full">

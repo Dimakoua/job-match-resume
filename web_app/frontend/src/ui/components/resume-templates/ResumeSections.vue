@@ -2,7 +2,7 @@
   <!-- Summary -->
   <div v-if="resume.summary && isSectionVisible('summary')" :style="{ marginBottom: `${layout.sectionSpacing}px` }">
     <h3 :class="classes.sectionHeaderClass" :style="classes.sectionHeaderStyle">Profile</h3>
-    <p :style="{ ...bodyStyle, whiteSpace: 'pre-wrap' }" :class="classes.bodyTextClass">{{ resume.summary }}</p>
+    <p :style="{ ...bodyStyle, whiteSpace: 'pre-wrap' }" :class="classes.bodyTextClass" v-html="resume.summary"></p>
   </div>
 
   <!-- Experience -->
@@ -34,20 +34,20 @@
           {{ exp.startDate }}{{ exp.startDate && exp.endDate ? ' — ' : '' }}{{ exp.endDate }}
         </span>
       </div>
-      <p v-if="exp.title && layout.template !== 'creative' && layout.template !== 'technical'" :class="classes.jobTitleClass" :style="{ color: style.accentColor }">{{ exp.title }}</p>
+      <p v-if="exp.title && layout.template !== 'creative' && layout.template !== 'technical'" :class="classes.jobTitleClass" :style="{ color: style.accentColor }" v-html="exp.title"></p>
       <p v-if="exp.title && layout.template === 'creative'" :class="classes.jobTitleClass">{{ exp.company }}</p>
       <p v-if="exp.description" :style="bodyStyle" :class="classes.bodyTextClass">
         <span v-if="layout.template === 'technical'">
           <ul class="list-disc list-inside space-y-1">
-            <li v-for="line in exp.description.split('\n')" :key="line">{{ line }}</li>
+            <li v-for="line in exp.description.split('\n')" :key="line" v-html="line"></li>
           </ul>
         </span>
         <span v-else-if="layout.template === 'creative'">
           <ul class="font-serif space-y-2 text-sm leading-relaxed list-disc ml-4">
-            <li v-for="line in exp.description.split('\n')" :key="line">{{ line }}</li>
+            <li v-for="line in exp.description.split('\n')" :key="line" v-html="line"></li>
           </ul>
         </span>
-        <span v-else :style="{ whiteSpace: 'pre-wrap' }">{{ exp.description }}</span>
+        <span v-else :style="{ whiteSpace: 'pre-wrap' }" v-html="exp.description"></span>
       </p>
       <p v-if="layout.template === 'technical'" class="text-[11px] font-mono font-medium text-blue-600">
         <span class="font-bold uppercase mr-1">Technologies used:</span> {{ exp.technologies || 'Not specified' }}
@@ -71,22 +71,18 @@
     </h3>
     <div v-for="(edu, index) in resume.education" :key="index" :class="educationItemClass">
       <div :class="educationHeaderClass">
-        <h4 v-if="layout.template === 'academic'" :class="classes.schoolNameClass">{{ edu.school }}</h4>
-        <h4 v-else-if="layout.template === 'creative'" :class="classes.schoolNameClass">{{ edu.degree }} {{ edu.field }}</h4>
-        <h4 v-else-if="layout.template === 'technical'" :class="classes.schoolNameClass">{{ edu.degree }} {{ edu.field }} | {{ edu.school }}</h4>
-        <h4 v-else :class="classes.schoolNameClass">{{ edu.school }}</h4>
+        <h4 v-if="layout.template === 'academic'" :class="classes.schoolNameClass" v-html="edu.school"></h4>
+        <h4 v-else-if="layout.template === 'creative'" :class="classes.schoolNameClass" v-html="edu.degree + ' ' + edu.field"></h4>
+        <h4 v-else-if="layout.template === 'technical'" :class="classes.schoolNameClass" v-html="edu.degree + ' ' + edu.field + ' | ' + edu.school"></h4>
+        <h4 v-else :class="classes.schoolNameClass" v-html="edu.school"></h4>
         <span :class="classes.dateClass">
           {{ edu.startDate }}{{ edu.startDate && edu.endDate ? ' — ' : '' }}{{ edu.endDate }}
         </span>
       </div>
-      <p v-if="layout.template === 'academic'" :class="classes.degreeClass">
-        {{ edu.degree }}{{ edu.degree && edu.field ? ', ' : '' }}{{ edu.field }}
-      </p>
-      <p v-else-if="layout.template === 'creative'" :class="classes.degreeClass">{{ edu.school }}</p>
-      <p v-if="layout.template === 'technical'" :class="classes.degreeClass">{{ edu.coursework || 'Coursework not specified' }}</p>
-      <p v-else :class="classes.degreeClass" :style="{ color: style.accentColor }">
-        {{ edu.degree }}{{ edu.degree && edu.field ? ', ' : '' }}{{ edu.field }}
-      </p>
+      <p v-if="layout.template === 'academic'" :class="classes.degreeClass" v-html="edu.degree + (edu.degree && edu.field ? ', ' : '') + edu.field"></p>
+      <p v-else-if="layout.template === 'creative'" :class="classes.degreeClass" v-html="edu.school"></p>
+      <p v-if="layout.template === 'technical'" :class="classes.degreeClass" v-html="edu.coursework || 'Coursework not specified'"></p>
+      <p v-else :class="classes.degreeClass" :style="{ color: style.accentColor }" v-html="edu.degree + (edu.degree && edu.field ? ', ' : '') + edu.field"></p>
     </div>
   </div>
 
@@ -123,7 +119,7 @@
       >
         <h4 :class="classes.projectNameClass">{{ project.name }}</h4>
         <p v-if="project.link" :class="projectLinkClass">Link</p>
-        <p class="text-xs text-slate-600 leading-snug">{{ project.description }}</p>
+        <p class="text-xs text-slate-600 leading-snug" v-html="project.description"></p>
       </div>
     </div>
     <div v-else-if="layout.template === 'technical'" class="grid grid-cols-2 gap-6">
@@ -133,7 +129,7 @@
         :class="classes.projectItemClass"
       >
         <h3 :class="classes.projectNameClass">{{ project.name }}</h3>
-        <p :class="classes.projectLinkClass">{{ project.description }}</p>
+        <p :class="classes.projectLinkClass" v-html="project.description"></p>
         <p v-if="project.technologies" class="text-[10px] font-mono text-blue-600">{{ project.technologies }}</p>
       </div>
     </div>
@@ -143,7 +139,7 @@
           <h4 :class="classes.projectNameClass">{{ project.name }}</h4>
           <a v-if="project.link" :href="project.link" target="_blank" :class="classes.projectLinkClass">Link</a>
         </div>
-        <p v-if="project.description" :style="bodyStyle" :class="classes.bodyTextClass">{{ project.description }}</p>
+        <p v-if="project.description" :style="bodyStyle" :class="classes.bodyTextClass" v-html="project.description"></p>
       </div>
     </div>
   </div>
@@ -170,22 +166,22 @@
     <div v-if="layout.template === 'technical'" :class="classes.skillsContainerClass">
       <div>
         <h3 class="text-[11px] font-bold text-slate-900 uppercase">Languages</h3>
-        <p class="text-sm mt-1">{{ resume.skills.slice(0, 4).join(', ') }}</p>
+        <p class="text-sm mt-1" v-html="resume.skills.slice(0, 4).join(', ')"></p>
       </div>
       <div>
         <h3 class="text-[11px] font-bold text-slate-900 uppercase">Frameworks</h3>
-        <p class="text-sm mt-1">{{ resume.skills.slice(4, 8).join(', ') }}</p>
+        <p class="text-sm mt-1" v-html="resume.skills.slice(4, 8).join(', ')"></p>
       </div>
       <div>
         <h3 class="text-[11px] font-bold text-slate-900 uppercase">Tools & Infra</h3>
-        <p class="text-sm mt-1">{{ resume.skills.slice(8, 12).join(', ') }}</p>
+        <p class="text-sm mt-1" v-html="resume.skills.slice(8, 12).join(', ')"></p>
       </div>
     </div>
     <div v-else-if="layout.template === 'creative'" :class="classes.skillsContainerClass">
       <div class="space-y-4">
         <div v-for="skill in resume.skills.slice(0, Math.min(3, resume.skills.length))" :key="skill.name || skill">
           <div class="flex justify-between mb-1">
-            <span class="text-xs font-bold text-slate-700">{{ skill.name || skill }}</span>
+            <span class="text-xs font-bold text-slate-700" v-html="skill.name || skill"></span>
             <span class="text-xs font-bold text-primary">{{ skill.level || '85%' }}</span>
           </div>
           <div class="w-full bg-slate-200 rounded-full h-1.5">
@@ -204,14 +200,13 @@
       </div>
     </div>
     <div v-else :class="classes.skillsContainerClass">
-      <span
+        <span
         v-for="(skill, index) in resume.skills"
         :key="index"
         :class="classes.skillTagClass"
         :style="{ backgroundColor: style.accentColor + '15', color: style.accentColor }"
-      >
-        {{ skill }}
-      </span>
+        v-html="skill"
+      ></span>
     </div>
   </div>
 

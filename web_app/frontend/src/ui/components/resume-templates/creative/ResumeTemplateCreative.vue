@@ -95,16 +95,12 @@
             <div class="absolute -left-[9px] top-0 size-4 bg-primary rounded-full ring-4 ring-white"></div>
             <div class="flex flex-wrap justify-between items-start mb-2">
               <div>
-                <h4 class="text-lg font-bold text-slate-900 leading-tight">{{ exp.title }}</h4>
-                <p class="text-primary font-semibold text-sm">{{ exp.company }}</p>
+                <h4 class="text-lg font-bold text-slate-900 leading-tight" v-html="exp.title"></h4>
+                <p class="text-primary font-semibold text-sm" v-html="exp.company"></p>
               </div>
-              <span class="text-xs font-bold bg-slate-100 px-3 py-1 rounded text-slate-500">
-                {{ exp.startDate }}{{ exp.startDate && exp.endDate ? ' — ' : '' }}{{ exp.endDate }}
-              </span>
+              <span class="text-xs font-bold bg-slate-100 px-3 py-1 rounded text-slate-500" v-html="exp.startDate + (exp.startDate && exp.endDate ? ' — ' : '') + exp.endDate"></span>
             </div>
-            <p v-if="exp.description" class="font-serif text-slate-600 space-y-2 text-sm leading-relaxed">
-              {{ exp.description }}
-            </p>
+            <p v-if="exp.description" class="font-serif text-slate-600 space-y-2 text-sm leading-relaxed" v-html="exp.description"></p>
           </div>
         </div>
       </section>

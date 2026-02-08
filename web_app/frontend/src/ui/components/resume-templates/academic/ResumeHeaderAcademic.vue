@@ -2,7 +2,7 @@
   <section class="text-center mb-10">
     <h1 class="text-3xl font-bold uppercase tracking-widest mb-2">{{ resume.firstName }} {{ resume.lastName }}</h1>
     <div class="text-sm italic leading-relaxed">
-      <p v-if="resume.title">{{ resume.title }}</p>
+      <p v-if="resume.title" v-html="resume.title"></p>
       <p v-if="resume.location">{{ resume.location }}</p>
       <p v-if="resume.email || resume.phone || resume.linkedin || resume.website" class="mt-2">
         <span v-if="resume.email">{{ resume.email }}</span>

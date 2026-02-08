@@ -3,7 +3,7 @@
     <h1 class="text-3xl font-bold tracking-tight mb-1" :style="{ fontFamily: fontFamilies[style.headingFont], color: style.accentColor }">
       {{ resume.firstName || 'Your' }} {{ resume.lastName || 'Name' }}
     </h1>
-    <p class="text-lg font-semibold text-gray-700 mb-2">{{ resume.title || 'Professional Title' }}</p>
+    <p class="text-lg font-semibold text-gray-700 mb-2" v-html="resume.title || 'Professional Title'"></p>
     <div class="flex flex-wrap gap-3 text-gray-500 border-b pb-4 border-gray-200" :style="contactStyle">
       <span v-if="resume.email">{{ resume.email }}</span>
       <span v-if="resume.phone">• {{ resume.phone }}</span>

@@ -52,16 +52,14 @@
         class="flex flex-col gap-2"
       >
         <div class="flex justify-between items-baseline">
-          <h3 class="font-bold text-base resume-header uppercase">{{ exp.title }} | {{ exp.company }}</h3>
-          <span class="resume-header text-sm font-medium">
-            {{ exp.startDate }}{{ exp.startDate && exp.endDate ? ' — ' : '' }}{{ exp.endDate }}
-          </span>
+          <h3 class="font-bold text-base resume-header uppercase" v-html="exp.title + ' | ' + exp.company"></h3>
+          <span class="resume-header text-sm font-medium" v-html="exp.startDate + (exp.startDate && exp.endDate ? ' — ' : '') + exp.endDate"></span>
         </div>
         <ul v-if="exp.description" class="list-disc list-inside text-sm text-slate-700 space-y-1">
-          <li v-for="line in exp.description.split('\n')" :key="line">{{ line }}</li>
+          <li v-for="line in exp.description.split('\n')" :key="line" v-html="line"></li>
         </ul>
         <p v-if="exp.technologies" class="text-[11px] font-mono font-medium text-blue-600">
-          <span class="font-bold uppercase mr-1">Technologies used:</span> {{ exp.technologies }}
+          <span class="font-bold uppercase mr-1">Technologies used:</span> <span v-html="exp.technologies"></span>
         </p>
       </div>
     </section>
