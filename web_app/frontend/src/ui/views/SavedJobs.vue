@@ -75,7 +75,7 @@
                         </button>
                     </div>
                     <!-- Job Grid -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-8">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-8">
                         <div v-for="job in filteredJobs" :key="job.id"
                             class="flex flex-col gap-4 p-5 bg-white dark:bg-gray-800 rounded-xl border border-[#e7ebf3] dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
                             @click="openTailoringStudio(job)">
