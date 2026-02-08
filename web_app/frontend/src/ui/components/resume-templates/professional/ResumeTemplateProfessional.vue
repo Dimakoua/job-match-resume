@@ -4,7 +4,7 @@
     :style="previewStyle"
   >
     <ResumeHeaderProfessional :resume="resume" :style="style" />
-    <ResumeSections
+    <ProfessionalResumeSections
       :resume="resume"
       :layout="layout"
       :style="style"
@@ -17,7 +17,7 @@
 <script setup>
 import { computed } from 'vue'
 import ResumeHeaderProfessional from './ResumeHeaderProfessional.vue'
-import ResumeSections from '../ResumeSections.vue'
+import ProfessionalResumeSections from './ProfessionalResumeSections.vue'
 
 const props = defineProps({
   resume: {

@@ -4,7 +4,7 @@
     :style="previewStyle"
   >
     <ResumeHeaderModern :resume="resume" :style="style" />
-    <ResumeSections
+    <ModernResumeSections
       :resume="resume"
       :layout="layout"
       :style="style"
@@ -17,7 +17,7 @@
 <script setup>
 import { computed } from 'vue'
 import ResumeHeaderModern from './ResumeHeaderModern.vue'
-import ResumeSections from '../ResumeSections.vue'
+import ModernResumeSections from './ModernResumeSections.vue'
 
 const props = defineProps({
   resume: {

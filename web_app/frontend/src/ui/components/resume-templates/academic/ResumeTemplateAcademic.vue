@@ -8,7 +8,7 @@
     />
 
     <!-- Sections -->
-    <ResumeSections
+    <AcademicResumeSections
       :resume="resume"
       :style="style"
       :layout="layout"
@@ -21,7 +21,7 @@
 <script setup>
 import { computed } from 'vue'
 import ResumeHeaderAcademic from './ResumeHeaderAcademic.vue'
-import ResumeSections from '../ResumeSections.vue'
+import AcademicResumeSections from './AcademicResumeSections.vue'
 
 const props = defineProps({
   resume: {

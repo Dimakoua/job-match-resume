@@ -4,7 +4,7 @@
     :style="previewStyle"
   >
     <ResumeHeaderMinimal :resume="resume" :style="style" />
-    <ResumeSections
+    <MinimalResumeSections
       :resume="resume"
       :layout="layout"
       :style="style"
@@ -17,7 +17,7 @@
 <script setup>
 import { computed } from 'vue'
 import ResumeHeaderMinimal from './ResumeHeaderMinimal.vue'
-import ResumeSections from '../ResumeSections.vue'
+import MinimalResumeSections from './MinimalResumeSections.vue'
 
 const props = defineProps({
   resume: {
