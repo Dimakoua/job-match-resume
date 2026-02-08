@@ -212,16 +212,16 @@ export class ClassicTemplate {
         for (const exp of section) {
           checkNewPage(60);
 
-          // Job title, company, and date on same line
-          const titleLine = `${exp.position || ''}${exp.position && exp.company ? ' at ' : ''}${exp.company || ''}`;
+          // Company name with date on same line
+          const companyName = exp.company || '';
           const dateRange = `${exp.startDate || ''}${exp.startDate && exp.endDate ? ' — ' : ''}${exp.endDate || 'Present'}`;
           
-          if (titleLine.trim()) {
-            const titleWidth = fontBold.widthOfTextAtSize(sanitizeText(titleLine), sizes.body);
+          if (companyName.trim()) {
+            const companyWidth = fontBold.widthOfTextAtSize(sanitizeText(companyName), sizes.body);
             const dateWidth = fontItalic.widthOfTextAtSize(sanitizeText(dateRange), sizes.small);
             
-            // Draw title on the left
-            currentPage.drawText(sanitizeText(titleLine), {
+            // Draw company on the left
+            currentPage.drawText(sanitizeText(companyName), {
               x: margin,
               y: currentY,
               size: sizes.body,
@@ -238,6 +238,18 @@ export class ClassicTemplate {
               color: grayColor
             });
             
+            currentY -= sizes.body * 1.3;
+          }
+
+          // Job title on separate line
+          if (exp.title) {
+            currentPage.drawText(sanitizeText(exp.title), {
+              x: margin,
+              y: currentY,
+              size: sizes.body,
+              font: fontItalic,
+              color: textColor
+            });
             currentY -= sizes.body * 1.3;
           }
 

@@ -156,13 +156,13 @@ export class ClassicTemplate {
         );
       } else if (sectionKey === 'experience' && Array.isArray(section)) {
         for (const exp of section) {
-          // Job title and company with date on the same line
-          const titleLine = `${exp.position || ''}${exp.position && exp.company ? ' at ' : ''}${exp.company || ''}`;
+          // Company name with date on the same line
+          const companyName = exp.company || '';
           const dateRange = `${exp.startDate || ''}${exp.startDate && exp.endDate ? ' — ' : ''}${exp.endDate || 'Present'}`;
           
-          // Create a paragraph with title on left and date on right
-          const titleRun = new TextRun({
-            text: titleLine,
+          // Create a paragraph with company on left and date on right
+          const companyRun = new TextRun({
+            text: companyName,
             font: fontFamily,
             size: 20,
             bold: true,
@@ -184,8 +184,8 @@ export class ClassicTemplate {
           
           docSections.push(
             new Paragraph({
-              children: [titleRun, tabRun, dateRun],
-              spacing: { after: 100 },
+              children: [companyRun, tabRun, dateRun],
+              spacing: { after: 50 },
               tabStops: [
                 {
                   type: 'right',
@@ -194,6 +194,22 @@ export class ClassicTemplate {
               ]
             })
           );
+
+          // Job title on separate line
+          if (exp.title) {
+            docSections.push(
+              new Paragraph({
+                text: exp.title,
+                spacing: { after: 100 },
+                run: {
+                  font: fontFamily,
+                  size: 20,
+                  italics: true,
+                  color: textColor
+                }
+              })
+            );
+          }
 
           // Description
           if (exp.description) {
