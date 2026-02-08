@@ -14,12 +14,21 @@
                         </p>
                     </div>
                     <nav class="flex flex-col gap-1">
-                        <a v-for="list in jobSearchLists" :key="list.id" @click="selectList(list.id)"
-                            class="flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer"
+                        <div v-for="list in jobSearchLists" :key="list.id" class="group flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer"
                             :class="list.id === selectedListId ? 'bg-primary/10 text-primary' : 'text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-800'">
-                            <span class="material-symbols-outlined text-[20px]">folder_open</span>
-                            <p class="text-sm font-medium leading-normal">{{ list.name }}</p>
-                        </a>
+                            <a @click="selectList(list.id)" class="flex-1 flex items-center gap-3">
+                                <span class="material-symbols-outlined text-[20px]">folder_open</span>
+                                <p class="text-sm font-medium leading-normal truncate">{{ list.name }}</p>
+                            </a>
+                            <div class="opacity-0 group-hover:opacity-100 flex gap-1">
+                                <button @click.stop="openEditListModal(list)" class="p-1 rounded hover:bg-gray-300 dark:hover:bg-gray-600">
+                                    <span class="material-symbols-outlined text-sm">edit</span>
+                                </button>
+                                <button @click.stop="handleDeleteList(list.id)" class="p-1 rounded hover:bg-gray-300 dark:hover:bg-gray-600 text-red-500">
+                                    <span class="material-symbols-outlined text-sm">delete</span>
+                                </button>
+                            </div>
+                        </div>
                         <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-800"
                             href="#">
                             <span class="material-symbols-outlined text-[20px]">archive</span>
@@ -147,6 +156,51 @@
           </div>
         </div>
 
+        <!-- Edit List Modal -->
+        <div v-if="editListModal.show" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" @click="editListModal.show = false">
+          <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-md w-full" @click.stop>
+            <div class="p-6 border-b border-gray-200 dark:border-gray-800">
+              <h3 class="text-lg font-bold text-gray-900 dark:text-white">Edit Job Search List</h3>
+            </div>
+            <form @submit.prevent="handleEditListSubmit" class="p-6">
+              <div class="mb-4">
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">List Name</label>
+                <input
+                  v-model="editListModal.name"
+                  type="text"
+                  required
+                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                  placeholder="e.g., Tech Companies 2024"
+                />
+              </div>
+              <div class="mb-6">
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Description (Optional)</label>
+                <textarea
+                  v-model="editListModal.description"
+                  rows="3"
+                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                  placeholder="Brief description of this job search..."
+                ></textarea>
+              </div>
+              <div class="flex gap-3">
+                <button
+                  type="button"
+                  @click="editListModal.show = false"
+                  class="flex-1 px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  class="flex-1 px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Update List
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
 
 </div>
 </template>
@@ -180,15 +234,20 @@ const {
   searchQuery,
   activeFilter,
   createListModal,
+  editListModal,
   filters,
   filteredJobs,
   loadJobSearchLists,
   createJobSearchList,
+  updateJobSearchList,
+  deleteJobSearchList,
   loadApplications,
   updateApplicationStatus,
   getStatusClass,
   resetCreateListModal,
-  openCreateListModal
+  openCreateListModal,
+  openEditListModal,
+  resetEditListModal
 } = useSavedJobsController(selectedListId);
 
 // Methods
@@ -226,6 +285,27 @@ const handleCreateListSubmit = async () => {
     }
   } catch (err) {
     console.error('Failed to create list:', err);
+  }
+};
+
+const handleEditListSubmit = async () => {
+  try {
+    await updateJobSearchList(editListModal.value.id, editListModal.value.name, editListModal.value.description);
+    resetEditListModal();
+    await loadJobSearchLists();
+  } catch (err) {
+    console.error('Failed to update list:', err);
+  }
+};
+
+const handleDeleteList = async (listId) => {
+  if (confirm('Are you sure you want to delete this campaign? This action cannot be undone.')) {
+    try {
+      await deleteJobSearchList(listId);
+      // If the current list was deleted, the watchEffect will handle navigation
+    } catch (err) {
+      console.error('Failed to delete list:', err);
+    }
   }
 };
 

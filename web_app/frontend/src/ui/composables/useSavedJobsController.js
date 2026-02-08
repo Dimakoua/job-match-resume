@@ -8,6 +8,8 @@
 import { ref, computed } from 'vue';
 import { ListJobSearchListsUseCase } from '../../core/application/job_search_list/ListJobSearchListsUseCase.js';
 import { CreateJobSearchListUseCase } from '../../core/application/job_search_list/CreateJobSearchListUseCase.js';
+import { UpdateJobSearchListUseCase } from '../../core/application/job_search_list/UpdateJobSearchListUseCase.js';
+import { DeleteJobSearchListUseCase } from '../../core/application/job_search_list/DeleteJobSearchListUseCase.js';
 import { ListJobApplicationsUseCase } from '../../core/application/job_application/ListJobApplicationsUseCase.js';
 import { UpdateJobApplicationUseCase } from '../../core/application/job_application/UpdateJobApplicationUseCase.js';
 import { HttpJobSearchListRepository } from '../../infrastructure/api/HttpJobSearchListRepository.js';
@@ -21,6 +23,8 @@ export function useSavedJobsController(selectedListIdRef = null) {
 
   const listJobSearchListsUseCase = new ListJobSearchListsUseCase(jobSearchListRepository);
   const createJobSearchListUseCase = new CreateJobSearchListUseCase(jobSearchListRepository);
+  const updateJobSearchListUseCase = new UpdateJobSearchListUseCase(jobSearchListRepository);
+  const deleteJobSearchListUseCase = new DeleteJobSearchListUseCase(jobSearchListRepository);
   const listJobApplicationsUseCase = new ListJobApplicationsUseCase(jobApplicationRepository);
   const updateJobApplicationUseCase = new UpdateJobApplicationUseCase(jobApplicationRepository);
 
@@ -38,6 +42,12 @@ export function useSavedJobsController(selectedListIdRef = null) {
   const activeFilter = ref('all');
   const createListModal = ref({
     show: false,
+    name: '',
+    description: ''
+  });
+  const editListModal = ref({
+    show: false,
+    id: null,
     name: '',
     description: ''
   });
@@ -120,6 +130,64 @@ export function useSavedJobsController(selectedListIdRef = null) {
     }
   };
 
+  const updateJobSearchList = async (id, name, description) => {
+    try {
+      const userId = authStore.user?.id;
+      if (!userId) {
+        throw new Error('User not authenticated');
+      }
+
+      const updatedList = await updateJobSearchListUseCase.execute({
+        id,
+        userId,
+        name,
+        description
+      });
+
+      // Update local state
+      const index = jobSearchLists.value.findIndex(list => list.id === id);
+      if (index !== -1) {
+        jobSearchLists.value[index] = updatedList;
+      }
+      return updatedList;
+    } catch (err) {
+      error.value = 'Failed to update job search list. Please try again.';
+      console.error('Error updating job search list:', err);
+      throw err;
+    }
+  };
+
+  const deleteJobSearchList = async (id) => {
+    try {
+      const userId = authStore.user?.id;
+      if (!userId) {
+        throw new Error('User not authenticated');
+      }
+
+      await deleteJobSearchListUseCase.execute({
+        id,
+        userId
+      });
+
+      // Remove from local state
+      jobSearchLists.value = jobSearchLists.value.filter(list => list.id !== id);
+
+      // If the deleted list was selected, redirect to first list or default
+      if (selectedListIdRef?.value === id) {
+        const remainingLists = jobSearchLists.value;
+        if (remainingLists.length > 0) {
+          // This will be handled by the component's watchEffect
+        } else {
+          // No lists left, perhaps redirect to a default view
+        }
+      }
+    } catch (err) {
+      error.value = 'Failed to delete job search list. Please try again.';
+      console.error('Error deleting job search list:', err);
+      throw err;
+    }
+  };
+
   const loadApplications = async (listId) => {
     isLoadingApps.value = true;
     error.value = null;
@@ -197,6 +265,24 @@ export function useSavedJobsController(selectedListIdRef = null) {
     createListModal.value.show = true;
   };
 
+  const openEditListModal = (list) => {
+    editListModal.value = {
+      show: true,
+      id: list.id,
+      name: list.name,
+      description: list.description
+    };
+  };
+
+  const resetEditListModal = () => {
+    editListModal.value = {
+      show: false,
+      id: null,
+      name: '',
+      description: ''
+    };
+  };
+
   return {
     // State
     jobSearchLists,
@@ -207,6 +293,7 @@ export function useSavedJobsController(selectedListIdRef = null) {
     searchQuery,
     activeFilter,
     createListModal,
+    editListModal,
 
     // Computed
     filters,
@@ -215,11 +302,15 @@ export function useSavedJobsController(selectedListIdRef = null) {
     // Methods
     loadJobSearchLists,
     createJobSearchList,
+    updateJobSearchList,
+    deleteJobSearchList,
     loadApplications,
     loadAllApplications,
     updateApplicationStatus,
     getStatusClass,
     resetCreateListModal,
-    openCreateListModal
+    openCreateListModal,
+    openEditListModal,
+    resetEditListModal
   };
 }
