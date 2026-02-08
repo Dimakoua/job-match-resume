@@ -91,14 +91,6 @@ export function useTailoringStudioController() {
   }
 
   // ===== Computed =====
-  const jobKeywords = computed(() => {
-    if (!job.value?.jobDescription) return [];
-    // Extract keywords from job description (simple approach)
-    const words = job.value.jobDescription.toLowerCase().split(/\s+/);
-    const keywords = words.filter(w => w.length > 4);
-    return [...new Set(keywords)].slice(0, 10);
-  });
-
   const resumeText = computed(() => {
     if (!resume.value?.sections) return '';
 
@@ -1240,7 +1232,6 @@ export function useTailoringStudioController() {
     editedJob,
 
     // Computed
-    jobKeywords,
     resumeText,
     atsScorePercent,
     displaySections,

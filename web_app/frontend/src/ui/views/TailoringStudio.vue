@@ -59,7 +59,7 @@
           </div>
           <div class="mt-auto p-4 bg-primary/5 rounded-lg border border-primary/20">
             <p class="text-xs font-bold text-primary uppercase mb-2">Pro Tip</p>
-            <p class="text-xs leading-relaxed text-[#4d6599] dark:text-gray-300">{{ jobKeywords.slice(0, 3).join(', ') }} are key terms in this job. Highlight them to boost your ATS score.</p>
+            <p class="text-xs leading-relaxed text-[#4d6599] dark:text-gray-300">{{ atsJobKeywords.slice(0, 3).join(', ') }} are key terms in this job. Highlight them to boost your ATS score.</p>
           </div>
         </aside>
         <!-- Main Content Area -->
@@ -127,7 +127,7 @@
                     </button>
                   </div>
                   <span class="text-[10px] font-bold px-2 py-1 bg-blue-100 text-blue-800 rounded uppercase">Details</span>
-                  <span v-if="jobKeywords.length > 0" class="text-[10px] font-bold px-2 py-1 bg-yellow-100 text-yellow-800 rounded uppercase">{{ jobKeywords.length }} Keywords</span>
+                  <span v-if="atsJobKeywords.length > 0" class="text-[10px] font-bold px-2 py-1 bg-yellow-100 text-yellow-800 rounded uppercase">{{ atsJobKeywords.length }} Keywords</span>
                 </div>
               </div>
               <div class="p-6 overflow-y-auto">
@@ -215,7 +215,7 @@
                     <span class="material-symbols-outlined text-lg">description</span>
                     Job Description
                   </h3>
-                  <span v-if="jobKeywords.length > 0" class="text-[10px] font-bold px-2 py-1 bg-yellow-100 text-yellow-800 rounded uppercase">{{ jobKeywords.length }} Keywords Found</span>
+                  <span v-if="atsJobKeywords.length > 0" class="text-[10px] font-bold px-2 py-1 bg-yellow-100 text-yellow-800 rounded uppercase">{{ atsJobKeywords.length }} Keywords Found</span>
                 </div>
                 <div class="p-6 overflow-y-auto prose prose-sm dark:prose-invert max-w-none">
                   <p v-if="isLoadingJob" class="text-gray-400">Loading job description...</p>
@@ -769,7 +769,6 @@ const {
   isGenerating,
   error,
   activeSection,
-  jobKeywords,
   resumeText,
   atsScorePercent,
   displaySections,
