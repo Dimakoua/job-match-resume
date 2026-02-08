@@ -5,7 +5,8 @@
  * Orchestrates job search lists and applications management.
  * Per technical_design.md §3.2D: "The Composable acts as the Controller."
  */
-import { ref, computed } from 'vue';
+import { ref, computed, watchEffect } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import { ListJobSearchListsUseCase } from '../../core/application/job_search_list/ListJobSearchListsUseCase.js';
 import { CreateJobSearchListUseCase } from '../../core/application/job_search_list/CreateJobSearchListUseCase.js';
 import { UpdateJobSearchListUseCase } from '../../core/application/job_search_list/UpdateJobSearchListUseCase.js';
@@ -29,6 +30,8 @@ export function useSavedJobsController(selectedListIdRef = null) {
   const updateJobApplicationUseCase = new UpdateJobApplicationUseCase(jobApplicationRepository);
 
   const authStore = useAuthStore();
+  const route = useRoute();
+  const router = useRouter();
 
   // ===== State =====
   const jobSearchLists = ref([]);
@@ -50,6 +53,32 @@ export function useSavedJobsController(selectedListIdRef = null) {
     id: null,
     name: '',
     description: ''
+  });
+
+  // Initialize activeFilter from URL query parameter
+  const getInitialActiveFilter = () => {
+    const filter = route.query.filter;
+    if (filter && ['all', 'recent', 'saved', 'applied', 'interviewing', 'rejected'].includes(filter)) {
+      return filter;
+    }
+    return 'all';
+  };
+
+  activeFilter.value = getInitialActiveFilter();
+
+  // Watch for activeFilter changes and update URL
+  watchEffect(() => {
+    const currentFilter = route.query.filter;
+    const newFilter = activeFilter.value;
+    
+    if (currentFilter !== newFilter) {
+      router.replace({
+        query: {
+          ...route.query,
+          filter: newFilter !== 'all' ? newFilter : undefined
+        }
+      });
+    }
   });
 
   // ===== Computed =====
