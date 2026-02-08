@@ -583,7 +583,7 @@
                       <span class="text-sm font-bold group-hover:text-primary transition-colors">{{ keyword }}</span>
                       <span class="text-[10px] text-[#4d6599]">Weight: Medium</span>
                     </div>
-                    <button class="flex items-center gap-1 text-[10px] font-bold text-primary px-3 py-1.5 bg-primary/5 rounded-full">
+                    <button @click="handleAutoInsert(keyword)" class="flex items-center gap-1 text-[10px] font-bold text-primary px-3 py-1.5 bg-primary/5 rounded-full hover:bg-primary/10 transition-colors">
                       <span class="material-symbols-outlined text-sm">add</span>
                       Auto-insert
                     </button>
@@ -803,13 +803,9 @@ const {
   editedJob,
 
   loadApplication,
-  generateTailoredResume,
-  improveSection,
-  updateResume,
+  handleAutoInsert,
   switchSection,
-  loadUserResumes,
-  linkResumeToApplication,
-  generateSuggestions,
+
 
   // UI Methods
   handleGenerateClick,

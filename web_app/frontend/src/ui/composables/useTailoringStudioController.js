@@ -623,6 +623,63 @@ export function useTailoringStudioController() {
     }
   };
 
+  const handleAutoInsert = async (keyword) => {
+    if (!resume.value) return;
+
+    try {
+      // Create a copy of the resume to modify
+      const updatedResume = { ...resume.value };
+
+      // Ensure sections exist
+      if (!updatedResume.sections) {
+        updatedResume.sections = {};
+      }
+
+      // Handle different resume formats
+      if (Array.isArray(updatedResume.sections)) {
+        // AI generated format - find or create skills section
+        let skillsSection = updatedResume.sections.find(section => 
+          section.type === 'skills' || section.title?.toLowerCase().includes('skill')
+        );
+
+        if (!skillsSection) {
+          skillsSection = {
+            type: 'skills',
+            title: 'Skills',
+            content: ''
+          };
+          updatedResume.sections.push(skillsSection);
+        }
+
+        // Add keyword to skills content if not already present
+        const currentSkills = skillsSection.content || '';
+        const skillsArray = currentSkills.split(',').map(s => s.trim()).filter(s => s);
+        
+        if (!skillsArray.includes(keyword)) {
+          skillsArray.push(keyword);
+          skillsSection.content = skillsArray.join(', ');
+        }
+      } else {
+        // Builder format - ensure skills array exists
+        if (!updatedResume.sections.skills) {
+          updatedResume.sections.skills = [];
+        }
+
+        // Add keyword if not already present
+        if (!updatedResume.sections.skills.includes(keyword)) {
+          updatedResume.sections.skills.push(keyword);
+        }
+      }
+
+      // Update the resume
+      await updateResume(updatedResume);
+
+    } catch (err) {
+      error.value = 'Failed to add keyword to resume. Please try again.';
+      console.error('Error auto-inserting keyword:', err);
+    }
+  };
+
   const switchSection = async (section) => {
     activeSection.value = section;
 
@@ -1254,6 +1311,7 @@ export function useTailoringStudioController() {
     generateTailoredResume,
     improveSection,
     updateResume,
+    handleAutoInsert,
     switchSection,
     toggleKeywordSelection,
     loadUserResumes,
