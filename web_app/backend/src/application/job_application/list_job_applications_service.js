@@ -4,6 +4,7 @@ import { z } from 'zod';
 const listJobApplicationsSchema = z.object({
   jobSearchListId: z.union([z.string().min(1, 'Invalid job search list ID'), z.undefined()]),
   userId: z.string().min(1, 'Invalid user ID'),
+  includeArchived: z.boolean().optional(),
 });
 
 export class ListJobApplicationsService {
@@ -11,16 +12,17 @@ export class ListJobApplicationsService {
     this.jobApplicationRepository = jobApplicationRepository;
   }
 
-  async execute(jobSearchListId, userId) {
+  async execute(jobSearchListId, userId, options = {}) {
     // Validate input
-    const validationResult = listJobApplicationsSchema.safeParse({ jobSearchListId, userId });
+    const validationResult = listJobApplicationsSchema.safeParse({ jobSearchListId, userId, includeArchived: options.includeArchived });
     if (!validationResult.success) {
       throw new Error(`Validation failed: ${validationResult.error.issues.map(i => i.message).join(', ')}`);
     }
 
     // Get applications
     const applications = await this.jobApplicationRepository.findByUserId(userId, {
-      jobSearchListId: jobSearchListId
+      jobSearchListId: jobSearchListId,
+      includeArchived: options.includeArchived
     });
 
     return {
@@ -35,6 +37,7 @@ export class ListJobApplicationsService {
         status: app.status,
         appliedDate: app.appliedDate,
         notes: app.notes,
+        archived: app.archived,
         createdAt: app.createdAt,
         updatedAt: app.updatedAt,
       }))

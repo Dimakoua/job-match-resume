@@ -15,6 +15,11 @@ import { D1JobSearchListRepository } from './adapters/repositories/job_search_li
 import { D1JobApplicationRepository } from './adapters/repositories/job_application/d1_job_application_repository.js';
 import { CreateJobSearchListService } from './application/job_search_list/create_job_search_list_service.js';
 import { CreateJobApplicationFromExtensionService } from './application/job_application/create_job_application_from_extension_service.js';
+import { ListJobApplicationsService } from './application/job_application/list_job_applications_service.js';
+import { UpdateJobApplicationService } from './application/job_application/update_job_application_service.js';
+import { DeleteJobApplicationService } from './application/job_application/delete_job_application_service.js';
+import { ArchiveJobApplicationService } from './application/job_application/archive_job_application_service.js';
+import { UnarchiveJobApplicationService } from './application/job_application/unarchive_job_application_service.js';
 
 const words = [
   'apple', 'banana', 'cherry', 'dog', 'elephant', 'flower', 'garden', 'house',
@@ -54,6 +59,11 @@ export class Factory {
       this.jobSearchListRepo,
       this.createJobSearchListService
     );
+    this.listJobApplicationsService = new ListJobApplicationsService(this.jobApplicationRepo);
+    this.updateJobApplicationService = new UpdateJobApplicationService(this.jobApplicationRepo);
+    this.deleteJobApplicationService = new DeleteJobApplicationService(this.jobApplicationRepo);
+    this.archiveJobApplicationService = new ArchiveJobApplicationService(this.jobApplicationRepo);
+    this.unarchiveJobApplicationService = new UnarchiveJobApplicationService(this.jobApplicationRepo);
   }
 
   async build(factoryName, opts = {}) {

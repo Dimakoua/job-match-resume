@@ -27,6 +27,8 @@ export class JobApplicationController extends BaseController {
     this.listJobApplicationsService = deps.listJobApplicationsService;
     this.updateJobApplicationService = deps.updateJobApplicationService;
     this.deleteJobApplicationService = deps.deleteJobApplicationService;
+    this.archiveJobApplicationService = deps.archiveJobApplicationService;
+    this.unarchiveJobApplicationService = deps.unarchiveJobApplicationService;
     this.jobApplicationRepository = deps.jobApplicationRepository;
   }
 
@@ -160,13 +162,15 @@ export class JobApplicationController extends BaseController {
       // Get query params
       const url = new URL(request.url);
       const jobSearchListId = url.searchParams.get('jobSearchListId');
+      const includeArchived = url.searchParams.get('includeArchived') === 'true';
 
-      if (!jobSearchListId) {
-        return this.errorResponse('MISSING_JOB_SEARCH_LIST_ID', 'jobSearchListId query parameter is required', 400);
+      if (!jobSearchListId && !includeArchived) {
+        return this.errorResponse('MISSING_JOB_SEARCH_LIST_ID', 'jobSearchListId query parameter is required when not viewing archive', 400);
       }
 
       // Execute service
-      const result = await this.listJobApplicationsService.execute(jobSearchListId, userId);
+      // Pass undefined if jobSearchListId is null (missing) to allow fetching across all lists
+      const result = await this.listJobApplicationsService.execute(jobSearchListId || undefined, userId, { includeArchived });
 
       return this.successResponse({
         success: true,
@@ -220,6 +224,7 @@ export class JobApplicationController extends BaseController {
             status: jobApplication.status,
             appliedDate: jobApplication.appliedDate,
             notes: jobApplication.notes,
+            archived: jobApplication.archived,
             createdAt: jobApplication.createdAt,
             updatedAt: jobApplication.updatedAt,
           },
@@ -316,6 +321,88 @@ export class JobApplicationController extends BaseController {
 
       if (error.message && error.message.includes('Validation failed')) {
         return this.errorResponse('INVALID_INPUT', error.message, 400);
+      }
+
+      return this.errorResponse('INTERNAL_ERROR', 'An unexpected error occurred', 500);
+    }
+  }
+
+  async archive(request) {
+    try {
+      const userId = await this.authenticate(request);
+
+      const url = new URL(request.url);
+      const parts = url.pathname.split('/').filter(p => p !== '');
+      let id = parts.pop();
+      
+      // Handle /api/job-applications/:id/archive
+      if (id === 'archive') {
+        id = parts.pop();
+      }
+
+      if (!id) {
+        return this.errorResponse('MISSING_ID', 'Job application ID is required', 400);
+      }
+
+      // Execute service
+      const result = await this.archiveJobApplicationService.execute(id, userId);
+
+      return this.successResponse(result);
+    } catch (error) {
+      console.error('Archive job application error:', error);
+
+      // If authenticate threw a Response, return it
+      if (error instanceof Response) {
+        return error;
+      }
+
+      if (error.message && error.message.includes('not found')) {
+        return this.errorResponse('NOT_FOUND', error.message, 404);
+      }
+
+      if (error.message && error.message.includes('Access denied')) {
+        return this.errorResponse('ACCESS_DENIED', error.message, 403);
+      }
+
+      return this.errorResponse('INTERNAL_ERROR', 'An unexpected error occurred', 500);
+    }
+  }
+
+  async unarchive(request) {
+    try {
+      const userId = await this.authenticate(request);
+
+      const url = new URL(request.url);
+      const parts = url.pathname.split('/').filter(p => p !== '');
+      let id = parts.pop();
+      
+      // Handle /api/job-applications/:id/unarchive
+      if (id === 'unarchive') {
+        id = parts.pop();
+      }
+
+      if (!id) {
+        return this.errorResponse('MISSING_ID', 'Job application ID is required', 400);
+      }
+
+      // Execute service
+      const result = await this.unarchiveJobApplicationService.execute(id, userId);
+
+      return this.successResponse(result);
+    } catch (error) {
+      console.error('Unarchive job application error:', error);
+
+      // If authenticate threw a Response, return it
+      if (error instanceof Response) {
+        return error;
+      }
+
+      if (error.message && error.message.includes('not found')) {
+        return this.errorResponse('NOT_FOUND', error.message, 404);
+      }
+
+      if (error.message && error.message.includes('Access denied')) {
+        return this.errorResponse('ACCESS_DENIED', error.message, 403);
       }
 
       return this.errorResponse('INTERNAL_ERROR', 'An unexpected error occurred', 500);

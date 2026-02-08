@@ -60,4 +60,22 @@ export function setupJobApplicationRoutes(router) {
     const { controller } = createController(env, JobApplicationController, [env.JWT_SECRET]);
     return controller.delete(request);
   });
+
+  // Archive job application
+  // Usage: POST /api/job-applications/<id>/archive
+  // Headers: Authorization: Bearer <jwt>
+  // Returns: { "success": true, "message": "Job application archived successfully" }
+  router.post('/api/job-applications/:id/archive', async (request, env, ctx) => {
+    const { controller } = createController(env, JobApplicationController, [env.JWT_SECRET]);
+    return controller.archive(request);
+  });
+
+  // Unarchive job application
+  // Usage: POST /api/job-applications/<id>/unarchive
+  // Headers: Authorization: Bearer <jwt>
+  // Returns: { "success": true, "message": "Job application unarchived successfully" }
+  router.post('/api/job-applications/:id/unarchive', async (request, env, ctx) => {
+    const { controller } = createController(env, JobApplicationController, [env.JWT_SECRET]);
+    return controller.unarchive(request);
+  });
 }

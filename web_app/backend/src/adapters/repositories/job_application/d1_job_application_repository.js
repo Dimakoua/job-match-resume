@@ -11,8 +11,8 @@ export class D1JobApplicationRepository {
     const sql = `
       INSERT INTO JobApplications (
         id, user_id, job_search_list_id, resume_id, company, position,
-        job_description, status, applied_date, notes, created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        job_description, status, applied_date, notes, archived, created_at, updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     const appliedDate = jobApplication.appliedDate ? jobApplication.appliedDate.getTime() : null;
@@ -30,6 +30,7 @@ export class D1JobApplicationRepository {
         jobApplication.status,
         appliedDate,
         jobApplication.notes,
+        jobApplication.archived ? 1 : 0,
         now,
         now
       ]);
@@ -41,7 +42,7 @@ export class D1JobApplicationRepository {
   async findById(id) {
     const sql = `
       SELECT id, user_id, job_search_list_id, resume_id, company, position,
-             job_description, status, applied_date, notes, created_at, updated_at
+             job_description, status, applied_date, notes, archived, created_at, updated_at
       FROM JobApplications
       WHERE id = ?
     `;
@@ -62,7 +63,7 @@ export class D1JobApplicationRepository {
   async findByUserId(userId, options = {}) {
     let sql = `
       SELECT id, user_id, job_search_list_id, resume_id, company, position,
-             job_description, status, applied_date, notes, created_at, updated_at
+             job_description, status, applied_date, notes, archived, created_at, updated_at
       FROM JobApplications
       WHERE user_id = ?
     `;
@@ -81,6 +82,11 @@ export class D1JobApplicationRepository {
         sql += ' AND job_search_list_id = ?';
         params.push(options.jobSearchListId);
       }
+    }
+
+    // By default, exclude archived applications unless explicitly requested
+    if (options.includeArchived !== true) {
+      sql += ' AND archived = 0';
     }
 
     sql += ' ORDER BY created_at DESC';
@@ -106,7 +112,7 @@ export class D1JobApplicationRepository {
   async update(jobApplication) {
     const sql = `
       UPDATE JobApplications
-      SET resume_id = ?, company = ?, position = ?, job_description = ?, job_search_list_id = ?, status = ?, applied_date = ?, notes = ?, updated_at = ?
+      SET resume_id = ?, company = ?, position = ?, job_description = ?, job_search_list_id = ?, status = ?, applied_date = ?, notes = ?, archived = ?, updated_at = ?
       WHERE id = ? AND user_id = ?
     `;
 
@@ -123,6 +129,7 @@ export class D1JobApplicationRepository {
         jobApplication.status,
         appliedDate,
         jobApplication.notes,
+        jobApplication.archived ? 1 : 0,
         now,
         jobApplication.id,
         jobApplication.userId
@@ -165,11 +172,38 @@ export class D1JobApplicationRepository {
       }
     }
 
+    // By default, exclude archived applications unless explicitly requested
+    if (options.includeArchived !== true) {
+      sql += ' AND archived = 0';
+    }
+
     try {
       const result = await query(this.database, sql, params);
       return result.results[0].count;
     } catch (error) {
       throw new Error(`Failed to count job applications: ${error.message}`);
+    }
+  }
+
+  async archiveById(id, userId) {
+    const sql = 'UPDATE JobApplications SET archived = 1, updated_at = ? WHERE id = ? AND user_id = ?';
+
+    try {
+      const result = await execute(this.database, sql, [Date.now(), id, userId]);
+      return result.meta.changes > 0;
+    } catch (error) {
+      throw new Error(`Failed to archive job application: ${error.message}`);
+    }
+  }
+
+  async unarchiveById(id, userId) {
+    const sql = 'UPDATE JobApplications SET archived = 0, updated_at = ? WHERE id = ? AND user_id = ?';
+
+    try {
+      const result = await execute(this.database, sql, [Date.now(), id, userId]);
+      return result.meta.changes > 0;
+    } catch (error) {
+      throw new Error(`Failed to unarchive job application: ${error.message}`);
     }
   }
 
@@ -184,7 +218,8 @@ export class D1JobApplicationRepository {
       row.job_description,
       row.status,
       row.applied_date ? new Date(row.applied_date) : null,
-      row.notes
+      row.notes,
+      row.archived === 1
     );
   }
 }

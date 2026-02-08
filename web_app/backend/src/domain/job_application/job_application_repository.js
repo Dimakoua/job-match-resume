@@ -63,4 +63,24 @@ export class JobApplicationRepository {
   async countByUserId(userId, options = {}) {
     return this.impl.countByUserId(userId, options);
   }
+
+  /**
+   * Archive a job application by ID
+   * @param {string} id
+   * @param {string} userId - For ownership verification
+   * @returns {Promise<boolean>} - True if archived, false if not found
+   */
+  async archiveById(id, userId) {
+    return this.impl.archiveById(id, userId);
+  }
+
+  /**
+   * Unarchive a job application by ID
+   * @param {string} id
+   * @param {string} userId - For ownership verification
+   * @returns {Promise<boolean>} - True if unarchived, false if not found
+   */
+  async unarchiveById(id, userId) {
+    return this.impl.unarchiveById(id, userId);
+  }
 }

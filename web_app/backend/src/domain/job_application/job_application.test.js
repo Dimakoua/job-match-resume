@@ -43,6 +43,25 @@ describe('JobApplication Domain Entity', () => {
       expect(app.status).toBe('saved');
       expect(app.appliedDate).toBeNull();
       expect(app.notes).toBeNull();
+      expect(app.archived).toBe(false);
+    });
+
+    it('should create with archived set to true', () => {
+      const app = new JobApplication(
+        'app-123',
+        'user-456',
+        null,
+        'resume-101',
+        'Tech Corp',
+        'Developer',
+        'Job description here',
+        'saved',
+        null,
+        null,
+        true
+      );
+
+      expect(app.archived).toBe(true);
     });
 
     it('should trim string fields', () => {
@@ -103,6 +122,11 @@ describe('JobApplication Domain Entity', () => {
       expect(() => new JobApplication('app-123', 'user-456', null, 'resume-101', 'Company', 'Position', 'Desc', 'saved', null, 123)).toThrow('Notes must be a string or null');
       expect(() => new JobApplication('app-123', 'user-456', null, 'resume-101', 'Company', 'Position', 'Desc', 'saved', null, 'a'.repeat(2001))).toThrow('Notes must be 2000 characters or less');
     });
+
+    it('should throw error for invalid archived', () => {
+      expect(() => new JobApplication('app-123', 'user-456', null, 'resume-101', 'Company', 'Position', 'Desc', 'saved', null, null, 'true')).toThrow('Archived must be a boolean');
+      expect(() => new JobApplication('app-123', 'user-456', null, 'resume-101', 'Company', 'Position', 'Desc', 'saved', null, null, 1)).toThrow('Archived must be a boolean');
+    });
   });
 
   describe('update methods', () => {
@@ -141,9 +165,19 @@ describe('JobApplication Domain Entity', () => {
       expect(app.jobSearchListId).toBe('list-789');
     });
 
+    it('should update archived status', () => {
+      expect(app.archived).toBe(false);
+      app.updateArchived(true);
+      expect(app.archived).toBe(true);
+      app.updateArchived(false);
+      expect(app.archived).toBe(false);
+    });
+
     it('should validate updates', () => {
       expect(() => app.updateStatus('invalid')).toThrow();
       expect(() => app.updateNotes('a'.repeat(2001))).toThrow();
+      expect(() => app.updateArchived('true')).toThrow('Archived must be a boolean');
+      expect(() => app.updateArchived(1)).toThrow('Archived must be a boolean');
     });
   });
 });

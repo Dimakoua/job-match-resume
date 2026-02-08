@@ -116,9 +116,9 @@
 - Completed: 2026-02-03
 - Evidence: POST `/api/job-applications/from-extension` endpoint implemented with JWT authentication, Zod validation, CreateJobApplicationFromExtensionService with comprehensive input validation, JobApplicationController with error handling, database migration updated to allow nullable resume_id/company/position fields, full integration tests 37/37 passing across service, controller, and repository layers.
 
-## B-047 — [testing] Job Application Integration Tests ✅ 100%
-- Completed: 2026-02-04
-- Evidence: Comprehensive integration tests implemented for all job application CRUD services (List, Update, Delete) using real D1 repositories instead of mocks. Fixed foreign key constraint issues by updating factory defaults, adjusted Zod validation schemas for flexible ID handling, improved repository date conversion, and updated test expectations for proper error message validation. All integration tests 23/23 passing with real database interactions.
+## B-048 — [feature] Job Application Archiving ✅ 100%
+- Completed: 2026-02-08
+- Evidence: Added `archived` boolean field to JobApplication entity and database migration, updated repository with archive filtering and archive/unarchive methods, added ArchiveJobApplicationService and UnarchiveJobApplicationService, updated JobApplicationController with archive/unarchive endpoints, modified list endpoint to support includeArchived filter, comprehensive tests passing (391/391).
 
 ## B-025 — [feature] ATS Score Calculation ✅ 100%
 - Completed: 2026-02-03

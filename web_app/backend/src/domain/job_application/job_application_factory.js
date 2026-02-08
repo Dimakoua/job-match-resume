@@ -13,7 +13,8 @@ export async function fakeJobApplication(repo, opts = {}) {
     opts.jobDescription || fakeRandomSentence(10),
     opts.status || 'saved',
     opts.appliedDate || null,
-    opts.notes || null
+    opts.notes || null,
+    opts.archived || false
   );
 
   if (opts.persisted) {

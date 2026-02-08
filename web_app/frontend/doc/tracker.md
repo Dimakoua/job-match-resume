@@ -156,13 +156,15 @@
   - Creates copy linked to job application
   - Version history maintained
 
-## F-057 — [integration] End-to-End Testing
-- Scope: Test complete user workflow from SavedJobs → TailoringStudio → Resume Download.
+## F-059 — [feature] Job Application Archiving UI
+- Scope: Implement frontend UI for archiving job applications with archive/unarchive buttons and archived applications view.
 - Acceptance:
-  - All data loads correctly from backend
-  - ATS scores calculate accurately
-  - AI generation completes without errors
-  - UI responsive on desktop/tablet/mobile
+  - Archive button on each job application card in SavedJobs.vue
+  - Unarchive functionality for archived applications
+  - "Archive" sidebar link shows archived applications
+  - Archive/unarchive API calls with proper error handling
+  - Loading states and success feedback
+- Status: 🔵 0% — Ready to start; backend archiving complete
 
 ---
 
