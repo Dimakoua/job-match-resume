@@ -557,7 +557,12 @@
                   </div>
                   <div class="flex flex-col justify-center">
                     <div class="flex items-center justify-between mb-2">
-                      <span class="text-sm font-medium text-[#4d6599]">Format Score</span>
+                      <div class="flex items-center gap-1">
+                        <span class="text-sm font-medium text-[#4d6599]">Format Score</span>
+                        <button @click="showFormatScoreExplanation = !showFormatScoreExplanation" class="text-[#4d6599] hover:text-primary transition-colors">
+                          <span class="material-symbols-outlined text-sm">info</span>
+                        </button>
+                      </div>
                       <span class="text-sm font-bold">{{ atsFormatScore || '--' }}%</span>
                     </div>
                     <div class="w-full h-1.5 bg-gray-100 dark:bg-white/5 rounded-full overflow-hidden">
@@ -574,6 +579,170 @@
                       <div class="h-full bg-purple-500" :style="{ width: Math.min((atsKeywordDensity || 0), 100) + '%' }"></div>
                     </div>
                     <p class="text-[10px] mt-2 text-[#4d6599]">Resume vs job keyword ratio</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Format Score Detailed Breakdown -->
+              <div v-if="showFormatScoreExplanation" class="bg-white dark:bg-background-dark border border-[#e7ebf3] dark:border-white/10 rounded-xl p-6 shadow-sm animate-fade-in">
+                <div class="flex items-center gap-3 mb-6">
+                  <div class="p-2 bg-yellow-100 dark:bg-yellow-900/20 text-yellow-600 dark:text-yellow-400 rounded-lg">
+                    <span class="material-symbols-outlined">analytics</span>
+                  </div>
+                  <div class="flex-1">
+                    <h3 class="text-lg font-bold">Format Score Breakdown</h3>
+                    <p class="text-sm text-[#4d6599] dark:text-gray-400">Detailed analysis of your resume formatting quality</p>
+                  </div>
+                  <button @click="showFormatScoreExplanation = false" class="p-1 hover:bg-gray-100 dark:hover:bg-white/10 rounded">
+                    <span class="material-symbols-outlined text-sm">close</span>
+                  </button>
+                </div>
+
+                <div class="mb-4">
+                  <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm font-medium">Overall Format Score</span>
+                    <span class="text-lg font-bold text-yellow-600">{{ atsFormatScore }}%</span>
+                  </div>
+                  <div class="w-full h-2 bg-gray-100 dark:bg-white/5 rounded-full overflow-hidden">
+                    <div class="h-full bg-yellow-500 rounded-full" :style="{ width: atsFormatScore + '%' }"></div>
+                  </div>
+                  <p class="text-xs text-[#4d6599] mt-1">Your resume format score is {{ atsFormatScore }}% based on the following criteria:</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <!-- Left Column -->
+                  <div class="space-y-4">
+                    <div class="p-4 border border-gray-100 dark:border-white/10 rounded-lg">
+                      <div class="flex justify-between items-center mb-2">
+                        <span class="font-medium text-sm">Essential Sections</span>
+                        <span class="text-sm font-bold">{{ atsFormatScoreBreakdown?.essentialSections.score }}/40pts</span>
+                      </div>
+                      <div class="w-full h-1.5 bg-gray-100 dark:bg-white/5 rounded-full overflow-hidden mb-2">
+                        <div class="h-full bg-blue-500 rounded-full" :style="{ width: (atsFormatScoreBreakdown?.essentialSections.score / 40) * 100 + '%' }"></div>
+                      </div>
+                      <div v-if="atsFormatScoreBreakdown?.essentialSections.issues.length > 0" class="text-xs text-red-600">
+                        <ul class="list-disc list-inside space-y-1">
+                          <li v-for="issue in atsFormatScoreBreakdown.essentialSections.issues" :key="issue">{{ issue }}</li>
+                        </ul>
+                      </div>
+                      <div v-else class="text-xs text-green-600">✓ All essential sections present</div>
+                    </div>
+
+                    <div class="p-4 border border-gray-100 dark:border-white/10 rounded-lg">
+                      <div class="flex justify-between items-center mb-2">
+                        <span class="font-medium text-sm">Contact Info</span>
+                        <span class="text-sm font-bold">{{ atsFormatScoreBreakdown?.contactInfo.score }}/20pts</span>
+                      </div>
+                      <div class="w-full h-1.5 bg-gray-100 dark:bg-white/5 rounded-full overflow-hidden mb-2">
+                        <div class="h-full bg-green-500 rounded-full" :style="{ width: (atsFormatScoreBreakdown?.contactInfo.score / 20) * 100 + '%' }"></div>
+                      </div>
+                      <div v-if="atsFormatScoreBreakdown?.contactInfo.issues.length > 0" class="text-xs text-red-600">
+                        <ul class="list-disc list-inside space-y-1">
+                          <li v-for="issue in atsFormatScoreBreakdown.contactInfo.issues" :key="issue">{{ issue }}</li>
+                        </ul>
+                      </div>
+                      <div v-else class="text-xs text-green-600">✓ Contact information complete</div>
+                    </div>
+
+                    <div class="p-4 border border-gray-100 dark:border-white/10 rounded-lg">
+                      <div class="flex justify-between items-center mb-2">
+                        <span class="font-medium text-sm">Experience Quality</span>
+                        <span class="text-sm font-bold">{{ atsFormatScoreBreakdown?.experienceQuality.score }}/15pts</span>
+                      </div>
+                      <div class="w-full h-1.5 bg-gray-100 dark:bg-white/5 rounded-full overflow-hidden mb-2">
+                        <div class="h-full bg-purple-500 rounded-full" :style="{ width: (atsFormatScoreBreakdown?.experienceQuality.score / 15) * 100 + '%' }"></div>
+                      </div>
+                      <div v-if="atsFormatScoreBreakdown?.experienceQuality.issues.length > 0" class="text-xs text-red-600">
+                        <ul class="list-disc list-inside space-y-1">
+                          <li v-for="issue in atsFormatScoreBreakdown.experienceQuality.issues" :key="issue">{{ issue }}</li>
+                        </ul>
+                      </div>
+                      <div v-else class="text-xs text-green-600">✓ Experience descriptions are detailed</div>
+                    </div>
+                  </div>
+
+                  <!-- Right Column -->
+                  <div class="space-y-4">
+                    <div class="p-4 border border-gray-100 dark:border-white/10 rounded-lg">
+                      <div class="flex justify-between items-center mb-2">
+                        <span class="font-medium text-sm">Education Quality</span>
+                        <span class="text-sm font-bold">{{ atsFormatScoreBreakdown?.educationQuality.score }}/10pts</span>
+                      </div>
+                      <div class="w-full h-1.5 bg-gray-100 dark:bg-white/5 rounded-full overflow-hidden mb-2">
+                        <div class="h-full bg-indigo-500 rounded-full" :style="{ width: (atsFormatScoreBreakdown?.educationQuality.score / 10) * 100 + '%' }"></div>
+                      </div>
+                      <div v-if="atsFormatScoreBreakdown?.educationQuality.issues.length > 0" class="text-xs text-red-600">
+                        <ul class="list-disc list-inside space-y-1">
+                          <li v-for="issue in atsFormatScoreBreakdown.educationQuality.issues" :key="issue">{{ issue }}</li>
+                        </ul>
+                      </div>
+                      <div v-else class="text-xs text-green-600">✓ Education details are complete</div>
+                    </div>
+
+                    <div class="p-4 border border-gray-100 dark:border-white/10 rounded-lg">
+                      <div class="flex justify-between items-center mb-2">
+                        <span class="font-medium text-sm">Skills Formatting</span>
+                        <span class="text-sm font-bold">{{ atsFormatScoreBreakdown?.skillsFormatting.score }}/10pts</span>
+                      </div>
+                      <div class="w-full h-1.5 bg-gray-100 dark:bg-white/5 rounded-full overflow-hidden mb-2">
+                        <div class="h-full bg-pink-500 rounded-full" :style="{ width: (atsFormatScoreBreakdown?.skillsFormatting.score / 10) * 100 + '%' }"></div>
+                      </div>
+                      <div v-if="atsFormatScoreBreakdown?.skillsFormatting.issues.length > 0" class="text-xs text-red-600">
+                        <ul class="list-disc list-inside space-y-1">
+                          <li v-for="issue in atsFormatScoreBreakdown.skillsFormatting.issues" :key="issue">{{ issue }}</li>
+                        </ul>
+                      </div>
+                      <div v-else class="text-xs text-green-600">✓ Skills are properly formatted</div>
+                    </div>
+
+                    <div class="p-4 border border-gray-100 dark:border-white/10 rounded-lg">
+                      <div class="flex justify-between items-center mb-2">
+                        <span class="font-medium text-sm">Length Appropriateness</span>
+                        <span class="text-sm font-bold">{{ atsFormatScoreBreakdown?.lengthAppropriateness.score }}/5pts</span>
+                      </div>
+                      <div class="w-full h-1.5 bg-gray-100 dark:bg-white/5 rounded-full overflow-hidden mb-2">
+                        <div class="h-full rounded-full" :class="atsFormatScoreBreakdown?.lengthAppropriateness.score === 5 ? 'bg-green-500' : 'bg-red-500'" :style="{ width: (atsFormatScoreBreakdown?.lengthAppropriateness.score / 5) * 100 + '%' }"></div>
+                      </div>
+                      <div v-if="atsFormatScoreBreakdown?.lengthAppropriateness.issues.length > 0" :class="atsFormatScoreBreakdown.lengthAppropriateness.score === 5 ? 'text-green-600' : 'text-red-600'">
+                        <div class="text-xs" v-for="issue in atsFormatScoreBreakdown.lengthAppropriateness.issues" :key="issue">{{ issue }}</div>
+                      </div>
+                      <div v-else class="text-xs text-green-600">✓ Resume length is appropriate</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div v-if="atsFormatScore < 100" class="mt-6 p-4 bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                  <div class="flex items-start gap-3">
+                    <span class="material-symbols-outlined text-yellow-600 mt-0.5">lightbulb</span>
+                    <div>
+                      <h4 class="text-sm font-medium text-yellow-900 dark:text-yellow-100 mb-2">💡 Quick Fixes to Improve Your Score</h4>
+                      <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
+                        <div v-if="atsFormatScoreBreakdown?.essentialSections.issues.length > 0" class="flex items-center gap-2">
+                          <span class="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
+                          <span>Add missing essential sections</span>
+                        </div>
+                        <div v-if="atsFormatScoreBreakdown?.contactInfo.issues.some(issue => !issue.includes('Consider adding'))" class="flex items-center gap-2">
+                          <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+                          <span>Complete your contact information</span>
+                        </div>
+                        <div v-if="atsFormatScoreBreakdown?.experienceQuality.issues.length > 0" class="flex items-center gap-2">
+                          <span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>
+                          <span>Expand job descriptions with achievements</span>
+                        </div>
+                        <div v-if="atsFormatScoreBreakdown?.educationQuality.issues.length > 0" class="flex items-center gap-2">
+                          <span class="w-1.5 h-1.5 bg-indigo-500 rounded-full"></span>
+                          <span>Add complete education details</span>
+                        </div>
+                        <div v-if="atsFormatScoreBreakdown?.skillsFormatting.issues.length > 0" class="flex items-center gap-2">
+                          <span class="w-1.5 h-1.5 bg-pink-500 rounded-full"></span>
+                          <span>Format skills as concise items</span>
+                        </div>
+                        <div v-if="atsFormatScoreBreakdown?.lengthAppropriateness.score < 5" class="flex items-center gap-2">
+                          <span class="w-1.5 h-1.5 bg-red-500 rounded-full"></span>
+                          <span>Adjust resume length (400-800 words)</span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -955,6 +1124,9 @@ const {
   isEditingNotes,
   editedNotes,
 
+  // Format score explanation state
+  showFormatScoreExplanation,
+
   // ATS Analysis
   atsMatchedKeywords,
   atsMissedKeywords,
@@ -963,6 +1135,7 @@ const {
   atsMetadata,
   atsSkillRelevance,
   atsFormatScore,
+  atsFormatScoreBreakdown,
   atsKeywordDensity,
 
   // AI Suggestions

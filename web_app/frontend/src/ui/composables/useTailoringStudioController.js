@@ -101,6 +101,9 @@ export function useTailoringStudioController() {
   const isEditingNotes = ref(false);
   const editedNotes = ref('');
 
+  // Format score explanation state
+  const showFormatScoreExplanation = ref(false);
+
   // Load settings from localStorage if available
   const savedSettings = localStorage.getItem('generationSettings');
   if (savedSettings) {
@@ -202,7 +205,252 @@ export function useTailoringStudioController() {
     if (!total) return null;
     return Math.round((matched / total) * 100);
   });
-  const atsFormatScore = computed(() => 78); // Placeholder
+  const atsFormatScore = computed(() => {
+    if (!resume.value) return null;
+
+    let score = 0;
+    const sections = resume.value.sections || resume.value;
+
+    // 1. Essential sections (40 points total - 10pts each)
+    const essentialSections = ['firstName', 'lastName', 'experience', 'education', 'skills'];
+    let essentialScore = 0;
+
+    // Personal info (firstName/lastName count as one section)
+    if ((sections.firstName || sections.lastName)) essentialScore += 10;
+
+    // Experience
+    if (sections.experience && Array.isArray(sections.experience) && sections.experience.length > 0) {
+      essentialScore += 10;
+    }
+
+    // Education
+    if (sections.education && Array.isArray(sections.education) && sections.education.length > 0) {
+      essentialScore += 10;
+    }
+
+    // Skills
+    if (sections.skills && Array.isArray(sections.skills) && sections.skills.length > 0) {
+      essentialScore += 10;
+    }
+
+    score += essentialScore;
+
+    // 2. Contact info completeness (20 points total - 5pts each for email, phone, location)
+    let contactScore = 0;
+    if (sections.email && sections.email.trim()) contactScore += 5;
+    if (sections.phone && sections.phone.trim()) contactScore += 5;
+    if (sections.location && sections.location.trim()) contactScore += 5;
+    // LinkedIn is bonus but not required
+    if (sections.linkedin && sections.linkedin.trim()) contactScore += 5;
+    score += Math.min(20, contactScore); // Cap at 20
+
+    // 3. Experience quality (15 points total)
+    let experienceScore = 0;
+    if (sections.experience && Array.isArray(sections.experience)) {
+      const experiences = sections.experience;
+      if (experiences.length > 0) {
+        // Check if experiences have detailed descriptions
+        const detailedExperiences = experiences.filter(exp =>
+          exp.description && exp.description.trim().length > 50 // At least 50 chars description
+        ).length;
+        experienceScore = Math.min(15, (detailedExperiences / experiences.length) * 15);
+      }
+    }
+    score += experienceScore;
+
+    // 4. Education quality (10 points total)
+    let educationScore = 0;
+    if (sections.education && Array.isArray(sections.education)) {
+      const educations = sections.education;
+      if (educations.length > 0) {
+        // Check if education entries have degree and dates
+        const completeEducations = educations.filter(edu =>
+          edu.degree && edu.degree.trim() &&
+          edu.school && edu.school.trim() &&
+          edu.startDate && edu.endDate
+        ).length;
+        educationScore = Math.min(10, (completeEducations / educations.length) * 10);
+      }
+    }
+    score += educationScore;
+
+    // 5. Skills formatting (10 points total)
+    let skillsScore = 0;
+    if (sections.skills && Array.isArray(sections.skills)) {
+      const skills = sections.skills;
+      if (skills.length > 0) {
+        // Check if skills are properly formatted (not too long descriptions)
+        const wellFormattedSkills = skills.filter(skill =>
+          skill && skill.trim().length > 0 && skill.trim().length < 50 // Reasonable skill name length
+        ).length;
+        skillsScore = Math.min(10, (wellFormattedSkills / skills.length) * 10);
+      }
+    }
+    score += skillsScore;
+
+    // 6. Length appropriateness (5 points total)
+    let lengthScore = 5; // Start with full points
+    const resumeText = displaySections.value.map(section => section.content).join(' ');
+    const wordCount = resumeText.split(/\s+/).filter(word => word.length > 0).length;
+
+    // Ideal resume length: 400-800 words (roughly 1-2 pages)
+    if (wordCount < 200) lengthScore = 1; // Too short
+    else if (wordCount < 400) lengthScore = 3; // A bit short
+    else if (wordCount > 1000) lengthScore = 2; // Too long
+    else if (wordCount > 800) lengthScore = 4; // A bit long
+    // else stays 5
+
+    score += lengthScore;
+
+    return Math.min(100, Math.round(score));
+  });
+
+  const atsFormatScoreBreakdown = computed(() => {
+    if (!resume.value) return null;
+
+    const sections = resume.value.sections || resume.value;
+    const breakdown = {
+      essentialSections: { score: 0, max: 40, issues: [] },
+      contactInfo: { score: 0, max: 20, issues: [] },
+      experienceQuality: { score: 0, max: 15, issues: [] },
+      educationQuality: { score: 0, max: 10, issues: [] },
+      skillsFormatting: { score: 0, max: 10, issues: [] },
+      lengthAppropriateness: { score: 5, max: 5, issues: [] }
+    };
+
+    // Essential sections
+    if (!(sections.firstName || sections.lastName)) {
+      breakdown.essentialSections.issues.push('Missing personal information (name)');
+    } else {
+      breakdown.essentialSections.score += 10;
+    }
+
+    if (!sections.experience || !Array.isArray(sections.experience) || sections.experience.length === 0) {
+      breakdown.essentialSections.issues.push('Missing work experience section');
+    } else {
+      breakdown.essentialSections.score += 10;
+    }
+
+    if (!sections.education || !Array.isArray(sections.education) || sections.education.length === 0) {
+      breakdown.essentialSections.issues.push('Missing education section');
+    } else {
+      breakdown.essentialSections.score += 10;
+    }
+
+    if (!sections.skills || !Array.isArray(sections.skills) || sections.skills.length === 0) {
+      breakdown.essentialSections.issues.push('Missing skills section');
+    } else {
+      breakdown.essentialSections.score += 10;
+    }
+
+    // Contact info
+    if (!sections.email || !sections.email.trim()) {
+      breakdown.contactInfo.issues.push('Missing email address');
+    } else {
+      breakdown.contactInfo.score += 5;
+    }
+
+    if (!sections.phone || !sections.phone.trim()) {
+      breakdown.contactInfo.issues.push('Missing phone number');
+    } else {
+      breakdown.contactInfo.score += 5;
+    }
+
+    if (!sections.location || !sections.location.trim()) {
+      breakdown.contactInfo.issues.push('Missing location');
+    } else {
+      breakdown.contactInfo.score += 5;
+    }
+
+    if (sections.linkedin && sections.linkedin.trim()) {
+      breakdown.contactInfo.score += 5; // Bonus for LinkedIn
+    } else {
+      breakdown.contactInfo.issues.push('Consider adding LinkedIn profile');
+    }
+
+    breakdown.contactInfo.score = Math.min(20, breakdown.contactInfo.score);
+
+    // Experience quality
+    if (sections.experience && Array.isArray(sections.experience)) {
+      const experiences = sections.experience;
+      if (experiences.length > 0) {
+        const detailedExperiences = experiences.filter(exp =>
+          exp.description && exp.description.trim().length > 50
+        ).length;
+        breakdown.experienceQuality.score = Math.min(15, (detailedExperiences / experiences.length) * 15);
+
+        if (detailedExperiences < experiences.length) {
+          breakdown.experienceQuality.issues.push(`${experiences.length - detailedExperiences} experience entries need more detailed descriptions`);
+        }
+      } else {
+        breakdown.experienceQuality.issues.push('No experience entries to evaluate');
+      }
+    } else {
+      breakdown.experienceQuality.issues.push('No experience section found');
+    }
+
+    // Education quality
+    if (sections.education && Array.isArray(sections.education)) {
+      const educations = sections.education;
+      if (educations.length > 0) {
+        const completeEducations = educations.filter(edu =>
+          edu.degree && edu.degree.trim() &&
+          edu.school && edu.school.trim() &&
+          edu.startDate && edu.endDate
+        ).length;
+        breakdown.educationQuality.score = Math.min(10, (completeEducations / educations.length) * 10);
+
+        if (completeEducations < educations.length) {
+          breakdown.educationQuality.issues.push(`${educations.length - completeEducations} education entries missing degree, school, or dates`);
+        }
+      } else {
+        breakdown.educationQuality.issues.push('No education entries to evaluate');
+      }
+    } else {
+      breakdown.educationQuality.issues.push('No education section found');
+    }
+
+    // Skills formatting
+    if (sections.skills && Array.isArray(sections.skills)) {
+      const skills = sections.skills;
+      if (skills.length > 0) {
+        const wellFormattedSkills = skills.filter(skill =>
+          skill && skill.trim().length > 0 && skill.trim().length < 50
+        ).length;
+        breakdown.skillsFormatting.score = Math.min(10, (wellFormattedSkills / skills.length) * 10);
+
+        if (wellFormattedSkills < skills.length) {
+          breakdown.skillsFormatting.issues.push(`${skills.length - wellFormattedSkills} skills need better formatting`);
+        }
+      } else {
+        breakdown.skillsFormatting.issues.push('No skills to evaluate');
+      }
+    } else {
+      breakdown.skillsFormatting.issues.push('No skills section found');
+    }
+
+    // Length appropriateness
+    const resumeText = displaySections.value.map(section => section.content).join(' ');
+    const wordCount = resumeText.split(/\s+/).filter(word => word.length > 0).length;
+
+    if (wordCount < 200) {
+      breakdown.lengthAppropriateness.score = 1;
+      breakdown.lengthAppropriateness.issues.push(`Resume is too short (${wordCount} words). Aim for 400-800 words`);
+    } else if (wordCount < 400) {
+      breakdown.lengthAppropriateness.score = 3;
+      breakdown.lengthAppropriateness.issues.push(`Resume could be longer (${wordCount} words). Consider adding more details`);
+    } else if (wordCount > 1000) {
+      breakdown.lengthAppropriateness.score = 2;
+      breakdown.lengthAppropriateness.issues.push(`Resume is too long (${wordCount} words). Consider condensing content`);
+    } else if (wordCount > 800) {
+      breakdown.lengthAppropriateness.score = 4;
+      breakdown.lengthAppropriateness.issues.push(`Resume is a bit long (${wordCount} words). Consider minor edits`);
+    } else {
+      breakdown.lengthAppropriateness.issues.push(`Good length (${wordCount} words)`);
+    }
+
+    return breakdown;
+  });
   const atsKeywordDensity = computed(() => {
     if (!atsScore.value || typeof atsScore.value === 'number') return null;
     const resumeCount = atsScore.value.metadata?.resumeKeywordCount || 0;
@@ -1405,6 +1653,9 @@ export function useTailoringStudioController() {
     isEditingNotes,
     editedNotes,
 
+    // Format score explanation state
+    showFormatScoreExplanation,
+
     // Computed
     resumeText,
     atsScorePercent,
@@ -1419,6 +1670,7 @@ export function useTailoringStudioController() {
     atsMetadata,
     atsSkillRelevance,
     atsFormatScore,
+    atsFormatScoreBreakdown,
     atsKeywordDensity,
 
     // Methods
