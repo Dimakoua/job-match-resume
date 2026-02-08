@@ -16,18 +16,21 @@
                     <nav class="flex flex-col gap-1">
                         <div v-for="list in jobSearchLists" :key="list.id" class="group flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer"
                             :class="list.id === selectedListId ? 'bg-primary/10 text-primary' : 'text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-800'">
-                            <a @click="selectList(list.id)" class="flex-1 flex items-center gap-3">
+                            <a @click="selectList(list.id)" class="flex-1 flex items-center gap-3 fill-available relative">
                                 <span class="material-symbols-outlined text-[20px]">folder_open</span>
-                                <p class="text-sm font-medium leading-normal truncate">{{ list.name }}</p>
+                                <p class="text-sm font-medium leading-normal truncate" :title="list.name">
+                                  <ScrollingText v-if="list.name.length > 10" :text="list.name" />
+                                  <span v-else>{{ list.name }}</span>
+                                </p>
+                                <div class="absolute right-0 opacity-0 group-hover:opacity-100 flex gap-1">
+                                    <button @click.stop="openEditListModal(list)" class="p-1 rounded hover:bg-gray-300 dark:hover:bg-gray-600">
+                                        <span class="material-symbols-outlined text-sm">edit</span>
+                                    </button>
+                                    <button @click.stop="handleDeleteList(list.id)" class="p-1 rounded hover:bg-gray-300 dark:hover:bg-gray-600 text-red-500">
+                                        <span class="material-symbols-outlined text-sm">delete</span>
+                                    </button>
+                                </div>
                             </a>
-                            <div class="opacity-0 group-hover:opacity-100 flex gap-1">
-                                <button @click.stop="openEditListModal(list)" class="p-1 rounded hover:bg-gray-300 dark:hover:bg-gray-600">
-                                    <span class="material-symbols-outlined text-sm">edit</span>
-                                </button>
-                                <button @click.stop="handleDeleteList(list.id)" class="p-1 rounded hover:bg-gray-300 dark:hover:bg-gray-600 text-red-500">
-                                    <span class="material-symbols-outlined text-sm">delete</span>
-                                </button>
-                            </div>
                         </div>
                         <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-800"
                             href="#">
@@ -212,6 +215,7 @@ import { useSavedJobsController } from '../composables/useSavedJobsController.js
 import { useAuthStore } from '../stores/useAuthStore.js';
 import AppHeader from '../components/AppHeader.vue';
 import AppFooter from '../components/AppFooter.vue';
+import ScrollingText from '../components/ScrollingText.vue';
 
 // Composables
 const route = useRoute();
@@ -331,5 +335,11 @@ onMounted(async () => {
 font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
 display: inline-block;
 vertical-align: middle;
+}
+
+.fill-available {
+  width: -webkit-fill-available;
+  width: -moz-available;
+  width: fill-available;
 }
 </style>
