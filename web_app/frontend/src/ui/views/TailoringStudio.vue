@@ -888,16 +888,12 @@ const authStore = useAuthStore();
 const {
   job,
   resume,
-  atsScore,
   isLoadingJob,
   isLoadingResume,
   isCalculatingAts,
   isGenerating,
-  error,
   activeSection,
-  resumeText,
   atsScorePercent,
-  displaySections,
   resumePreviewData,
   generationSettings,
   userResumes,
@@ -931,7 +927,6 @@ const {
   editedJob,
 
   loadApplication,
-  handleAutoInsert,
   switchSection,
 
 
