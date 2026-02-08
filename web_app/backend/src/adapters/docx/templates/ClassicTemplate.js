@@ -156,37 +156,44 @@ export class ClassicTemplate {
         );
       } else if (sectionKey === 'experience' && Array.isArray(section)) {
         for (const exp of section) {
-          // Job title and company
+          // Job title and company with date on the same line
           const titleLine = `${exp.position || ''}${exp.position && exp.company ? ' at ' : ''}${exp.company || ''}`;
+          const dateRange = `${exp.startDate || ''}${exp.startDate && exp.endDate ? ' — ' : ''}${exp.endDate || 'Present'}`;
+          
+          // Create a paragraph with title on left and date on right
+          const titleRun = new TextRun({
+            text: titleLine,
+            font: fontFamily,
+            size: 20,
+            bold: true,
+            color: textColor
+          });
+          
+          const tabRun = new TextRun({
+            text: '\t',
+            size: 20
+          });
+          
+          const dateRun = new TextRun({
+            text: dateRange,
+            font: fontFamily,
+            size: 18,
+            italics: true,
+            color: grayColor
+          });
+          
           docSections.push(
             new Paragraph({
-              text: titleLine,
-              spacing: { after: 50 },
-              run: {
-                font: fontFamily,
-                size: 20,
-                bold: true,
-                color: textColor
-              }
+              children: [titleRun, tabRun, dateRun],
+              spacing: { after: 100 },
+              tabStops: [
+                {
+                  type: 'right',
+                  position: 9144 // Right edge position
+                }
+              ]
             })
           );
-
-          // Date range
-          if (exp.startDate || exp.endDate) {
-            const dateRange = `${exp.startDate || ''}${exp.startDate && exp.endDate ? ' — ' : ''}${exp.endDate || 'Present'}`;
-            docSections.push(
-              new Paragraph({
-                text: dateRange,
-                spacing: { after: 100 },
-                run: {
-                  font: fontFamily,
-                  size: 18,
-                  italics: true,
-                  color: grayColor
-                }
-              })
-            );
-          }
 
           // Description
           if (exp.description) {
