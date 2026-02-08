@@ -22,6 +22,12 @@
         >
           Dashboard
         </router-link>
+        <router-link to="/saved-jobs"
+          class="text-sm font-medium leading-normal transition-colors"
+          :class="isActive('/saved-jobs') ? 'text-[#0e121b] dark:text-white' : 'text-[#4d6599] dark:text-gray-400 hover:text-primary'"
+          >
+          Saved Applications
+        </router-link>
       </nav>
       <!-- User Menu -->
       <div class="relative">
@@ -79,7 +85,9 @@ const userInitials = computed(() => {
   return name.substring(0, 2).toUpperCase()
 })
 
-const isActive = (path) => route.path === path
+const isActive = (path) => {
+  return route.path.startsWith(path);
+}
 
 const handleSignOut = () => {
   showUserMenu.value = false
