@@ -317,7 +317,7 @@ export function useTailoringStudioController() {
 
   // ===== Methods =====
   const loadApplication = async () => {
-    if (!applicationIdRef?.value) return;
+    if (!applicationIdRef?.value || applicationIdRef.value === 'undefined') return;
 
     isLoadingJob.value = true;
     error.value = null;
@@ -1315,6 +1315,28 @@ export function useTailoringStudioController() {
     }
   };
 
+  const updateApplicationStatus = async (applicationId, status, application) => {
+    if (!application) return;
+
+    try {
+      const updatedApplication = {
+        ...application,
+        status: status
+      };
+
+      const result = await updateJobApplicationUseCase.execute({
+        application: updatedApplication
+      });
+
+      // Update the local job object
+      Object.assign(job.value, result);
+      console.log('Application status updated successfully');
+    } catch (error) {
+      console.error('Failed to update application status:', error);
+      throw error;
+    }
+  };
+
   return {
     // State
     job,
@@ -1408,6 +1430,7 @@ export function useTailoringStudioController() {
     // Notes Editing Methods
     startEditingNotes,
     cancelEditingNotes,
-    saveNotes
+    saveNotes,
+    updateApplicationStatus
   };
 }

@@ -77,7 +77,15 @@
               </div>
               <div class="flex flex-col">
                 <p class="text-sm font-bold">Application Connection</p>
-                <p class="text-xs text-[#4d6599] dark:text-gray-400">Current Stage: <span :class="['inline-flex items-center px-2 py-1 rounded-full text-xs font-medium', getStatusBadgeClass(job?.status)]">{{ job?.status || 'pending' }}</span></p>
+                <p class="text-xs text-[#4d6599] dark:text-gray-400">Current Stage: <div class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium" :class="getStatusBadgeClass(job?.status)">
+                  <select v-if="job" v-model="job.status" @change.stop="updateStatus(job)" @click.stop class="bg-transparent border-0 text-xs font-medium outline-none cursor-pointer appearance-none" :class="getStatusBadgeClass(job?.status)">
+                    <option value="saved">Saved</option>
+                    <option value="applied">Applied</option>
+                    <option value="interviewing">Interviewing</option>
+                    <option value="rejected">Rejected</option>
+                  </select>
+                  <span v-else class="text-xs font-medium text-gray-400">Loading...</span>
+                </div></p>
               </div>
             </div>
             <div class="flex items-center gap-3">
@@ -928,6 +936,7 @@ const {
 
   loadApplication,
   switchSection,
+  updateApplicationStatus,
 
 
   // UI Methods
@@ -963,6 +972,14 @@ const {
 const handleEditResume = () => {
   if (resume.value?.id) {
     router.push(`/builder?id=${resume.value.id}`);
+  }
+};
+
+const updateStatus = async (job) => {
+  try {
+    await updateApplicationStatus(job.id, job.status, job);
+  } catch (error) {
+    console.error('Failed to update status:', error);
   }
 };
 
