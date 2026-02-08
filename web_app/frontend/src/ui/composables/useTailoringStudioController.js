@@ -14,9 +14,10 @@ import { ImproveTextUseCase } from '../../core/application/ai/ImproveTextUseCase
 import { GenerateSuggestionsUseCase } from '../../core/application/ai/GenerateSuggestionsUseCase.js';
 import { CalculateAtsScoreUseCase } from '../../core/application/resume/CalculateAtsScoreUseCase.js';
 import { UpdateResumeUseCase } from '../../core/application/resume/UpdateResumeUseCase.js';
-import { ListResumesUseCase } from '../../core/application/resume/ListResumesUseCase.js';
+import { ListResumesUseCase } from '../../core/application/editor/ListResumesUseCase.js';
 import { HttpJobApplicationRepository } from '../../infrastructure/api/HttpJobApplicationRepository.js';
 import { HttpResumeRepository } from '../../infrastructure/api/HttpResumeRepository.js';
+import { HttpResumesListService } from '../../infrastructure/api/HttpResumesListService.js';
 import { HttpAIService } from '../../infrastructure/api/HttpAIService.js';
 import { useAuthStore } from '../stores/useAuthStore.js';
 
@@ -27,6 +28,7 @@ export function useTailoringStudioController() {
   // ===== Dependency Injection (DI) =====
   const jobApplicationRepository = new HttpJobApplicationRepository();
   const resumeRepository = new HttpResumeRepository();
+  const resumesListService = new HttpResumesListService();
   const aiService = new HttpAIService();
 
   const getJobApplicationUseCase = new GetJobApplicationUseCase(jobApplicationRepository);
@@ -36,7 +38,7 @@ export function useTailoringStudioController() {
   const generateSuggestionsUseCase = new GenerateSuggestionsUseCase(aiService);
   const calculateAtsScoreUseCase = new CalculateAtsScoreUseCase(resumeRepository);
   const updateResumeUseCase = new UpdateResumeUseCase(resumeRepository);
-  const listResumesUseCase = new ListResumesUseCase(resumeRepository);
+  const listResumesUseCase = new ListResumesUseCase(resumesListService);
 
   const authStore = useAuthStore();
 
@@ -72,6 +74,14 @@ export function useTailoringStudioController() {
   const userResumes = ref([]);
   const isLoadingResumes = ref(false);
   const showLinkResumeModal = ref(false);
+  const resumePagination = ref({
+    page: 1,
+    limit: 5,
+    totalCount: 0,
+    totalPages: 0,
+    hasNext: false,
+    hasPrev: false
+  });
 
   // AI Suggestions state
   const suggestions = ref([]);
@@ -724,17 +734,38 @@ export function useTailoringStudioController() {
     }
   };
 
-  const loadUserResumes = async () => {
+  const loadUserResumes = async (options = {}) => {
     isLoadingResumes.value = true;
     error.value = null;
 
     try {
-      userResumes.value = await listResumesUseCase.execute();
+      const { page = 1, limit = resumePagination.value.limit } = options;
+      const result = await listResumesUseCase.execute({ page, limit });
+      userResumes.value = result.resumes || [];
+      resumePagination.value = result.pagination || resumePagination.value;
     } catch (err) {
       error.value = 'Failed to load resumes. Please try again.';
       console.error('Error loading user resumes:', err);
     } finally {
       isLoadingResumes.value = false;
+    }
+  };
+
+  const goToResumePage = async (page) => {
+    if (page >= 1 && page <= resumePagination.value.totalPages) {
+      await loadUserResumes({ page, limit: resumePagination.value.limit });
+    }
+  };
+
+  const goToResumeNext = async () => {
+    if (resumePagination.value.hasNext) {
+      await loadUserResumes({ page: resumePagination.value.page + 1, limit: resumePagination.value.limit });
+    }
+  };
+
+  const goToResumePrevious = async () => {
+    if (resumePagination.value.hasPrev) {
+      await loadUserResumes({ page: resumePagination.value.page - 1, limit: resumePagination.value.limit });
     }
   };
 
@@ -823,7 +854,7 @@ export function useTailoringStudioController() {
 
   // UI Methods
   const handleGenerateClick = async () => {
-    await loadUserResumes();
+    await loadUserResumes({ page: 1 });
     selectedResumeId.value = resume.value?.id || (userResumes.value.length > 0 ? userResumes.value[0].id : null);
     showGenerationModal.value = true;
   };
@@ -842,7 +873,7 @@ export function useTailoringStudioController() {
   };
 
   const handleLinkResumeClick = async () => {
-    await loadUserResumes();
+    await loadUserResumes({ page: 1 });
     showLinkResumeModal.value = true;
   };
 
@@ -1354,6 +1385,7 @@ export function useTailoringStudioController() {
     userResumes,
     isLoadingResumes,
     showLinkResumeModal,
+    resumePagination,
 
     // AI Suggestions
     suggestions,
@@ -1400,6 +1432,9 @@ export function useTailoringStudioController() {
     switchSection,
     toggleKeywordSelection,
     loadUserResumes,
+    goToResumePage,
+    goToResumeNext,
+    goToResumePrevious,
     linkResumeToApplication,
     generateSuggestions,
 

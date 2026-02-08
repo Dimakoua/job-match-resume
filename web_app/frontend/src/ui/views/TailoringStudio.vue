@@ -94,7 +94,7 @@
                 <div class="size-8 rounded-full border-2 border-white dark:border-background-dark bg-primary flex items-center justify-center text-[10px] font-bold text-white">{{ resume ? 'CV' : 'N/A' }}</div>
               </div>
               <div class="flex gap-2">
-                <button v-if="!isGenerating" @click="handleLinkResumeClick"
+                <button v-if="!isGenerating" @click="handleLinkResumeClickWithReset"
                   class="flex items-center gap-2 cursor-pointer rounded-lg h-9 px-4 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-600">
                   <span class="material-symbols-outlined text-sm">link</span>
                   <span class="truncate">Link Resume</span>
@@ -864,6 +864,50 @@
             </div>
           </div>
 
+          <!-- Pagination -->
+          <div v-if="resumePagination.totalPages > 1" class="mt-6 flex justify-center">
+            <div class="flex items-center gap-2">
+              <!-- Previous Button -->
+              <button 
+                @click="goToResumePrevious"
+                :disabled="!resumePagination.hasPrev"
+                class="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+
+              <!-- Page Numbers -->
+              <div class="flex items-center gap-1">
+                <button 
+                  v-for="page in resumePagination.totalPages" 
+                  :key="page"
+                  @click="goToResumePage(page)"
+                  :class="[
+                    'px-3 py-2 rounded-lg text-sm font-medium transition-colors',
+                    page === resumePagination.page 
+                      ? 'bg-primary text-white' 
+                      : 'border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800'
+                  ]"
+                >
+                  {{ page }}
+                </button>
+              </div>
+
+              <!-- Next Button -->
+              <button 
+                @click="goToResumeNext"
+                :disabled="!resumePagination.hasNext"
+                class="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
           <div class="flex gap-3 mt-6">
             <button @click="closeLinkResumeModal"
               class="flex-1 px-4 py-2 border border-gray-200 dark:border-white/10 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-white/5">
@@ -907,6 +951,7 @@ const {
   userResumes,
   isLoadingResumes,
   showLinkResumeModal,
+  resumePagination,
   isEditingNotes,
   editedNotes,
 
@@ -966,8 +1011,20 @@ const {
   //Notes
   startEditingNotes,
   cancelEditingNotes,
-  saveNotes
+  saveNotes,
+
+  // Resume pagination
+  loadUserResumes,
+  goToResumePage,
+  goToResumeNext,
+  goToResumePrevious
 } = useTailoringStudioController();
+
+// Reset pagination when modal opens
+const handleLinkResumeClickWithReset = async () => {
+  await loadUserResumes({ page: 1, limit: 5 });
+  showLinkResumeModal.value = true;
+};
 
 const handleEditResume = () => {
   if (resume.value?.id) {
