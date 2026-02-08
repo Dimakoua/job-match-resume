@@ -165,9 +165,7 @@
                       Job Description
                     </h2>
                     <div v-if="!isEditingJob" class="bg-gray-50 dark:bg-background-dark/50 rounded-lg p-4">
-                      <p v-if="job.jobDescription" class="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">
-                        {{ job.jobDescription }}
-                      </p>
+                      <p v-if="job.jobDescription" class="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed" v-html="highlightKeywords(job.jobDescription)"></p>
                       <p v-else class="text-gray-400 italic">No job description available</p>
                     </div>
                   </div>
@@ -219,7 +217,7 @@
                 </div>
                 <div class="p-6 overflow-y-auto prose prose-sm dark:prose-invert max-w-none">
                   <p v-if="isLoadingJob" class="text-gray-400">Loading job description...</p>
-                  <p v-else-if="job?.jobDescription" class="whitespace-pre-wrap text-sm text-gray-700 dark:text-gray-300">{{ job.jobDescription }}</p>
+                  <p v-else-if="job?.jobDescription" class="whitespace-pre-wrap text-sm text-gray-700 dark:text-gray-300" v-html="highlightKeywords(job.jobDescription)"></p>
                   <p v-else class="text-gray-400">No job description available</p>
                 </div>
               </div>
@@ -861,6 +859,18 @@ const handleEditResume = () => {
   if (resume.value?.id) {
     router.push(`/builder?id=${resume.value.id}`);
   }
+};
+
+const highlightKeywords = (text) => {
+  if (!text || !atsJobKeywords.value?.length) return text;
+  
+  let highlightedText = text;
+  atsJobKeywords.value.forEach(keyword => {
+    const regex = new RegExp(`(${keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+    highlightedText = highlightedText.replace(regex, '<span class="bg-yellow-200 dark:bg-yellow-800/30 px-1 rounded font-semibold">$1</span>');
+  });
+  
+  return highlightedText;
 };
 
 onMounted(async () => {
