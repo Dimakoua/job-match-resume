@@ -32,57 +32,52 @@ export class ClassicTemplate {
 
     const docSections = [];
 
-    // Helper for Section Headers
+    // Helper for Section Headers (centered, semibold, matching UI design)
     const createSectionHeader = (text) => {
+      const headerText = text.charAt(0).toUpperCase() + text.slice(1); // Capitalize first letter only
       return new Paragraph({
-        text: text.toUpperCase(),
-        spacing: { before: 200, after: 100 },
+        text: headerText,
+        spacing: { before: 150, after: 100 },
+        alignment: AlignmentType.CENTER,
         run: {
           font: headingFontFamily,
-          size: 26, // 13pt
-          bold: true,
-          color: accentColor,
-          allCaps: true
-        },
-        indent: { left: 360 }, // 0.25 inch indent for left border effect
-        border: {
-          left: {
-            color: accentColor,
-            space: 1,
-            value: BorderStyle.SINGLE,
-            size: 24
-          }
+          size: 24, // 12pt
+          bold: true, // semibold in DOCX
+          color: textColor // dark text color, not accent
         }
       });
     };
 
-    // Header with double bottom border
+    // Header with centered layout (matching UI)
     const headerParagraphs = [];
 
-    // Name (left side)
-    const fullName = `${resume.firstName || 'Your'} ${resume.lastName || 'Name'}`;
+    // Name (centered)
+    const fullName = `${sections.firstName || resume.firstName || 'Your'} ${sections.lastName || resume.lastName || 'Name'}`;
     headerParagraphs.push(
       new Paragraph({
         text: fullName.toUpperCase(),
         spacing: { after: 50 },
+        alignment: AlignmentType.CENTER,
         run: {
           font: headingFontFamily,
-          size: 62, // 31pt
+          size: 36, // 18pt
           bold: true,
           color: textColor
         }
       })
     );
 
-    // Professional Title
-    if (resume.title) {
+    // Professional Title (centered)
+    const title = sections.title || resume.title;
+    if (title) {
       headerParagraphs.push(
         new Paragraph({
-          text: resume.title,
+          text: title,
           spacing: { after: 100 },
+          alignment: AlignmentType.CENTER,
           run: {
             font: fontFamily,
-            size: 30, // 15pt
+            size: 24, // 12pt
             italics: true,
             color: grayColor
           }
@@ -90,29 +85,36 @@ export class ClassicTemplate {
       );
     }
 
-    // Contact Information (right side, but we'll put it after name for simplicity)
+    // Contact Information (centered, single line with separators)
+    const location = sections.location || resume.location;
+    const phone = sections.phone || resume.phone;
+    const email = sections.email || resume.email;
+    const github = sections.github || resume.github;
+    const linkedin = sections.linkedin || resume.linkedin;
+    
     const contactParts = [];
-    if (resume.location) contactParts.push(resume.location.toUpperCase());
-    if (resume.phone) contactParts.push(resume.phone);
-    if (resume.email) contactParts.push(resume.email.toLowerCase());
-    if (resume.linkedin) contactParts.push(resume.linkedin);
+    if (location) contactParts.push(location.toUpperCase());
+    if (phone) contactParts.push(phone);
+    if (email) contactParts.push(email.toLowerCase());
+    if (github) contactParts.push(`GitHub: ${github}`);
+    if (linkedin) contactParts.push(`LinkedIn: ${linkedin}`);
 
     if (contactParts.length > 0) {
       headerParagraphs.push(
         new Paragraph({
-          text: contactParts.join('\n'),
+          text: contactParts.join(' | '),
           spacing: { after: 200 },
+          alignment: AlignmentType.CENTER,
           run: {
             font: fontFamily,
             size: 20, // 10pt
             color: grayColor
-          },
-          alignment: AlignmentType.RIGHT
+          }
         })
       );
     }
 
-    // Double bottom border
+    // Single bottom border (gray line)
     headerParagraphs.push(
       new Paragraph({
         text: '',
@@ -121,7 +123,7 @@ export class ClassicTemplate {
           bottom: {
             color: 'CCCCCC',
             space: 1,
-            value: BorderStyle.DOUBLE,
+            value: BorderStyle.SINGLE,
             size: 4
           }
         }
@@ -148,7 +150,7 @@ export class ClassicTemplate {
             spacing: { after: 200 },
             run: {
               font: fontFamily,
-              size: 22 // 11pt
+              size: 20 // 10pt
             }
           })
         );
@@ -162,7 +164,7 @@ export class ClassicTemplate {
               spacing: { after: 50 },
               run: {
                 font: fontFamily,
-                size: 22,
+                size: 20,
                 bold: true,
                 color: textColor
               }
@@ -256,7 +258,7 @@ export class ClassicTemplate {
             spacing: { after: 200 },
             run: {
               font: fontFamily,
-              size: 22
+              size: 20
             }
           })
         );
@@ -301,7 +303,7 @@ export class ClassicTemplate {
               spacing: { after: 100 },
               run: {
                 font: fontFamily,
-                size: 22
+                size: 20
               }
             })
           );

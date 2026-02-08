@@ -50,26 +50,33 @@ export class ClassicTemplate {
     // Font size mapping
     const baseSize = style.fontSize || 11;
     const sizes = {
-      name: baseSize + 20, // 31pt
-      title: baseSize + 4, // 15pt
-      section: baseSize + 2, // 13pt
-      body: baseSize, // 11pt
-      contact: baseSize - 1, // 10pt
-      small: baseSize - 2 // 9pt
+      name: 18, // 18pt
+      title: 12, // 12pt
+      section: 12, // 12pt
+      body: 10, // 10pt
+      contact: 10, // 10pt
+      small: 9 // 9pt
     };
 
     const margin = 50;
     let currentY = height - margin;
 
+    // Helper: Sanitize text for WinAnsi encoding
+    const sanitizeText = (text) => {
+      if (!text) return text;
+      return String(text).replace(/●/g, '-').replace(/•/g, '-').replace(/\n/g, ' ');
+    };
+
     // Helper: Add text with wrapping
     const addText = (text, x, y, options = {}) => {
       if (!text) return y;
+      const sanitizedText = sanitizeText(text);
       const size = options.size || sizes.body;
       const font = options.font || fontRegular;
       const color = options.color || textColor;
       const maxWidth = options.maxWidth || (width - 2 * margin);
 
-      const words = String(text).split(' ');
+      const words = sanitizedText.split(' ');
       let line = '';
       let currentYPos = y;
 
@@ -94,26 +101,20 @@ export class ClassicTemplate {
       return currentYPos;
     };
 
-    // Helper: Add section header
+    // Helper: Add section header (centered, semibold, matching UI design)
     const addSectionHeader = (text, y) => {
-      // Draw accent left border
-      currentPage.drawRectangle({
-        x: margin,
-        y: y - 2,
-        width: 4,
-        height: sizes.section * 1.2,
-        color: accentColor
-      });
-
-      currentPage.drawText(text.toUpperCase(), {
-        x: margin + 12,
+      const headerText = text.charAt(0).toUpperCase() + text.slice(1); // Capitalize first letter only
+      const headerWidth = fontRegular.widthOfTextAtSize(sanitizeText(headerText), sizes.section);
+      
+      currentPage.drawText(sanitizeText(headerText), {
+        x: (width - headerWidth) / 2,
         y: y,
         size: sizes.section,
-        font: fontBold,
-        color: accentColor
+        font: fontBold, // semibold equivalent in pdf-lib
+        color: textColor // Use dark text color, not accent
       });
 
-      return y - sizes.section * 2;
+      return y - sizes.section * 1.8;
     };
 
     // Helper: Check if we need a new page
@@ -126,13 +127,12 @@ export class ClassicTemplate {
       return false;
     };
 
-    // Header with double bottom border
-    const headerY = currentY;
-
-    // Name (left side)
-    const fullName = `${resume.firstName || 'Your'} ${resume.lastName || 'Name'}`;
-    currentPage.drawText(fullName.toUpperCase(), {
-      x: margin,
+    // Header with centered layout (matching UI)
+    // Name (centered)
+    const fullName = `${sections.firstName || resume.firstName || 'Your'} ${sections.lastName || resume.lastName || 'Name'}`;
+    const nameWidth = fontBold.widthOfTextAtSize(sanitizeText(fullName.toUpperCase()), sizes.name);
+    currentPage.drawText(sanitizeText(fullName.toUpperCase()), {
+      x: (width - nameWidth) / 2,
       y: currentY,
       size: sizes.name,
       font: fontBold,
@@ -140,10 +140,12 @@ export class ClassicTemplate {
     });
     currentY -= sizes.name * 1.3;
 
-    // Professional Title
-    if (resume.title) {
-      currentPage.drawText(resume.title, {
-        x: margin,
+    // Professional Title (centered)
+    const title = sections.title || resume.title;
+    if (title) {
+      const titleWidth = fontItalic.widthOfTextAtSize(sanitizeText(title), sizes.title);
+      currentPage.drawText(sanitizeText(title), {
+        x: (width - titleWidth) / 2,
         y: currentY,
         size: sizes.title,
         font: fontItalic,
@@ -152,47 +154,43 @@ export class ClassicTemplate {
       currentY -= sizes.title * 1.5;
     }
 
-    // Contact Information (right side)
+    // Contact Information (centered, single line)
     const contactParts = [];
-    if (resume.location) contactParts.push(resume.location.toUpperCase());
-    if (resume.phone) contactParts.push(resume.phone);
-    if (resume.email) contactParts.push(resume.email.toLowerCase());
-    if (resume.linkedin) contactParts.push(resume.linkedin);
+    const location = sections.location || resume.location;
+    const phone = sections.phone || resume.phone;
+    const email = sections.email || resume.email;
+    const github = sections.github || resume.github;
+    const linkedin = sections.linkedin || resume.linkedin;
+    
+    if (location) contactParts.push(location.toUpperCase());
+    if (phone) contactParts.push(phone);
+    if (email) contactParts.push(email.toLowerCase());
+    if (github) contactParts.push(`GitHub: ${github}`);
+    if (linkedin) contactParts.push(`LinkedIn: ${linkedin}`);
 
     if (contactParts.length > 0) {
-      const contactX = width - margin;
-      let contactY = headerY;
-
-      for (const contact of contactParts) {
-        const textWidth = fontRegular.widthOfTextAtSize(contact, sizes.contact);
-        currentPage.drawText(contact, {
-          x: contactX - textWidth,
-          y: contactY,
-          size: sizes.contact,
-          font: fontRegular,
-          color: grayColor
-        });
-        contactY -= sizes.contact * 1.8;
-      }
+      const contactText = contactParts.join(' | ');
+      const contactWidth = fontRegular.widthOfTextAtSize(sanitizeText(contactText), sizes.contact);
+      currentPage.drawText(sanitizeText(contactText), {
+        x: (width - contactWidth) / 2,
+        y: currentY,
+        size: sizes.contact,
+        font: fontRegular,
+        color: grayColor
+      });
+      currentY -= sizes.contact * 1.8;
     }
 
-    // Double bottom border
+    // Single bottom border (gray line)
     currentPage.drawRectangle({
       x: margin,
       y: currentY + 10,
       width: width - 2 * margin,
-      height: 2,
-      color: rgb(0.8, 0.8, 0.8)
-    });
-    currentPage.drawRectangle({
-      x: margin,
-      y: currentY + 6,
-      width: width - 2 * margin,
-      height: 2,
+      height: 1,
       color: rgb(0.8, 0.8, 0.8)
     });
 
-    currentY -= 40;
+    currentY -= 30;
 
     // Sections
     const sectionOrder = ['summary', 'experience', 'education', 'skills', 'projects', 'certifications'];
@@ -217,7 +215,7 @@ export class ClassicTemplate {
           // Job title and company
           const titleLine = `${exp.position || ''}${exp.position && exp.company ? ' at ' : ''}${exp.company || ''}`;
           if (titleLine.trim()) {
-            currentPage.drawText(titleLine, {
+            currentPage.drawText(sanitizeText(titleLine), {
               x: margin,
               y: currentY,
               size: sizes.body,
@@ -230,7 +228,7 @@ export class ClassicTemplate {
           // Date range
           if (exp.startDate || exp.endDate) {
             const dateRange = `${exp.startDate || ''}${exp.startDate && exp.endDate ? ' — ' : ''}${exp.endDate || 'Present'}`;
-            currentPage.drawText(dateRange, {
+            currentPage.drawText(sanitizeText(dateRange), {
               x: margin,
               y: currentY,
               size: sizes.small,
@@ -254,7 +252,7 @@ export class ClassicTemplate {
 
           const degreeLine = `${edu.degree || ''}${edu.degree && edu.field ? ' in ' : ''}${edu.field || ''}`;
           if (degreeLine.trim()) {
-            currentPage.drawText(degreeLine, {
+            currentPage.drawText(sanitizeText(degreeLine), {
               x: margin,
               y: currentY,
               size: sizes.body,
@@ -266,7 +264,7 @@ export class ClassicTemplate {
 
           const schoolLine = `${edu.school || ''}`;
           if (schoolLine.trim()) {
-            currentPage.drawText(schoolLine, {
+            currentPage.drawText(sanitizeText(schoolLine), {
               x: margin,
               y: currentY,
               size: sizes.contact,
@@ -278,7 +276,7 @@ export class ClassicTemplate {
 
           if (edu.startDate || edu.endDate) {
             const dateRange = `${edu.startDate || ''}${edu.startDate && edu.endDate ? ' — ' : ''}${edu.endDate || ''}`;
-            currentPage.drawText(dateRange, {
+            currentPage.drawText(sanitizeText(dateRange), {
               x: margin,
               y: currentY,
               size: sizes.small,
@@ -291,15 +289,15 @@ export class ClassicTemplate {
           currentY -= 8;
         }
       } else if (sectionKey === 'skills' && Array.isArray(section)) {
-        const skillsText = section.join(' • ');
-        currentY = addText(skillsText, margin, currentY);
+        const skillsText = section.join(' | ');
+        currentY = addText(skillsText, margin, currentY, { size: sizes.small });
         currentY -= 15;
       } else if (sectionKey === 'projects' && Array.isArray(section)) {
         for (const project of section) {
           checkNewPage(50);
 
           if (project.name) {
-            currentPage.drawText(project.name, {
+            currentPage.drawText(sanitizeText(project.name), {
               x: margin,
               y: currentY,
               size: sizes.body,
@@ -320,7 +318,7 @@ export class ClassicTemplate {
         for (const item of section) {
           checkNewPage(40);
           const itemText = typeof item === 'string' ? item : (item.title || item.name || JSON.stringify(item));
-          currentY = addText(`• ${itemText}`, margin, currentY);
+          currentY = addText(`- ${itemText}`, margin, currentY);
           currentY -= 5;
         }
         currentY -= 10;
