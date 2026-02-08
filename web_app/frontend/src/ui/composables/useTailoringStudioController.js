@@ -210,26 +210,31 @@ export function useTailoringStudioController() {
 
     let score = 0;
     const sections = resume.value.sections || resume.value;
+    const visibleSections = resume.value?.sections?.visibleSections || [];
+    const isVisible = (type) => {
+      if (visibleSections.length === 0) return true;
+      const sectionConfig = visibleSections.find(s => s.id === type);
+      return sectionConfig ? sectionConfig.visible : true; // Default to visible if not found
+    };
 
     // 1. Essential sections (40 points total - 10pts each)
-    const essentialSections = ['firstName', 'lastName', 'experience', 'education', 'skills'];
     let essentialScore = 0;
 
     // Personal info (firstName/lastName count as one section)
-    if ((sections.firstName || sections.lastName)) essentialScore += 10;
+    if (isVisible('personal') && (sections.firstName || sections.lastName)) essentialScore += 10;
 
     // Experience
-    if (sections.experience && Array.isArray(sections.experience) && sections.experience.length > 0) {
+    if (isVisible('experience') && sections.experience && Array.isArray(sections.experience) && sections.experience.length > 0) {
       essentialScore += 10;
     }
 
     // Education
-    if (sections.education && Array.isArray(sections.education) && sections.education.length > 0) {
+    if (isVisible('education') && sections.education && Array.isArray(sections.education) && sections.education.length > 0) {
       essentialScore += 10;
     }
 
     // Skills
-    if (sections.skills && Array.isArray(sections.skills) && sections.skills.length > 0) {
+    if (isVisible('skills') && sections.skills && Array.isArray(sections.skills) && sections.skills.length > 0) {
       essentialScore += 10;
     }
 
@@ -237,16 +242,18 @@ export function useTailoringStudioController() {
 
     // 2. Contact info completeness (20 points total - 5pts each for email, phone, location)
     let contactScore = 0;
-    if (sections.email && sections.email.trim()) contactScore += 5;
-    if (sections.phone && sections.phone.trim()) contactScore += 5;
-    if (sections.location && sections.location.trim()) contactScore += 5;
-    // LinkedIn is bonus but not required
-    if (sections.linkedin && sections.linkedin.trim()) contactScore += 5;
+    if (isVisible('personal')) {
+      if (sections.email && sections.email.trim()) contactScore += 5;
+      if (sections.phone && sections.phone.trim()) contactScore += 5;
+      if (sections.location && sections.location.trim()) contactScore += 5;
+      // LinkedIn is bonus but not required
+      if (sections.linkedin && sections.linkedin.trim()) contactScore += 5;
+    }
     score += Math.min(20, contactScore); // Cap at 20
 
     // 3. Experience quality (15 points total)
     let experienceScore = 0;
-    if (sections.experience && Array.isArray(sections.experience)) {
+    if (isVisible('experience') && sections.experience && Array.isArray(sections.experience)) {
       const experiences = sections.experience;
       if (experiences.length > 0) {
         // Check if experiences have detailed descriptions
@@ -260,7 +267,7 @@ export function useTailoringStudioController() {
 
     // 4. Education quality (10 points total)
     let educationScore = 0;
-    if (sections.education && Array.isArray(sections.education)) {
+    if (isVisible('education') && sections.education && Array.isArray(sections.education)) {
       const educations = sections.education;
       if (educations.length > 0) {
         // Check if education entries have degree and dates
@@ -276,7 +283,7 @@ export function useTailoringStudioController() {
 
     // 5. Skills formatting (10 points total)
     let skillsScore = 0;
-    if (sections.skills && Array.isArray(sections.skills)) {
+    if (isVisible('skills') && sections.skills && Array.isArray(sections.skills)) {
       const skills = sections.skills;
       if (skills.length > 0) {
         // Check if skills are properly formatted (not too long descriptions)
@@ -309,124 +316,148 @@ export function useTailoringStudioController() {
     if (!resume.value) return null;
 
     const sections = resume.value.sections || resume.value;
+    const visibleSections = resume.value?.sections?.visibleSections || [];
+    const isVisible = (type) => {
+      if (visibleSections.length === 0) return true;
+      const sectionConfig = visibleSections.find(s => s.id === type);
+      return sectionConfig ? sectionConfig.visible : true; // Default to visible if not found
+    };
+
     const breakdown = {
       essentialSections: { score: 0, max: 40, issues: [] },
       contactInfo: { score: 0, max: 20, issues: [] },
       experienceQuality: { score: 0, max: 15, issues: [] },
       educationQuality: { score: 0, max: 10, issues: [] },
       skillsFormatting: { score: 0, max: 10, issues: [] },
-      lengthAppropriateness: { score: 5, max: 5, issues: [] }
+      lengthAppropriateness: { score: 5, max: 5, issues: [] },
+      sectionVisibility: { score: 0, max: 0, issues: [] } // No score, just advice
     };
 
     // Essential sections
-    if (!(sections.firstName || sections.lastName)) {
-      breakdown.essentialSections.issues.push('Missing personal information (name)');
-    } else {
-      breakdown.essentialSections.score += 10;
+    if (isVisible('personal')) {
+      if (!(sections.firstName || sections.lastName)) {
+        breakdown.essentialSections.issues.push('Add your full name - this is the first thing recruiters see and helps ATS systems identify your application');
+      } else {
+        breakdown.essentialSections.score += 10;
+      }
     }
 
-    if (!sections.experience || !Array.isArray(sections.experience) || sections.experience.length === 0) {
-      breakdown.essentialSections.issues.push('Missing work experience section');
-    } else {
-      breakdown.essentialSections.score += 10;
+    if (isVisible('experience')) {
+      if (!sections.experience || !Array.isArray(sections.experience) || sections.experience.length === 0) {
+        breakdown.essentialSections.issues.push('Include a work experience section - most ATS systems expect this core section to evaluate your background');
+      } else {
+        breakdown.essentialSections.score += 10;
+      }
     }
 
-    if (!sections.education || !Array.isArray(sections.education) || sections.education.length === 0) {
-      breakdown.essentialSections.issues.push('Missing education section');
-    } else {
-      breakdown.essentialSections.score += 10;
+    if (isVisible('education')) {
+      if (!sections.education || !Array.isArray(sections.education) || sections.education.length === 0) {
+        breakdown.essentialSections.issues.push('Add your educational background - this helps establish your qualifications and is commonly parsed by ATS');
+      } else {
+        breakdown.essentialSections.score += 10;
+      }
     }
 
-    if (!sections.skills || !Array.isArray(sections.skills) || sections.skills.length === 0) {
-      breakdown.essentialSections.issues.push('Missing skills section');
-    } else {
-      breakdown.essentialSections.score += 10;
+    if (isVisible('skills')) {
+      if (!sections.skills || !Array.isArray(sections.skills) || sections.skills.length === 0) {
+        breakdown.essentialSections.issues.push('Include a skills section - this is crucial for keyword matching and shows your technical competencies');
+      } else {
+        breakdown.essentialSections.score += 10;
+      }
     }
 
     // Contact info
-    if (!sections.email || !sections.email.trim()) {
-      breakdown.contactInfo.issues.push('Missing email address');
-    } else {
-      breakdown.contactInfo.score += 5;
-    }
+    if (isVisible('personal')) {
+      if (!sections.email || !sections.email.trim()) {
+        breakdown.contactInfo.issues.push('Add your email address - essential for recruiters to contact you and commonly parsed by ATS systems');
+      } else {
+        breakdown.contactInfo.score += 5;
+      }
 
-    if (!sections.phone || !sections.phone.trim()) {
-      breakdown.contactInfo.issues.push('Missing phone number');
-    } else {
-      breakdown.contactInfo.score += 5;
-    }
+      if (!sections.phone || !sections.phone.trim()) {
+        breakdown.contactInfo.issues.push('Include your phone number - provides another way for employers to reach you');
+      } else {
+        breakdown.contactInfo.score += 5;
+      }
 
-    if (!sections.location || !sections.location.trim()) {
-      breakdown.contactInfo.issues.push('Missing location');
-    } else {
-      breakdown.contactInfo.score += 5;
-    }
+      if (!sections.location || !sections.location.trim()) {
+        breakdown.contactInfo.issues.push('Add your location/city - helps employers assess relocation needs and local opportunities');
+      } else {
+        breakdown.contactInfo.score += 5;
+      }
 
-    if (sections.linkedin && sections.linkedin.trim()) {
-      breakdown.contactInfo.score += 5; // Bonus for LinkedIn
-    } else {
-      breakdown.contactInfo.issues.push('Consider adding LinkedIn profile');
-    }
+      if (sections.linkedin && sections.linkedin.trim()) {
+        breakdown.contactInfo.score += 5; // Bonus for LinkedIn
+      } else {
+        breakdown.contactInfo.issues.push('Consider adding your LinkedIn profile - provides additional professional context and networking opportunities');
+      }
 
-    breakdown.contactInfo.score = Math.min(20, breakdown.contactInfo.score);
+      breakdown.contactInfo.score = Math.min(20, breakdown.contactInfo.score);
+    }
 
     // Experience quality
-    if (sections.experience && Array.isArray(sections.experience)) {
-      const experiences = sections.experience;
-      if (experiences.length > 0) {
-        const detailedExperiences = experiences.filter(exp =>
-          exp.description && exp.description.trim().length > 50
-        ).length;
-        breakdown.experienceQuality.score = Math.min(15, (detailedExperiences / experiences.length) * 15);
+    if (isVisible('experience')) {
+      if (sections.experience && Array.isArray(sections.experience)) {
+        const experiences = sections.experience;
+        if (experiences.length > 0) {
+          const detailedExperiences = experiences.filter(exp =>
+            exp.description && exp.description.trim().length > 50
+          ).length;
+          breakdown.experienceQuality.score = Math.min(15, (detailedExperiences / experiences.length) * 15);
 
-        if (detailedExperiences < experiences.length) {
-          breakdown.experienceQuality.issues.push(`${experiences.length - detailedExperiences} experience entries need more detailed descriptions`);
+          if (detailedExperiences < experiences.length) {
+            breakdown.experienceQuality.issues.push(`${experiences.length - detailedExperiences} experience entries lack detailed descriptions. Add quantifiable achievements and responsibilities (aim for 50+ characters each) to better showcase your impact and improve ATS parsing`);
+          }
+        } else {
+          breakdown.experienceQuality.issues.push('No experience entries to evaluate - add your work history to demonstrate your professional background');
         }
       } else {
-        breakdown.experienceQuality.issues.push('No experience entries to evaluate');
+        breakdown.experienceQuality.issues.push('Experience section not found - this is critical for most job applications and ATS evaluation');
       }
-    } else {
-      breakdown.experienceQuality.issues.push('No experience section found');
     }
 
     // Education quality
-    if (sections.education && Array.isArray(sections.education)) {
-      const educations = sections.education;
-      if (educations.length > 0) {
-        const completeEducations = educations.filter(edu =>
-          edu.degree && edu.degree.trim() &&
-          edu.school && edu.school.trim() &&
-          edu.startDate && edu.endDate
-        ).length;
-        breakdown.educationQuality.score = Math.min(10, (completeEducations / educations.length) * 10);
+    if (isVisible('education')) {
+      if (sections.education && Array.isArray(sections.education)) {
+        const educations = sections.education;
+        if (educations.length > 0) {
+          const completeEducations = educations.filter(edu =>
+            edu.degree && edu.degree.trim() &&
+            edu.school && edu.school.trim() &&
+            edu.startDate && edu.endDate
+          ).length;
+          breakdown.educationQuality.score = Math.min(10, (completeEducations / educations.length) * 10);
 
-        if (completeEducations < educations.length) {
-          breakdown.educationQuality.issues.push(`${educations.length - completeEducations} education entries missing degree, school, or dates`);
+          if (completeEducations < educations.length) {
+            breakdown.educationQuality.issues.push(`${educations.length - completeEducations} education entries are incomplete. Include degree/major, school name, and graduation dates to provide a complete picture of your educational background`);
+          }
+        } else {
+          breakdown.educationQuality.issues.push('No education entries to evaluate - add your academic background to establish your qualifications');
         }
       } else {
-        breakdown.educationQuality.issues.push('No education entries to evaluate');
+        breakdown.educationQuality.issues.push('Education section not found - this helps establish your academic credentials and qualifications');
       }
-    } else {
-      breakdown.educationQuality.issues.push('No education section found');
     }
 
     // Skills formatting
-    if (sections.skills && Array.isArray(sections.skills)) {
-      const skills = sections.skills;
-      if (skills.length > 0) {
-        const wellFormattedSkills = skills.filter(skill =>
-          skill && skill.trim().length > 0 && skill.trim().length < 50
-        ).length;
-        breakdown.skillsFormatting.score = Math.min(10, (wellFormattedSkills / skills.length) * 10);
+    if (isVisible('skills')) {
+      if (sections.skills && Array.isArray(sections.skills)) {
+        const skills = sections.skills;
+        if (skills.length > 0) {
+          const wellFormattedSkills = skills.filter(skill =>
+            skill && skill.trim().length > 0 && skill.trim().length < 50
+          ).length;
+          breakdown.skillsFormatting.score = Math.min(10, (wellFormattedSkills / skills.length) * 10);
 
-        if (wellFormattedSkills < skills.length) {
-          breakdown.skillsFormatting.issues.push(`${skills.length - wellFormattedSkills} skills need better formatting`);
+          if (wellFormattedSkills < skills.length) {
+            breakdown.skillsFormatting.issues.push(`${skills.length - wellFormattedSkills} skills need better formatting. Keep skill names concise (under 50 characters) and ensure they're properly listed for optimal ATS parsing`);
+          }
+        } else {
+          breakdown.skillsFormatting.issues.push('No skills to evaluate - add relevant technical and soft skills that match the job requirements');
         }
       } else {
-        breakdown.skillsFormatting.issues.push('No skills to evaluate');
+        breakdown.skillsFormatting.issues.push('Skills section not found - this is essential for keyword matching and demonstrating your technical competencies');
       }
-    } else {
-      breakdown.skillsFormatting.issues.push('No skills section found');
     }
 
     // Length appropriateness
@@ -435,18 +466,65 @@ export function useTailoringStudioController() {
 
     if (wordCount < 200) {
       breakdown.lengthAppropriateness.score = 1;
-      breakdown.lengthAppropriateness.issues.push(`Resume is too short (${wordCount} words). Aim for 400-800 words`);
+      breakdown.lengthAppropriateness.issues.push(`Resume is too short (${wordCount} words). Most ATS systems and recruiters expect 400-800 words. Add more details about your achievements and responsibilities`);
     } else if (wordCount < 400) {
       breakdown.lengthAppropriateness.score = 3;
-      breakdown.lengthAppropriateness.issues.push(`Resume could be longer (${wordCount} words). Consider adding more details`);
+      breakdown.lengthAppropriateness.issues.push(`Resume could be longer (${wordCount} words). Consider expanding on your experience details and adding more quantifiable achievements to reach the ideal 400-800 word range`);
     } else if (wordCount > 1000) {
       breakdown.lengthAppropriateness.score = 2;
-      breakdown.lengthAppropriateness.issues.push(`Resume is too long (${wordCount} words). Consider condensing content`);
+      breakdown.lengthAppropriateness.issues.push(`Resume is too long (${wordCount} words). Some ATS systems have character limits. Focus on the most relevant 1-2 years of experience and condense descriptions`);
     } else if (wordCount > 800) {
       breakdown.lengthAppropriateness.score = 4;
-      breakdown.lengthAppropriateness.issues.push(`Resume is a bit long (${wordCount} words). Consider minor edits`);
+      breakdown.lengthAppropriateness.issues.push(`Resume is a bit long (${wordCount} words). Consider minor edits to stay within the optimal 400-800 word range for better ATS compatibility`);
     } else {
-      breakdown.lengthAppropriateness.issues.push(`Good length (${wordCount} words)`);
+      breakdown.lengthAppropriateness.issues.push(`Good length (${wordCount} words) - falls within the ideal 400-800 word range for most ATS systems and recruiters`);
+    }
+
+    // Section Visibility Advice
+    if (visibleSections.length > 0) {
+      // Get hidden sections (those with visible: false)
+      const hiddenSections = visibleSections.filter(s => !s.visible).map(s => s.id);
+      console.log('Hidden sections:', hiddenSections);
+
+      // Check for critical sections that should never be hidden
+      const criticalSections = ['personal', 'experience', 'skills'];
+      const hiddenCritical = criticalSections.filter(section => hiddenSections.includes(section));
+
+      if (hiddenCritical.length > 0) {
+        breakdown.sectionVisibility.issues.push(`⚠️ Critical sections are hidden: ${hiddenCritical.join(', ')}. These sections (personal info, work experience, skills) are essential for ATS parsing and should typically be visible`);
+      }
+
+      // Advice for education
+      if (hiddenSections.includes('education')) {
+        breakdown.sectionVisibility.issues.push(`📚 Education section is hidden. This is often acceptable for experienced professionals (5+ years) where work experience takes precedence, but consider making it visible if education is relevant to the role`);
+      }
+
+      // Advice for certifications
+      if (hiddenSections.includes('certifications')) {
+        breakdown.sectionVisibility.issues.push(`🏆 Certifications section is hidden. Hide this only if certifications aren't relevant to the job, or if space is limited. Otherwise, keep visible to showcase your qualifications`);
+      }
+
+      // Advice for projects
+      if (hiddenSections.includes('projects')) {
+        breakdown.sectionVisibility.issues.push(`💼 Projects section is hidden. Consider showing this if you have relevant projects that demonstrate your skills, especially for technical roles`);
+      }
+
+      // Advice for summary
+      if (hiddenSections.includes('summary')) {
+        breakdown.sectionVisibility.issues.push(`📝 Professional summary is hidden. This section helps set the tone and highlight key qualifications - consider making it visible unless space is extremely limited`);
+      }
+
+      // General advice
+      if (hiddenSections.length > 2) {
+        breakdown.sectionVisibility.issues.push(`ℹ️ Multiple sections are hidden. While customization is good, ensure you're not hiding too much content that ATS systems and recruiters expect to see`);
+      }
+
+      // If no sections are hidden
+      if (hiddenSections.length === 0) {
+        breakdown.sectionVisibility.issues.push(`✅ All sections are currently visible. Consider hiding less relevant sections (like old education for experienced roles) to optimize space and focus on your strongest qualifications`);
+      }
+    } else {
+      breakdown.sectionVisibility.issues.push(`✅ All sections are currently visible. Consider hiding less relevant sections (like old education for experienced roles) to optimize space and focus on your strongest qualifications`);
     }
 
     return breakdown;
@@ -469,10 +547,17 @@ export function useTailoringStudioController() {
 
     // Transform flat Builder format to array format for display
     const sections = resume.value.sections;
+    const visibleSections = sections.visibleSections || [];
+    const isVisible = (type) => {
+      if (visibleSections.length === 0) return true;
+      const sectionConfig = visibleSections.find(s => s.id === type);
+      return sectionConfig ? sectionConfig.visible : true; // Default to visible if not found
+    };
+
     const result = [];
 
     // Personal Info
-    if (sections.firstName || sections.lastName || sections.email || sections.phone || sections.location) {
+    if (isVisible('personal') && (sections.firstName || sections.lastName || sections.email || sections.phone || sections.location)) {
       result.push({
         title: 'Personal Information',
         content: [
@@ -487,7 +572,7 @@ export function useTailoringStudioController() {
     }
 
     // Summary
-    if (sections.summary) {
+    if (isVisible('summary') && sections.summary) {
       result.push({
         title: 'Professional Summary',
         content: sections.summary
@@ -495,7 +580,7 @@ export function useTailoringStudioController() {
     }
 
     // Experience
-    if (sections.experience && Array.isArray(sections.experience) && sections.experience.length > 0) {
+    if (isVisible('experience') && sections.experience && Array.isArray(sections.experience) && sections.experience.length > 0) {
       result.push({
         title: 'Work Experience',
         content: sections.experience.map(exp =>
@@ -505,7 +590,7 @@ export function useTailoringStudioController() {
     }
 
     // Education
-    if (sections.education && Array.isArray(sections.education) && sections.education.length > 0) {
+    if (isVisible('education') && sections.education && Array.isArray(sections.education) && sections.education.length > 0) {
       result.push({
         title: 'Education',
         content: sections.education.map(edu =>
@@ -515,7 +600,7 @@ export function useTailoringStudioController() {
     }
 
     // Skills
-    if (sections.skills && Array.isArray(sections.skills) && sections.skills.length > 0) {
+    if (isVisible('skills') && sections.skills && Array.isArray(sections.skills) && sections.skills.length > 0) {
       result.push({
         title: 'Skills',
         content: sections.skills.join(', ')
@@ -523,7 +608,7 @@ export function useTailoringStudioController() {
     }
 
     // Certifications
-    if (sections.certifications && Array.isArray(sections.certifications) && sections.certifications.length > 0) {
+    if (isVisible('certifications') && sections.certifications && Array.isArray(sections.certifications) && sections.certifications.length > 0) {
       result.push({
         title: 'Certifications',
         content: sections.certifications.map(cert =>
@@ -533,7 +618,7 @@ export function useTailoringStudioController() {
     }
 
     // Projects
-    if (sections.projects && Array.isArray(sections.projects) && sections.projects.length > 0) {
+    if (isVisible('projects') && sections.projects && Array.isArray(sections.projects) && sections.projects.length > 0) {
       result.push({
         title: 'Projects',
         content: sections.projects.map(proj =>

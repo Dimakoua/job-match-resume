@@ -708,6 +708,22 @@
                       </div>
                       <div v-else class="text-xs text-green-600">✓ Resume length is appropriate</div>
                     </div>
+
+                    <div class="p-4 border border-gray-100 dark:border-white/10 rounded-lg">
+                      <div class="flex justify-between items-center mb-2">
+                        <span class="font-medium text-sm">Section Visibility</span>
+                        <span class="text-sm font-bold">{{ atsFormatScoreBreakdown?.sectionVisibility.score }}/5pts</span>
+                      </div>
+                      <div class="w-full h-1.5 bg-gray-100 dark:bg-white/5 rounded-full overflow-hidden mb-2">
+                        <div class="h-full rounded-full" :class="atsFormatScoreBreakdown?.sectionVisibility.score === 5 ? 'bg-green-500' : 'bg-red-500'" :style="{ width: (atsFormatScoreBreakdown?.sectionVisibility.score / 5) * 100 + '%' }"></div>
+                      </div>
+                      <div v-if="atsFormatScoreBreakdown?.sectionVisibility.issues.length > 0" class="text-xs text-red-600">
+                        <ul class="list-disc list-inside space-y-1">
+                          <li v-for="issue in atsFormatScoreBreakdown.sectionVisibility.issues" :key="issue">{{ issue }}</li>
+                        </ul>
+                      </div>
+                      <div v-else class="text-xs text-green-600">✓ Section visibility is optimized</div>
+                    </div>
                   </div>
                 </div>
 
@@ -740,6 +756,10 @@
                         <div v-if="atsFormatScoreBreakdown?.lengthAppropriateness.score < 5" class="flex items-center gap-2">
                           <span class="w-1.5 h-1.5 bg-red-500 rounded-full"></span>
                           <span>Adjust resume length (400-800 words)</span>
+                        </div>
+                        <div v-if="atsFormatScoreBreakdown?.sectionVisibility.issues.length > 0" class="flex items-center gap-2">
+                          <span class="w-1.5 h-1.5 bg-orange-500 rounded-full"></span>
+                          <span>Review section visibility settings</span>
                         </div>
                       </div>
                     </div>
