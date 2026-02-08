@@ -77,7 +77,7 @@
               </div>
               <div class="flex flex-col">
                 <p class="text-sm font-bold">Application Connection</p>
-                <p class="text-xs text-[#4d6599] dark:text-gray-400">Current Stage: <span :class="getStatusBadgeClass(job?.status)">{{ job?.status || 'pending' }}</span></p>
+                <p class="text-xs text-[#4d6599] dark:text-gray-400">Current Stage: <span :class="['inline-flex items-center px-2 py-1 rounded-full text-xs font-medium', getStatusBadgeClass(job?.status)]">{{ job?.status || 'pending' }}</span></p>
               </div>
             </div>
             <div class="flex items-center gap-3">
