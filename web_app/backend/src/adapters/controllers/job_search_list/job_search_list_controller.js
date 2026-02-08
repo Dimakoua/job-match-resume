@@ -55,6 +55,9 @@ export class JobSearchListController extends BaseController {
       }, 201);
     } catch (error) {
       console.error('Create job search list error:', error);
+      if (error instanceof Response) {
+        return error;
+      }
       return this.errorResponse('INTERNAL_ERROR', 'An unexpected error occurred', 500);
     }
   }
@@ -143,6 +146,9 @@ export class JobSearchListController extends BaseController {
     } catch (error) {
       console.error('Update job search list error:', error);
 
+      if (error instanceof Response) {
+        return error;
+      }
       if (error.message === 'Job search list not found') {
         return this.errorResponse('NOT_FOUND', 'Job search list not found', 404);
       }
@@ -173,6 +179,9 @@ export class JobSearchListController extends BaseController {
     } catch (error) {
       console.error('Delete job search list error:', error);
 
+      if (error instanceof Response) {
+        return error;
+      }
       if (error.message === 'Job search list not found') {
         return this.errorResponse('NOT_FOUND', 'Job search list not found', 404);
       }

@@ -1,5 +1,5 @@
 export class JobSearchList {
-  constructor(id, userId, name, description = null) {
+  constructor(id, userId, name, description = null, createdAt = null, updatedAt = null) {
     this.validateId(id);
     this.validateUserId(userId);
     this.validateName(name);
@@ -9,6 +9,8 @@ export class JobSearchList {
     this.userId = userId;
     this.name = name.trim();
     this.description = description ? description.trim() : null;
+    this.createdAt = createdAt;
+    this.updatedAt = updatedAt;
   }
 
   validateId(id) {

@@ -17,24 +17,24 @@ export class D1JobSearchListRepository {
   }
 
   async findById(id) {
-    const sql = 'SELECT id, user_id, name, description FROM JobSearchLists WHERE id = ?';
+    const sql = 'SELECT id, user_id, name, description, created_at, updated_at FROM JobSearchLists WHERE id = ?';
     try {
       const result = await query(this.database, sql, [id]);
       if (result.results.length === 0) {
         return null;
       }
       const row = result.results[0];
-      return new JobSearchList(row.id, row.user_id, row.name, row.description);
+      return new JobSearchList(row.id, row.user_id, row.name, row.description, row.created_at, row.updated_at);
     } catch (error) {
       throw new Error(`Failed to find job search list: ${error.message}`);
     }
   }
 
   async findAllByUserId(userId) {
-    const sql = 'SELECT id, user_id, name, description FROM JobSearchLists WHERE user_id = ? ORDER BY created_at DESC';
+    const sql = 'SELECT id, user_id, name, description, created_at, updated_at FROM JobSearchLists WHERE user_id = ? ORDER BY created_at DESC';
     try {
       const result = await query(this.database, sql, [userId]);
-      return result.results.map(row => new JobSearchList(row.id, row.user_id, row.name, row.description));
+      return result.results.map(row => new JobSearchList(row.id, row.user_id, row.name, row.description, row.created_at, row.updated_at));
     } catch (error) {
       throw new Error(`Failed to find job search lists: ${error.message}`);
     }
