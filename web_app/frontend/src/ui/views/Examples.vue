@@ -23,7 +23,7 @@
               class="group bg-white dark:bg-[#1a202c] rounded-xl border border-[#e7ebf3] dark:border-[#2d364f] overflow-hidden shadow-sm hover:shadow-xl transition-all cursor-pointer focus-within:ring-2 focus-within:ring-primary"
             >
               <!-- Preview -->
-              <div class="aspect-[3/4] bg-slate-100 dark:bg-slate-900 overflow-hidden group-hover:bg-slate-200 dark:group-hover:bg-slate-800 transition-colors">
+              <div class="aspect-[3/4] bg-slate-100 dark:bg-slate-900 overflow-hidden group-hover:bg-slate-200 dark:group-hover:bg-slate-800 transition-colors cursor-pointer" @click="openPreviewModal(example)">
                 <div class="scale-[0.65] origin-top-left w-[153.8%] h-[153.8%] group-hover:scale-[0.67] transition-transform duration-300">
                   <ResumePreview 
                     :resume="example.resumeData"
@@ -52,11 +52,11 @@
 
                 <!-- Actions -->
                 <button 
-                  @click="() => handleUseTemplate(example)"
-                  :aria-label="`Use ${example.title} template`"
+                  @click="openPreviewModal(example)"
+                  :aria-label="`Preview ${example.title} template`"
                   class="w-full bg-primary hover:bg-blue-700 active:bg-blue-800 text-white font-bold py-2 rounded-lg transition-colors text-sm shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
                 >
-                  Use This Template
+                  Preview Template
                 </button>
               </div>
             </div>
@@ -71,6 +71,65 @@
 
       <!-- Footer -->
       <AppFooter />
+    </div>
+
+    <!-- Preview Modal -->
+    <div v-if="previewModal.show" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" @click="closePreviewModal">
+      <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden" @click.stop>
+        <div class="flex flex-col lg:flex-row">
+          <!-- Preview Section -->
+          <div class="flex-1 p-6 bg-gray-50 dark:bg-gray-800">
+            <div class="bg-white dark:bg-gray-900 rounded-lg shadow-sm p-4 h-[600px] overflow-hidden">
+              <ResumePreview 
+                :resume="previewModal.example?.resumeData"
+                :sections="[]"
+                :layout="previewModal.example?.layout"
+                :style="previewModal.example?.style"
+              />
+            </div>
+          </div>
+
+          <!-- Info Section -->
+          <div class="lg:w-80 p-6 border-t lg:border-t-0 lg:border-l border-gray-200 dark:border-gray-700">
+            <div class="flex items-start justify-between mb-4">
+              <div>
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white">{{ previewModal.example?.title }}</h3>
+                <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">{{ previewModal.example?.description }}</p>
+              </div>
+              <button @click="closePreviewModal" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
+                <span class="material-symbols-outlined text-gray-400">close</span>
+              </button>
+            </div>
+
+            <!-- Tags -->
+            <div class="flex flex-wrap gap-2 mb-6">
+              <span 
+                v-for="tag in previewModal.example?.tags" 
+                :key="tag"
+                class="text-xs px-3 py-1 bg-primary/10 dark:bg-primary/20 text-primary rounded-full"
+              >
+                {{ tag }}
+              </span>
+            </div>
+
+            <!-- Actions -->
+            <div class="space-y-3">
+              <button 
+                @click="handleUseTemplate(previewModal.example)"
+                class="w-full bg-primary hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition-colors shadow-sm hover:shadow-md"
+              >
+                Use This Template
+              </button>
+              <button 
+                @click="closePreviewModal"
+                class="w-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 font-medium py-3 rounded-lg transition-colors"
+              >
+                Close Preview
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -382,6 +441,12 @@ const examples = ref([
   }
 ])
 
+// Preview modal state
+const previewModal = ref({
+  show: false,
+  example: null
+})
+
 const handleUseTemplate = (example) => {
   if (!example || !example.id) {
     console.error('Invalid template selected')
@@ -397,6 +462,16 @@ const handleUseTemplate = (example) => {
       templateStyle: JSON.stringify(example.style)
     }
   })
+}
+
+const openPreviewModal = (example) => {
+  previewModal.value.show = true
+  previewModal.value.example = example
+}
+
+const closePreviewModal = () => {
+  previewModal.value.show = false
+  previewModal.value.example = null
 }
 </script>
 
