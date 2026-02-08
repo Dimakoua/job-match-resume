@@ -224,7 +224,7 @@
                 </div>
               </div>
               <!-- Right Side: Resume Editor -->
-              <div class="flex-1 bg-white dark:bg-background-dark/50 border border-[#e7ebf3] dark:border-white/10 rounded-xl flex flex-col overflow-hidden shadow-2xl">
+              <div class="flex-[2] bg-white dark:bg-background-dark/50 border border-[#e7ebf3] dark:border-white/10 rounded-xl flex flex-col overflow-hidden shadow-2xl">
                 <div class="p-4 border-b border-[#e7ebf3] dark:border-white/10 flex justify-between items-center bg-white dark:bg-background-dark">
                   <div class="flex items-center gap-3">
                     <h3 class="text-sm font-bold flex items-center gap-2 text-primary">
@@ -233,6 +233,10 @@
                     </h3>
                     <span v-if="resume?.title" class="text-[10px] text-[#4d6599] italic">{{ resume.title }}</span>
                   </div>
+                  <button v-if="resume" @click="handleEditResume" class="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-primary bg-primary/10 hover:bg-primary/20 rounded-lg transition-colors">
+                    <span class="material-symbols-outlined text-sm">edit</span>
+                    Edit Resume
+                  </button>
                 </div>
                 <div class="p-2 overflow-y-auto bg-gray-50 dark:bg-background-dark/30 flex-1">
                   <!-- Resume Content -->
@@ -246,7 +250,7 @@
                       :style="{ 
                         headingFont: 'inter', 
                         bodyFont: 'inter', 
-                        fontSize: 10, 
+                        fontSize: 12, 
                         lineHeight: 1.4, 
                         accentColor: '#2463eb' 
                       }"
@@ -767,7 +771,7 @@
 
 <script setup>
 import { computed, onMounted, ref } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useTailoringStudioController } from '../composables/useTailoringStudioController.js';
 import { useAuthStore } from '../stores/useAuthStore.js';
 import AppHeader from '../components/AppHeader.vue';
@@ -776,6 +780,7 @@ import JobApplicationForm from '../components/JobApplicationForm.vue';
 import ResumePreview from '../components/ResumePreview.vue';
 
 const route = useRoute();
+const router = useRouter();
 const authStore = useAuthStore();
 
 // Use the controller composable
@@ -851,6 +856,12 @@ const {
   cancelEditingJob,
   handleJobFormSubmit
 } = useTailoringStudioController();
+
+const handleEditResume = () => {
+  if (resume.value?.id) {
+    router.push(`/builder?id=${resume.value.id}`);
+  }
+};
 
 onMounted(async () => {
   await loadApplication();
