@@ -58,7 +58,8 @@ export class HttpJobApplicationRepository {
         data.jobDescription,
         data.status,
         data.appliedDate ? new Date(data.appliedDate) : null,
-        data.notes
+        data.notes,
+        data.archived
       );
     } catch (error) {
       if (error.response?.status === 404) {
@@ -72,10 +73,19 @@ export class HttpJobApplicationRepository {
    * Find all job applications for a job search list
    * @param {string} jobSearchListId - The job search list ID
    * @param {string} userId - The user ID (for authorization)
+   * @param {Object} options - Additional options
+   * @param {boolean} options.includeArchived - Whether to include archived applications
    * @returns {Promise<JobApplication[]>} - Array of applications
    */
-  async findAllByJobSearchListId(jobSearchListId, userId) {
-    const response = await axios.get(`/api/job-applications?jobSearchListId=${jobSearchListId}`);
+  async findAllByJobSearchListId(jobSearchListId, userId, options = {}) {
+    const params = new URLSearchParams();
+    if (jobSearchListId) {
+      params.append('jobSearchListId', jobSearchListId);
+    }
+    if (options.includeArchived) {
+      params.append('includeArchived', 'true');
+    }
+    const response = await axios.get(`/api/job-applications?${params}`);
     return response.data.data.applications.map(app =>
       new JobApplication(
         app.id,
@@ -87,7 +97,8 @@ export class HttpJobApplicationRepository {
         app.jobDescription,
         app.status,
         app.appliedDate ? new Date(app.appliedDate) : null,
-        app.notes
+        app.notes,
+        app.archived
       )
     );
   }
@@ -130,5 +141,27 @@ export class HttpJobApplicationRepository {
    */
   async delete(id) {
     await axios.delete(`/api/job-applications/${id}`);
+  }
+
+  /**
+   * Archive a job application
+   * @param {string} id - The application ID
+   * @param {string} userId - The user ID (for authorization)
+   * @returns {Promise<Object>} - Success response
+   */
+  async archive(id, userId) {
+    const response = await axios.post(`/api/job-applications/${id}/archive`);
+    return response.data;
+  }
+
+  /**
+   * Unarchive a job application
+   * @param {string} id - The application ID
+   * @param {string} userId - The user ID (for authorization)
+   * @returns {Promise<Object>} - Success response
+   */
+  async unarchive(id, userId) {
+    const response = await axios.post(`/api/job-applications/${id}/unarchive`);
+    return response.data;
   }
 }

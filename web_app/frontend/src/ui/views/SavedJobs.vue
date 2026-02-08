@@ -32,8 +32,8 @@
                                 </div>
                             </a>
                         </div>
-                        <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-800"
-                            href="#">
+                        <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-800 cursor-pointer"
+                            @click="toggleArchiveView">
                             <span class="material-symbols-outlined text-[20px]">archive</span>
                             <p class="text-sm font-medium leading-normal">Archive</p>
                         </a>
@@ -51,9 +51,9 @@
                         <div class="flex min-w-72 flex-col gap-2">
                             <p
                                 class="text-[#0e121b] dark:text-white text-4xl font-black leading-tight tracking-[-0.033em]">
-                                {{ selectedList?.name || 'Saved Jobs' }}</p>
+                                {{ isArchiveView ? 'Archived Jobs' : (selectedList?.name || 'Saved Jobs') }}</p>
                             <p class="text-[#4d6599] dark:text-gray-400 text-base font-normal leading-normal">{{
-                                filteredJobs.length }} saved job descriptions</p>
+                                filteredJobs.length }} {{ isArchiveView ? 'archived' : 'saved' }} job descriptions</p>
                         </div>
                         <div class="flex gap-3">
                             <button @click="addJobManually"
@@ -104,6 +104,16 @@
                                     class="flex items-center justify-center gap-1 rounded px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs hover:bg-gray-200 dark:hover:bg-gray-600">
                                     <span class="material-symbols-outlined text-sm">edit</span>
                                     Edit
+                                </button>
+                                <button v-if="!isArchiveView" @click="archiveJob(job)"
+                                    class="flex items-center justify-center gap-1 rounded px-2 py-1 bg-orange-100 dark:bg-orange-900 text-orange-700 dark:text-orange-300 text-xs hover:bg-orange-200 dark:hover:bg-orange-800">
+                                    <span class="material-symbols-outlined text-sm">archive</span>
+                                    Archive
+                                </button>
+                                <button v-if="isArchiveView" @click="unarchiveJob(job)"
+                                    class="flex items-center justify-center gap-1 rounded px-2 py-1 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 text-xs hover:bg-green-200 dark:hover:bg-green-800">
+                                    <span class="material-symbols-outlined text-sm">unarchive</span>
+                                    Unarchive
                                 </button>
                             </div>
                         </div>
@@ -237,6 +247,7 @@ const {
   error,
   searchQuery,
   activeFilter,
+  isArchiveView,
   createListModal,
   editListModal,
   filters,
@@ -247,6 +258,8 @@ const {
   deleteJobSearchList,
   loadApplications,
   updateApplicationStatus,
+  archiveApplication,
+  unarchiveApplication,
   getStatusClass,
   resetCreateListModal,
   openCreateListModal,
@@ -313,9 +326,41 @@ const handleDeleteList = async (listId) => {
   }
 };
 
+const toggleArchiveView = () => {
+  router.push(isArchiveView.value ? '/saved-jobs' : '/saved-jobs/archive');
+};
+
+const archiveJob = async (job) => {
+  try {
+    await archiveApplication(job.id);
+    // Remove from current view immediately for better UX
+    const index = applications.value.findIndex(app => app.id === job.id);
+    if (index > -1) {
+      applications.value.splice(index, 1);
+    }
+  } catch (error) {
+    console.error('Failed to archive job:', error);
+  }
+};
+
+const unarchiveJob = async (job) => {
+  try {
+    await unarchiveApplication(job.id);
+    // Remove from current view immediately for better UX
+    const index = applications.value.findIndex(app => app.id === job.id);
+    if (index > -1) {
+      applications.value.splice(index, 1);
+    }
+  } catch (error) {
+    console.error('Failed to unarchive job:', error);
+  }
+};
+
 watchEffect(async () => {
-  if (selectedListId.value) {
+  if (selectedListId.value && !isArchiveView.value) {
     await loadApplications(selectedListId.value);
+  } else if (isArchiveView.value) {
+    await loadApplications(null, true); // Load archived applications
   } else if (jobSearchLists.value.length > 0) {
     // Default to first list
     router.replace(`/saved-jobs/${jobSearchLists.value[0].id}`);
@@ -324,8 +369,10 @@ watchEffect(async () => {
 
 onMounted(async () => {
   await loadJobSearchLists();
-  if (selectedListId.value) {
+  if (selectedListId.value && !isArchiveView.value) {
     await loadApplications(selectedListId.value);
+  } else if (isArchiveView.value) {
+    await loadApplications(null, true); // Load archived applications
   }
 });
 </script>

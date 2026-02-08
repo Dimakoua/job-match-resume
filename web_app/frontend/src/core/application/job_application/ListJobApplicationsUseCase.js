@@ -14,19 +14,25 @@ export class ListJobApplicationsUseCase {
    * @param {Object} command
    * @param {string} command.jobSearchListId - The job search list ID
    * @param {string} command.userId - The user making the request
+   * @param {boolean} command.includeArchived - Whether to include archived applications
    * @returns {Promise<JobApplication[]>} - Array of job applications
    */
   async execute(command) {
     // Validate command
-    if (!command.jobSearchListId) {
-      throw new Error('jobSearchListId is required');
-    }
     if (!command.userId) {
       throw new Error('userId is required');
     }
+    
+    // Warn if neither list ID nor archive flag is set (optional strictness)
+    // if (!command.jobSearchListId && !command.includeArchived) { ... }
 
     // Find all applications for the job search list
-    const applications = await this.jobApplicationRepository.findAllByJobSearchListId(command.jobSearchListId, command.userId);
+    const applications = await this.jobApplicationRepository.findAllByJobSearchListId(
+
+      command.jobSearchListId,
+      command.userId,
+      { includeArchived: command.includeArchived }
+    );
 
     return applications;
   }

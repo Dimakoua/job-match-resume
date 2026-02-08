@@ -15,7 +15,8 @@ export class JobApplication {
     jobDescription,
     status = 'saved',
     appliedDate = null,
-    notes = null
+    notes = null,
+    archived = false
   ) {
     this.validateId(id);
     this.validateUserId(userId);
@@ -27,6 +28,7 @@ export class JobApplication {
     this.validateStatus(status);
     this.validateAppliedDate(appliedDate);
     this.validateNotes(notes);
+    this.validateArchived(archived);
 
     this.id = id;
     this.userId = userId;
@@ -38,6 +40,7 @@ export class JobApplication {
     this.status = status;
     this.appliedDate = appliedDate;
     this.notes = notes ? notes.trim() : null;
+    this.archived = archived;
   }
 
   validateId(id) {
@@ -129,6 +132,12 @@ export class JobApplication {
     }
   }
 
+  validateArchived(archived) {
+    if (typeof archived !== 'boolean') {
+      throw new Error('Archived must be a boolean');
+    }
+  }
+
   updateStatus(newStatus) {
     this.validateStatus(newStatus);
     this.status = newStatus;
@@ -142,6 +151,11 @@ export class JobApplication {
   updateNotes(newNotes) {
     this.validateNotes(newNotes);
     this.notes = newNotes ? newNotes.trim() : null;
+  }
+
+  updateArchived(newArchived) {
+    this.validateArchived(newArchived);
+    this.archived = newArchived;
   }
 
   updateJobSearchList(newJobSearchListId) {

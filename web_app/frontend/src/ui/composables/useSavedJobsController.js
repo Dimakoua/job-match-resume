@@ -13,6 +13,8 @@ import { UpdateJobSearchListUseCase } from '../../core/application/job_search_li
 import { DeleteJobSearchListUseCase } from '../../core/application/job_search_list/DeleteJobSearchListUseCase.js';
 import { ListJobApplicationsUseCase } from '../../core/application/job_application/ListJobApplicationsUseCase.js';
 import { UpdateJobApplicationUseCase } from '../../core/application/job_application/UpdateJobApplicationUseCase.js';
+import { ArchiveJobApplicationUseCase } from '../../core/application/job_application/ArchiveJobApplicationUseCase.js';
+import { UnarchiveJobApplicationUseCase } from '../../core/application/job_application/UnarchiveJobApplicationUseCase.js';
 import { HttpJobSearchListRepository } from '../../infrastructure/api/HttpJobSearchListRepository.js';
 import { HttpJobApplicationRepository } from '../../infrastructure/api/HttpJobApplicationRepository.js';
 import { useAuthStore } from '../stores/useAuthStore.js';
@@ -28,6 +30,8 @@ export function useSavedJobsController(selectedListIdRef = null) {
   const deleteJobSearchListUseCase = new DeleteJobSearchListUseCase(jobSearchListRepository);
   const listJobApplicationsUseCase = new ListJobApplicationsUseCase(jobApplicationRepository);
   const updateJobApplicationUseCase = new UpdateJobApplicationUseCase(jobApplicationRepository);
+  const archiveJobApplicationUseCase = new ArchiveJobApplicationUseCase(jobApplicationRepository);
+  const unarchiveJobApplicationUseCase = new UnarchiveJobApplicationUseCase(jobApplicationRepository);
 
   const authStore = useAuthStore();
   const route = useRoute();
@@ -43,6 +47,7 @@ export function useSavedJobsController(selectedListIdRef = null) {
   // UI State
   const searchQuery = ref('');
   const activeFilter = ref('all');
+  const isArchiveView = ref(false);
   const createListModal = ref({
     show: false,
     name: '',
@@ -65,6 +70,14 @@ export function useSavedJobsController(selectedListIdRef = null) {
   };
 
   activeFilter.value = getInitialActiveFilter();
+
+  // Initialize isArchiveView from route
+  isArchiveView.value = route.path === '/saved-jobs/archive';
+
+  // Watch for route changes to update isArchiveView
+  watchEffect(() => {
+    isArchiveView.value = route.path === '/saved-jobs/archive';
+  });
 
   // Watch for activeFilter changes and update URL
   watchEffect(() => {
@@ -93,8 +106,15 @@ export function useSavedJobsController(selectedListIdRef = null) {
   const filteredJobs = computed(() => {
     let filtered = applications.value;
 
+    // Filter by archive status
+    if (isArchiveView.value) {
+      filtered = filtered.filter(job => job.archived);
+    } else {
+      filtered = filtered.filter(job => !job.archived);
+    }
+
     // Filter by selected list (if provided)
-    if (selectedListIdRef?.value) {
+    if (selectedListIdRef?.value && !isArchiveView.value) {
       filtered = filtered.filter(job => job.jobSearchListId === selectedListIdRef.value);
     }
 
@@ -232,7 +252,8 @@ export function useSavedJobsController(selectedListIdRef = null) {
 
       const apps = await listJobApplicationsUseCase.execute({
         jobSearchListId: listId,
-        userId
+        userId,
+        includeArchived: isArchiveView.value
       });
       applications.value = apps;
       return apps;
@@ -271,6 +292,46 @@ export function useSavedJobsController(selectedListIdRef = null) {
     } catch (err) {
       error.value = 'Failed to update application status. Please try again.';
       console.error('Error updating application status:', err);
+      throw err;
+    }
+  };
+
+  const archiveApplication = async (applicationId) => {
+    try {
+      const userId = authStore.user?.id;
+      if (!userId) {
+        throw new Error('User not authenticated');
+      }
+
+      await archiveJobApplicationUseCase.execute({ id: applicationId, userId });
+      
+      // Remove from local state if not in archive view
+      if (!isArchiveView.value) {
+        applications.value = applications.value.filter(app => app.id !== applicationId);
+      }
+    } catch (err) {
+      error.value = 'Failed to archive application. Please try again.';
+      console.error('Error archiving application:', err);
+      throw err;
+    }
+  };
+
+  const unarchiveApplication = async (applicationId) => {
+    try {
+      const userId = authStore.user?.id;
+      if (!userId) {
+        throw new Error('User not authenticated');
+      }
+
+      await unarchiveJobApplicationUseCase.execute({ id: applicationId, userId });
+      
+      // Remove from local state if in archive view
+      if (isArchiveView.value) {
+        applications.value = applications.value.filter(app => app.id !== applicationId);
+      }
+    } catch (err) {
+      error.value = 'Failed to unarchive application. Please try again.';
+      console.error('Error unarchiving application:', err);
       throw err;
     }
   };
@@ -324,6 +385,7 @@ export function useSavedJobsController(selectedListIdRef = null) {
     error,
     searchQuery,
     activeFilter,
+    isArchiveView,
     createListModal,
     editListModal,
 
@@ -339,6 +401,8 @@ export function useSavedJobsController(selectedListIdRef = null) {
     loadApplications,
     loadAllApplications,
     updateApplicationStatus,
+    archiveApplication,
+    unarchiveApplication,
     getStatusClass,
     resetCreateListModal,
     openCreateListModal,
