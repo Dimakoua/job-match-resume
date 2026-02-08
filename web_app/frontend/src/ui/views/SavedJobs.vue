@@ -32,7 +32,8 @@
                                 </div>
                             </a>
                         </div>
-                        <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-800 cursor-pointer"
+                        <a class="flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer"
+                            :class="isArchiveView ? 'bg-primary/10 text-primary' : 'text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-800'"
                             @click="toggleArchiveView">
                             <span class="material-symbols-outlined text-[20px]">archive</span>
                             <p class="text-sm font-medium leading-normal">Archive</p>
