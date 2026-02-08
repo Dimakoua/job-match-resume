@@ -2,7 +2,7 @@
 # frontend/tracker.md
 
 **Version:** 1.3
-**Last updated:** 2026-02-05
+**Last updated:** 2026-02-08
 **Status:** Active
 
 ---
@@ -156,7 +156,7 @@
   - Creates copy linked to job application
   - Version history maintained
 
-## F-059 — [feature] Job Application Archiving UI
+## F-059 — [feature] Job Application Archiving UI ✅ 100%
 - Scope: Implement frontend UI for archiving job applications with archive/unarchive buttons and archived applications view.
 - Acceptance:
   - Archive button on each job application card in SavedJobs.vue
@@ -164,13 +164,14 @@
   - "Archive" sidebar link shows archived applications
   - Archive/unarchive API calls with proper error handling
   - Loading states and success feedback
-- Status: 🔵 0% — Ready to start; backend archiving complete
+- Status: ✅ 100% — Completed; archive/unarchive buttons implemented, archive view route added, JobApplication domain updated to include archived field for proper filtering
 
 ---
 
 ## Status Summary
 - ✅ 100% — F-003 to F-046: Infrastructure, UI, and core features complete
 - ✅ 100% — F-052: Generation Settings Logic + Resume Selection complete
+- ✅ 100% — F-059: Job Application Archiving UI complete
 - 🔵 0% — F-053: Resume editing in TailoringStudio (active, ready to start)
 - 🔵 0% — F-054 to F-057: Backlog features (keyword highlighting, download, versioning, e2e testing)
 
