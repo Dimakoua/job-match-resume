@@ -24,7 +24,7 @@
             >
               <!-- Preview -->
               <div class="aspect-[3/4] bg-slate-100 dark:bg-slate-900 overflow-hidden group-hover:bg-slate-200 dark:group-hover:bg-slate-800 transition-colors">
-                <div class="scale-[0.65] origin-top-left w-[153.8%] h-[153.8%] p-4 group-hover:scale-[0.67] transition-transform duration-300">
+                <div class="scale-[0.65] origin-top-left w-[153.8%] h-[153.8%] group-hover:scale-[0.67] transition-transform duration-300">
                   <ResumePreview 
                     :resume="example.resumeData"
                     :sections="[]"
