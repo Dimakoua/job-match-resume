@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-[1000px] w-full bg-white shadow-2xl rounded-xl overflow-hidden flex flex-col md:flex-row min-h-[1200px]">
+  <div class="max-w-[1000px] w-full bg-white shadow-2xl rounded-xl flex flex-col md:flex-row">
     <!-- Left Column (1/3 Sidebar) -->
     <aside class="w-full md:w-1/3 bg-slate-50 p-8 flex flex-col gap-10">
       <!-- Profile Section -->

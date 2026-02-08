@@ -205,9 +205,9 @@
             </div>
 
             <!-- Editor Section (Split View) -->
-            <div v-if="activeSection === 'editor'" class="flex gap-6 overflow-hidden">
+            <div v-if="activeSection === 'editor'" class="flex gap-6 overflow-y-auto">
               <!-- Left Side: Job Description -->
-              <div class="flex-1 bg-white dark:bg-background-dark/50 border border-[#e7ebf3] dark:border-white/10 rounded-xl flex flex-col overflow-hidden">
+              <div class="flex-1 bg-white dark:bg-background-dark/50 border border-[#e7ebf3] dark:border-white/10 rounded-xl flex flex-col">
                 <div class="p-4 border-b border-[#e7ebf3] dark:border-white/10 flex justify-between items-center bg-gray-50/50 dark:bg-white/5">
                   <h3 class="text-sm font-bold flex items-center gap-2">
                     <span class="material-symbols-outlined text-lg">description</span>
@@ -215,14 +215,14 @@
                   </h3>
                   <span v-if="atsJobKeywords.length > 0" class="text-[10px] font-bold px-2 py-1 bg-yellow-100 text-yellow-800 rounded uppercase">{{ atsJobKeywords.length }} Keywords Found</span>
                 </div>
-                <div class="p-6 overflow-y-auto prose prose-sm dark:prose-invert max-w-none">
+                <div class="p-6 prose prose-sm dark:prose-invert max-w-none">
                   <p v-if="isLoadingJob" class="text-gray-400">Loading job description...</p>
                   <p v-else-if="job?.jobDescription" class="whitespace-pre-wrap text-sm text-gray-700 dark:text-gray-300" v-html="highlightKeywords(job.jobDescription)"></p>
                   <p v-else class="text-gray-400">No job description available</p>
                 </div>
               </div>
               <!-- Right Side: Resume Editor -->
-              <div class="flex-[2] bg-white dark:bg-background-dark/50 border border-[#e7ebf3] dark:border-white/10 rounded-xl flex flex-col overflow-hidden shadow-2xl">
+              <div class="flex-[2] bg-white dark:bg-background-dark/50 border border-[#e7ebf3] dark:border-white/10 rounded-xl flex flex-col shadow-2xl">
                 <div class="p-4 border-b border-[#e7ebf3] dark:border-white/10 flex justify-between items-center bg-white dark:bg-background-dark">
                   <div class="flex items-center gap-3">
                     <h3 class="text-sm font-bold flex items-center gap-2 text-primary">
@@ -236,12 +236,12 @@
                     Edit Resume
                   </button>
                 </div>
-                <div class="p-2 overflow-y-auto bg-gray-50 dark:bg-background-dark/30 flex-1">
+                <div class="p-2 bg-gray-50 dark:bg-background-dark/30 flex-1">
                   <!-- Resume Content -->
                   <div v-if="isLoadingResume" class="flex items-center justify-center h-full">
                     <p class="text-gray-400">Loading resume...</p>
                   </div>
-                  <div v-else-if="resume" class="flex-1 overflow-y-auto">
+                  <div v-else-if="resume" class="h-full">
                     <ResumePreview
                       :resume="resumePreviewData"
                       :layout="{ template: 'classic', margins: 24, sectionSpacing: 16 }"
