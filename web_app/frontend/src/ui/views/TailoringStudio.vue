@@ -411,7 +411,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="lg:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-8 pl-2">
+                <div class="lg:col-span-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 pl-2">
                   <div class="flex flex-col justify-center">
                     <div class="flex items-center justify-between mb-2">
                       <span class="text-sm font-medium text-[#4d6599]">Keyword Match</span>
@@ -441,6 +441,26 @@
                       <div class="h-full bg-green-500" :style="{ width: Math.min((atsJobKeywords.length / 20) * 100, 100) + '%' }"></div>
                     </div>
                     <p class="text-[10px] mt-2 text-[#4d6599]">Keywords required by job</p>
+                  </div>
+                  <div class="flex flex-col justify-center">
+                    <div class="flex items-center justify-between mb-2">
+                      <span class="text-sm font-medium text-[#4d6599]">Format Score</span>
+                      <span class="text-sm font-bold">{{ atsFormatScore || '--' }}%</span>
+                    </div>
+                    <div class="w-full h-1.5 bg-gray-100 dark:bg-white/5 rounded-full overflow-hidden">
+                      <div class="h-full bg-yellow-500" :style="{ width: (atsFormatScore || 0) + '%' }"></div>
+                    </div>
+                    <p class="text-[10px] mt-2 text-[#4d6599]">Resume formatting quality</p>
+                  </div>
+                  <div class="flex flex-col justify-center">
+                    <div class="flex items-center justify-between mb-2">
+                      <span class="text-sm font-medium text-[#4d6599]">Keyword Density</span>
+                      <span class="text-sm font-bold">{{ atsKeywordDensity || '--' }}%</span>
+                    </div>
+                    <div class="w-full h-1.5 bg-gray-100 dark:bg-white/5 rounded-full overflow-hidden">
+                      <div class="h-full bg-purple-500" :style="{ width: Math.min((atsKeywordDensity || 0), 100) + '%' }"></div>
+                    </div>
+                    <p class="text-[10px] mt-2 text-[#4d6599]">Resume vs job keyword ratio</p>
                   </div>
                 </div>
               </div>
