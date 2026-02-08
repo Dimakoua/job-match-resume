@@ -416,15 +416,15 @@
                       <h4 class="text-md font-semibold text-gray-900 dark:text-white">Application Notes</h4>
                       <button v-if="!isEditingNotes" @click="startEditingNotes"
                         class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-primary bg-primary/10 hover:bg-primary/20 rounded-lg transition-colors">
-                        <span class="material-symbols-outlined text-sm">{{ job.notes ? 'edit' : 'add' }}</span>
-                        {{ job.notes ? 'Edit Notes' : 'Add Notes' }}
+                        <span class="material-symbols-outlined text-sm">{{ job?.notes ? 'edit' : 'add' }}</span>
+                        {{ job?.notes ? 'Edit Notes' : 'Add Notes' }}
                       </button>
                     </div>
                   </div>
 
                   <!-- Notes Display -->
                   <div v-if="!isEditingNotes" class="bg-gray-50 dark:bg-background-dark/50 rounded-lg p-6 min-h-64">
-                    <div v-if="job.notes" class="prose prose-sm dark:prose-invert max-w-none">
+                    <div v-if="job?.notes" class="prose prose-sm dark:prose-invert max-w-none">
                       <p class="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">{{ job.notes }}</p>
                     </div>
                     <div v-else class="text-center py-12">

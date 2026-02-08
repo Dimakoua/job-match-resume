@@ -6,7 +6,7 @@
  * Per technical_design.md §3.2D: "The Composable acts as the Controller."
  */
 import { ref, computed } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { GetJobApplicationUseCase } from '../../core/application/job_application/GetJobApplicationUseCase.js';
 import { UpdateJobApplicationUseCase } from '../../core/application/job_application/UpdateJobApplicationUseCase.js';
 import { GenerateFromJDUseCase } from '../../core/application/ai/GenerateFromJDUseCase.js';
@@ -22,6 +22,7 @@ import { useAuthStore } from '../stores/useAuthStore.js';
 
 export function useTailoringStudioController() {
   const route = useRoute();
+  const router = useRouter();
   const applicationIdRef = computed(() => route.params.id);
   // ===== Dependency Injection (DI) =====
   const jobApplicationRepository = new HttpJobApplicationRepository();
@@ -50,7 +51,16 @@ export function useTailoringStudioController() {
   const error = ref(null);
 
   // UI State
-  const activeSection = ref('editor');
+  // Load active section from URL params or default to 'details'
+  const getInitialActiveSection = () => {
+    const tab = route.query.tab;
+    if (tab && ['details', 'editor', 'suggestions', 'notes', 'analysis'].includes(tab)) {
+      return tab;
+    }
+    return 'details';
+  };
+
+  const activeSection = ref(getInitialActiveSection());
   const selectedKeywords = ref([]);
   const suggestedKeywords = ref([]);
   const generationSettings = ref({
@@ -686,6 +696,14 @@ export function useTailoringStudioController() {
 
   const switchSection = async (section) => {
     activeSection.value = section;
+
+    // Update URL params
+    await router.replace({
+      query: {
+        ...route.query,
+        tab: section
+      }
+    });
 
     // Auto-calculate ATS score when switching to analysis tab
     if (section === 'analysis' && !atsScore.value && job.value?.jobDescription && resume.value && !isCalculatingAts.value) {
