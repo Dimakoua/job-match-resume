@@ -76,8 +76,8 @@
       <span v-else>Education</span>
     </h3>
     <div v-if="resume.education && resume.education.length > 0">
-      <div v-for="(edu, index) in resume.education" :key="index" :class="educationItemClass">
-        <div :class="educationHeaderClass">
+      <div v-for="(edu, index) in resume.education" :key="index" :class="classes.educationItemClass">
+        <div :class="classes.educationHeaderClass">
           <h4 v-if="layout.template === 'academic'" :class="classes.schoolNameClass" v-html="edu.school"></h4>
           <h4 v-else-if="layout.template === 'creative'" :class="classes.schoolNameClass" v-html="edu.degree + ' ' + edu.field"></h4>
           <h4 v-else-if="layout.template === 'technical'" :class="classes.schoolNameClass" v-html="edu.degree + ' ' + edu.field + ' | ' + edu.school"></h4>
