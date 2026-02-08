@@ -1,6 +1,6 @@
 /**
  * useGeneratorController (Composable)
- * 
+ *
  * Manages the multi-step wizard for generating a resume from a job description.
  */
 import { ref, onMounted } from 'vue'
@@ -10,6 +10,7 @@ import { HttpResumeRepository } from '../../infrastructure/api/HttpResumeReposit
 import { GenerateFromJDUseCase } from '../../core/application/ai/GenerateFromJDUseCase.js'
 import { ListTemplatesUseCase } from '../../core/application/editor/ListTemplatesUseCase.js'
 import { filterSupportedTemplates } from '../../ui/components/resume-templates/resumeTemplateFactory.js'
+import { extractTextFromPdf, validatePDFFile } from '../../ui/utils/pdfUtils.js'
 
 export function useGeneratorController() {
   const router = useRouter()
@@ -28,6 +29,9 @@ export function useGeneratorController() {
   const templates = ref([])
   const isGenerating = ref(false)
   const error = ref(null)
+  const inputMethod = ref('paste') // 'paste' or 'upload'
+  const selectedFile = ref(null)
+  const isProcessingFile = ref(false)
 
   // ===== Actions =====
   const fetchTemplates = async () => {
@@ -53,7 +57,11 @@ export function useGeneratorController() {
         return
       }
       if (!userData.value.trim()) {
-        error.value = 'Please paste your current resume or key details.'
+        if (inputMethod.value === 'upload') {
+          error.value = 'Please upload a PDF file or switch to paste mode.'
+        } else {
+          error.value = 'Please paste your current resume or key details.'
+        }
         return
       }
     }
@@ -70,6 +78,38 @@ export function useGeneratorController() {
     selectedTemplate.value = id
   }
 
+  const setInputMethod = (method) => {
+    inputMethod.value = method
+    if (method === 'paste') {
+      selectedFile.value = null
+    }
+  }
+
+  const handleFileSelect = async (file) => {
+    if (!file) return
+
+    // Validate PDF file
+    const validation = validatePDFFile(file)
+    if (!validation.isValid) {
+      error.value = validation.error
+      return
+    }
+
+    selectedFile.value = file
+    error.value = null
+    isProcessingFile.value = true
+
+    try {
+      const text = await extractTextFromPdf(file)
+      userData.value = text
+    } catch (err) {
+      error.value = 'Failed to extract text from PDF. Please try again or paste the content manually.'
+      console.error('PDF extraction error:', err)
+    } finally {
+      isProcessingFile.value = false
+    }
+  }
+
   const handleGenerate = async () => {
     isGenerating.value = true
     error.value = null
@@ -81,7 +121,7 @@ export function useGeneratorController() {
         userData.value,
         selectedTemplate.value
       )
-      
+
       // Redirect to builder with the new resume ID
       router.push(`/builder?id=${resume.id}`)
     } catch (err) {
@@ -107,10 +147,15 @@ export function useGeneratorController() {
     templates,
     isGenerating,
     error,
+    inputMethod,
+    selectedFile,
+    isProcessingFile,
     // Actions
     nextStep,
     prevStep,
     selectTemplate,
+    setInputMethod,
+    handleFileSelect,
     handleGenerate
   }
 }

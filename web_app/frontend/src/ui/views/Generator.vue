@@ -44,13 +44,103 @@
               <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                 Your Current Resume/CV <span class="text-red-500">*</span>
               </label>
-              <textarea 
-                v-model="userData"
-                rows="8"
-                class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all resize-none custom-scrollbar"
-                placeholder="Paste your current resume or key details: name, email, work experience, education, skills..."
-              ></textarea>
-              <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">Include your contact info, work history, education, and skills. The AI will use this to create a tailored resume.</p>
+              
+              <!-- Input Method Tabs -->
+              <div class="flex mb-4 bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+                <button
+                  @click="setInputMethod('paste')"
+                  :class="[
+                    'flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all',
+                    inputMethod === 'paste' 
+                      ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm' 
+                      : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                  ]"
+                >
+                  Paste Text
+                </button>
+                <button
+                  @click="setInputMethod('upload')"
+                  :class="[
+                    'flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all',
+                    inputMethod === 'upload' 
+                      ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm' 
+                      : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                  ]"
+                >
+                  Upload PDF
+                </button>
+              </div>
+
+              <!-- Paste Text Input -->
+              <div v-if="inputMethod === 'paste'">
+                <textarea 
+                  v-model="userData"
+                  rows="8"
+                  class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all resize-none custom-scrollbar"
+                  placeholder="Paste your current resume or key details: name, email, work experience, education, skills..."
+                ></textarea>
+                <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">Include your contact info, work history, education, and skills. The AI will use this to create a tailored resume.</p>
+              </div>
+
+              <!-- Upload PDF Input -->
+              <div v-else-if="inputMethod === 'upload'" class="space-y-4">
+                <div 
+                  @click="$refs.fileInput.click()"
+                  class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl p-8 text-center cursor-pointer hover:border-primary transition-colors"
+                  :class="{ 'border-primary bg-primary/5': selectedFile }"
+                >
+                  <div v-if="!selectedFile" class="space-y-4">
+                    <div class="mx-auto size-12 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="size-6 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14.5 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V7.5L14.5 2z"/>
+                        <polyline points="14,2 14,8 20,8"/>
+                      </svg>
+                    </div>
+                    <div>
+                      <p class="text-sm font-medium text-gray-900 dark:text-white">Click to upload your resume PDF</p>
+                      <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">PDF files up to 10MB</p>
+                    </div>
+                  </div>
+                  
+                  <div v-else class="space-y-4">
+                    <div class="mx-auto size-12 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="size-6 text-green-600 dark:text-green-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                      </svg>
+                    </div>
+                    <div>
+                      <p class="text-sm font-medium text-gray-900 dark:text-white">{{ selectedFile.name }}</p>
+                      <p class="text-xs text-gray-500 dark:text-gray-400">{{ (selectedFile.size / 1024 / 1024).toFixed(1) }} MB</p>
+                    </div>
+                    <button 
+                      @click.stop="$refs.fileInput.click()"
+                      class="text-xs text-primary hover:text-blue-700 font-medium"
+                    >
+                      Change file
+                    </button>
+                  </div>
+                </div>
+
+                <input
+                  ref="fileInput"
+                  type="file"
+                  accept=".pdf"
+                  @change="handleFileChange"
+                  class="hidden"
+                />
+
+                <div v-if="isProcessingFile" class="flex items-center justify-center py-4">
+                  <div class="animate-spin rounded-full size-6 border-2 border-primary border-t-transparent mr-3"></div>
+                  <span class="text-sm text-gray-600 dark:text-gray-400">Extracting text from PDF...</span>
+                </div>
+
+                <div v-if="userData && inputMethod === 'upload'" class="mt-4">
+                  <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">Extracted text preview:</p>
+                  <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-3 max-h-32 overflow-y-auto custom-scrollbar">
+                    <pre class="text-xs text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{{ userData.substring(0, 500) }}{{ userData.length > 500 ? '...' : '' }}</pre>
+                  </div>
+                </div>
+              </div>
             </div>
             
             <div v-if="error" class="p-3 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-sm border border-red-100 dark:border-red-900/30">
@@ -195,11 +285,23 @@ const {
   templates,
   isGenerating,
   error,
+  inputMethod,
+  selectedFile,
+  isProcessingFile,
   nextStep,
   prevStep,
   selectTemplate,
+  setInputMethod,
+  handleFileSelect,
   handleGenerate
 } = useGeneratorController()
+
+const handleFileChange = (event) => {
+  const file = event.target.files[0]
+  if (file) {
+    handleFileSelect(file)
+  }
+}
 </script>
 
 <style scoped>

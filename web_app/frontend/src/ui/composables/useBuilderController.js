@@ -16,11 +16,10 @@ import { HttpAIService } from '../../infrastructure/api/HttpAIService.js'
 import { HttpResumeRepository } from '../../infrastructure/api/HttpResumeRepository.js'
 import { ExportService } from '../../infrastructure/api/ExportService.js'
 import { DownloadResumeUseCase } from '../../core/application/export/DownloadResumeUseCase.js'
-import * as pdfjsLib from 'pdfjs-dist'
+import { extractTextFromPdf, validatePDFFile } from '../utils/pdfUtils.js'
 
 export function useBuilderController() {
   // Configure PDF.js worker
-  pdfjsLib.GlobalWorkerOptions.workerSrc = '/node_modules/pdfjs-dist/build/pdf.worker.mjs'
 
   const route = useRoute()
   const router = useRouter()
@@ -351,6 +350,14 @@ export function useBuilderController() {
     uploadModal.value.error = null
 
     try {
+
+      // Validate PDF file
+      const validation = validatePDFFile(file)
+      if (!validation.isValid) {
+        uploadModal.value.error = validation.error
+        uploadModal.value.loading = false
+        return
+      }
       // Extract text from PDF
       const text = await extractTextFromPdf(file)
       
@@ -370,43 +377,6 @@ export function useBuilderController() {
       uploadModal.value.error = 'Failed to parse PDF. Please try again.'
       uploadModal.value.loading = false
     }
-  }
-
-  const extractTextFromPdf = async (file) => {
-    const reader = new FileReader()
-    return new Promise((resolve, reject) => {
-      reader.onload = async (e) => {
-        try {
-          const pdfData = new Uint8Array(e.target.result)
-          const pdfDoc = await pdfjsLib.getDocument(pdfData).promise
-          const totalPages = pdfDoc.numPages
-
-          let textContent = ''
-
-          // Create an array of promises for each page
-          const pagePromises = []
-
-          for (let i = 1; i <= totalPages; i++) {
-            pagePromises.push(pdfDoc.getPage(i).then(async page => {
-              const text = await page.getTextContent()
-              return text.items.map(item => item.str).join(' ')
-            }))
-          }
-
-          // Wait for all pages to be processed
-          const allText = await Promise.all(pagePromises)
-
-          // Combine all pages' text
-          textContent = allText.join('\n')
-
-          resolve(textContent)
-        } catch (error) {
-          reject(error)
-        }
-      }
-      reader.onerror = () => reject(new Error('Failed to read file'))
-      reader.readAsArrayBuffer(file)
-    })
   }
 
   // ===== Zoom Controls =====
