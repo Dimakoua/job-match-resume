@@ -13,9 +13,10 @@ export function setupResumeRoutes(router) {
   });
 
   // List user's resumes
-  // Usage: GET /api/resumes
+  // Usage: GET /api/resumes?page=1&limit=9
   // Headers: Authorization: Bearer <jwt>
-  // Returns: { "success": true, "data": { "resumes": [{ "id": "...", "title": "...", "updatedAt": "..." }, ...] } }
+  // Query params: page (optional, default: 1), limit (optional, default: 9, max: 100)
+  // Returns: { "success": true, "data": { "resumes": [{ "id": "...", "title": "...", "updatedAt": "..." }, ...], "pagination": { "page": 1, "limit": 9, "totalCount": 25, "totalPages": 3, "hasNext": true, "hasPrev": false } } }
   router.get('/api/resumes', async (request, env, ctx) => {
     const { controller } = createController(env, ResumeController, [env.JWT_SECRET]);
     return controller.listResumes(request);

@@ -48,16 +48,39 @@ export class D1ResumeRepository {
     }
   }
 
-  async findAllByUserId(userId) {
-    const sql = 'SELECT id, user_id, title, content, template_id, created_at, updated_at FROM Resumes WHERE user_id = ? ORDER BY created_at DESC';
+  async findAllByUserId(userId, options = {}) {
+    const { limit, offset } = options;
+    let sql = 'SELECT id, user_id, title, content, template_id, created_at, updated_at FROM Resumes WHERE user_id = ? ORDER BY created_at DESC';
+    const params = [userId];
+
+    if (limit !== undefined) {
+      sql += ' LIMIT ?';
+      params.push(limit);
+    }
+
+    if (offset !== undefined) {
+      sql += ' OFFSET ?';
+      params.push(offset);
+    }
+
     try {
-      const result = await query(this.database, sql, [userId]);
+      const result = await query(this.database, sql, params);
       return result.results.map(row => {
         const sections = JSON.parse(row.content);
         return new Resume(row.id, row.user_id, row.title, sections, row.template_id, new Date(row.created_at), new Date(row.updated_at));
       });
     } catch (error) {
       throw new Error(`Failed to find resumes: ${error.message}`);
+    }
+  }
+
+  async countByUserId(userId) {
+    const sql = 'SELECT COUNT(*) as count FROM Resumes WHERE user_id = ?';
+    try {
+      const result = await query(this.database, sql, [userId]);
+      return result.results[0].count;
+    } catch (error) {
+      throw new Error(`Failed to count resumes: ${error.message}`);
     }
   }
 

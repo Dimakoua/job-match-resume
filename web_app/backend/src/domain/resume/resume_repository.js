@@ -37,10 +37,20 @@ export class ResumeRepository {
   /**
    * Finds all Resumes by user ID.
    * @param {string} userId - The user ID.
+   * @param {Object} options - Query options (limit, offset).
    * @returns {Promise<Resume[]>} Array of resumes for the user.
    */
-  async findAllByUserId(userId) {
-    return this.impl.findAllByUserId(userId);
+  async findAllByUserId(userId, options = {}) {
+    return this.impl.findAllByUserId(userId, options);
+  }
+
+  /**
+   * Counts Resumes by user ID.
+   * @param {string} userId - The user ID.
+   * @returns {Promise<number>} Count of resumes for the user.
+   */
+  async countByUserId(userId) {
+    return this.impl.countByUserId(userId);
   }
 
   /**

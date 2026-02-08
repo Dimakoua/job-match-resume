@@ -26,6 +26,14 @@ export function useDashboardController() {
   const resumes = ref([])
   const isLoading = ref(true)
   const error = ref(null)
+  const pagination = ref({
+    page: 1,
+    limit: 8,
+    totalCount: 0,
+    totalPages: 0,
+    hasNext: false,
+    hasPrev: false
+  })
 
   const previewModal = ref({
     show: false,
@@ -37,12 +45,14 @@ export function useDashboardController() {
   })
 
   // ===== Event Handlers =====
-  const loadResumes = async () => {
+  const loadResumes = async (page = 1) => {
     isLoading.value = true
     error.value = null
 
     try {
-      resumes.value = await listResumesUseCase.execute()
+      const result = await listResumesUseCase.execute({ page, limit: pagination.value.limit })
+      resumes.value = result.resumes || []
+      pagination.value = result.pagination || pagination.value
     } catch (err) {
       error.value = 'Failed to load resumes. Please try again.'
       console.error('Error loading resumes:', err)
@@ -130,6 +140,25 @@ export function useDashboardController() {
     }
   }
 
+  // ===== Pagination Methods =====
+  const goToPage = async (page) => {
+    if (page >= 1 && page <= pagination.value.totalPages) {
+      await loadResumes(page)
+    }
+  }
+
+  const goToNext = async () => {
+    if (pagination.value.hasNext) {
+      await goToPage(pagination.value.page + 1)
+    }
+  }
+
+  const goToPrevious = async () => {
+    if (pagination.value.hasPrev) {
+      await goToPage(pagination.value.page - 1)
+    }
+  }
+
   // ===== Lifecycle =====
   onMounted(() => {
     loadResumes()
@@ -141,6 +170,7 @@ export function useDashboardController() {
     resumes,
     isLoading,
     error,
+    pagination,
     previewModal,
     // Handlers
     loadResumes,
@@ -150,6 +180,10 @@ export function useDashboardController() {
     handleDownloadResume,
     handlePreviewResume,
     handleDuplicateResume,
-    handleDeleteResume
+    handleDeleteResume,
+    // Pagination
+    goToPage,
+    goToNext,
+    goToPrevious
   }
 }

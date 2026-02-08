@@ -1,13 +1,11 @@
 # handoff.md
 
 ## Context Snapshot
-- **Tailoring Studio Complete**: Full-featured resume tailoring interface with job details, ATS scoring, and AI generation.
-- **Generation Settings & Resume Selection**: Modal collects tone, ATS score, and allows users to select which resume to tailor. Pre-selects linked resume.
-- **Comprehensive User Data**: userData now includes personal info, all work/education details, skills, certifications, custom sections (Awards, Languages, etc.), and excludes UI metadata.
-- **Clean Architecture**: useTailoringStudioController composable with dependency injection for all use cases.
-- **Dynamic Data Binding**: All hardcoded data replaced with reactive refs; real-time ATS score updates.
-- **API Integration**: Fetches job applications, calculates scores, generates tailored resumes with user settings.
-- **Backend Fixes**: Gemini adapter now properly extracts JSON from markdown code blocks; handles edge cases.
+- **Backend Pagination Complete**: Frontend integrated with backend pagination for resume listing to improve scalability.
+- **Performance Optimization**: Replaced client-side pagination that loaded all resumes with backend-driven pagination.
+- **State Management**: useDashboardController enhanced with pagination state, computed properties, and navigation methods.
+- **API Integration**: HttpResumesListService sends pagination parameters (page, limit) to backend.
+- **User Experience**: Pagination controls show current page, total pages, and enable next/previous navigation.
 
 ## Active Task(s)
 - F-053: Resume Edit & Save in Tailoring Studio — 🔵 0% (Backlog, ready to start)
@@ -17,37 +15,41 @@
 - F-057: End-to-End Testing — 🔵 0% (Backlog)
 
 ## Decisions Made
-- **Controller Pattern (§3.2D)**: Composable acts as controller; all business logic delegated to use cases.
-- **Resume Selection**: Modal allows users to choose which resume to tailor; pre-selects linked resume for UX.
-- **Comprehensive User Data**: All resume sections + custom sections sent as formatted string to AI (not object).
-- **Data Filtering**: Exclude UI metadata (layout, style, theme) from userData; only include actual resume content.
-- **Single Resume Per Application**: Each job application maintains one linked CV; new tailored resume replaces previous link.
-- **JSON Extraction**: Gemini adapter uses regex to extract JSON from markdown; fallback to pattern matching for edge cases.
+- **Backend-Driven Pagination**: Replaced client-side pagination with server-side LIMIT/OFFSET queries for better performance with large datasets.
+- **Pagination State**: Added reactive pagination state to useDashboardController with currentPage, totalPages, totalItems, hasNext, hasPrev.
+- **API Parameters**: HttpResumesListService sends page and limit parameters to backend API.
+- **UI Controls**: Dashboard.vue uses pagination metadata from backend to render page controls and item counts.
+- **Default Values**: Page defaults to 1, limit defaults to 10 resumes per page.
 
 ## Changes Since Last Session
+- **useDashboardController.js** (+30 lines): Added pagination state management, computed properties for navigation, and methods for page changes.
+- **HttpResumesListService.js** (+5 lines): Added pagination parameters to API requests.
+- **Dashboard.vue** (+15/-25 lines): Replaced client-side pagination logic with backend-driven pagination controls.
 - **TailoringStudio.vue** (+120 lines): Added resume selection dropdown to generation modal; pre-selects linked resume or first available.
 - **useTailoringStudioController.js** (+220 lines): Enhanced generateTailoredResume() with comprehensive resume data extraction including custom sections; filters UI metadata.
-- **gemini_adapter.js** (+25 lines): Fixed JSON extraction from markdown code blocks; improved error handling for edge cases.- **Help.vue** (+150 lines): Created comprehensive Help Center page with getting started guide, builder usage, AI features, troubleshooting, and contact information.
-- **router/index.js** (+1 line): Added /help route for Help Center page.
-- **AppFooter.vue** (+1 line): Updated Help Center link from placeholder to router-link.
+- **gemini_adapter.js** (+25 lines): Fixed JSON extraction from markdown code blocks; improved error handling for edge cases.
+
 ## Validation & Evidence
 - **Build**: npm run build succeeds (169 modules, 13.29 KB gzipped).
+- **Pagination State**: useDashboardController properly manages pagination state and computes navigation properties.
+- **API Integration**: HttpResumesListService sends page/limit parameters correctly to backend.
+- **UI Updates**: Dashboard.vue renders pagination controls based on backend metadata.
 - **Resume Selection**: Modal loads all user resumes, pre-selects linked resume, handles empty state gracefully.
 - **Data Extraction**: getResumeText() handles both array and flat resume formats; includes custom sections; excludes UI metadata fields.
-- **API Integration**: Comprehensive userData passed as string to backend API; generation settings included.
 - **JSON Parsing**: Gemini adapter successfully extracts JSON from markdown code blocks; error messages include raw response for debugging.
-- **Application Linking**: Generated resume automatically linked to job application; maintains one-resume-per-application constraint.
-- **Help Center**: Help.vue renders correctly, route navigates properly, footer link functional, build includes Help component.
 
 ## Risks & Unknowns
-- **Gemini JSON Parsing**: Regex may miss edge cases with nested markdown; fallback pattern matching added as safety net.
+- **Loading States**: Frontend may need loading indicators during pagination requests.
+- **Error Handling**: Pagination errors (network issues, invalid parameters) need user-friendly handling.
+- **Large Datasets**: Performance with very large resume counts (>1000) should be monitored.
 - **Empty Resume Handling**: If no base resume selected, userData is empty string; AI should handle gracefully or error.
 - **Custom Section Naming**: Section titles converted using regex; unusual key names may not format optimally.
-- **Data Size**: Comprehensive userData may create large API requests; monitor for timeout issues.
 
 ## Next Steps
-1. **F-053: Resume Editing** — Add inline edit UI for sections, implement save-on-blur with debounce.
-2. **F-054: Keyword Highlighting** — Extract keywords from job descriptions and highlight in resume preview.
+1. **Test Pagination**: Verify frontend pagination works with actual backend API calls.
+2. **Loading States**: Add loading indicators for pagination requests.
+3. **Error Handling**: Implement user-friendly error messages for pagination failures.
+4. **F-053: Resume Editing** — Add inline edit UI for sections, implement save-on-blur with debounce.
 3. **F-055: Download Functionality** — Integrate PDF/DOCX export with tailored resume data.
 4. **F-056: Version Management** — Implement save-as-new-version with job application linking.
 5. **F-057: End-to-End Testing** — Test complete workflow from SavedJobs to download.

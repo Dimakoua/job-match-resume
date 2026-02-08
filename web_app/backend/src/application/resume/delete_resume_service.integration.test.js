@@ -36,8 +36,8 @@ describe("DeleteResumeService Integration Tests", () => {
     const resume = await createService.execute({ userId: 'user-delete-1', title: 'Resume to Delete' });
 
     // Verify it exists
-    const resumesBefore = await listService.execute({ userId: 'user-delete-1' });
-    expect(resumesBefore).toHaveLength(1);
+    const resultBefore = await listService.execute({ userId: 'user-delete-1' });
+    expect(resultBefore.resumes).toHaveLength(1);
 
     // Delete the resume
     const result = await deleteService.execute({ resumeId: resume.id, userId: 'user-delete-1' });
@@ -46,8 +46,8 @@ describe("DeleteResumeService Integration Tests", () => {
     expect(result.id).toBe(resume.id);
 
     // Verify it's gone
-    const resumesAfter = await listService.execute({ userId: 'user-delete-1' });
-    expect(resumesAfter).toHaveLength(0);
+    const resultAfter = await listService.execute({ userId: 'user-delete-1' });
+    expect(resultAfter.resumes).toHaveLength(0);
   });
 
   it("should reject deletion of non-existent resume", async () => {
@@ -80,8 +80,8 @@ describe("DeleteResumeService Integration Tests", () => {
     }
 
     // Verify resume still exists
-    const resumes = await listService.execute({ userId: 'user-delete-3' });
-    expect(resumes).toHaveLength(1);
+    const result = await listService.execute({ userId: 'user-delete-3' });
+    expect(result.resumes).toHaveLength(1);
   });
 
   it("should handle missing userId", async () => {

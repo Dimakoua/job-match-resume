@@ -217,6 +217,9 @@ describe('ResumeController Integration Tests', () => {
     expect(result.data.resumes[0]).toHaveProperty('id');
     expect(result.data.resumes[0]).toHaveProperty('title');
     expect(result.data.resumes[0]).toHaveProperty('updatedAt');
+    expect(result.data).toHaveProperty('pagination');
+    expect(result.data.pagination).toHaveProperty('page');
+    expect(result.data.pagination).toHaveProperty('totalCount');
   });
 
   it('should not list resumes from other users', async () => {
@@ -242,6 +245,7 @@ describe('ResumeController Integration Tests', () => {
     const result = await response.json();
     expect(result.success).toBe(true);
     expect(result.data.resumes.length).toBe(0); // User B should see no resumes
+    expect(result.data).toHaveProperty('pagination');
   });
 
   describe('generateFromJD endpoint', () => {

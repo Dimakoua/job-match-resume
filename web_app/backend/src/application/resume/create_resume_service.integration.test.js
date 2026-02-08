@@ -44,12 +44,12 @@ describe("Resume Services Integration Tests", () => {
     const listCommand = {
       userId: 'user-456'
     };
-    const resumes = await listService.execute(listCommand);
+    const result = await listService.execute(listCommand);
 
-    expect(resumes).toHaveLength(1);
-    expect(resumes[0].id).toBe(createdResume.id);
-    expect(resumes[0].title).toBe('My Integration Resume');
-    expect(resumes[0].updatedAt).toBeInstanceOf(Date);
+    expect(result.resumes).toHaveLength(1);
+    expect(result.resumes[0].id).toBe(createdResume.id);
+    expect(result.resumes[0].title).toBe('My Integration Resume');
+    expect(result.resumes[0].updatedAt).toBeInstanceOf(Date);
   });
 
   it("should create multiple resumes and list them", async () => {
@@ -61,10 +61,10 @@ describe("Resume Services Integration Tests", () => {
     const resume2 = await createService.execute({ userId: 'user-789', title: 'Resume 2' });
 
     // List resumes
-    const resumes = await listService.execute({ userId: 'user-789' });
+    const result = await listService.execute({ userId: 'user-789' });
 
-    expect(resumes).toHaveLength(2);
-    const titles = resumes.map(r => r.title).sort();
+    expect(result.resumes).toHaveLength(2);
+    const titles = result.resumes.map(r => r.title).sort();
     expect(titles).toEqual(['Resume 1', 'Resume 2']);
   });
 
@@ -77,12 +77,12 @@ describe("Resume Services Integration Tests", () => {
     await createService.execute({ userId: 'user-a', title: 'User A Resume' });
 
     // List for user2 should be empty
-    const user2Resumes = await listService.execute({ userId: 'user-b' });
-    expect(user2Resumes).toHaveLength(0);
+    const user2Result = await listService.execute({ userId: 'user-b' });
+    expect(user2Result.resumes).toHaveLength(0);
 
     // List for user1 should have 1
-    const user1Resumes = await listService.execute({ userId: 'user-a' });
-    expect(user1Resumes).toHaveLength(1);
+    const user1Result = await listService.execute({ userId: 'user-a' });
+    expect(user1Result.resumes).toHaveLength(1);
   });
 
   it("should create a resume with template sections", async () => {

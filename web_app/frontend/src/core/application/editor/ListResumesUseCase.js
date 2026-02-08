@@ -8,14 +8,24 @@ export class ListResumesUseCase {
     this.resumesListService = resumesListService
   }
 
-  async execute() {
+  async execute(options = {}) {
     try {
-      const resumes = await this.resumesListService.listResumes()
-      return resumes.map(resume => ({
-        id: resume.id,
-        title: resume.title || 'Untitled Resume',
-        updatedAt: resume.updatedAt || new Date().toISOString()
-      }))
+      const result = await this.resumesListService.listResumes(options)
+      return {
+        resumes: (result.resumes || []).map(resume => ({
+          id: resume.id,
+          title: resume.title || 'Untitled Resume',
+          updatedAt: resume.updatedAt || new Date().toISOString()
+        })),
+        pagination: result.pagination || {
+          page: 1,
+          limit: 9,
+          totalCount: 0,
+          totalPages: 0,
+          hasNext: false,
+          hasPrev: false
+        }
+      }
     } catch (error) {
       console.error('Failed to fetch resumes:', error)
       throw error

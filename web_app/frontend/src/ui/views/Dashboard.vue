@@ -57,6 +57,50 @@
             />
           </div>
 
+          <!-- Pagination -->
+          <div v-if="resumes.length > 0 && pagination.totalPages > 1" class="mt-8 flex justify-center">
+            <div class="flex items-center gap-2">
+              <!-- Previous Button -->
+              <button 
+                @click="goToPrevious"
+                :disabled="!pagination.hasPrev"
+                class="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+
+              <!-- Page Numbers -->
+              <div class="flex items-center gap-1">
+                <button 
+                  v-for="page in pagination.totalPages" 
+                  :key="page"
+                  @click="goToPage(page)"
+                  :class="[
+                    'px-3 py-2 rounded-lg text-sm font-medium transition-colors',
+                    page === pagination.page 
+                      ? 'bg-primary text-white' 
+                      : 'border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800'
+                  ]"
+                >
+                  {{ page }}
+                </button>
+              </div>
+
+              <!-- Next Button -->
+              <button 
+                @click="goToNext"
+                :disabled="!pagination.hasNext"
+                class="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
           <!-- Inspiration Section -->
           <div class="mt-16 bg-[#e7ebf3]/40 dark:bg-[#1a202c] p-8 rounded-xl flex flex-col md:flex-row items-center justify-between gap-4">
             <div class="flex gap-4 items-center">
@@ -130,7 +174,6 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import AppHeader from '../components/AppHeader.vue'
 import AppFooter from '../components/AppFooter.vue'
@@ -144,6 +187,7 @@ const {
   resumes,
   isLoading,
   error,
+  pagination,
   previewModal,
   handleCreateWithAI,
   handleCreateFromScratch,
@@ -151,7 +195,10 @@ const {
   handleDownloadResume,
   handlePreviewResume,
   handleDuplicateResume,
-  handleDeleteResume
+  handleDeleteResume,
+  goToPage,
+  goToNext,
+  goToPrevious
 } = useDashboardController()
 
 // Router instance

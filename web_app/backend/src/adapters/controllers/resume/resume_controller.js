@@ -107,12 +107,35 @@ export class ResumeController extends BaseController {
     try {
       const userId = await this.authenticate(request);
 
-      // Execute list resumes
-      const resumes = await this.listResumesService.execute({ userId });
+      // Parse pagination parameters
+      let page = 1;
+      let limit = 9;
+
+      if (request.url) {
+        try {
+          const url = new URL(request.url);
+          const pageParam = url.searchParams.get('page');
+          const limitParam = url.searchParams.get('limit');
+          
+          if (pageParam) page = parseInt(pageParam);
+          if (limitParam) limit = parseInt(limitParam);
+        } catch (error) {
+          // If URL parsing fails, use defaults
+          console.warn('Failed to parse request URL for pagination:', error.message);
+        }
+      }
+
+      // Validate pagination parameters
+      if (page < 1 || limit < 1 || limit > 100) {
+        return this.errorResponse('INVALID_PAGINATION', 'Invalid pagination parameters', 400);
+      }
+
+      // Execute list resumes with pagination
+      const result = await this.listResumesService.execute({ userId, page, limit });
 
       return this.successResponse({
         success: true,
-        data: { resumes },
+        data: result,
       });
     } catch (error) {
       // If authenticate threw a Response, return it

@@ -220,10 +220,12 @@
 - Acceptance: Database connectivity, external services, system resources monitored.
 - Evidence Required: Enhanced health endpoint, monitoring dashboards, alert thresholds.
 
-## B-044 — [performance] Pagination Implementation 🟡 Medium
-- Scope: Add pagination to list endpoints.
-- Acceptance: Large result sets paginated, performance optimized, proper pagination headers.
-- Evidence Required: Pagination middleware, performance tests, API documentation updated.
+## B-044 — [performance] Pagination Implementation ✅ 100%
+- Completed: 2026-02-07
+- Scope: Add backend pagination to resume listing endpoints.
+- Acceptance: Large result sets paginated with LIMIT/OFFSET, performance optimized, proper pagination metadata returned.
+- Evidence Required: Repository with pagination queries, service with pagination logic, controller with query parsing, integration tests passing.
+- Evidence: D1ResumeRepository.findAllByUserId() with LIMIT/OFFSET, ListResumesService returns {resumes, pagination}, ResumeController parses page/limit params, 120 tests passing.
 
 ## B-045 — [security] Security Headers 🟡 Medium
 - Scope: Add security headers (CSP, HSTS, etc.).
