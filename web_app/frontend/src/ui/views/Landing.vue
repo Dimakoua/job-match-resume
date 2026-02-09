@@ -268,9 +268,9 @@
           <div>
             <h5 class="font-bold mb-4 text-slate-900 text-sm">Product</h5>
             <ul class="space-y-3 text-xs text-slate-500">
-              <li><a class="hover:text-primary" href="#">Resume Builder</a></li>
-              <li><a class="hover:text-primary" href="#">Job Tracker</a></li>
-              <li><a class="hover:text-primary" href="#">ATS Scanner</a></li>
+              <li><router-link to="/builder" class="hover:text-primary">Resume Builder</router-link></li>
+              <li><router-link to="/saved-jobs" class="hover:text-primary">Job Tracker</router-link></li>
+              <li><router-link to="/generator" class="hover:text-primary">ATS Scanner</router-link></li>
             </ul>
           </div>
           <div>
@@ -278,14 +278,14 @@
             <ul class="space-y-3 text-xs text-slate-500">
               <li><a class="hover:text-primary" href="#">Career Blog</a></li>
               <li><a class="hover:text-primary" href="#">Templates</a></li>
-              <li><a class="hover:text-primary" href="#">Help Center</a></li>
+              <li><router-link to="/help" class="hover:text-primary">Help Center</router-link></li>
             </ul>
           </div>
           <div>
             <h5 class="font-bold mb-4 text-slate-900 text-sm">Legal</h5>
             <ul class="space-y-3 text-xs text-slate-500">
-              <li><a @click="$router.push('/privacy')" class="hover:text-primary cursor-pointer" href="#">Privacy Policy</a></li>
-              <li><a @click="$router.push('/terms')" class="hover:text-primary cursor-pointer" href="#">Terms of Service</a></li>
+              <li><router-link to="/privacy" class="hover:text-primary">Privacy Policy</router-link></li>
+              <li><router-link to="/terms" class="hover:text-primary">Terms of Service</router-link></li>
               <li><a class="hover:text-primary" href="#">Contact Us</a></li>
             </ul>
           </div>
