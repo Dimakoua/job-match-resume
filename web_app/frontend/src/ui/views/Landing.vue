@@ -286,7 +286,7 @@
             <ul class="space-y-3 text-xs text-slate-500">
               <li><router-link to="/privacy" class="hover:text-primary">Privacy Policy</router-link></li>
               <li><router-link to="/terms" class="hover:text-primary">Terms of Service</router-link></li>
-              <li><a class="hover:text-primary" href="#">Contact Us</a></li>
+              <li><router-link to="/contact" class="hover:text-primary">Contact Us</router-link></li>
             </ul>
           </div>
         </div>
