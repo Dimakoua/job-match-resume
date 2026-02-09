@@ -1,5 +1,5 @@
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '../stores/useAuthStore.js'
 import { LoginUseCase } from '../../core/application/auth/LoginUseCase.js'
 import { SignupUseCase } from '../../core/application/auth/SignupUseCase.js'
@@ -7,6 +7,7 @@ import { HttpAuthService } from '../../infrastructure/api/HttpAuthService.js'
 
 export function useAuthController() {
   const router = useRouter()
+  const route = useRoute()
   const authStore = useAuthStore()
   const isLoading = ref(false)
   const error = ref(null)
@@ -23,7 +24,8 @@ export function useAuthController() {
       const { user, token } = await loginUseCase.execute(email, password)
       console.log('Login successful, user:', user, 'token:', token)
       authStore.login(user, token)
-      router.push('/dashboard')
+      const redirectTo = route.query.redirect || '/dashboard'
+      router.push(redirectTo)
     } catch (err) {
       console.log('Error response:', err.response?.data)
       let errorMessage = err.response?.data?.error?.message || err.response?.data?.message || 'Login failed'
@@ -44,7 +46,8 @@ export function useAuthController() {
     try {
       const { user, token } = await signupUseCase.execute(name, email, password)
       authStore.login(user, token)
-      router.push('/dashboard')
+      const redirectTo = route.query.redirect || '/dashboard'
+      router.push(redirectTo)
     } catch (err) {
       let errorMessage = err.response?.data?.message || 'Signup failed'
       if (err.response?.data?.details) {

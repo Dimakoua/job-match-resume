@@ -34,8 +34,8 @@ router.beforeEach((to, from, next) => {
     // Authenticated user on landing -> redirect to dashboard
     next('/dashboard')
   } else if (to.meta.requiresAuth && !isAuthenticated) {
-    // Trying to access protected route without auth -> redirect to login
-    next('/login')
+    // Trying to access protected route without auth -> redirect to login with redirect param
+    next('/login?redirect=' + encodeURIComponent(to.fullPath))
   } else if (isAuthPage && isAuthenticated) {
     // Already logged in, trying to access auth pages -> redirect to dashboard
     next('/dashboard')
