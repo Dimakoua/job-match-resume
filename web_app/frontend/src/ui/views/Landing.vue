@@ -11,7 +11,7 @@
         <div class="hidden md:flex items-center gap-8">
           <a class="text-sm font-medium text-slate-600 hover:text-primary transition-colors" href="#features">Features</a>
           <a class="text-sm font-medium text-slate-600 hover:text-primary transition-colors" href="#how-it-works">How It Works</a>
-          <a class="text-sm font-medium text-slate-600 hover:text-primary transition-colors" href="#">Job Tracker</a>
+          <a class="text-sm font-medium text-slate-600 hover:text-primary transition-colors" href="#job-tracker">Job Tracker</a>
         </div>
         <div class="flex items-center gap-4">
           <button @click="$router.push('/login')" class="text-sm font-semibold text-slate-700 hover:text-primary">Log in</button>
@@ -213,6 +213,42 @@
           </div>
           <button @click="$router.push('/signup')" class="bg-primary hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-bold transition-all shadow-xl shadow-blue-600/20 whitespace-nowrap">
             Start Building for Free
+          </button>
+        </div>
+      </div>
+    </section>
+    <section class="py-20 bg-slate-50" id="job-tracker">
+      <div class="max-w-6xl mx-auto px-6">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl font-extrabold mb-3 tracking-tight">Master Your Job Search with Professional Tracking</h2>
+          <p class="text-slate-500 text-base max-w-2xl mx-auto">Transform chaos into clarity. Our intuitive job tracker helps you stay organized, focused, and ahead of the competition.</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div class="bg-white p-8 rounded-xl border border-slate-100 shadow-sm">
+            <div class="size-12 rounded-lg bg-indigo-600 text-white flex items-center justify-center mb-6 shadow-lg shadow-indigo-100">
+              <span class="material-symbols-outlined text-2xl">list_alt</span>
+            </div>
+            <h3 class="text-xl font-bold mb-3">Smart Organization</h3>
+            <p class="text-slate-500 text-sm leading-relaxed">Categorize applications by role, company, or status. Find what you need instantly with our flexible list system.</p>
+          </div>
+          <div class="bg-white p-8 rounded-xl border border-slate-100 shadow-sm">
+            <div class="size-12 rounded-lg bg-emerald-600 text-white flex items-center justify-center mb-6 shadow-lg shadow-emerald-100">
+              <span class="material-symbols-outlined text-2xl">archive</span>
+            </div>
+            <h3 class="text-xl font-bold mb-3">Seamless Archiving</h3>
+            <p class="text-slate-500 text-sm leading-relaxed">Archive old applications to maintain a clean, active pipeline while preserving historical data for future reference.</p>
+          </div>
+          <div class="bg-white p-8 rounded-xl border border-slate-100 shadow-sm">
+            <div class="size-12 rounded-lg bg-purple-600 text-white flex items-center justify-center mb-6 shadow-lg shadow-purple-100">
+              <span class="material-symbols-outlined text-2xl">edit</span>
+            </div>
+            <h3 class="text-xl font-bold mb-3">Dynamic Updates</h3>
+            <p class="text-slate-500 text-sm leading-relaxed">Edit statuses, add notes, and track progress in real-time. Stay on top of every opportunity with ease.</p>
+          </div>
+        </div>
+        <div class="mt-12 text-center">
+          <button @click="$router.push('/signup')" class="bg-primary hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-bold transition-all shadow-lg shadow-blue-200">
+            Start Organizing Your Job Search
           </button>
         </div>
       </div>
