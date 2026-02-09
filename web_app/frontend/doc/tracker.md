@@ -168,6 +168,10 @@
 
 ---
 
+## F-060 — [ui] Refactor Marketing Header/Footer Components ✅ 100%
+- Scope: Extract common header and footer code from Landing.vue and ContactUs.vue into reusable MarketingHeader.vue and MarketingFooter.vue components
+- Status: ✅ 100% — Components created, views updated, build passes
+
 ## Status Summary
 - ✅ 100% — F-003 to F-046: Infrastructure, UI, and core features complete
 - ✅ 100% — F-052: Generation Settings Logic + Resume Selection complete
