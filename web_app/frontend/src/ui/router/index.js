@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { TokenStorage } from '../../infrastructure/storage/TokenStorage.js'
 
 const routes = [
-  { path: '/', redirect: '/dashboard' },
+  { path: '/', name: 'Landing', component: () => import('../views/Landing.vue') },
   { path: '/login', name: 'Login', component: () => import('../views/Login.vue') },
   { path: '/signup', name: 'Signup', component: () => import('../views/Signup.vue') },
   { path: '/forgot-password', name: 'ForgotPassword', component: () => import('../views/ForgotPassword.vue') },
@@ -30,7 +30,10 @@ router.beforeEach((to, from, next) => {
   const isAuthenticated = !!TokenStorage.getToken()
   const isAuthPage = ['Login', 'Signup', 'ForgotPassword'].includes(to.name)
   
-  if (to.meta.requiresAuth && !isAuthenticated) {
+  if (to.name === 'Landing' && isAuthenticated) {
+    // Authenticated user on landing -> redirect to dashboard
+    next('/dashboard')
+  } else if (to.meta.requiresAuth && !isAuthenticated) {
     // Trying to access protected route without auth -> redirect to login
     next('/login')
   } else if (isAuthPage && isAuthenticated) {
