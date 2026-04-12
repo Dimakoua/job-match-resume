@@ -30,6 +30,7 @@
                     :sections="[]"
                     :layout="example.layout"
                     :style="example.style"
+                    :hide-empty-sections="true"
                   />
                 </div>
               </div>
@@ -85,6 +86,7 @@
                 :sections="[]"
                 :layout="previewModal.example?.layout"
                 :style="previewModal.example?.style"
+                :hide-empty-sections="true"
               />
             </div>
           </div>

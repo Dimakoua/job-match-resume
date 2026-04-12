@@ -6,6 +6,7 @@
     :style="style"
     :sections="sections"
     :keywordsToHighlight="keywordsToHighlight"
+    :hide-empty-sections="hideEmptySections"
   />
 </template>
 
@@ -43,6 +44,10 @@ const props = defineProps({
   keywordsToHighlight: {
     type: Array,
     default: () => []
+  },
+  hideEmptySections: {
+    type: Boolean,
+    default: false
   }
 })
 

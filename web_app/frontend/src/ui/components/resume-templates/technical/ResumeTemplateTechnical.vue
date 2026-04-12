@@ -8,7 +8,7 @@
     />
 
     <!-- Summary -->
-    <section>
+    <section v-if="!hideEmptySections || resume.summary">
       <h2 class="resume-header text-xs font-bold uppercase tracking-widest text-slate-500 border-b border-slate-200 pb-1 mb-3">Professional Summary</h2>
       <div v-if="resume.summary">
         <p class="text-sm">
@@ -24,7 +24,7 @@
     </section>
 
     <!-- Technical Skills (Top-level grid for engineers) -->
-    <section>
+    <section v-if="!hideEmptySections || (resume.skills && resume.skills.length > 0)">
       <h2 class="resume-header text-xs font-bold uppercase tracking-widest text-slate-500 border-b border-slate-200 pb-1 mb-3">Technical Skills</h2>
       <div v-if="resume.skills && resume.skills.length > 0">
         <div class="grid grid-cols-3 gap-4">
@@ -61,7 +61,7 @@
     </section>
 
     <!-- Professional Experience -->
-    <section class="flex flex-col gap-6">
+    <section class="flex flex-col gap-6" v-if="!hideEmptySections || (resume.experience && resume.experience.length > 0)">
       <h2 class="resume-header text-xs font-bold uppercase tracking-widest text-slate-500 border-b border-slate-200 pb-1 mb-1">Professional Experience</h2>
       <div v-if="resume.experience && resume.experience.length > 0">
         <div
@@ -90,7 +90,7 @@
     </section>
 
     <!-- Selected Projects -->
-    <section class="flex flex-col gap-4">
+    <section class="flex flex-col gap-4" v-if="!hideEmptySections || (resume.projects && resume.projects.length > 0)">
       <h2 class="resume-header text-xs font-bold uppercase tracking-widest text-slate-500 border-b border-slate-200 pb-1 mb-1">Selected Projects</h2>
       <div v-if="resume.projects && resume.projects.length > 0">
         <div class="grid grid-cols-2 gap-6">
@@ -114,7 +114,7 @@
     </section>
 
     <!-- Education -->
-    <section>
+    <section v-if="!hideEmptySections || (resume.education && resume.education.length > 0)">
       <h2 class="resume-header text-xs font-bold uppercase tracking-widest text-slate-500 border-b border-slate-200 pb-1 mb-3">Education</h2>
       <div v-if="resume.education && resume.education.length > 0">
         <div
@@ -160,6 +160,10 @@ defineProps({
   customSections: {
     type: Array,
     default: () => []
+  },
+  hideEmptySections: {
+    type: Boolean,
+    default: false
   }
 })
 </script>

@@ -14,6 +14,7 @@
       :layout="layout"
       :sections="customSections"
       :classes="classes"
+      :hide-empty-sections="hideEmptySections"
     />
   </div>
 </template>
@@ -39,6 +40,10 @@ const props = defineProps({
   customSections: {
     type: Array,
     default: () => []
+  },
+  hideEmptySections: {
+    type: Boolean,
+    default: false
   }
 })
 

@@ -1,6 +1,6 @@
 <template>
   <!-- Summary -->
-  <div v-if="isSectionVisible('summary')" :style="{ marginBottom: `${layout.sectionSpacing}px` }">
+  <div v-if="isSectionVisible('summary') && (!hideEmptySections || resume.summary)" :style="{ marginBottom: `${layout.sectionSpacing}px` }">
     <h3 :class="classes.sectionHeaderClass" :style="classes.sectionHeaderStyle">Profile</h3>
     <div v-if="resume.summary">
       <p :style="{ ...bodyStyle, whiteSpace: 'pre-wrap' }" :class="classes.bodyTextClass" v-html="resume.summary"></p>
@@ -8,7 +8,7 @@
   </div>
 
   <!-- Experience -->
-  <div v-if="isSectionVisible('experience')" :style="{ marginBottom: `${layout.sectionSpacing}px` }">
+  <div v-if="isSectionVisible('experience') && (!hideEmptySections || filledExperiences.length > 0)" :style="{ marginBottom: `${layout.sectionSpacing}px` }">
     <h3 :class="classes.sectionHeaderClass" :style="classes.sectionHeaderStyle">Professional Experience</h3>
     <div v-if="filledExperiences.length > 0">
       <div
@@ -35,7 +35,7 @@
   </div>
 
   <!-- Education -->
-  <div v-if="isSectionVisible('education')" :style="{ marginBottom: `${layout.sectionSpacing}px` }">
+  <div v-if="isSectionVisible('education') && (!hideEmptySections || (resume.education && resume.education.length > 0))" :style="{ marginBottom: `${layout.sectionSpacing}px` }">
     <h3 :class="classes.sectionHeaderClass" :style="classes.sectionHeaderStyle">Education</h3>
     <div v-if="resume.education && resume.education.length > 0">
       <div v-for="(edu, index) in resume.education" :key="index" :class="classes.educationItemClass">
@@ -51,7 +51,7 @@
   </div>
 
   <!-- Projects -->
-  <div v-if="isSectionVisible('projects')" :style="{ marginBottom: `${layout.sectionSpacing}px` }">
+  <div v-if="isSectionVisible('projects') && (!hideEmptySections || (resume.projects && resume.projects.length > 0))" :style="{ marginBottom: `${layout.sectionSpacing}px` }">
     <h3 :class="classes.sectionHeaderClass" :style="classes.sectionHeaderStyle">Selected Projects</h3>
     <div v-if="resume.projects && resume.projects.length > 0" class="grid grid-cols-2 gap-6">
       <div
@@ -67,7 +67,7 @@
   </div>
 
   <!-- Certifications -->
-  <div v-if="isSectionVisible('certifications')" :style="{ marginBottom: `${layout.sectionSpacing}px` }">
+  <div v-if="isSectionVisible('certifications') && (!hideEmptySections || (resume.certifications && resume.certifications.length > 0))" :style="{ marginBottom: `${layout.sectionSpacing}px` }">
     <h3 :class="classes.sectionHeaderClass" :style="classes.sectionHeaderStyle">Certifications</h3>
     <div v-if="resume.certifications && resume.certifications.length > 0">
       <div v-for="(cert, index) in resume.certifications" :key="index" :class="classes.certificationItemClass">
@@ -81,7 +81,7 @@
   </div>
 
   <!-- Skills -->
-  <div v-if="isSectionVisible('skills')" :style="{ marginBottom: `${layout.sectionSpacing}px` }">
+  <div v-if="isSectionVisible('skills') && (!hideEmptySections || (resume.skills && resume.skills.length > 0))" :style="{ marginBottom: `${layout.sectionSpacing}px` }">
     <h3 :class="classes.sectionHeaderClass" :style="classes.sectionHeaderStyle">Technical Skills</h3>
     <div v-if="resume.skills && resume.skills.length > 0" :class="classes.skillsContainerClass">
       <div>
@@ -108,7 +108,7 @@
   </template>
 
   <!-- Empty State -->
-  <div v-if="isEmpty" class="flex-1 flex items-center justify-center">
+  <div v-if="isEmpty && !hideEmptySections" class="flex-1 flex items-center justify-center">
     <div class="text-center text-gray-400">
       <svg xmlns="http://www.w3.org/2000/svg" class="size-12 mx-auto mb-3 opacity-50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
@@ -156,6 +156,10 @@ const props = defineProps({
   classes: {
     type: Object,
     default: () => ({})
+  },
+  hideEmptySections: {
+    type: Boolean,
+    default: false
   }
 })
 
