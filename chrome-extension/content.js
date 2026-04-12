@@ -24,8 +24,11 @@ const SITE_CONFIG = {
             '.job-details-jobs-unified-top-card__company-name',
             '.jobs-unified-top-card__company-name a',
             '.jobs-unified-top-card__company-name',
+            'a[data-tracking-control-name="public_jobs_topcard-org-name"]',
+            '[class*="topcard__org-name"]',
+            '[class*="company-name"]',
+            '.artdeco-entity-lockup__subtitle span',
             '[data-tracking-control-name*="company"]',
-            'a[href*="/company/"]',
         ],
     },
     indeed: {
@@ -66,14 +69,34 @@ function queryFirst(selectors) {
     return null;
 }
 
-// Parse LinkedIn page title: "Job Title at Company | LinkedIn"
+// Parse LinkedIn page title into { title, company }.
+// Known formats:
+//   "Software Engineer at EvenUp | LinkedIn"
+//   "Software Engineer - EvenUp | LinkedIn"
+//   "EvenUp is hiring a Software Engineer | LinkedIn"
+//   "EvenUp hiring Software Engineer | LinkedIn"
 function parseLinkedInTitle() {
     const raw = document.title || '';
-    const noSuffix = raw.replace(/\s*\|\s*LinkedIn\s*$/i, '').trim();
-    const atMatch  = noSuffix.match(/^(.+?)\s+at\s+(.+)$/i);
+    const noSuffix = raw.replace(/\s*\|.*$/, '').trim(); // strip " | LinkedIn" and anything after |
+
+    // "X at Y"
+    const atMatch = noSuffix.match(/^(.+?)\s+at\s+(.+)$/i);
     if (atMatch) return { title: atMatch[1].trim(), company: atMatch[2].trim() };
-    const hiringMatch = noSuffix.match(/^(.+?)\s+(?:is hiring|hiring)\s+(.+)$/i);
+
+    // "X is hiring (a/an) Y" or "X hiring Y"
+    const hiringMatch = noSuffix.match(/^(.+?)\s+(?:is\s+)?hiring\s+(?:a\s+|an\s+)?(.+)$/i);
     if (hiringMatch) return { title: hiringMatch[2].trim(), company: hiringMatch[1].trim() };
+
+    // "X - Y" (try both orderings; shorter part is usually the company)
+    const dashMatch = noSuffix.match(/^(.+?)\s+[-–—]\s+(.+)$/);
+    if (dashMatch) {
+        const a = dashMatch[1].trim(), b = dashMatch[2].trim();
+        // Heuristic: the company part tends to be shorter
+        return a.length <= b.length
+            ? { title: b, company: a }
+            : { title: a, company: b };
+    }
+
     return { title: noSuffix, company: '' };
 }
 
@@ -89,6 +112,7 @@ function detectJobMeta(siteKey) {
         if (!company && parsed.company) company = parsed.company;
     }
 
+    console.debug('[ROA] detectJobMeta', { siteKey, title, company, pageTitle: document.title });
     return { title, company };
 }
 
@@ -263,6 +287,19 @@ function injectFloatingCard(jobDescription, siteKey) {
 }
 
 async function doSaveApplication(subtitle, company, title) {
+    // Re-detect meta at click time — the full page is rendered by now even if
+    // it wasn't when the JD first appeared (timing gap on slow connections).
+    const siteKey = getSiteKey();
+    if (siteKey) {
+        const fresh = detectJobMeta(siteKey);
+        if (!company && fresh.company) company = fresh.company;
+        if (!title   && fresh.title)   title   = fresh.title;
+        // Rebuild subtitle with any newly found values
+        if (!subtitle || subtitle === 'Job found on this page') {
+            subtitle = title && company ? `${title} · ${company}` : title || company || subtitle;
+        }
+    }
+
     const { userToken } = await chrome.storage.local.get(['userToken']);
 
     // Not logged in → open popup so user can log in first

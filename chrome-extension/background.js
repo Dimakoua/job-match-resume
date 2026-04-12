@@ -1,3 +1,6 @@
+// const API_BASE_URL = 'https://your-backend-url.com'; // update with actual backend URL
+const API_BASE_URL = 'http://localhost:8787';
+
 const prompt = `
     Please optimize the following resume to align with the provided job description while preserving its original format, structure, and professional style. 
     Ensure that the revised resume is ATS-friendly and tailored for maximum compatibility with Applicant Tracking Systems (ATS) while maintaining readability and a natural flow.
