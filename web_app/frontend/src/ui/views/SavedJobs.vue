@@ -40,7 +40,7 @@
                         </a>
                     </nav>
                     <button @click="openCreateListModal"
-                        class="flex items-center justify-center gap-2 rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold mt-auto">
+                        class="flex items-center justify-center gap-2 rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold mt-4">
                         <span class="material-symbols-outlined text-sm">add</span>
                         <span class="truncate">New List</span>
                     </button>
@@ -57,7 +57,12 @@
                                 filteredJobs.length }} {{ isArchiveView ? 'archived' : 'saved' }} job descriptions</p>
                         </div>
                         <div class="flex gap-3">
-                            <button @click="addJobManually"
+                            <button @click="openCreateListModal"
+                                class="flex items-center justify-center rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold shadow-sm">
+                                <span class="material-symbols-outlined text-sm">add</span>
+                                <span class="truncate">New List</span>
+                            </button>
+                        <button @click="addJobManually"
                                 class="flex items-center justify-center rounded-lg h-10 px-4 bg-white dark:bg-gray-800 text-[#0e121b] dark:text-white border border-[#e7ebf3] dark:border-gray-700 text-sm font-bold shadow-sm">
                                 <span class="truncate">Add Job Manually</span>
                             </button>
