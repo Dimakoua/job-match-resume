@@ -45,10 +45,10 @@
         <div v-if="!resume.skillCategories" class="flex flex-wrap gap-2">
           <span
             v-for="skill in resume.skills"
-            :key="skill"
+            :key="skill.name || skill"
             class="px-3 py-1 bg-slate-100 text-slate-900 text-sm rounded"
           >
-            {{ skill }}
+            {{ skill.name || skill }}
           </span>
         </div>
       </div>
