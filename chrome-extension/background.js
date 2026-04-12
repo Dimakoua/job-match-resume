@@ -239,13 +239,30 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     }
 
     if (message.action === "openPopupAndShowJobSave") {
-        // Store JD and detected title so the popup can pre-fill and show the banner
+        // Store JD and detected title/company so the popup can pre-fill and show the banner
         chrome.storage.session.set({
             jobDescriptionForSave: message.jobDescription,
             detectedJobTitle:      message.detectedJobTitle || '',
+            detectedCompany:       message.detectedCompany  || '',
         });
 
         chrome.action.openPopup();
+    }
+
+    if (message.action === "saveJobApplicationFromContent") {
+        const { company, position, jobDescription, url, userToken } = message;
+
+        fetch(`${API_BASE_URL}/api/job-applications/from-extension`, {
+            method: 'POST',
+            headers: {
+                'Content-Type':  'application/json',
+                'Authorization': `Bearer ${userToken}`,
+            },
+            body: JSON.stringify({ company, position, jobDescription, url: url || undefined }),
+        })
+        .then(r => r.json())
+        .then(data => sendResponse({ success: data.success, message: data.message }))
+        .catch(() => sendResponse({ success: false, message: 'Network error' }));
     }
 
     return true;

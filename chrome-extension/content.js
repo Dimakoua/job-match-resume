@@ -5,19 +5,46 @@ let savedJobDescription   = null;
 
 const SITE_CONFIG = {
     linkedin: {
-        jd:      '*[data-test-job-description-text], .job-details-about-the-job-module__description',
-        title:   '.job-details-jobs-unified-top-card__job-title h1, h1.t-24',
-        company: '.job-details-jobs-unified-top-card__company-name a, .job-details-jobs-unified-top-card__company-name',
+        jd:      [
+            '.job-details-about-the-job-module__description',
+            '[data-test-job-description-text]',
+            '.jobs-description__content',
+            '.jobs-box__html-content',
+        ],
+        title:   [
+            'h1.job-details-jobs-unified-top-card__job-title',
+            '.job-details-jobs-unified-top-card__job-title h1',
+            'h1.jobs-unified-top-card__job-title',
+            '.jobs-unified-top-card__job-title h1',
+            'h1[class*="job-title"]',
+            'h1.t-24',
+        ],
+        company: [
+            '.job-details-jobs-unified-top-card__company-name a',
+            '.job-details-jobs-unified-top-card__company-name',
+            '.jobs-unified-top-card__company-name a',
+            '.jobs-unified-top-card__company-name',
+            '[data-tracking-control-name*="company"]',
+            'a[href*="/company/"]',
+        ],
     },
     indeed: {
-        jd:      '#jobDescriptionText',
-        title:   'h1.jobsearch-JobInfoHeader-title, h1[data-testid="jobsearch-JobInfoHeader-title"]',
-        company: '.jobsearch-InlineCompanyRating-companyHeader a, .jobsearch-CompanyInfoContainer a',
+        jd:      ['#jobDescriptionText'],
+        title:   [
+            'h1.jobsearch-JobInfoHeader-title',
+            'h1[data-testid="jobsearch-JobInfoHeader-title"]',
+        ],
+        company: [
+            '.jobsearch-InlineCompanyRating-companyHeader a',
+            '.jobsearch-CompanyInfoContainer a',
+            '[data-testid="inlineHeader-companyName"] a',
+            '[data-testid="inlineHeader-companyName"]',
+        ],
     },
     glassdoor: {
-        jd:      "[class*='JobDetails_jobDescription']",
-        title:   'h1[data-test="job-title"]',
-        company: '[data-test="employer-name"]',
+        jd:      ["[class*='JobDetails_jobDescription']"],
+        title:   ['h1[data-test="job-title"]'],
+        company: ['[data-test="employer-name"]'],
     },
 };
 
@@ -29,10 +56,39 @@ function getSiteKey() {
     return null;
 }
 
+function queryFirst(selectors) {
+    for (const sel of selectors) {
+        try {
+            const el = document.querySelector(sel);
+            if (el) return el;
+        } catch (_) { /* invalid selector — skip */ }
+    }
+    return null;
+}
+
+// Parse LinkedIn page title: "Job Title at Company | LinkedIn"
+function parseLinkedInTitle() {
+    const raw = document.title || '';
+    const noSuffix = raw.replace(/\s*\|\s*LinkedIn\s*$/i, '').trim();
+    const atMatch  = noSuffix.match(/^(.+?)\s+at\s+(.+)$/i);
+    if (atMatch) return { title: atMatch[1].trim(), company: atMatch[2].trim() };
+    const hiringMatch = noSuffix.match(/^(.+?)\s+(?:is hiring|hiring)\s+(.+)$/i);
+    if (hiringMatch) return { title: hiringMatch[2].trim(), company: hiringMatch[1].trim() };
+    return { title: noSuffix, company: '' };
+}
+
 function detectJobMeta(siteKey) {
     const cfg     = SITE_CONFIG[siteKey];
-    const title   = document.querySelector(cfg.title)?.innerText?.trim()   || '';
-    const company = document.querySelector(cfg.company)?.innerText?.trim() || '';
+    let   title   = queryFirst(cfg.title)?.innerText?.trim()   || '';
+    let   company = queryFirst(cfg.company)?.innerText?.trim() || '';
+
+    // LinkedIn-specific fallback: parse page <title> tag
+    if (siteKey === 'linkedin' && (!title || !company)) {
+        const parsed = parseLinkedInTitle();
+        if (!title   && parsed.title)   title   = parsed.title;
+        if (!company && parsed.company) company = parsed.company;
+    }
+
     return { title, company };
 }
 
@@ -144,6 +200,28 @@ function injectFloatingCard(jobDescription, siteKey) {
             color: #374151;
         }
         #roa-floating-card .roa-btn-secondary:hover { background: #e5e7eb; }
+        #roa-floating-card .roa-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 6px 0 2px;
+        }
+        #roa-floating-card .roa-status.loading { color: #6b7280; }
+        #roa-floating-card .roa-status.success  { color: #10b981; }
+        #roa-floating-card .roa-status.error    { color: #ef4444; }
+        @keyframes roaSpin {
+            to { transform: rotate(360deg); }
+        }
+        #roa-floating-card .roa-spinner {
+            width: 16px; height: 16px;
+            border: 2px solid #e5e7eb;
+            border-top-color: #6b7280;
+            border-radius: 50%;
+            animation: roaSpin .7s linear infinite;
+            flex-shrink: 0;
+        }
     `;
     document.head.appendChild(styleEl);
 
@@ -170,14 +248,9 @@ function injectFloatingCard(jobDescription, siteKey) {
 
     document.getElementById('roa-dismiss').addEventListener('click', removeFloatingCard);
 
-    document.getElementById('roa-save-btn').addEventListener('click', () => {
-        chrome.runtime.sendMessage({
-            action:           'openPopupAndShowJobSave',
-            jobDescription:   savedJobDescription,
-            detectedJobTitle: subtitle,
-        });
-        removeFloatingCard();
-    });
+    document.getElementById('roa-save-btn').addEventListener('click', () =>
+        doSaveApplication(subtitle, company, title)
+    );
 
     document.getElementById('roa-optimize-btn').addEventListener('click', () => {
         // Store JD for optimize tab and open popup
@@ -187,6 +260,81 @@ function injectFloatingCard(jobDescription, siteKey) {
         });
         removeFloatingCard();
     });
+}
+
+async function doSaveApplication(subtitle, company, title) {
+    const { userToken } = await chrome.storage.local.get(['userToken']);
+
+    // Not logged in → open popup so user can log in first
+    if (!userToken) {
+        chrome.runtime.sendMessage({
+            action:           'openPopupAndShowJobSave',
+            jobDescription:   savedJobDescription,
+            detectedJobTitle: title,
+            detectedCompany:  company,
+        });
+        removeFloatingCard();
+        return;
+    }
+
+    // Missing company or title → open popup pre-filled so user can complete them
+    if (!company || !title) {
+        chrome.runtime.sendMessage({
+            action:           'openPopupAndShowJobSave',
+            jobDescription:   savedJobDescription,
+            detectedJobTitle: title,
+            detectedCompany:  company,
+        });
+        removeFloatingCard();
+        return;
+    }
+
+    // All data present — save directly via background worker (avoids CORS)
+    setCardState('loading');
+
+    chrome.runtime.sendMessage({
+        action:         'saveJobApplicationFromContent',
+        company,
+        position:       title,
+        jobDescription: savedJobDescription,
+        url:            location.href,
+        userToken,
+    }, (response) => {
+        if (response?.success) {
+            setCardState('success');
+            setTimeout(removeFloatingCard, 2200);
+        } else {
+            setCardState('error', response?.message || 'Could not save — try again.', subtitle, company, title);
+        }
+    });
+}
+
+function setCardState(state, message, subtitle, company, title) {
+    const actions = floatingCard?.querySelector('.roa-actions');
+    if (!actions) return;
+
+    if (state === 'loading') {
+        actions.innerHTML = `
+            <div class="roa-status loading">
+                <div class="roa-spinner"></div>
+                Saving…
+            </div>`;
+    } else if (state === 'success') {
+        actions.innerHTML = `
+            <div class="roa-status success">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                Saved to your applications!
+            </div>`;
+    } else if (state === 'error') {
+        actions.innerHTML = `
+            <div class="roa-status error">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                ${escapeHtml(message || 'Something went wrong')}
+            </div>
+            <button class="roa-btn-primary" id="roa-retry-btn" style="margin-top:8px;width:100%">Retry</button>`;
+        floatingCard.querySelector('#roa-retry-btn')
+            ?.addEventListener('click', () => doSaveApplication(subtitle, company, title));
+    }
 }
 
 function escapeHtml(str) {
@@ -208,11 +356,19 @@ function removeFloatingCard() {
 
 // ── JD observer ───────────────────────────────────────────────
 
+let _activeJdObserver = null;   // track so we can cancel it on navigation
+
 function waitForJobDescription() {
+    // Cancel any pending observer from a previous navigation
+    if (_activeJdObserver) {
+        _activeJdObserver.disconnect();
+        _activeJdObserver = null;
+    }
+
     const siteKey = getSiteKey();
     if (!siteKey) return;
 
-    const selector = SITE_CONFIG[siteKey].jd;
+    const selectors = SITE_CONFIG[siteKey].jd;
 
     function handleElement(el) {
         const text = el.innerText?.trim() || '';
@@ -223,21 +379,22 @@ function waitForJobDescription() {
     }
 
     // Already in DOM?
-    const existing = document.querySelector(selector);
+    const existing = queryFirst(selectors);
     if (existing && (existing.innerText?.trim()?.length || 0) >= 50) {
         handleElement(existing);
         return;
     }
 
     // Wait for it
-    const observer = new MutationObserver((_mutations, obs) => {
-        const el = document.querySelector(selector);
+    _activeJdObserver = new MutationObserver((_mutations, obs) => {
+        const el = queryFirst(selectors);
         if (el && (el.innerText?.trim()?.length || 0) >= 50) {
             obs.disconnect();
+            _activeJdObserver = null;
             handleElement(el);
         }
     });
-    observer.observe(document.body, { childList: true, subtree: true });
+    _activeJdObserver.observe(document.body, { childList: true, subtree: true });
 }
 
 function sendJobDescription(jobDescription) {
@@ -255,10 +412,10 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
 });
 
 // ── SPA navigation detection ──────────────────────────────────
-// LinkedIn, Indeed and Glassdoor are single-page apps. When the user clicks a
-// new job listing the URL changes via pushState but the page never reloads, so
-// the content script only runs once. We watch for URL changes and re-run
-// detection each time so the floating card appears for every new job viewed.
+// LinkedIn, Indeed and Glassdoor navigate via pushState — the page never fully
+// reloads. Poll the URL every 500 ms (negligible CPU). On change: immediately
+// destroy the old card (synchronously, no animation delay), reset state, and
+// re-run JD detection after a short pause for the new content to render.
 
 let _lastUrl = location.href;
 
@@ -266,31 +423,24 @@ function _onUrlChange() {
     if (location.href === _lastUrl) return;
     _lastUrl = location.href;
 
-    // Reset state and remove any existing card
+    // Synchronously destroy the old card so the guard in injectFloatingCard
+    // doesn't block the new one (avoids race with the 260ms slide-out timer)
+    if (floatingCard) {
+        floatingCard.remove();
+        floatingCard = null;
+    }
+    if (_activeJdObserver) {
+        _activeJdObserver.disconnect();
+        _activeJdObserver = null;
+    }
     savedJobDescription = null;
-    removeFloatingCard();
 
-    // Small delay to let the new job content render
-    setTimeout(waitForJobDescription, 600);
+    // Give the SPA time to render the new job content
+    setTimeout(waitForJobDescription, 700);
 }
 
-// popstate covers browser back/forward
-window.addEventListener('popstate', _onUrlChange);
-
-// Patch history.pushState / replaceState (used by React/Vue routers)
-(function () {
-    const _push    = history.pushState.bind(history);
-    const _replace = history.replaceState.bind(history);
-
-    history.pushState = function (...args) {
-        _push(...args);
-        _onUrlChange();
-    };
-    history.replaceState = function (...args) {
-        _replace(...args);
-        _onUrlChange();
-    };
-})();
+// Poll every 500 ms — reliable across all SPA router implementations
+setInterval(_onUrlChange, 500);
 
 // ── Boot ──────────────────────────────────────────────────────
 waitForJobDescription();

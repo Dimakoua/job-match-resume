@@ -426,15 +426,19 @@ async function handleGoogleSignIn() {
 // ── Job saving ────────────────────────────────────────────────
 
 function extractJobDetails(jobDescription) {
-    const lines    = jobDescription.split('\n');
-    let company    = '';
-    let position   = '';
+    const lines  = jobDescription.split('\n');
+    let company  = '';
+    let position = '';
 
-    for (const line of lines.slice(0, 10)) {
-        if (!company  && (line.toLowerCase().includes('company') || line.toLowerCase().includes(' at ')))
-            company  = line.replace(/company[:\s]*/i, '').trim();
-        if (!position && (line.toLowerCase().includes('position') || line.toLowerCase().includes('job title')))
-            position = line.replace(/position[:\s]*/i, '').replace(/job title[:\s]*/i, '').trim();
+    for (const line of lines.slice(0, 15)) {
+        const trimmed = line.trim();
+        // Skip blank or long lines — company/position labels are short
+        if (!trimmed || trimmed.length > 100) continue;
+
+        if (!company  && /^company\s*:/i.test(trimmed))
+            company  = trimmed.replace(/^company\s*:\s*/i, '').trim();
+        if (!position && /^(position|job title|role|title)\s*:/i.test(trimmed))
+            position = trimmed.replace(/^(position|job title|role|title)\s*:\s*/i, '').trim();
     }
 
     return { company, position };
@@ -489,22 +493,28 @@ async function saveJob() {
 async function checkForDetectedJD() {
     try {
         const result = await chrome.storage.session.get(
-            ['jobDescriptionForSave', 'detectedJobTitle']
+            ['jobDescriptionForSave', 'detectedJobTitle', 'detectedCompany']
         );
 
         if (!result.jobDescriptionForSave) return false;
 
-        await chrome.storage.session.remove(['jobDescriptionForSave', 'detectedJobTitle']);
+        await chrome.storage.session.remove(['jobDescriptionForSave', 'detectedJobTitle', 'detectedCompany']);
 
         // Pre-fill the job save form
         document.getElementById('jobDescriptionSave').value = result.jobDescriptionForSave;
 
+        // Use DOM-detected values first; fall back to JD text extraction
         const extracted = extractJobDetails(result.jobDescriptionForSave);
-        if (extracted.company)  document.getElementById('jobCompany').value  = extracted.company;
-        if (extracted.position) document.getElementById('jobPosition').value = extracted.position;
+        const companyVal  = result.detectedCompany  || extracted.company  || '';
+        const positionVal = result.detectedJobTitle || extracted.position || '';
+        if (companyVal)  document.getElementById('jobCompany').value  = companyVal;
+        if (positionVal) document.getElementById('jobPosition').value = positionVal;
 
         // Show the detected banner
-        const subtitle = result.detectedJobTitle || 'from current page';
+        const titleForBanner = result.detectedJobTitle || result.detectedCompany || 'from current page';
+        const subtitle = result.detectedJobTitle && result.detectedCompany
+            ? `${result.detectedJobTitle} · ${result.detectedCompany}`
+            : titleForBanner;
         document.getElementById('detectedJobTitle').textContent = subtitle;
         document.getElementById('jdDetectedBanner').classList.remove('hidden');
 
