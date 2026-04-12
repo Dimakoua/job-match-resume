@@ -22,11 +22,11 @@
             {{ exp.startDate }}{{ exp.startDate && exp.endDate ? ' — ' : '' }}{{ exp.endDate }}
           </span>
         </div>
-        <p v-if="exp.description" :style="bodyStyle" :class="classes.bodyTextClass">
+        <div v-if="exp.description" :style="bodyStyle" :class="classes.bodyTextClass">
           <ul class="list-disc list-inside space-y-1">
             <li v-for="line in exp.description.split('\n')" :key="line" v-html="line"></li>
           </ul>
-        </p>
+        </div>
         <p v-if="exp.technologies" class="text-[11px] font-mono font-medium text-blue-600">
           <span class="font-bold uppercase mr-1">Technologies used:</span> {{ exp.technologies || 'Not specified' }}
         </p>

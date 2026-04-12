@@ -28,11 +28,11 @@
         <span :class="classes.dateClass">
           {{ exp.startDate }}{{ exp.startDate && exp.endDate ? ' — ' : '' }}{{ exp.endDate }}
         </span>
-        <p v-if="exp.description" :style="bodyStyle" :class="classes.bodyTextClass">
+        <div v-if="exp.description" :style="bodyStyle" :class="classes.bodyTextClass">
           <ul class="font-serif space-y-2 text-sm leading-relaxed list-disc ml-4">
             <li v-for="line in exp.description.split('\n')" :key="line" v-html="line"></li>
           </ul>
-        </p>
+        </div>
       </div>
     </div>
   </div>
