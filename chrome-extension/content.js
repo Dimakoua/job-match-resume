@@ -277,11 +277,12 @@ function injectFloatingCard(jobDescription, siteKey) {
     );
 
     document.getElementById('roa-optimize-btn').addEventListener('click', () => {
-        // Store JD for optimize tab and open popup
-        chrome.runtime.sendMessage({
+        // Store JD for the Optimize tab, then open the popup
+        safeMessage({
             action:         'saveJobDescription',
             jobDescription: savedJobDescription,
         });
+        safeMessage({ action: 'openPopupOnOptimizeTab' });
         removeFloatingCard();
     });
 }
@@ -304,7 +305,7 @@ async function doSaveApplication(subtitle, company, title) {
 
     // Not logged in → open popup so user can log in first
     if (!userToken) {
-        chrome.runtime.sendMessage({
+        safeMessage({
             action:           'openPopupAndShowJobSave',
             jobDescription:   savedJobDescription,
             detectedJobTitle: title,
@@ -316,7 +317,7 @@ async function doSaveApplication(subtitle, company, title) {
 
     // Missing company or title → open popup pre-filled so user can complete them
     if (!company || !title) {
-        chrome.runtime.sendMessage({
+        safeMessage({
             action:           'openPopupAndShowJobSave',
             jobDescription:   savedJobDescription,
             detectedJobTitle: title,
@@ -329,7 +330,7 @@ async function doSaveApplication(subtitle, company, title) {
     // All data present — save directly via background worker (avoids CORS)
     setCardState('loading');
 
-    chrome.runtime.sendMessage({
+    safeMessage({
         action:         'saveJobApplicationFromContent',
         company,
         position:       title,
@@ -434,8 +435,19 @@ function waitForJobDescription() {
     _activeJdObserver.observe(document.body, { childList: true, subtree: true });
 }
 
+// Wraps chrome.runtime.sendMessage to silently swallow errors that happen when
+// the service worker is not yet active or the extension context is invalidated.
+function safeMessage(msg, cb) {
+    try {
+        chrome.runtime.sendMessage(msg, (response) => {
+            if (chrome.runtime.lastError) { /* swallow */ return; }
+            cb && cb(response);
+        });
+    } catch (_) { /* extension context invalidated — ignore */ }
+}
+
 function sendJobDescription(jobDescription) {
-    chrome.runtime.sendMessage({ action: 'saveJobDescription', jobDescription });
+    safeMessage({ action: 'saveJobDescription', jobDescription });
 }
 
 // ── Message listener ──────────────────────────────────────────

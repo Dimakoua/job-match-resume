@@ -555,8 +555,16 @@ document.addEventListener('DOMContentLoaded', async function () {
     initializeGoogleSignIn();
     refreshJobsTab();
 
-    // If opened from the floating card, skip wizard and jump straight to Jobs tab
-    const routedFromCard = await checkForDetectedJD();
+    // If opened from the floating card "Optimize CV", jump to Optimize tab with JD pre-filled
+    const { openOnOptimizeTab } = await chrome.storage.session.get(['openOnOptimizeTab']);
+    if (openOnOptimizeTab) {
+        await chrome.storage.session.remove(['openOnOptimizeTab']);
+        loadJobDescription();   // reads savedJobDescription from session into the JD textarea
+        switchTab('optimize');
+    }
+
+    // If opened from the floating card "Save Application", skip wizard and jump to Jobs tab
+    const routedFromCard = !openOnOptimizeTab && await checkForDetectedJD();
 
     // Show wizard on first ever open, unless we were routed by the floating card
     if (!isWizardSeen() && !routedFromCard) {

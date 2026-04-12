@@ -268,6 +268,11 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
         .catch(() => sendResponse({ success: false, message: 'Network error' }));
     }
 
+    if (message.action === 'openPopupOnOptimizeTab') {
+        chrome.storage.session.set({ openOnOptimizeTab: true });
+        chrome.action.openPopup();
+    }
+
     return true;
 });
 
