@@ -21,7 +21,7 @@
       </div>
 
       <!-- Contact Section -->
-      <div class="flex flex-col gap-4">
+      <div class="flex flex-col gap-4" v-if="!hideEmptySections || resume.email || resume.phone || resume.location || resume.website">
         <h3 class="text-slate-900 font-bold text-sm uppercase tracking-wider border-b border-primary/20 pb-2">Contact</h3>
         <div class="flex flex-col gap-3">
           <div v-if="resume.email" class="flex items-center gap-3">
@@ -50,7 +50,7 @@
       </div>
 
       <!-- Skills Section -->
-      <div class="flex flex-col gap-6">
+      <div class="flex flex-col gap-6" v-if="!hideEmptySections || (resume.skills && resume.skills.length > 0)">
         <h3 class="text-slate-900 font-bold text-sm uppercase tracking-wider border-b border-primary/20 pb-2">Core Skills</h3>
         <div v-if="resume.skills && resume.skills.length > 0" class="space-y-4">
           <div v-for="skill in resume.skills?.slice(0, Math.min(3, resume.skills.length)) || []" :key="skill">
@@ -84,7 +84,7 @@
     <!-- Right Column (2/3 Main Content) -->
     <article class="w-full md:w-2/3 p-10 flex flex-col gap-12 bg-white">
       <!-- Profile Summary -->
-      <section>
+      <section v-if="!hideEmptySections || resume.summary">
         <h2 class="text-2xl font-black text-slate-900 mb-4 flex items-center gap-3">
           <span class="size-2 bg-primary rounded-full"></span>
           Profile
@@ -104,7 +104,7 @@
       </section>
 
       <!-- Experience Section -->
-      <section>
+      <section v-if="!hideEmptySections || (resume.experience && resume.experience.length > 0)">
         <h2 class="text-2xl font-black text-slate-900 mb-6 flex items-center gap-3">
           <span class="size-2 bg-primary rounded-full"></span>
           Experience
@@ -138,7 +138,7 @@
       </section>
 
       <!-- Projects Section -->
-      <section>
+      <section v-if="!hideEmptySections || (resume.projects && resume.projects.length > 0)">
         <h2 class="text-2xl font-black text-slate-900 mb-6 flex items-center gap-3">
           <span class="size-2 bg-primary rounded-full"></span>
           Recent Projects
@@ -166,7 +166,7 @@
       </section>
 
       <!-- Education -->
-      <section>
+      <section v-if="!hideEmptySections || (resume.education && resume.education.length > 0)">
         <h2 class="text-2xl font-black text-slate-900 mb-6 flex items-center gap-3">
           <span class="size-2 bg-primary rounded-full"></span>
           Education
@@ -217,6 +217,10 @@ defineProps({
   customSections: {
     type: Array,
     default: () => []
+  },
+  hideEmptySections: {
+    type: Boolean,
+    default: false
   }
 })
 </script>
