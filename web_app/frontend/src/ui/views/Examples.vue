@@ -316,7 +316,16 @@ const examples = ref([
           endDate: '2016'
         }
       ],
-      skills: ['Figma', 'UX Research', 'Prototyping', 'Design Systems', 'Accessibility (WCAG)', 'User Testing', 'Motion Design', 'Framer']
+      skills: [
+        { name: 'Figma', level: '95%' },
+        { name: 'UX Research', level: '90%' },
+        { name: 'Prototyping', level: '88%' },
+        { name: 'Design Systems', level: '85%' },
+        { name: 'Accessibility (WCAG)', level: '82%' },
+        { name: 'User Testing', level: '80%' },
+        { name: 'Motion Design', level: '75%' },
+        { name: 'Framer', level: '70%' }
+      ]
     },
     layout: { template: 'creative', margins: 40, sectionSpacing: 20 },
     style: { headingFont: 'playfair', bodyFont: 'inter', fontSize: 11, accentColor: '#db2777' }
