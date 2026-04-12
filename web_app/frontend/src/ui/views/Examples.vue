@@ -75,11 +75,11 @@
 
     <!-- Preview Modal -->
     <div v-if="previewModal.show" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" @click="closePreviewModal">
-      <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden" @click.stop>
+      <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-auto" @click.stop>
         <div class="flex flex-col lg:flex-row">
           <!-- Preview Section -->
           <div class="flex-1 p-6 bg-gray-50 dark:bg-gray-800">
-            <div class="bg-white dark:bg-gray-900 rounded-lg shadow-sm p-4 h-[600px] overflow-hidden">
+            <div class="bg-white dark:bg-gray-900 rounded-lg shadow-sm p-4 h-[600px] overflow-auto">
               <ResumePreview 
                 :resume="previewModal.example?.resumeData"
                 :sections="[]"
@@ -143,301 +143,472 @@ import ResumePreview from '../components/ResumePreview.vue'
 
 const router = useRouter()
 
-// Sample example templates with preview data
+// Professional example templates for user inspiration
 const examples = ref([
   {
     id: 1,
-    title: 'Software Engineer',
-    description: 'Modern resume for tech roles with emphasis on projects and skills',
-    tags: ['Tech', 'Modern', 'Minimal'],
+    title: 'Senior Software Engineer',
+    description: 'Clean modern layout for experienced engineers — highlights technical depth, scale, and team leadership.',
+    tags: ['Engineering', 'Modern', 'Tech'],
     template: 'modern',
     resumeData: {
-      firstName: 'Alex',
-      lastName: 'Johnson',
-      email: 'alex@example.com',
-      phone: '+1 (555) 123-4567',
+      firstName: 'Marcus',
+      lastName: 'Chen',
+      title: 'Staff Software Engineer',
+      email: 'marcus.chen@email.com',
+      phone: '+1 (415) 882-3410',
       location: 'San Francisco, CA',
-      summary: 'Full-stack engineer with 5+ years building scalable applications',
-      linkedin: 'linkedin.com/in/alexjohnson',
+      linkedin: 'linkedin.com/in/marcuschen',
+      website: 'github.com/marcuschen',
+      summary: 'Senior software engineer with 8 years of experience building high-throughput distributed systems at scale. Led cross-functional teams of 6–10 engineers to ship products serving 20M+ users. Deep expertise in Go, Kubernetes, and cloud-native architecture.',
       experience: [
         {
-          position: 'Senior Software Engineer',
-          company: 'Tech Corp',
-          duration: '2021 - Present',
+          title: 'Staff Software Engineer',
+          company: 'Stripe',
+          startDate: '2022',
+          endDate: 'Present',
           location: 'San Francisco, CA',
-          achievements: 'Led team of 5 engineers; reduced latency by 40%'
+          description: 'Architected and delivered a real-time fraud detection pipeline processing 3B+ API calls/day with 99.99% uptime. Reduced infrastructure costs by $4.2M annually by migrating legacy batch jobs to streaming. Mentored 4 engineers promoted to senior level.'
         },
         {
-          position: 'Software Engineer',
-          company: 'StartupXYZ',
-          duration: '2019 - 2021',
+          title: 'Senior Software Engineer',
+          company: 'Airbnb',
+          startDate: '2019',
+          endDate: '2022',
           location: 'San Francisco, CA',
-          achievements: 'Built microservices architecture; scaled to 10M requests/day'
+          description: 'Led backend rewrite of the payments service in Go, cutting p99 latency from 380ms to 45ms. Built internal developer platform adopted by 200+ engineers, reducing service deployment time by 60%. Owned incident response rotation for critical payment infrastructure.'
         },
         {
-          position: 'Junior Developer',
-          company: 'Dev Agency',
-          duration: '2017 - 2019',
-          location: 'Mountain View, CA',
-          achievements: 'Developed 15+ client projects using React and Node.js'
+          title: 'Software Engineer',
+          company: 'Dropbox',
+          startDate: '2017',
+          endDate: '2019',
+          location: 'San Francisco, CA',
+          description: 'Delivered end-to-end file sync engine improvements that eliminated 70% of client-reported sync errors. Shipped ML-based smart search feature that increased search engagement by 32%.'
         }
       ],
       education: [
         {
-          degree: 'B.S. Computer Science',
-          university: 'Stanford University',
-          years: '2017-2021'
+          degree: 'B.S.',
+          field: 'Computer Science',
+          school: 'UC Berkeley',
+          startDate: '2013',
+          endDate: '2017'
         }
       ],
-      skills: ['React', 'Node.js', 'Python', 'AWS', 'PostgreSQL']
+      skills: ['Go', 'Kubernetes', 'gRPC', 'PostgreSQL', 'Redis', 'AWS', 'Python', 'System Design']
     },
-    layout: { template: 'modern' },
-    style: { headingFont: 'inter', bodyFont: 'inter', accentColor: '#3b82f6' }
+    layout: { template: 'modern', margins: 40, sectionSpacing: 20 },
+    style: { headingFont: 'inter', bodyFont: 'inter', fontSize: 11, accentColor: '#2563eb' }
   },
   {
     id: 2,
     title: 'Product Manager',
-    description: 'Executive-focused template highlighting leadership and impact',
-    tags: ['Business', 'Executive', 'Professional'],
+    description: 'Executive-style layout that leads with business impact, strategy, and cross-functional leadership.',
+    tags: ['Product', 'Professional', 'Leadership'],
     template: 'professional',
     resumeData: {
-      firstName: 'Sarah',
-      lastName: 'Williams',
-      email: 'sarah@example.com',
-      phone: '+1 (555) 234-5678',
+      firstName: 'Priya',
+      lastName: 'Nair',
+      title: 'Director of Product',
+      email: 'priya.nair@email.com',
+      phone: '+1 (646) 554-9023',
       location: 'New York, NY',
-      summary: 'Strategic product leader driving innovation and user growth at scale',
-      linkedin: 'linkedin.com/in/sarahwilliams',
+      linkedin: 'linkedin.com/in/priyanair',
+      summary: 'Product leader with 9 years of experience defining and shipping consumer and B2B products used by 30M+ people. Track record of growing revenue, improving retention, and scaling cross-functional teams from 0 to 1 and 1 to 10. Former founder; MBA from Wharton.',
       experience: [
         {
-          position: 'Senior Product Manager',
-          company: 'Innovation Inc',
-          duration: '2020 - Present',
+          title: 'Director of Product',
+          company: 'Notion',
+          startDate: '2021',
+          endDate: 'Present',
           location: 'New York, NY',
-          achievements: 'Grew user base by 150%; managed $2M+ budget'
+          description: 'Owned the collaboration and sharing product area serving 25M users. Launched real-time multiplayer editing, which increased daily active users by 41% and drove $18M in incremental ARR. Built and managed a team of 5 PMs and 3 designers.'
         },
         {
-          position: 'Product Manager',
-          company: 'Growth Startup',
-          duration: '2018 - 2020',
-          location: 'San Francisco, CA',
-          achievements: 'Launched 8 major features; improved retention by 35%'
+          title: 'Senior Product Manager',
+          company: 'HubSpot',
+          startDate: '2018',
+          endDate: '2021',
+          location: 'Boston, MA',
+          description: 'Led CRM core product from 50K to 150K paying customers. Redesigned the deal pipeline UX — reduced time-to-close by 22% and improved NPS by 18 points. Collaborated with sales and marketing to define go-to-market strategy for SMB segment.'
         },
         {
-          position: 'Associate Product Manager',
-          company: 'Tech Consulting',
-          duration: '2016 - 2018',
+          title: 'Product Manager',
+          company: 'Squarespace',
+          startDate: '2016',
+          endDate: '2018',
           location: 'New York, NY',
-          achievements: 'Managed feature roadmap for 3 products; $500K revenue impact'
+          description: 'Shipped e-commerce checkout redesign that lifted conversion rate by 14%. Defined and executed roadmap for the mobile app team, resulting in 4.8-star App Store rating.'
         }
       ],
       education: [
         {
           degree: 'MBA',
-          university: 'Harvard Business School',
-          years: '2018-2020'
+          field: '',
+          school: 'Wharton School, University of Pennsylvania',
+          startDate: '2014',
+          endDate: '2016'
+        },
+        {
+          degree: 'B.S.',
+          field: 'Business Administration',
+          school: 'University of Michigan',
+          startDate: '2010',
+          endDate: '2014'
         }
       ],
-      skills: ['Product Strategy', 'Analytics', 'Leadership', 'UX Design']
+      skills: ['Product Strategy', 'Roadmapping', 'A/B Testing', 'SQL', 'Figma', 'OKRs', 'User Research', 'Go-to-Market']
     },
-    layout: { template: 'professional' },
-    style: { headingFont: 'inter', bodyFont: 'inter', accentColor: '#1f2937' }
+    layout: { template: 'professional', margins: 44, sectionSpacing: 22 },
+    style: { headingFont: 'inter', bodyFont: 'inter', fontSize: 11, accentColor: '#111827' }
   },
   {
     id: 3,
-    title: 'Designer',
-    description: 'Creative resume showcasing design portfolio and visual hierarchy',
-    tags: ['Creative', 'Design', 'Portfolio'],
+    title: 'UX / Product Designer',
+    description: 'Creative layout that showcases design thinking, portfolio breadth, and measurable UX outcomes.',
+    tags: ['Design', 'Creative', 'UX'],
     template: 'creative',
     resumeData: {
-      firstName: 'Jordan',
-      lastName: 'Chen',
-      email: 'jordan@example.com',
-      phone: '+1 (555) 345-6789',
+      firstName: 'Sofia',
+      lastName: 'Reyes',
+      title: 'Lead Product Designer',
+      email: 'sofia.reyes@email.com',
+      phone: '+1 (310) 773-4481',
       location: 'Los Angeles, CA',
-      summary: 'Award-winning designer passionate about creating beautiful user experiences',
-      linkedin: 'linkedin.com/in/jordanchen',
+      linkedin: 'linkedin.com/in/sofiareyes',
+      website: 'sofiareyes.design',
+      summary: 'Product designer with 7 years crafting intuitive digital experiences for fintech, healthcare, and consumer apps. Expert in end-to-end design — from discovery workshops to launch-ready Figma components. Passionate about accessibility and inclusive design.',
       experience: [
         {
-          position: 'Lead Product Designer',
-          company: 'Design Studio',
-          duration: '2019 - Present',
-          location: 'Los Angeles, CA',
-          achievements: 'Designed mobile app used by 500K+ users; won 2 design awards'
+          title: 'Lead Product Designer',
+          company: 'Robinhood',
+          startDate: '2021',
+          endDate: 'Present',
+          location: 'Menlo Park, CA (Remote)',
+          description: 'Redesigned the options trading flow for first-time investors, reducing task-failure rate from 34% to 8% and increasing options activations by 55%. Built and maintained the Robinhood design system (900+ components) used by 40 designers. Won internal "Design Impact" award 2023.'
         },
         {
-          position: 'Product Designer',
-          company: 'Creative Agency',
-          duration: '2017 - 2019',
-          location: 'Los Angeles, CA',
-          achievements: 'Redesigned web platform; improved UX metrics by 45%'
+          title: 'Senior Product Designer',
+          company: 'Oscar Health',
+          startDate: '2018',
+          endDate: '2021',
+          location: 'New York, NY',
+          description: 'Owned end-to-end UX for member portal serving 500K+ patients. Led a complete visual rebrand executed across web and mobile in 14 weeks. Increased member portal login engagement by 38% after redesigning the home dashboard.'
         },
         {
-          position: 'UI/UX Designer',
-          company: 'Digital Co',
-          duration: '2015 - 2017',
+          title: 'UX Designer',
+          company: 'IDEO',
+          startDate: '2016',
+          endDate: '2018',
           location: 'San Francisco, CA',
-          achievements: 'Created design systems used by 20+ startups'
+          description: "Facilitated design sprints for 10+ clients including Google, CVS, and Levi's. Delivered research-driven prototypes that shaped $25M+ in client product investments."
         }
       ],
       education: [
         {
-          degree: 'BFA Graphic Design',
-          university: 'Rhode Island School of Design',
-          years: '2016-2020'
+          degree: 'BFA',
+          field: 'Interaction Design',
+          school: 'California College of the Arts',
+          startDate: '2012',
+          endDate: '2016'
         }
       ],
-      skills: ['Figma', 'UI Design', 'UX Research', 'Prototyping', 'Branding']
+      skills: ['Figma', 'UX Research', 'Prototyping', 'Design Systems', 'Accessibility (WCAG)', 'User Testing', 'Motion Design', 'Framer']
     },
-    layout: { template: 'creative' },
-    style: { headingFont: 'inter', bodyFont: 'inter', accentColor: '#ec4899' }
+    layout: { template: 'creative', margins: 40, sectionSpacing: 20 },
+    style: { headingFont: 'playfair', bodyFont: 'inter', fontSize: 11, accentColor: '#db2777' }
   },
   {
     id: 4,
-    title: 'Marketing Manager',
-    description: 'Results-driven template perfect for marketing professionals',
-    tags: ['Marketing', 'Business', 'Results-Driven'],
-    template: 'modern',
+    title: 'Data Scientist',
+    description: 'Technical resume that leads with ML expertise, quantified research impact, and open-source contributions.',
+    tags: ['Data Science', 'ML', 'Technical'],
+    template: 'technical',
     resumeData: {
-      firstName: 'Emily',
-      lastName: 'Rodriguez',
-      email: 'emily@example.com',
-      phone: '+1 (555) 456-7890',
-      location: 'Chicago, IL',
-      summary: 'Results-driven marketer specializing in growth strategy and brand development',
-      linkedin: 'linkedin.com/in/emilyrodriguez',
+      firstName: 'James',
+      lastName: 'Okafor',
+      title: 'Senior Machine Learning Engineer',
+      email: 'james.okafor@email.com',
+      phone: '+1 (206) 441-8892',
+      location: 'Seattle, WA',
+      linkedin: 'linkedin.com/in/jamesokafor',
+      website: 'github.com/jamesokafor',
+      summary: 'Machine learning engineer and data scientist with 6 years of experience building production ML systems and NLP pipelines. Published researcher with 3 peer-reviewed papers. Experienced in taking models from Jupyter notebooks to serving 100M+ predictions/day.',
       experience: [
         {
-          position: 'Marketing Manager',
-          company: 'Brand Co',
-          duration: '2020 - Present',
-          location: 'Chicago, IL',
-          achievements: 'Increased brand awareness by 200%; led team of 4 marketers'
+          title: 'Senior Machine Learning Engineer',
+          company: 'Amazon',
+          startDate: '2021',
+          endDate: 'Present',
+          location: 'Seattle, WA',
+          description: 'Built product ranking model for Amazon Search, improving click-through rate by 12% and increasing attributed revenue by $380M annually. Led cross-team initiative to standardize ML feature engineering platform (reduced feature dev time by 4×). Co-authored internal LLM fine-tuning playbook adopted company-wide.'
         },
         {
-          position: 'Marketing Specialist',
-          company: 'Growth Marketing Inc',
-          duration: '2018 - 2020',
-          location: 'Chicago, IL',
-          achievements: 'Managed $500K marketing budget; grew leads by 120%'
+          title: 'Data Scientist',
+          company: 'Spotify',
+          startDate: '2019',
+          endDate: '2021',
+          location: 'New York, NY',
+          description: 'Developed personalized podcast recommendation model using collaborative filtering + content embeddings, increasing podcast listening hours by 27%. Built real-time A/B testing pipeline supporting 500+ experiments simultaneously.'
         },
         {
-          position: 'Content Marketing Coordinator',
-          company: 'Digital Media',
-          duration: '2016 - 2018',
-          location: 'Milwaukee, WI',
-          achievements: 'Created 200+ pieces of content; 2M+ total impressions'
+          title: 'Data Analyst',
+          company: 'McKinsey & Company',
+          startDate: '2017',
+          endDate: '2019',
+          location: 'Chicago, IL',
+          description: 'Delivered data-driven strategy reports for Fortune 500 clients in retail and CPG. Automated data pipeline reduced analyst reporting time from 12 hours to 45 minutes per week.'
         }
       ],
       education: [
         {
-          degree: 'B.S. Marketing',
-          university: 'Northwestern University',
-          years: '2018-2022'
+          degree: 'M.S.',
+          field: 'Computer Science (Machine Learning)',
+          school: 'Carnegie Mellon University',
+          startDate: '2015',
+          endDate: '2017'
+        },
+        {
+          degree: 'B.S.',
+          field: 'Statistics & Mathematics',
+          school: 'University of Chicago',
+          startDate: '2011',
+          endDate: '2015'
         }
       ],
-      skills: ['Digital Marketing', 'Content Strategy', 'Analytics', 'Social Media']
+      skills: ['Python', 'PyTorch', 'TensorFlow', 'Spark', 'SQL', 'Kubernetes', 'MLflow', 'Transformers (HuggingFace)', 'Scala']
     },
-    layout: { template: 'modern' },
-    style: { headingFont: 'inter', bodyFont: 'inter', accentColor: '#f59e0b' }
+    layout: { template: 'technical', margins: 40, sectionSpacing: 20 },
+    style: { headingFont: 'roboto-mono', bodyFont: 'inter', fontSize: 11, accentColor: '#0891b2' }
   },
   {
     id: 5,
-    title: 'Data Scientist',
-    description: 'Technical resume emphasizing data skills and analytics projects',
-    tags: ['Data', 'Tech', 'Research'],
-    template: 'professional',
+    title: 'Marketing Director',
+    description: 'Results-driven layout emphasizing revenue impact, brand growth, and cross-channel campaign performance.',
+    tags: ['Marketing', 'Leadership', 'Growth'],
+    template: 'classic',
     resumeData: {
-      firstName: 'David',
-      lastName: 'Kumar',
-      email: 'david@example.com',
-      phone: '+1 (555) 567-8901',
-      location: 'Seattle, WA',
-      summary: 'Data scientist with expertise in ML and statistical analysis',
-      linkedin: 'linkedin.com/in/davidkumar',
+      firstName: 'Lauren',
+      lastName: 'Mitchell',
+      title: 'Director of Marketing',
+      email: 'lauren.mitchell@email.com',
+      phone: '+1 (312) 664-5571',
+      location: 'Chicago, IL',
+      linkedin: 'linkedin.com/in/laurenmitchell',
+      summary: 'Marketing director with 10 years of experience building iconic consumer brands and digital-first growth engines. Managed up to $15M in annual marketing budgets and teams of 12. Expertise in performance marketing, brand strategy, and integrated campaign execution.',
       experience: [
         {
-          position: 'Senior Data Scientist',
-          company: 'Analytics Corp',
-          duration: '2019 - Present',
-          location: 'Seattle, WA',
-          achievements: 'Built ML models improving prediction accuracy by 35%'
+          title: 'Director of Marketing',
+          company: 'Grubhub',
+          startDate: '2020',
+          endDate: 'Present',
+          location: 'Chicago, IL',
+          description: "Launched \"Tonight's Dinner\" brand campaign reaching 40M households, driving a 29% increase in new user acquisition. Scaled performance marketing budget from $3M to $11M with 3.2× ROAS. Built and mentored a high-performing team of 12 across brand, performance, and content."
         },
         {
-          position: 'Data Scientist',
-          company: 'Tech Solutions',
-          duration: '2017 - 2019',
-          location: 'Seattle, WA',
-          achievements: 'Developed recommendation engine; increased revenue by $1M'
+          title: 'Senior Marketing Manager',
+          company: 'Groupon',
+          startDate: '2017',
+          endDate: '2020',
+          location: 'Chicago, IL',
+          description: 'Owned email and CRM marketing for 28M subscribers — improved open rates by 22% and revenue per email by 34% through segmentation and personalization. Led influencer and affiliate programs generating $7M in annual attributed revenue.'
         },
         {
-          position: 'Data Analyst',
-          company: 'Analytics Firm',
-          duration: '2015 - 2017',
-          location: 'Portland, OR',
-          achievements: 'Built 50+ dashboards; trained 20+ analysts on ML basics'
+          title: 'Marketing Manager',
+          company: '1871 Chicago',
+          startDate: '2015',
+          endDate: '2017',
+          location: 'Chicago, IL',
+          description: 'Grew LinkedIn following from 4K to 28K and event attendance by 3× through organic content strategy. Produced 12 flagship industry events attended by 5,000+ professionals.'
         }
       ],
       education: [
         {
-          degree: 'M.S. Data Science',
-          university: 'University of Washington',
-          years: '2019-2021'
+          degree: 'B.S.',
+          field: 'Marketing & Communications',
+          school: 'Northwestern University',
+          startDate: '2011',
+          endDate: '2015'
         }
       ],
-      skills: ['Python', 'Machine Learning', 'TensorFlow', 'SQL', 'Tableau']
+      skills: ['Brand Strategy', 'Performance Marketing', 'CRM & Email', 'Paid Social', 'Google Ads', 'Budget Management', 'Influencer Marketing', 'Analytics']
     },
-    layout: { template: 'professional' },
-    style: { headingFont: 'inter', bodyFont: 'inter', accentColor: '#06b6d4' }
+    layout: { template: 'classic', margins: 44, sectionSpacing: 22 },
+    style: { headingFont: 'inter', bodyFont: 'inter', fontSize: 11, accentColor: '#d97706' }
   },
   {
     id: 6,
-    title: 'HR Specialist',
-    description: 'Comprehensive template for human resources professionals',
-    tags: ['HR', 'Business', 'Professional'],
-    template: 'professional',
+    title: 'Financial Analyst',
+    description: 'Clean, authoritative format for finance professionals — focuses on deals, modeling, and analytical rigor.',
+    tags: ['Finance', 'Analyst', 'Classic'],
+    template: 'classic',
     resumeData: {
-      firstName: 'Michelle',
-      lastName: 'Thompson',
-      email: 'michelle@example.com',
-      phone: '+1 (555) 678-9012',
-      location: 'Boston, MA',
-      summary: 'HR professional focused on talent development and organizational excellence',
-      linkedin: 'linkedin.com/in/michellethompson',
+      firstName: 'Tyler',
+      lastName: 'Brooks',
+      title: 'Vice President, Investment Banking',
+      email: 'tyler.brooks@email.com',
+      phone: '+1 (212) 993-7740',
+      location: 'New York, NY',
+      linkedin: 'linkedin.com/in/tylerbrooks',
+      summary: 'CFA charterholder and financial analyst with 7 years of experience in investment banking and corporate finance. Closed $2.4B in M&A and capital markets transactions. Skilled in financial modeling, valuation, and board-level communications.',
       experience: [
         {
-          position: 'HR Manager',
-          company: 'People First Corp',
-          duration: '2019 - Present',
-          location: 'Boston, MA',
-          achievements: 'Reduced turnover by 25%; implemented new talent program'
+          title: 'Vice President, Investment Banking',
+          company: 'Goldman Sachs',
+          startDate: '2021',
+          endDate: 'Present',
+          location: 'New York, NY',
+          description: 'Led execution of 6 M&A transactions totaling $1.8B in deal value across TMT and healthcare sectors. Built 3-statement LBO and DCF models supporting sell-side mandates. Managed 2 analysts and presented deal memos to C-suite and board audiences.'
         },
         {
-          position: 'HR Specialist',
-          company: 'Human Resources Solutions',
-          duration: '2017 - 2019',
-          location: 'Boston, MA',
-          achievements: 'Managed recruitment for 200+ hires; improved hiring time by 30%'
+          title: 'Associate, Corporate Development',
+          company: 'Johnson & Johnson',
+          startDate: '2018',
+          endDate: '2021',
+          location: 'New Brunswick, NJ',
+          description: 'Evaluated acquisition targets in medtech with combined EV of $6B+. Owned financial due diligence and integration planning for 2 closed transactions. Reduced financial close reporting cycle from 8 days to 3 days through process automation.'
         },
         {
-          position: 'HR Coordinator',
-          company: 'Employee Services',
-          duration: '2015 - 2017',
-          location: 'Hartford, CT',
-          achievements: 'Coordinated 50+ company events; increased engagement by 40%'
+          title: 'Financial Analyst',
+          company: 'Lazard',
+          startDate: '2016',
+          endDate: '2018',
+          location: 'New York, NY',
+          description: 'Supported structuring and closing of $600M cross-border acquisition. Built and maintained complex merger models, cap tables, and scenario analyses for client engagements.'
         }
       ],
       education: [
         {
-          degree: 'B.A. Human Resources',
-          university: 'Boston University',
-          years: '2017-2021'
+          degree: 'B.S.',
+          field: 'Finance & Economics',
+          school: 'University of Pennsylvania',
+          startDate: '2012',
+          endDate: '2016'
         }
       ],
-      skills: ['Talent Management', 'HRIS', 'Recruitment', 'Employee Relations']
+      skills: ['Financial Modeling', 'Valuation (DCF, LBO, Comps)', 'M&A', 'Capital Markets', 'Excel & VBA', 'Bloomberg', 'PowerPoint', 'CFA']
     },
-    layout: { template: 'professional' },
-    style: { headingFont: 'inter', bodyFont: 'inter', accentColor: '#10b981' }
+    layout: { template: 'classic', margins: 44, sectionSpacing: 22 },
+    style: { headingFont: 'inter', bodyFont: 'inter', fontSize: 11, accentColor: '#1e3a5f' }
+  },
+  {
+    id: 7,
+    title: 'Academic Researcher',
+    description: 'Publication-forward layout for PhD candidates, postdocs, and faculty — emphasizes grants, research, and teaching.',
+    tags: ['Academic', 'Research', 'PhD'],
+    template: 'academic',
+    resumeData: {
+      firstName: 'Amara',
+      lastName: 'Osei',
+      title: 'Postdoctoral Research Fellow',
+      email: 'amara.osei@university.edu',
+      phone: '+1 (617) 495-2200',
+      location: 'Cambridge, MA',
+      linkedin: 'linkedin.com/in/amaraosei',
+      website: 'scholar.google.com/amaraosei',
+      summary: 'Computational biologist and NIH-funded researcher specializing in single-cell genomics and machine learning applications to cancer biology. 18 peer-reviewed publications; 1,400+ citations. Seeking tenure-track faculty position.',
+      experience: [
+        {
+          title: 'Postdoctoral Research Fellow',
+          company: 'Broad Institute of MIT & Harvard',
+          startDate: '2022',
+          endDate: 'Present',
+          location: 'Cambridge, MA',
+          description: 'Led development of scRNA-seq computational pipeline adopted by 30+ labs worldwide (GitHub: 2.1K stars). First-authored Nature Methods paper on deep learning-based cell-type deconvolution (IF: 48.0). Secured $180K NIH K99 transitional award.'
+        },
+        {
+          title: 'Graduate Research Assistant',
+          company: 'Stanford University, Chang Lab',
+          startDate: '2016',
+          endDate: '2022',
+          location: 'Stanford, CA',
+          description: 'PhD dissertation: "Graph neural networks for spatial transcriptomics." Published 11 papers in Nature, Cell, and PNAS. Co-supervised 4 undergraduate research assistants. Won departmental best dissertation award 2022.'
+        },
+        {
+          title: 'Teaching Assistant — Computational Biology',
+          company: 'Stanford University',
+          startDate: '2017',
+          endDate: '2020',
+          location: 'Stanford, CA',
+          description: 'Led weekly lab sections for 45–60 students. Developed problem sets covering sequence alignment, hidden Markov models, and CRISPR data analysis used by 3 subsequent cohorts.'
+        }
+      ],
+      education: [
+        {
+          degree: 'Ph.D.',
+          field: 'Biomedical Informatics',
+          school: 'Stanford University',
+          startDate: '2016',
+          endDate: '2022'
+        },
+        {
+          degree: 'B.Sc.',
+          field: 'Biochemistry (First Class Honours)',
+          school: 'University of Ghana',
+          startDate: '2012',
+          endDate: '2016'
+        }
+      ],
+      skills: ['Python (Scanpy, PyTorch)', 'R (Seurat, DESeq2)', 'Single-cell Genomics', 'Graph Neural Networks', 'CRISPR Analysis', 'NIH Grant Writing', 'Scientific Communication']
+    },
+    layout: { template: 'academic', margins: 44, sectionSpacing: 22 },
+    style: { headingFont: 'lora', bodyFont: 'inter', fontSize: 11, accentColor: '#7c3aed' }
+  },
+  {
+    id: 8,
+    title: 'Operations Manager',
+    description: 'Minimal, easy-to-read format for operations, supply chain, and general management professionals.',
+    tags: ['Operations', 'Management', 'Minimal'],
+    template: 'minimal',
+    resumeData: {
+      firstName: 'Kevin',
+      lastName: 'Park',
+      title: 'Senior Operations Manager',
+      email: 'kevin.park@email.com',
+      phone: '+1 (503) 218-4437',
+      location: 'Portland, OR',
+      linkedin: 'linkedin.com/in/kevinpark',
+      summary: 'Operations manager with 8 years of experience scaling logistics and fulfillment operations for e-commerce and retail companies. Known for building lean processes, high-performing teams, and resilient supply chains in fast-growth environments.',
+      experience: [
+        {
+          title: 'Senior Operations Manager',
+          company: 'Zappos (Amazon subsidiary)',
+          startDate: '2020',
+          endDate: 'Present',
+          location: 'Louisville, KY (Remote)',
+          description: 'Oversaw daily operations for a 480-person fulfillment center processing 85K orders/day. Implemented lean Six Sigma improvements cutting picking error rate from 1.8% to 0.3%. Reduced overtime spend by $1.2M annually by reengineering shift scheduling model.'
+        },
+        {
+          title: 'Operations Manager',
+          company: 'Patagonia',
+          startDate: '2017',
+          endDate: '2020',
+          location: 'Reno, NV',
+          description: 'Managed 3 fulfillment shifts and 120 associates across peak and off-peak seasons. Led WMS implementation (Manhattan Associates) that improved inventory accuracy to 99.8%. Achieved 98.2% on-time shipping rate during the 2019 holiday season.'
+        },
+        {
+          title: 'Operations Supervisor',
+          company: 'UPS Supply Chain Solutions',
+          startDate: '2015',
+          endDate: '2017',
+          location: 'Portland, OR',
+          description: 'Supervised cross-dock operations for 3 key retail accounts. Trained and onboarded 45 new associates; reduced 90-day turnover by 18%.'
+        }
+      ],
+      education: [
+        {
+          degree: 'B.S.',
+          field: 'Supply Chain Management',
+          school: 'Portland State University',
+          startDate: '2011',
+          endDate: '2015'
+        }
+      ],
+      skills: ['Lean / Six Sigma (Green Belt)', 'Warehouse Management Systems', 'Supply Chain Optimization', 'P&L Management', 'Team Leadership', 'Process Improvement', 'SAP', 'KPI Reporting']
+    },
+    layout: { template: 'minimal', margins: 40, sectionSpacing: 20 },
+    style: { headingFont: 'inter', bodyFont: 'inter', fontSize: 11, accentColor: '#374151' }
   }
 ])
 
