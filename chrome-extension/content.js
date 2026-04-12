@@ -254,5 +254,43 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     return true;
 });
 
+// ── SPA navigation detection ──────────────────────────────────
+// LinkedIn, Indeed and Glassdoor are single-page apps. When the user clicks a
+// new job listing the URL changes via pushState but the page never reloads, so
+// the content script only runs once. We watch for URL changes and re-run
+// detection each time so the floating card appears for every new job viewed.
+
+let _lastUrl = location.href;
+
+function _onUrlChange() {
+    if (location.href === _lastUrl) return;
+    _lastUrl = location.href;
+
+    // Reset state and remove any existing card
+    savedJobDescription = null;
+    removeFloatingCard();
+
+    // Small delay to let the new job content render
+    setTimeout(waitForJobDescription, 600);
+}
+
+// popstate covers browser back/forward
+window.addEventListener('popstate', _onUrlChange);
+
+// Patch history.pushState / replaceState (used by React/Vue routers)
+(function () {
+    const _push    = history.pushState.bind(history);
+    const _replace = history.replaceState.bind(history);
+
+    history.pushState = function (...args) {
+        _push(...args);
+        _onUrlChange();
+    };
+    history.replaceState = function (...args) {
+        _replace(...args);
+        _onUrlChange();
+    };
+})();
+
 // ── Boot ──────────────────────────────────────────────────────
 waitForJobDescription();

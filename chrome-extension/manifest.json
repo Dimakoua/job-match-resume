@@ -46,13 +46,15 @@
         {
             "matches": [
                 "*://*.linkedin.com/jobs/*",
-                "*://*.indeed.com/vjk*",
-                "*://*.indeed.com/cmp/*/jobs/*",
-                "*://*.glassdoor.com/Job/*"
+                "*://*.linkedin.com/job/*",
+                "*://*.indeed.com/*",
+                "*://*.glassdoor.com/Job/*",
+                "*://*.glassdoor.com/job-listing/*"
             ],
             "js": [
                 "content.js"
-            ]
+            ],
+            "run_at": "document_idle"
         }
     ],
     "icons": {

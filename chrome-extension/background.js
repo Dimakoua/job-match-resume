@@ -251,11 +251,5 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     return true;
 });
 
-chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-    if (changeInfo.status === "complete" && tab.url) {
-        chrome.scripting.executeScript({
-            target: { tabId: tabId },
-            files: ["content.js"]
-        });
-    }
-});
+// content.js is declared in manifest content_scripts and injected automatically.
+// No programmatic re-injection needed here.
