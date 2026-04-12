@@ -1,309 +1,230 @@
-// API Configuration
-const API_BASE_URL = 'https://your-backend-url.com'; // Update this with your actual backend URL
-function loadSettings() {
-    const aiModelSelect = document.getElementById('aiModel');
-    const userTokenInput = document.getElementById('userToken');
+// ── Config ────────────────────────────────────────────────────
+const API_BASE_URL = 'https://your-backend-url.com'; // update with actual backend URL
 
-    const savedAiModel = localStorage.getItem('aiModel');
+// Holds the last AI result so the download button can use it
+let lastOptimizationResult = null;
+
+// ── Settings ──────────────────────────────────────────────────
+
+function loadSettings() {
+    const savedAiModel  = localStorage.getItem('aiModel');
     const savedUserToken = localStorage.getItem('userToken');
 
-    if (savedAiModel) {
-        aiModelSelect.value = savedAiModel;
-    }
-    if (savedUserToken) {
-        userTokenInput.value = savedUserToken;
-    }
-
-    if (savedAiModel && savedUserToken) {
-        // Hide the form if both settings are saved
-        const AISettingsForm = document.getElementById('AISettingsForm');
-        AISettingsForm.classList.add('hidden');
-    }
+    if (savedAiModel)   document.getElementById('aiModel').value     = savedAiModel;
+    if (savedUserToken) document.getElementById('userToken').value   = savedUserToken;
 
     return { aiModel: savedAiModel, userToken: savedUserToken };
 }
 
-function setupView({ aiModel, userToken }) {
-    if(!aiModel || !userToken) {
-        showView(VIEWS.AI_SETTINGS);
-    } else {
-        showView(VIEWS.MAIN);
-    }
-}
+function saveSettings() {
+    const aiModel   = document.getElementById('aiModel').value;
+    const userToken = document.getElementById('userToken').value;
 
-function loadJobDescription() {
-    chrome.runtime.sendMessage({ action: "getJobDescription" }, function (response) {
-        const jobDescription = response.jobDescription;
-        document.getElementById('jobDescription').value = jobDescription;
-    });
-}
-
-function loadCV() {
-    const parsedResume = localStorage.getItem('parsedResume');
-
-    if (parsedResume) {
-        document.getElementById('resume').value = parsedResume;
-    }
-}
-
-// Centralized view management
-const VIEWS = {
-    MAIN: 'MainForm',
-    AI_SETTINGS: 'AISettingsForm',
-    LOGIN: 'LoginForm',
-    JOB_SAVE: 'JobSaveForm',
-    ATS_SCORE: 'atsScore'
-};
-
-function showView(viewName) {
-    // Hide all views
-    Object.values(VIEWS).forEach(viewId => {
-        document.getElementById(viewId).classList.add('hidden');
-    });
-
-    // Hide header elements that should only show in certain views
-    const header = document.getElementById('header');
-    const history = document.getElementById('history');
-    
-    if (viewName === VIEWS.ATS_SCORE) {
-        header.classList.add('hidden');
-        history.classList.remove('hidden');
-    } else {
-        header.classList.remove('hidden');
-        history.classList.add('hidden');
+    if (!aiModel || !userToken) {
+        showMessage('error', 'Please select a model and enter your API key.');
+        return;
     }
 
-    // Show the requested view
-    document.getElementById(viewName).classList.remove('hidden');
+    localStorage.setItem('aiModel',    aiModel);
+    localStorage.setItem('userToken',  userToken);
+    showMessage('success', 'Settings saved!');
+    hideAISettings();
+}
+
+// ── AI Settings panel toggle ──────────────────────────────────
+
+function showAISettings() {
+    document.getElementById('AISettingsForm').classList.remove('hidden');
+    document.getElementById('showAISettingsForm').classList.add('active');
+    document.getElementById('tabNav').classList.add('hidden');
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+}
+
+function hideAISettings() {
+    document.getElementById('AISettingsForm').classList.add('hidden');
+    document.getElementById('showAISettingsForm').classList.remove('active');
+    document.getElementById('tabNav').classList.remove('hidden');
+    // Restore the active tab
+    const active = document.querySelector('.tab-btn.active');
+    const tabName = active ? active.dataset.tab : 'optimize';
+    document.getElementById('tab-' + tabName).classList.remove('hidden');
 }
 
 function toggleAISettings() {
-    const aiSettingsForm = document.getElementById('AISettingsForm');
-    
-    if (aiSettingsForm.classList.contains('hidden')) {
-        // Show AI settings
-        showView(VIEWS.AI_SETTINGS);
-    } else {
-        // Go back to main form
-        showView(VIEWS.MAIN);
-    }
+    const panel = document.getElementById('AISettingsForm');
+    panel.classList.contains('hidden') ? showAISettings() : hideAISettings();
 }
 
-function toggleATSResul() {
-    const atsScore = document.getElementById('atsScore');
-    
-    if (atsScore.classList.contains('hidden')) {
-        // Show ATS score
-        showView(VIEWS.ATS_SCORE);
-    } else {
-        // Go back to main form
-        showView(VIEWS.MAIN);
-    }
+// ── Tab management ────────────────────────────────────────────
+
+function switchTab(tabName) {
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.tab === tabName);
+    });
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+    document.getElementById('tab-' + tabName).classList.remove('hidden');
+
+    // Close settings panel if open
+    document.getElementById('AISettingsForm').classList.add('hidden');
+    document.getElementById('showAISettingsForm').classList.remove('active');
+    document.getElementById('tabNav').classList.remove('hidden');
+
+    if (tabName === 'jobs') refreshJobsTab();
 }
 
-function toggleLoginForm() {
-    const loginForm = document.getElementById('LoginForm');
-    
-    if (loginForm.classList.contains('hidden')) {
-        // Show login form
-        showView(VIEWS.LOGIN);
-    } else {
-        // Go back to main form
-        showView(VIEWS.MAIN);
-    }
+// ── Jobs tab state ────────────────────────────────────────────
+
+function refreshJobsTab() {
+    chrome.storage.local.get(['userToken', 'userProfile'], ({ userToken, userProfile }) => {
+        const prompt = document.getElementById('jobSaveLoginPrompt');
+        const fields = document.getElementById('jobSaveFields');
+        if (userToken && userProfile) {
+            prompt.classList.add('hidden');
+            fields.classList.remove('hidden');
+        } else {
+            prompt.classList.remove('hidden');
+            fields.classList.add('hidden');
+        }
+    });
 }
 
-// Function to save settings to localStorage
-function saveSettings() {
-    const aiModelSelect = document.getElementById('aiModel');
-    const userTokenInput = document.getElementById('userToken');
+// ── Resume optimization ───────────────────────────────────────
 
-    const aiModel = aiModelSelect.value;
-    const userToken = userTokenInput.value;
-
-    if (!aiModel || !userToken) {
-        showMessage('error', 'Please fill in AI model and API key.', 3000);
-        return;
-    }
-
-    // Store settings in localStorage
-    localStorage.setItem('aiModel', aiModel);
-    localStorage.setItem('userToken', userToken);
-
-    // Show success message and hide the form
-    showMessage('success', 'Settings Saved Successfully!', 3000);
-    toggleAISettings();
+function loadCV() {
+    const saved = localStorage.getItem('parsedResume');
+    if (saved) document.getElementById('resume').value = saved;
 }
 
-function showMessage(type, text, timeout = 3000) {
-    let messageDiv = document.getElementById('messageBox');
-
-    if (!messageBox) {
-        console.error("Message box container not found!");
-        return;
-    }
-
-    const randomId = 'msg-' + Math.random().toString(36).substr(2, 9);
-
-    // Create a new message div
-    messageDiv = document.createElement('div');
-    messageDiv.id = randomId;
-    messageDiv.className = type === 'success' ? 'success-message' : 'error-message';
-    messageDiv.textContent = text;
-
-    messageBox.appendChild(messageDiv);
-
-    // Remove the message after timeout
-    setTimeout(() => {
-        messageDiv.classList.add('fade-out'); // Optional: Add fade-out animation
-        setTimeout(() => messageDiv.remove(), 500); // Allow time for animation before removing
-    }, timeout);
+function loadJobDescription() {
+    chrome.runtime.sendMessage({ action: 'getJobDescription' }, function (response) {
+        if (response && response.jobDescription &&
+            response.jobDescription !== 'Job description not found.') {
+            document.getElementById('jobDescription').value = response.jobDescription;
+        }
+    });
 }
 
 async function optimizeResume() {
     const settings = loadSettings();
 
-    const resumeInput = document.getElementById("resume");
-    const jobDescriptionInput = document.getElementById("jobDescription");
+    if (!settings.aiModel || !settings.userToken) {
+        showMessage('error', 'Configure your AI API key in Settings first.');
+        showAISettings();
+        return;
+    }
 
-    const resumeText = resumeInput.value.trim();
-    const jobDescriptionText = jobDescriptionInput.value.trim();
+    const resumeText      = document.getElementById('resume').value.trim();
+    const jobDescription  = document.getElementById('jobDescription').value.trim();
 
-    if (!resumeText || !jobDescriptionText) {
-        alert("Please enter both your resume and job description.");
+    if (!resumeText || !jobDescription) {
+        showMessage('error', 'Please provide both your resume and a job description.');
         return;
     }
 
     try {
         toggleLoader(true);
+        const result = await chrome.runtime.sendMessage({
+            action:         'optimizeResume',
+            resume:         resumeText,
+            jobDescription: jobDescription,
+            ai: { model: settings.aiModel, token: settings.userToken },
+        });
 
-        // Send message to background.js
-        const result = await chrome.runtime.sendMessage(
-            {
-                action: "optimizeResume",
-                resume: resumeText,
-                jobDescription: jobDescriptionText,
-                ai: {
-                    model: settings.aiModel,
-                    token: settings.userToken,
-                }
-            }
-        );
-
-        generateDocx(result);
-        displayATSScore(result.ATSCompatibilityScore,);
-    } catch (error) {
-        showMessage('error', 'An error occurred while optimizing the resume.', 3000);
+        showATSResult(result);
+    } catch (_err) {
+        showMessage('error', 'An error occurred while optimizing the resume.');
     } finally {
         toggleLoader(false);
     }
 }
 
+function toggleLoader(show) {
+    document.getElementById('loader').classList.toggle('hidden', !show);
+    document.getElementById('optimizeResume').classList.toggle('hidden',  show);
+}
+
+// ── File parsing ──────────────────────────────────────────────
+
 function handleFileUpload(event) {
     const file = event.target.files[0];
+    if (!file) return;
 
-    if (!file) {
-        console.error("No file selected.");
-        return;
-    }
+    const type = file.type;
+    const reader = new FileReader();
 
-    const fileType = file.type;
-
-    // For Text files
-    if (fileType === "text/plain") {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            const fileContent = e.target.result;
-            parseResumeContent(fileContent);
-        };
+    if (type === 'text/plain') {
+        reader.onload = e => updateResumeContent(e.target.result);
         reader.readAsText(file);
-    }
-    // For PDF files, use pdf.js to extract text
-    else if (fileType === "application/pdf") {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            const pdfData = new Uint8Array(e.target.result);
-            parsePDF(pdfData);
-        };
+    } else if (type === 'application/pdf') {
+        reader.onload = e => parsePDF(new Uint8Array(e.target.result));
         reader.readAsArrayBuffer(file);
-    }
-    // For DOCX files, use Mammoth.js to extract text
-    else if (fileType === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            const arrayBuffer = e.target.result;
-            parseDOCX(arrayBuffer);
-        };
+    } else if (type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+        reader.onload = e => parseDOCX(e.target.result);
         reader.readAsArrayBuffer(file);
-    } else {
-        console.log("Unsupported file type");
     }
 }
 
-// Parse Text file
-function parseResumeContent(content) {
-    updateResumeContent(content);
-}
-
-// Parse PDF using pdf.js
 async function parsePDF(pdfData) {
     try {
         const pdfDoc = await pdfjsLib.getDocument(pdfData).promise;
-        const totalPages = pdfDoc.numPages;
-
-        let textContent = "";
-
-        // Create an array of promises for each page
-        const pagePromises = [];
-
-        for (let i = 1; i <= totalPages; i++) {
-            pagePromises.push(pdfDoc.getPage(i).then(async page => {
-                const text = await page.getTextContent();
-                return text.items.map(item => item.str).join(" "); // Convert items to text
+        const pages  = [];
+        for (let i = 1; i <= pdfDoc.numPages; i++) {
+            pages.push(pdfDoc.getPage(i).then(async page => {
+                const txt = await page.getTextContent();
+                return txt.items.map(item => item.str).join(' ');
             }));
         }
-
-        // Wait for all pages to be processed
-        const allText = await Promise.all(pagePromises);
-
-        // Combine all pages' text
-        textContent = allText.join("\n");
-
-        updateResumeContent(textContent);
-    } catch (error) {
-        console.error("Error parsing PDF:", error);
+        updateResumeContent((await Promise.all(pages)).join('\n'));
+    } catch (err) {
+        console.error('PDF parse error:', err);
     }
 }
 
-
-// Parse DOCX using Mammoth.js
 function parseDOCX(arrayBuffer) {
-    mammoth.extractRawText({ arrayBuffer: arrayBuffer })
-        .then(result => {
-            updateResumeContent(result.value);
-        })
-        .catch(err => {
-            console.error("Error parsing DOCX file:", err);
-        });
+    mammoth.extractRawText({ arrayBuffer })
+        .then(r => updateResumeContent(r.value))
+        .catch(err => console.error('DOCX parse error:', err));
 }
 
 function updateResumeContent(content) {
-    const resumeInput = document.getElementById('resume');
-    if (resumeInput) {
-        resumeInput.value = content;
-        localStorage.setItem('parsedResume', content);
-    }
+    document.getElementById('resume').value = content;
+    localStorage.setItem('parsedResume', content);
 }
 
-function generateDocx(jsonData) {
-    const doc = generateResume(jsonData.optimizedResume)
+// ── ATS score display ─────────────────────────────────────────
 
-    // Convert the document to a blob
-    Packer.toBlob(doc).then((blob) => {
+function showATSResult(result) {
+    lastOptimizationResult = result;
+
+    document.getElementById('optimizeForm').classList.add('hidden');
+    document.getElementById('atsResult').classList.remove('hidden');
+
+    setATSScore(result.ATSCompatibilityScore || 0);
+    document.getElementById('atsExplanation').textContent =
+        result.explanation || '';
+}
+
+function hideATSResult() {
+    document.getElementById('atsResult').classList.add('hidden');
+    document.getElementById('optimizeForm').classList.remove('hidden');
+}
+
+function setATSScore(percent) {
+    const circle       = document.querySelector('.progress-circle');
+    const text         = document.querySelector('.progress-text');
+    const circumference = 2 * Math.PI * 50;
+    circle.style.strokeDashoffset = circumference - (percent / 100) * circumference;
+    text.textContent = `${percent}/100`;
+}
+
+function downloadOptimizedResume() {
+    if (!lastOptimizationResult) return;
+    const doc = generateResume(lastOptimizationResult.optimizedResume);
+    Packer.toBlob(doc).then(blob => {
         const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = jsonData.recomendedFileName;
+        const a   = document.createElement('a');
+        a.href     = url;
+        a.download = lastOptimizationResult.recomendedFileName || 'optimized_resume.docx';
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -311,36 +232,11 @@ function generateDocx(jsonData) {
     });
 }
 
-function setATSScore(percent) {
-    const circle = document.querySelector(".progress-circle");
-    const text = document.querySelector(".progress-text");
-    const radius = 50;
-    const circumference = 2 * Math.PI * radius;
-    const offset = circumference - (percent / 100) * circumference;
+// ── Auth ──────────────────────────────────────────────────────
 
-    circle.style.strokeDashoffset = offset;
-    text.textContent = `${percent}/100`;
-}
-
-function displayATSScore(atsScore) {
-    toggleATSResul();
-    // Set the ATS score text
-    setATSScore(atsScore);
-}
-
-function toggleLoader() {
-    const loader = document.getElementById("loader");
-    const optimizeResumeBtn = document.getElementById("optimizeResume");
-
-    loader.classList.toggle("hidden");
-    optimizeResumeBtn.classList.toggle("hidden");
-}
-
-// Login and User Management Functions
 async function checkLoginStatus() {
-    const { userToken } = await chrome.storage.local.get(['userToken']);
-    const { userProfile } = await chrome.storage.local.get(['userProfile']);
-
+    const { userToken, userProfile } =
+        await chrome.storage.local.get(['userToken', 'userProfile']);
     if (userToken && userProfile) {
         showUserProfile(userProfile);
         return true;
@@ -349,45 +245,19 @@ async function checkLoginStatus() {
 }
 
 function showUserProfile(profile) {
-    document.getElementById('userName').textContent = profile.name;
+    document.getElementById('userProfile').classList.remove('hidden');
     document.getElementById('loginSection').classList.add('hidden');
     document.getElementById('signupSection').classList.add('hidden');
-    document.getElementById('userProfile').classList.remove('hidden');
-    document.getElementById('showLoginForm').textContent = 'account_circle';
-    document.getElementById('showLoginForm').title = 'Profile';
-}
-
-function toggleLoginForm() {
-    const loginForm = document.getElementById('LoginForm');
-    const mainForm = document.getElementById('MainForm');
-    const aiSettings = document.getElementById('AISettingsForm');
-    const jobSaveForm = document.getElementById('JobSaveForm');
-    const atsScore = document.getElementById('atsScore');
-
-    // Hide other forms
-    mainForm.classList.add('hidden');
-    aiSettings.classList.add('hidden');
-    jobSaveForm.classList.add('hidden');
-    atsScore.classList.add('hidden');
-
-    loginForm.classList.toggle('hidden');
+    document.getElementById('userName').textContent = profile.name;
 }
 
 function toggleSignup(showSignup) {
-    const loginSection = document.getElementById('loginSection');
-    const signupSection = document.getElementById('signupSection');
-
-    if (showSignup) {
-        loginSection.classList.add('hidden');
-        signupSection.classList.remove('hidden');
-    } else {
-        signupSection.classList.add('hidden');
-        loginSection.classList.remove('hidden');
-    }
+    document.getElementById('loginSection').classList.toggle('hidden',  showSignup);
+    document.getElementById('signupSection').classList.toggle('hidden', !showSignup);
 }
 
 async function handleLogin() {
-    const email = document.getElementById('loginEmail').value;
+    const email    = document.getElementById('loginEmail').value.trim();
     const password = document.getElementById('loginPassword').value;
 
     if (!email || !password) {
@@ -396,35 +266,32 @@ async function handleLogin() {
     }
 
     try {
-        const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ email, password }),
+        const res  = await fetch(`${API_BASE_URL}/api/auth/login`, {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({ email, password }),
         });
-
-        const data = await response.json();
+        const data = await res.json();
 
         if (data.success) {
             await chrome.storage.local.set({
-                userToken: data.data.token,
+                userToken:   data.data.token,
                 userProfile: data.data.user,
             });
             showUserProfile(data.data.user);
+            refreshJobsTab();
             showMessage('success', 'Logged in successfully!');
-            toggleLoginForm();
         } else {
             showMessage('error', data.message || 'Login failed.');
         }
-    } catch (error) {
+    } catch (_) {
         showMessage('error', 'Network error. Please try again.');
     }
 }
 
 async function handleSignup() {
-    const name = document.getElementById('signupName').value;
-    const email = document.getElementById('signupEmail').value;
+    const name     = document.getElementById('signupName').value.trim();
+    const email    = document.getElementById('signupEmail').value.trim();
     const password = document.getElementById('signupPassword').value;
 
     if (!name || !email || !password) {
@@ -433,15 +300,12 @@ async function handleSignup() {
     }
 
     try {
-        const response = await fetch(`${API_BASE_URL}/api/auth/signup`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ name, email, password }),
+        const res  = await fetch(`${API_BASE_URL}/api/auth/signup`, {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({ name, email, password }),
         });
-
-        const data = await response.json();
+        const data = await res.json();
 
         if (data.success) {
             showMessage('success', 'Account created! Please log in.');
@@ -449,7 +313,7 @@ async function handleSignup() {
         } else {
             showMessage('error', data.message || 'Signup failed.');
         }
-    } catch (error) {
+    } catch (_) {
         showMessage('error', 'Network error. Please try again.');
     }
 }
@@ -458,245 +322,238 @@ async function handleLogout() {
     await chrome.storage.local.remove(['userToken', 'userProfile']);
     document.getElementById('userProfile').classList.add('hidden');
     document.getElementById('loginSection').classList.remove('hidden');
-    document.getElementById('showLoginForm').textContent = 'account_circle';
-    document.getElementById('showLoginForm').title = 'Login';
+    refreshJobsTab();
     showMessage('success', 'Logged out successfully!');
 }
 
-// Google Sign-In Configuration
-const GOOGLE_CLIENT_ID = 'your-google-client-id.apps.googleusercontent.com'; // Replace with your actual Google Client ID for the extension
+// ── Google Sign-In ────────────────────────────────────────────
 
-// Initialize Google Sign-In using Chrome Identity API
+const GOOGLE_CLIENT_ID = 'your-google-client-id.apps.googleusercontent.com';
+
 function initializeGoogleSignIn() {
-    // Check if Google Sign-In button should be shown
-    const googleSignInBtn = document.getElementById('googleSignInBtn');
-    if (googleSignInBtn) {
-        googleSignInBtn.innerHTML = '<button class="google-signin-button" id="googleSignInButton"><span class="google-icon">G</span> Continue with Google</button>';
-        document.getElementById('googleSignInButton').addEventListener('click', handleGoogleSignIn);
-    }
+    const container = document.getElementById('googleSignInBtn');
+    if (!container) return;
+    container.innerHTML = '<button class="google-signin-button" id="googleSignInButton">'
+        + '<span class="google-icon">G</span> Continue with Google</button>';
+    document.getElementById('googleSignInButton')
+        .addEventListener('click', handleGoogleSignIn);
 }
 
-// Handle Google Sign-In using Chrome Identity API
 async function handleGoogleSignIn() {
     try {
-        // Use Chrome Identity API for OAuth
         const redirectURL = chrome.identity.getRedirectURL();
-        const clientId = GOOGLE_CLIENT_ID;
-        
-        const authURL = `https://accounts.google.com/o/oauth2/auth?` +
-            `client_id=${clientId}&` +
-            `response_type=id_token&` +
-            `redirect_uri=${encodeURIComponent(redirectURL)}&` +
-            `scope=${encodeURIComponent('openid email profile')}&` +
-            `nonce=${Math.random().toString(36).substring(2)}`;
+        const authURL = 'https://accounts.google.com/o/oauth2/auth?'
+            + `client_id=${GOOGLE_CLIENT_ID}&`
+            + `response_type=id_token&`
+            + `redirect_uri=${encodeURIComponent(redirectURL)}&`
+            + `scope=${encodeURIComponent('openid email profile')}&`
+            + `nonce=${Math.random().toString(36).substring(2)}`;
 
-        const responseUrl = await chrome.identity.launchWebAuthFlow({
-            url: authURL,
-            interactive: true
-        });
+        const responseUrl = await chrome.identity.launchWebAuthFlow(
+            { url: authURL, interactive: true }
+        );
 
-        if (responseUrl) {
-            // Extract the id_token from the response URL
-            const url = new URL(responseUrl);
-            const idToken = url.hash.substring(1).split('&')
-                .find(param => param.startsWith('id_token='))
-                ?.split('=')[1];
-
-            if (idToken) {
-                // Send the ID token to our backend
-                const result = await fetch(`${API_BASE_URL}/api/auth/google/login`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        idToken: idToken,
-                    }),
-                });
-
-                const data = await result.json();
-
-                if (data.success) {
-                    await chrome.storage.local.set({
-                        userToken: data.data.token,
-                        userProfile: data.data.user,
-                    });
-                    showUserProfile(data.data.user);
-                    showMessage('success', 'Logged in with Google successfully!');
-                    toggleLoginForm();
-                } else {
-                    showMessage('error', data.message || 'Google login failed.');
-                }
-            } else {
-                showMessage('error', 'Failed to obtain access token.');
-            }
-        } else {
+        if (!responseUrl) {
             showMessage('error', 'Google sign-in was cancelled.');
+            return;
         }
-    } catch (error) {
-        console.error('Google sign-in error:', error);
+
+        const idToken = new URL(responseUrl).hash.substring(1)
+            .split('&')
+            .find(p => p.startsWith('id_token='))
+            ?.split('=')[1];
+
+        if (!idToken) {
+            showMessage('error', 'Failed to obtain access token.');
+            return;
+        }
+
+        const res  = await fetch(`${API_BASE_URL}/api/auth/google/login`, {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({ idToken }),
+        });
+        const data = await res.json();
+
+        if (data.success) {
+            await chrome.storage.local.set({
+                userToken:   data.data.token,
+                userProfile: data.data.user,
+            });
+            showUserProfile(data.data.user);
+            refreshJobsTab();
+            showMessage('success', 'Logged in with Google!');
+        } else {
+            showMessage('error', data.message || 'Google login failed.');
+        }
+    } catch (err) {
+        console.error('Google sign-in error:', err);
         showMessage('error', 'Google sign-in failed. Please try again.');
     }
 }
 
-// Job Saving Functions
-function showJobSaveForm() {
-    const jobDescription = document.getElementById('jobDescription').value;
-    document.getElementById('jobDescriptionSave').value = jobDescription;
-
-    // Try to auto-extract company and position from job description
-    const extracted = extractJobDetails(jobDescription);
-    document.getElementById('jobCompany').value = extracted.company;
-    document.getElementById('jobPosition').value = extracted.position;
-
-    // Show job save form
-    showView(VIEWS.JOB_SAVE);
-}
-
-function hideJobSaveForm() {
-    showView(VIEWS.MAIN);
-}
+// ── Job saving ────────────────────────────────────────────────
 
 function extractJobDetails(jobDescription) {
-    // Simple extraction logic - can be improved
-    const lines = jobDescription.split('\n');
-    let company = '';
-    let position = '';
+    const lines    = jobDescription.split('\n');
+    let company    = '';
+    let position   = '';
 
-    for (const line of lines.slice(0, 10)) { // Check first 10 lines
-        if (line.toLowerCase().includes('company') || line.toLowerCase().includes('at ')) {
-            company = line.replace(/company[:\s]*/i, '').trim();
-        }
-        if (line.toLowerCase().includes('position') || line.toLowerCase().includes('job title')) {
+    for (const line of lines.slice(0, 10)) {
+        if (!company  && (line.toLowerCase().includes('company') || line.toLowerCase().includes(' at ')))
+            company  = line.replace(/company[:\s]*/i, '').trim();
+        if (!position && (line.toLowerCase().includes('position') || line.toLowerCase().includes('job title')))
             position = line.replace(/position[:\s]*/i, '').replace(/job title[:\s]*/i, '').trim();
-        }
     }
 
     return { company, position };
 }
 
 async function saveJob() {
-    const company = document.getElementById('jobCompany').value;
-    const position = document.getElementById('jobPosition').value;
-    const url = document.getElementById('jobUrl').value;
-    const jobDescription = document.getElementById('jobDescriptionSave').value;
+    const company     = document.getElementById('jobCompany').value.trim();
+    const position    = document.getElementById('jobPosition').value.trim();
+    const url         = document.getElementById('jobUrl').value.trim();
+    const jd          = document.getElementById('jobDescriptionSave').value.trim();
 
-    if (!company || !position || !jobDescription) {
-        showMessage('error', 'Please fill in company, position, and job description.');
+    if (!company || !position || !jd) {
+        showMessage('error', 'Company, position, and job description are required.');
         return;
     }
 
     try {
         const { userToken } = await chrome.storage.local.get(['userToken']);
 
-        const response = await fetch(`${API_BASE_URL}/api/job-applications/from-extension`, {
-            method: 'POST',
+        const res  = await fetch(`${API_BASE_URL}/api/job-applications/from-extension`, {
+            method:  'POST',
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type':  'application/json',
                 'Authorization': `Bearer ${userToken}`,
             },
             body: JSON.stringify({
                 company,
                 position,
-                jobDescription,
+                jobDescription: jd,
                 url: url || undefined,
             }),
         });
-
-        const data = await response.json();
+        const data = await res.json();
 
         if (data.success) {
-            showMessage('success', 'Job saved to dashboard!');
-            hideJobSaveForm();
+            showMessage('success', 'Job saved to your applications!');
+            document.getElementById('jobCompany').value        = '';
+            document.getElementById('jobPosition').value       = '';
+            document.getElementById('jobUrl').value            = '';
+            document.getElementById('jobDescriptionSave').value = '';
+            document.getElementById('jdDetectedBanner').classList.add('hidden');
         } else {
             showMessage('error', data.message || 'Failed to save job.');
         }
-    } catch (error) {
+    } catch (_) {
         showMessage('error', 'Network error. Please try again.');
     }
 }
 
-// Check for pending job save from floating button
-async function checkForPendingJobSave() {
+// ── Detected JD from floating card ───────────────────────────
+
+async function checkForDetectedJD() {
     try {
-        const result = await chrome.storage.session.get(['jobDescriptionForSave']);
-        if (result.jobDescriptionForSave) {
-            // Clear the stored job description
-            await chrome.storage.session.remove(['jobDescriptionForSave']);
-            
-            // Check if user is logged in
-            const isLoggedIn = await checkLoginStatus();
-            if (isLoggedIn) {
-                // Pre-fill and show job save form
-                document.getElementById('jobDescriptionSave').value = result.jobDescriptionForSave;
-                
-                // Try to extract company and position
-                const extracted = extractJobDetails(result.jobDescriptionForSave);
-                document.getElementById('jobCompany').value = extracted.company;
-                document.getElementById('jobPosition').value = extracted.position;
-                
-                // Show job save form
-                showView(VIEWS.JOB_SAVE);
-            } else {
-                // Show login prompt
-                showMessage('info', 'Please log in to save jobs to your dashboard.');
-                showView(VIEWS.LOGIN);
-            }
-        }
-    } catch (error) {
-        console.error('Error checking for pending job save:', error);
+        const result = await chrome.storage.session.get(
+            ['jobDescriptionForSave', 'detectedJobTitle']
+        );
+
+        if (!result.jobDescriptionForSave) return;
+
+        await chrome.storage.session.remove(['jobDescriptionForSave', 'detectedJobTitle']);
+
+        // Pre-fill the job save form
+        document.getElementById('jobDescriptionSave').value = result.jobDescriptionForSave;
+
+        const extracted = extractJobDetails(result.jobDescriptionForSave);
+        if (extracted.company)  document.getElementById('jobCompany').value  = extracted.company;
+        if (extracted.position) document.getElementById('jobPosition').value = extracted.position;
+
+        // Show the detected banner
+        const subtitle = result.detectedJobTitle || 'from current page';
+        document.getElementById('detectedJobTitle').textContent = subtitle;
+        document.getElementById('jdDetectedBanner').classList.remove('hidden');
+
+        // Switch to the Jobs tab
+        switchTab('jobs');
+    } catch (err) {
+        console.error('checkForDetectedJD:', err);
     }
 }
 
-// Event listener for Save button
-document.addEventListener('DOMContentLoaded', function () {
-    // Load saved settings on page load
+// ── Toast messages ────────────────────────────────────────────
+
+function showMessage(type, text, timeout = 3000) {
+    const box = document.getElementById('messageBox');
+    if (!box) return;
+
+    const div = document.createElement('div');
+    div.className = type === 'success' ? 'success-message' : 'error-message';
+    div.textContent = text;
+    box.appendChild(div);
+
+    setTimeout(() => {
+        div.classList.add('fade-out');
+        setTimeout(() => div.remove(), 500);
+    }, timeout);
+}
+
+// ── Init ──────────────────────────────────────────────────────
+
+document.addEventListener('DOMContentLoaded', async function () {
     const settings = loadSettings();
-    setupView(settings);
     loadCV();
-    checkLoginStatus(); // Check if user is logged in
-    
-    // Initialize Google Sign-In
+    loadJobDescription();
+
+    await checkLoginStatus();
     initializeGoogleSignIn();
 
-    // Check if we should show job save form
-    checkForPendingJobSave();
+    // If popup was opened from the floating card, switch to Jobs tab + pre-fill
+    await checkForDetectedJD();
 
-    const saveAISettingsBtn = document.getElementById('saveAISettings');
-    const showAISettingsForm = document.getElementById('showAISettingsForm');
-    const optimizeResumeBtn = document.getElementById('optimizeResume');
-    const resumeFileInput = document.getElementById('resumeFile');
-    const history = document.getElementById('history');
+    // Refresh jobs tab visibility (login-gated content)
+    refreshJobsTab();
 
-    // Login related
-    const showLoginForm = document.getElementById('showLoginForm');
-    const loginBtn = document.getElementById('loginBtn');
-    const signupBtn = document.getElementById('signupBtn');
-    const logoutBtn = document.getElementById('logoutBtn');
-    const showSignupForm = document.getElementById('showSignupForm');
-    const backToLogin = document.getElementById('backToLogin');
+    // If no AI key yet, open AI settings automatically
+    if (!settings.aiModel || !settings.userToken) {
+        showAISettings();
+    }
 
-    // Job saving related
-    const saveJobBtn = document.getElementById('saveJobBtn');
-    const cancelSaveJob = document.getElementById('cancelSaveJob');
+    // ── Event bindings ─────────────────────────────────────────
 
-    optimizeResumeBtn.addEventListener('click', optimizeResume);
-    saveAISettingsBtn.addEventListener('click', saveSettings);
-    resumeFileInput.addEventListener('change', handleFileUpload);
-    showAISettingsForm.addEventListener('click', toggleAISettings);
-    history.addEventListener('click', toggleATSResul);
+    // Settings
+    document.getElementById('showAISettingsForm').addEventListener('click', toggleAISettings);
+    document.getElementById('saveAISettings').addEventListener('click', saveSettings);
 
-    // Login events
-    showLoginForm.addEventListener('click', toggleLoginForm);
-    loginBtn.addEventListener('click', handleLogin);
-    signupBtn.addEventListener('click', handleSignup);
-    logoutBtn.addEventListener('click', handleLogout);
-    showSignupForm.addEventListener('click', () => toggleSignup(true));
-    backToLogin.addEventListener('click', () => toggleSignup(false));
+    // Tabs
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+    });
 
-    // Job saving events
-    saveJobBtn.addEventListener('click', saveJob);
-    cancelSaveJob.addEventListener('click', hideJobSaveForm);
+    // Optimize tab
+    document.getElementById('optimizeResume').addEventListener('click', optimizeResume);
+    document.getElementById('resumeFile').addEventListener('change', handleFileUpload);
+    document.getElementById('backToOptimize').addEventListener('click', hideATSResult);
+    document.getElementById('downloadResume').addEventListener('click', downloadOptimizedResume);
+
+    // Jobs tab
+    document.getElementById('saveJobBtn').addEventListener('click', saveJob);
+    document.getElementById('goToAccountTab').addEventListener('click', () => switchTab('account'));
+    document.getElementById('dismissDetectedJD').addEventListener('click', () => {
+        document.getElementById('jdDetectedBanner').classList.add('hidden');
+    });
+
+    // Account tab
+    document.getElementById('loginBtn').addEventListener('click', handleLogin);
+    document.getElementById('signupBtn').addEventListener('click', handleSignup);
+    document.getElementById('logoutBtn').addEventListener('click', handleLogout);
+    document.getElementById('showSignupForm').addEventListener('click', e => {
+        e.preventDefault(); toggleSignup(true);
+    });
+    document.getElementById('backToLogin').addEventListener('click', e => {
+        e.preventDefault(); toggleSignup(false);
+    });
 });
-
-loadJobDescription();

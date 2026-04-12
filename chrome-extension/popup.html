@@ -12,150 +12,205 @@
 
 <body>
     <div class="container">
-        <span id="history" class="back-icon hidden material-symbols-outlined">arrow_back</span>
 
-        <div id="header" class="header-container">
+        <!-- Header -->
+        <div class="header-container">
             <h2>AI Resume Optimizer</h2>
-            <div class="header-actions">
-                <span id="showLoginForm" class="settings-icon material-symbols-outlined" title="Login">account_circle</span>
-                <span id="showAISettingsForm" class="settings-icon material-symbols-outlined" title="AI Settings">settings</span>
-            </div>
+            <span id="showAISettingsForm" class="settings-icon material-symbols-outlined" title="AI Settings">settings</span>
         </div>
 
-        <!-- AI Settings Form -->
-        <section id="AISettingsForm" class="hidden">
+        <!-- AI Settings Panel (slide-down overlay) -->
+        <section id="AISettingsForm" class="settings-panel hidden">
+            <h3 class="panel-title">AI Settings</h3>
             <div class="input-field">
-                <label for="aiModel">Select AI Model</label>
+                <label for="aiModel">Model</label>
                 <select id="aiModel">
                     <option value="gemini" selected>Gemini</option>
                     <option value="gpt">GPT</option>
                     <option value="claude">Claude</option>
                 </select>
             </div>
-
             <div class="input-field">
-                <label for="userToken">AI API Key</label>
-                <input id="userToken" type="password" placeholder="Enter AI token">
+                <label for="userToken">API Key</label>
+                <input id="userToken" type="password" placeholder="Enter your AI API key">
             </div>
-
-            <button class="btn grey" id="saveAISettings">Save</button>
+            <button class="btn" id="saveAISettings">Save Settings</button>
         </section>
 
-        <!-- Login Form -->
-        <section id="LoginForm" class="hidden">
+        <!-- Tab Navigation -->
+        <nav class="tab-nav" id="tabNav">
+            <button class="tab-btn active" data-tab="optimize">
+                <span class="material-symbols-outlined">auto_fix_high</span>
+                <span class="tab-label">Optimize</span>
+            </button>
+            <button class="tab-btn" data-tab="jobs">
+                <span class="material-symbols-outlined">work</span>
+                <span class="tab-label">Save Job</span>
+            </button>
+            <button class="tab-btn" data-tab="account">
+                <span class="material-symbols-outlined">account_circle</span>
+                <span class="tab-label">Account</span>
+            </button>
+        </nav>
+
+        <!-- ── Tab: Optimize ──────────────────────────────── -->
+        <section id="tab-optimize" class="tab-content">
+
+            <!-- Optimize form -->
+            <div id="optimizeForm">
+                <div class="input-field">
+                    <label for="resumeFile">Upload Resume</label>
+                    <input type="file" id="resumeFile" accept=".pdf, .docx, .txt" />
+                </div>
+                <div class="input-field">
+                    <label for="resume">Parsed Resume</label>
+                    <textarea id="resume" placeholder="Your resume content will appear here" rows="5" readonly></textarea>
+                </div>
+                <div class="input-field">
+                    <label for="jobDescription">Job Description</label>
+                    <textarea id="jobDescription" placeholder="Paste the job description here" rows="5"></textarea>
+                </div>
+                <div class="action-row">
+                    <button class="btn" id="optimizeResume">
+                        <span class="material-symbols-outlined btn-icon">auto_fix_high</span>
+                        Optimize Resume
+                    </button>
+                    <div class="loader hidden" id="loader"></div>
+                </div>
+            </div>
+
+            <!-- ATS result (shown after optimization) -->
+            <div id="atsResult" class="hidden">
+                <div class="ats-result-header">
+                    <button id="backToOptimize" class="btn-ghost">
+                        <span class="material-symbols-outlined">arrow_back</span>Back
+                    </button>
+                    <h3>ATS Score</h3>
+                </div>
+                <div class="ats-score-container">
+                    <div class="progress-container">
+                        <svg class="progress-ring" width="120" height="120">
+                            <circle class="progress-background" cx="60" cy="60" r="50" />
+                            <circle class="progress-circle" cx="60" cy="60" r="50" />
+                        </svg>
+                        <div class="progress-text">0/100</div>
+                    </div>
+                </div>
+                <p id="atsExplanation" class="ats-explanation"></p>
+                <button class="btn" id="downloadResume">
+                    <span class="material-symbols-outlined btn-icon">download</span>
+                    Download Optimized Resume
+                </button>
+            </div>
+
+        </section>
+
+        <!-- ── Tab: Save Job ──────────────────────────────── -->
+        <section id="tab-jobs" class="tab-content hidden">
+
+            <!-- JD detected banner (auto-filled from job site) -->
+            <div id="jdDetectedBanner" class="jd-banner hidden">
+                <div class="jd-banner-body">
+                    <span class="material-symbols-outlined jd-banner-icon">location_searching</span>
+                    <div>
+                        <strong>Job description detected</strong>
+                        <span id="detectedJobTitle" class="jd-banner-sub"></span>
+                    </div>
+                </div>
+                <button id="dismissDetectedJD" class="jd-banner-dismiss" title="Dismiss">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+
+            <!-- Not-logged-in prompt -->
+            <div id="jobSaveLoginPrompt" class="login-prompt hidden">
+                <span class="material-symbols-outlined prompt-icon">lock</span>
+                <p>Log in to save jobs and track your applications</p>
+                <button class="btn" id="goToAccountTab">Log In</button>
+            </div>
+
+            <!-- Job save form (shown when logged in) -->
+            <div id="jobSaveFields" class="hidden">
+                <div class="input-field">
+                    <label for="jobCompany">Company</label>
+                    <input id="jobCompany" type="text" placeholder="Company name">
+                </div>
+                <div class="input-field">
+                    <label for="jobPosition">Position</label>
+                    <input id="jobPosition" type="text" placeholder="Job title">
+                </div>
+                <div class="input-field">
+                    <label for="jobUrl">URL <span class="optional">(optional)</span></label>
+                    <input id="jobUrl" type="url" placeholder="https://...">
+                </div>
+                <div class="input-field">
+                    <label for="jobDescriptionSave">Job Description</label>
+                    <textarea id="jobDescriptionSave" placeholder="Paste or auto-fill job description" rows="5"></textarea>
+                </div>
+                <button class="btn" id="saveJobBtn">
+                    <span class="material-symbols-outlined btn-icon">bookmark_add</span>
+                    Save to Applications
+                </button>
+            </div>
+
+        </section>
+
+        <!-- ── Tab: Account ───────────────────────────────── -->
+        <section id="tab-account" class="tab-content hidden">
+
+            <!-- User profile (when logged in) -->
+            <div id="userProfile" class="hidden">
+                <div class="profile-card">
+                    <span class="material-symbols-outlined profile-avatar">account_circle</span>
+                    <div>
+                        <p class="profile-name" id="userName"></p>
+                        <p class="profile-sub">Logged in</p>
+                    </div>
+                </div>
+                <button class="btn btn-outline" id="logoutBtn">Log Out</button>
+            </div>
+
+            <!-- Login form -->
             <div id="loginSection">
+                <h3 class="panel-title">Log In</h3>
                 <div class="input-field">
                     <label for="loginEmail">Email</label>
-                    <input id="loginEmail" type="email" placeholder="Enter your email">
+                    <input id="loginEmail" type="email" placeholder="your@email.com">
                 </div>
-
                 <div class="input-field">
                     <label for="loginPassword">Password</label>
-                    <input id="loginPassword" type="password" placeholder="Enter your password">
+                    <input id="loginPassword" type="password" placeholder="Password">
                 </div>
-
-                <button class="btn" id="loginBtn">Login</button>
-                
-                <div class="divider">
-                    <span>or</span>
-                </div>
-                
+                <button class="btn" id="loginBtn">Log In</button>
+                <div class="divider"><span>or</span></div>
                 <div id="googleSignInBtn" class="google-signin-btn"></div>
-                
-                <button class="btn grey" id="showSignupForm">Sign Up</button>
+                <p class="auth-switch">No account? <a id="showSignupForm" href="#">Sign Up</a></p>
             </div>
 
+            <!-- Signup form -->
             <div id="signupSection" class="hidden">
+                <h3 class="panel-title">Create Account</h3>
                 <div class="input-field">
                     <label for="signupName">Name</label>
-                    <input id="signupName" type="text" placeholder="Enter your name">
+                    <input id="signupName" type="text" placeholder="Your name">
                 </div>
-
                 <div class="input-field">
                     <label for="signupEmail">Email</label>
-                    <input id="signupEmail" type="email" placeholder="Enter your email">
+                    <input id="signupEmail" type="email" placeholder="your@email.com">
                 </div>
-
                 <div class="input-field">
                     <label for="signupPassword">Password</label>
-                    <input id="signupPassword" type="password" placeholder="Enter your password">
+                    <input id="signupPassword" type="password" placeholder="Password">
                 </div>
-
                 <button class="btn" id="signupBtn">Sign Up</button>
-                <button class="btn grey" id="backToLogin">Back to Login</button>
-            </div>
-
-            <div id="userProfile" class="hidden">
-                <p>Welcome, <span id="userName"></span>!</p>
-                <button class="btn grey" id="logoutBtn">Logout</button>
-            </div>
-        </section>
-
-        <!-- Resume Upload Section -->
-        <section id="MainForm">
-            <div class="input-field">
-                <label for="resumeFile">Upload Resume</label>
-                <input type="file" id="resumeFile" accept=".pdf, .docx, .txt" />
-            </div>
-
-            <div class="input-field">
-                <label for="resume">Parsed Resume Content</label>
-                <textarea id="resume" placeholder="Your resume content will appear here" rows="6" readonly></textarea>
-            </div>
-
-            <div class="input-field">
-                <label for="jobDescription">Paste Job Description</label>
-                <textarea id="jobDescription" placeholder="Enter job description" rows="6"></textarea>
-            </div>
-
-            <div class="ats-container">
-                <button class="btn" id="optimizeResume">Optimize Resume</button>
-                <div class="loader hidden" id="loader"></div>
+                <p class="auth-switch">Have an account? <a id="backToLogin" href="#">Log In</a></p>
             </div>
 
         </section>
 
-        <!-- Job Saving Form -->
-        <section id="JobSaveForm" class="hidden">
-            <h3>Save Job to Dashboard</h3>
-            <div class="input-field">
-                <label for="jobCompany">Company</label>
-                <input id="jobCompany" type="text" placeholder="Company name">
-            </div>
-
-            <div class="input-field">
-                <label for="jobPosition">Position</label>
-                <input id="jobPosition" type="text" placeholder="Job position">
-            </div>
-
-            <div class="input-field">
-                <label for="jobUrl">Job URL (optional)</label>
-                <input id="jobUrl" type="url" placeholder="https://...">
-            </div>
-
-            <div class="input-field">
-                <label for="jobDescriptionSave">Job Description</label>
-                <textarea id="jobDescriptionSave" placeholder="Job description will be auto-filled" rows="6"></textarea>
-            </div>
-
-            <div class="ats-container">
-                <button class="btn" id="saveJobBtn">Save Job</button>
-                <button class="btn grey" id="cancelSaveJob">Cancel</button>
-            </div>
-        </section>
-
-        <section id="atsScore" class="ats-score-container hidden">
-            <div class="progress-container">
-                <svg class="progress-ring" width="120" height="120">
-                    <circle class="progress-background" cx="60" cy="60" r="50" />
-                    <circle class="progress-circle" cx="60" cy="60" r="50" />
-                </svg>
-                <div class="progress-text">0/100</div>
-            </div>
-        </section>
     </div>
 
-    <!-- Message Box Container -->
+    <!-- Toast messages -->
     <div id="messageBox"></div>
 
     <script src="./libs/pdf.min.js"></script>

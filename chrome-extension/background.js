@@ -239,10 +239,12 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     }
 
     if (message.action === "openPopupAndShowJobSave") {
-        // Store the job description for the popup
-        chrome.storage.session.set({ jobDescriptionForSave: message.jobDescription });
-        
-        // Open the popup
+        // Store JD and detected title so the popup can pre-fill and show the banner
+        chrome.storage.session.set({
+            jobDescriptionForSave: message.jobDescription,
+            detectedJobTitle:      message.detectedJobTitle || '',
+        });
+
         chrome.action.openPopup();
     }
 
