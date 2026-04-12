@@ -82,7 +82,7 @@
           :key="index"
           :class="classes.skillTagClass"
           :style="{ backgroundColor: style.accentColor + '15', color: style.accentColor }"
-          v-html="skill"
+          v-html="skill.name || skill"
         ></span>
       </div>
     </div>

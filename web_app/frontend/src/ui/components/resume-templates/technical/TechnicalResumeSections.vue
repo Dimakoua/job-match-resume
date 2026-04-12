@@ -86,15 +86,15 @@
     <div v-if="resume.skills && resume.skills.length > 0" :class="classes.skillsContainerClass">
       <div>
         <h3 class="text-[11px] font-bold text-slate-900 uppercase">Languages</h3>
-        <p class="text-sm mt-1" v-html="resume.skills.slice(0, 4).join(', ')"></p>
+        <p class="text-sm mt-1" v-html="resume.skills.slice(0, 4).map(s => s.name || s).join(', ')"></p>
       </div>
       <div>
         <h3 class="text-[11px] font-bold text-slate-900 uppercase">Frameworks</h3>
-        <p class="text-sm mt-1" v-html="resume.skills.slice(4, 8).join(', ')"></p>
+        <p class="text-sm mt-1" v-html="resume.skills.slice(4, 8).map(s => s.name || s).join(', ')"></p>
       </div>
       <div>
         <h3 class="text-[11px] font-bold text-slate-900 uppercase">Tools & Infra</h3>
-        <p class="text-sm mt-1" v-html="resume.skills.slice(8, 12).join(', ')"></p>
+        <p class="text-sm mt-1" v-html="resume.skills.slice(8, 12).map(s => s.name || s).join(', ')"></p>
       </div>
     </div>
   </div>

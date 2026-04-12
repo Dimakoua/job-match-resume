@@ -111,7 +111,7 @@
           v-for="(skill, index) in resume.skills"
           :key="index"
           :class="classes.skillTagClass"
-          v-html="skill"
+          v-html="skill.name || skill"
         ></span>
       </div>
     </div>

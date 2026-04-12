@@ -483,23 +483,38 @@
           <h2 class="text-xl font-bold tracking-tight">Skills</h2>
         </div>
       </div>
-      <div class="flex flex-wrap gap-2 mb-4">
-        <span 
+      <div class="space-y-3 mb-4">
+        <div 
           v-for="(skill, index) in form.skills" 
           :key="index"
-          class="px-3 py-1.5 bg-gray-100 dark:bg-gray-800 text-sm font-medium rounded-lg flex items-center gap-2 group"
+          class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg"
         >
-          {{ skill }}
+          <div class="flex-1">
+            <input 
+              v-model="skill.name"
+              class="w-full rounded border-[#d0d7e7] dark:border-gray-700 bg-white dark:bg-gray-900 focus:border-primary focus:ring-1 focus:ring-primary p-2 text-sm" 
+              type="text" 
+              placeholder="Skill name..."
+            />
+          </div>
+          <div class="w-20">
+            <input 
+              v-model="skill.level"
+              class="w-full rounded border-[#d0d7e7] dark:border-gray-700 bg-white dark:bg-gray-900 focus:border-primary focus:ring-1 focus:ring-primary p-2 text-sm text-center" 
+              type="text" 
+              placeholder="85%"
+            />
+          </div>
           <button 
             @click="removeSkill(index)"
-            class="text-gray-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
+            class="text-gray-400 hover:text-red-500 transition-colors p-1"
           >
             <svg xmlns="http://www.w3.org/2000/svg" class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <line x1="18" y1="6" x2="6" y2="18"/>
               <line x1="6" y1="6" x2="18" y2="18"/>
             </svg>
           </button>
-        </span>
+        </div>
       </div>
       <div class="flex gap-2">
         <input 
@@ -574,6 +589,17 @@ const initializeForm = (data) => {
   if (!initialized.certifications) initialized.certifications = []
   if (!initialized.projects) initialized.projects = []
   if (!initialized.customSections) initialized.customSections = {}
+  
+  // Convert string skills to objects with name and level
+  if (initialized.skills && initialized.skills.length > 0) {
+    initialized.skills = initialized.skills.map(skill => {
+      if (typeof skill === 'string') {
+        return { name: skill, level: '85%' }
+      }
+      return skill
+    })
+  }
+  
   return initialized
 }
 
@@ -680,7 +706,7 @@ const removeProject = (index) => {
 
 const addSkill = () => {
   if (newSkill.value.trim()) {
-    form.value.skills.push(newSkill.value.trim())
+    form.value.skills.push({ name: newSkill.value.trim(), level: '85%' })
     newSkill.value = ''
   }
 }
