@@ -49,8 +49,10 @@ export function useAuthController() {
       const redirectTo = route.query.redirect || '/dashboard'
       router.push(redirectTo)
     } catch (err) {
-      let errorMessage = err.response?.data?.message || 'Signup failed'
-      if (err.response?.data?.details) {
+      let errorMessage = err.response?.data?.error?.message || err.response?.data?.message || 'Signup failed'
+      if (err.response?.data?.error?.details) {
+        errorMessage += ': ' + err.response.data.error.details.map(d => d.message).join(', ')
+      } else if (err.response?.data?.details) {
         errorMessage += ': ' + err.response.data.details.map(d => d.message).join(', ')
       }
       error.value = errorMessage
