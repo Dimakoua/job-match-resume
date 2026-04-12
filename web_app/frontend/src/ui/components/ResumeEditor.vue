@@ -497,7 +497,7 @@
               placeholder="Skill name..."
             />
           </div>
-          <div class="w-20">
+          <div v-if="props.template === 'creative'" class="w-20">
             <input 
               v-model="skill.level"
               class="w-full rounded border-[#d0d7e7] dark:border-gray-700 bg-white dark:bg-gray-900 focus:border-primary focus:ring-1 focus:ring-primary p-2 text-sm text-center" 
@@ -575,6 +575,10 @@ const props = defineProps({
   sections: {
     type: Array,
     default: () => []
+  },
+  template: {
+    type: String,
+    default: 'modern'
   }
 })
 

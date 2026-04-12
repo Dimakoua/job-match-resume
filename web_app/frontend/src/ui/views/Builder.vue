@@ -25,6 +25,7 @@
           v-if="activeTab === 'edit'"
           v-model="resumeData"
           :sections="sections"
+          :template="layoutSettings.template"
           @ai-enhance="handleAiEnhance"
         />
         
