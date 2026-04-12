@@ -39,7 +39,7 @@
 
         <!-- Tab Navigation -->
         <nav class="tab-nav" id="tabNav">
-            <button class="tab-btn active" data-tab="optimize">
+            <button class="tab-btn" data-tab="optimize">
                 <span class="material-symbols-outlined">auto_fix_high</span>
                 <span class="tab-label">Optimize</span>
             </button>
@@ -47,14 +47,14 @@
                 <span class="material-symbols-outlined">work</span>
                 <span class="tab-label">Save Job</span>
             </button>
-            <button class="tab-btn" data-tab="account">
+            <button class="tab-btn active" data-tab="account">
                 <span class="material-symbols-outlined">account_circle</span>
                 <span class="tab-label">Account</span>
             </button>
         </nav>
 
         <!-- ── Tab: Optimize ──────────────────────────────── -->
-        <section id="tab-optimize" class="tab-content">
+        <section id="tab-optimize" class="tab-content hidden">
 
             <!-- Optimize form -->
             <div id="optimizeForm">
@@ -156,7 +156,7 @@
         </section>
 
         <!-- ── Tab: Account ───────────────────────────────── -->
-        <section id="tab-account" class="tab-content hidden">
+        <section id="tab-account" class="tab-content">
 
             <!-- User profile (when logged in) -->
             <div id="userProfile" class="hidden">

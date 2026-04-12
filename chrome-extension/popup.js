@@ -1,5 +1,6 @@
 // ── Config ────────────────────────────────────────────────────
-const API_BASE_URL = 'https://your-backend-url.com'; // update with actual backend URL
+// const API_BASE_URL = 'https://your-backend-url.com'; // update with actual backend URL
+const API_BASE_URL = 'http://localhost:8787';
 
 // Holds the last AI result so the download button can use it
 let lastOptimizationResult = null;
@@ -517,9 +518,9 @@ document.addEventListener('DOMContentLoaded', async function () {
     // Refresh jobs tab visibility (login-gated content)
     refreshJobsTab();
 
-    // If no AI key yet, open AI settings automatically
+    // If no AI key yet, show a hint but stay on the account tab
     if (!settings.aiModel || !settings.userToken) {
-        showAISettings();
+        showMessage('error', 'Add your AI API key in Settings (⚙) to use Optimize.', 5000);
     }
 
     // ── Event bindings ─────────────────────────────────────────
