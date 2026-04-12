@@ -26,7 +26,7 @@
                                     <button @click.stop="openEditListModal(list)" class="p-1 rounded hover:bg-gray-300 dark:hover:bg-gray-600">
                                         <span class="material-symbols-outlined text-sm">edit</span>
                                     </button>
-                                    <button @click.stop="handleDeleteList(list.id)" class="p-1 rounded hover:bg-gray-300 dark:hover:bg-gray-600 text-red-500">
+                                    <button @click.stop="openDeleteListModal(list)" class="p-1 rounded hover:bg-gray-300 dark:hover:bg-gray-600 text-red-500">
                                         <span class="material-symbols-outlined text-sm">delete</span>
                                     </button>
                                 </div>
@@ -220,12 +220,40 @@
           </div>
         </div>
 
+        <!-- Delete List Confirmation Modal -->
+        <div v-if="deleteListModal.show" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" @click="closeDeleteListModal()">
+          <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-md w-full" @click.stop>
+            <div class="p-6 border-b border-gray-200 dark:border-gray-800">
+              <h3 class="text-lg font-bold text-gray-900 dark:text-white">Delete campaign</h3>
+            </div>
+            <div class="p-6 space-y-4">
+              <p class="text-sm text-gray-600 dark:text-gray-300">This will permanently remove the campaign <strong>{{ deleteListModal.listName }}</strong> and all its saved jobs. This action cannot be undone.</p>
+              <div class="flex gap-3">
+                <button
+                  type="button"
+                  @click="closeDeleteListModal()"
+                  class="flex-1 px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  @click="confirmDeleteList()"
+                  class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                >
+                  Delete Campaign
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
 </div>
 </template>
 
 <script setup>
-import { computed, onMounted, watchEffect } from 'vue';
+import { computed, onMounted, ref, watchEffect } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useSavedJobsController } from '../composables/useSavedJobsController.js';
 import { useAuthStore } from '../stores/useAuthStore.js';
@@ -321,14 +349,35 @@ const handleEditListSubmit = async () => {
   }
 };
 
-const handleDeleteList = async (listId) => {
-  if (confirm('Are you sure you want to delete this campaign? This action cannot be undone.')) {
-    try {
-      await deleteJobSearchList(listId);
-      // If the current list was deleted, the watchEffect will handle navigation
-    } catch (err) {
-      console.error('Failed to delete list:', err);
-    }
+const deleteListModal = ref({
+  show: false,
+  listId: null,
+  listName: ''
+});
+
+const openDeleteListModal = (list) => {
+  deleteListModal.value = {
+    show: true,
+    listId: list.id,
+    listName: list.name
+  };
+};
+
+const closeDeleteListModal = () => {
+  deleteListModal.value = {
+    show: false,
+    listId: null,
+    listName: ''
+  };
+};
+
+const confirmDeleteList = async () => {
+  try {
+    await deleteJobSearchList(deleteListModal.value.listId);
+    closeDeleteListModal();
+    await loadJobSearchLists();
+  } catch (err) {
+    console.error('Failed to delete list:', err);
   }
 };
 
