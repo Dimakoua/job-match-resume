@@ -13,8 +13,41 @@
 <body>
     <div class="container">
 
+        <!-- ── Welcome Wizard (shown once on first open) ──────── -->
+        <section id="welcomeWizard" class="wizard hidden">
+            <div class="wizard-hero">
+                <span class="material-symbols-outlined wizard-hero-icon">auto_awesome</span>
+                <h2 class="wizard-heading">Welcome to<br>AI Resume Optimizer</h2>
+                <p class="wizard-sub">Choose how you'd like to get started</p>
+            </div>
+
+            <div class="wizard-cards">
+                <!-- Path 1: no login -->
+                <button class="wizard-card" id="wizardChooseAI">
+                    <span class="material-symbols-outlined wizard-card-icon">key</span>
+                    <div class="wizard-card-body">
+                        <strong>Use your own AI key</strong>
+                        <span>No account needed. Paste your Gemini, GPT or Claude key and optimize resumes instantly.</span>
+                    </div>
+                    <span class="material-symbols-outlined wizard-card-arrow">chevron_right</span>
+                </button>
+
+                <!-- Path 2: login -->
+                <button class="wizard-card wizard-card-accent" id="wizardChooseLogin">
+                    <span class="material-symbols-outlined wizard-card-icon">workspace_premium</span>
+                    <div class="wizard-card-body">
+                        <strong>Sign in for more</strong>
+                        <span>Save jobs, track applications, sync across devices — all in one dashboard.</span>
+                    </div>
+                    <span class="material-symbols-outlined wizard-card-arrow">chevron_right</span>
+                </button>
+            </div>
+
+            <p class="wizard-note">You can always switch modes later from the tabs above.</p>
+        </section>
+
         <!-- Header -->
-        <div class="header-container">
+        <div class="header-container" id="mainHeader">
             <h2>AI Resume Optimizer</h2>
             <span id="showAISettingsForm" class="settings-icon material-symbols-outlined" title="AI Settings">settings</span>
         </div>

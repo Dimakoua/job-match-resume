@@ -1,3 +1,33 @@
+// ── Welcome Wizard ────────────────────────────────────────────
+
+const WIZARD_SEEN_KEY = 'wizardSeen';
+
+function isWizardSeen() {
+    return localStorage.getItem(WIZARD_SEEN_KEY) === '1';
+}
+
+function markWizardSeen() {
+    localStorage.setItem(WIZARD_SEEN_KEY, '1');
+}
+
+/** Show the wizard screen, hiding the rest of the shell. */
+function showWizard() {
+    document.getElementById('welcomeWizard').classList.remove('hidden');
+    document.getElementById('mainHeader').classList.add('hidden');
+    document.getElementById('AISettingsForm').classList.add('hidden');
+    document.getElementById('tabNav').classList.add('hidden');
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+}
+
+/** Dismiss wizard and reveal the main shell. */
+function dismissWizard(targetTab) {
+    markWizardSeen();
+    document.getElementById('welcomeWizard').classList.add('hidden');
+    document.getElementById('mainHeader').classList.remove('hidden');
+    document.getElementById('tabNav').classList.remove('hidden');
+    switchTab(targetTab);
+}
+
 // ── Config ────────────────────────────────────────────────────
 // const API_BASE_URL = 'https://your-backend-url.com'; // update with actual backend URL
 const API_BASE_URL = 'http://localhost:8787';
@@ -462,7 +492,7 @@ async function checkForDetectedJD() {
             ['jobDescriptionForSave', 'detectedJobTitle']
         );
 
-        if (!result.jobDescriptionForSave) return;
+        if (!result.jobDescriptionForSave) return false;
 
         await chrome.storage.session.remove(['jobDescriptionForSave', 'detectedJobTitle']);
 
@@ -480,8 +510,10 @@ async function checkForDetectedJD() {
 
         // Switch to the Jobs tab
         switchTab('jobs');
+        return true;
     } catch (err) {
         console.error('checkForDetectedJD:', err);
+        return false;
     }
 }
 
@@ -505,23 +537,30 @@ function showMessage(type, text, timeout = 3000) {
 // ── Init ──────────────────────────────────────────────────────
 
 document.addEventListener('DOMContentLoaded', async function () {
-    const settings = loadSettings();
+    loadSettings();
     loadCV();
     loadJobDescription();
 
     await checkLoginStatus();
     initializeGoogleSignIn();
-
-    // If popup was opened from the floating card, switch to Jobs tab + pre-fill
-    await checkForDetectedJD();
-
-    // Refresh jobs tab visibility (login-gated content)
     refreshJobsTab();
 
-    // If no AI key yet, show a hint but stay on the account tab
-    if (!settings.aiModel || !settings.userToken) {
-        showMessage('error', 'Add your AI API key in Settings (⚙) to use Optimize.', 5000);
+    // If opened from the floating card, skip wizard and jump straight to Jobs tab
+    const routedFromCard = await checkForDetectedJD();
+
+    // Show wizard on first ever open, unless we were routed by the floating card
+    if (!isWizardSeen() && !routedFromCard) {
+        showWizard();
     }
+
+    // ── Wizard buttons ─────────────────────────────────────────
+    document.getElementById('wizardChooseAI').addEventListener('click', () => {
+        dismissWizard('optimize');
+        showAISettings();          // open AI settings right away
+    });
+    document.getElementById('wizardChooseLogin').addEventListener('click', () => {
+        dismissWizard('account');
+    });
 
     // ── Event bindings ─────────────────────────────────────────
 
