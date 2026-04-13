@@ -118,13 +118,27 @@ function detectJobMeta(siteKey) {
 
 // ── Floating card ─────────────────────────────────────────────
 
-function injectFloatingCard(jobDescription, siteKey) {
+async function injectFloatingCard(jobDescription, siteKey) {
     if (floatingCard) return;   // already shown
 
     const { title, company } = detectJobMeta(siteKey);
     const subtitle = title && company
         ? `${title} · ${company}`
         : title || company || 'Job found on this page';
+
+    // Check login state and AI token to decide which actions to show
+    let userToken = null;
+    let hasAiToken = false;
+    try {
+        const stored = await chrome.storage.local.get(['userToken', 'hasAiToken']);
+        userToken  = stored.userToken  || null;
+        hasAiToken = Boolean(stored.hasAiToken);
+    } catch (_) {}
+
+    const isLoggedIn = Boolean(userToken);
+
+    // Nothing actionable to show — skip card entirely
+    if (!isLoggedIn && !hasAiToken) return;
 
     floatingCard = document.createElement('div');
     floatingCard.id = 'roa-floating-card';
@@ -263,8 +277,13 @@ function injectFloatingCard(jobDescription, siteKey) {
             <button class="roa-close" id="roa-dismiss" title="Dismiss">&#x2715;</button>
         </div>
         <div class="roa-actions">
-            <button class="roa-btn-primary"   id="roa-save-btn">Save Application</button>
-            <button class="roa-btn-secondary" id="roa-optimize-btn">Optimize CV</button>
+            ${isLoggedIn && hasAiToken
+                ? `<button class="roa-btn-primary"   id="roa-save-btn">Save Application</button>
+                   <button class="roa-btn-secondary" id="roa-optimize-btn">Optimize CV</button>`
+                : isLoggedIn
+                    ? `<button class="roa-btn-primary" id="roa-save-btn" style="flex:1">Save Application</button>`
+                    : `<button class="roa-btn-primary" id="roa-optimize-btn" style="flex:1">Optimize CV</button>`
+            }
         </div>
     `;
 
@@ -272,11 +291,13 @@ function injectFloatingCard(jobDescription, siteKey) {
 
     document.getElementById('roa-dismiss').addEventListener('click', removeFloatingCard);
 
-    document.getElementById('roa-save-btn').addEventListener('click', () =>
-        doSaveApplication(subtitle, company, title)
-    );
+    if (isLoggedIn) {
+        document.getElementById('roa-save-btn')?.addEventListener('click', () =>
+            doSaveApplication(subtitle, company, title)
+        );
+    }
 
-    document.getElementById('roa-optimize-btn').addEventListener('click', () => {
+    document.getElementById('roa-optimize-btn')?.addEventListener('click', () => {
         // Store JD for the Optimize tab, then open the popup
         safeMessage({
             action:         'saveJobDescription',
@@ -413,7 +434,7 @@ function waitForJobDescription() {
         if (text.length < 50) return;          // too short — probably not a real JD
         savedJobDescription = text;
         sendJobDescription(text);
-        injectFloatingCard(text, siteKey);
+        injectFloatingCard(text, siteKey);     // async — fire and forget is fine here
     }
 
     // Already in DOM?

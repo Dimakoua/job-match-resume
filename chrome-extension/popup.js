@@ -58,6 +58,8 @@ function saveSettings() {
 
     localStorage.setItem('aiModel',    aiModel);
     localStorage.setItem('userToken',  userToken);
+    // Mirror flag to chrome.storage.local so content scripts can read it
+    chrome.storage.local.set({ hasAiToken: true });
     showMessage('success', 'Settings saved!');
     hideAISettings();
 }
