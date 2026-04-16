@@ -1211,7 +1211,10 @@ const {
   loadUserResumes,
   goToResumePage,
   goToResumeNext,
-  goToResumePrevious
+  goToResumePrevious,
+
+  // ATS keyword insertion
+  handleAutoInsert,
 } = useTailoringStudioController();
 
 // Reset pagination when modal opens

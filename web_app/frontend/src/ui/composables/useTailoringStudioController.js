@@ -287,9 +287,10 @@ export function useTailoringStudioController() {
       const skills = sections.skills;
       if (skills.length > 0) {
         // Check if skills are properly formatted (not too long descriptions)
-        const wellFormattedSkills = skills.filter(skill =>
-          skill && skill.trim().length > 0 && skill.trim().length < 50 // Reasonable skill name length
-        ).length;
+        const wellFormattedSkills = skills.filter(skill => {
+          const s = typeof skill === 'string' ? skill : (skill?.name ?? String(skill ?? ''));
+          return s.trim().length > 0 && s.trim().length < 50; // Reasonable skill name length
+        }).length;
         skillsScore = Math.min(10, (wellFormattedSkills / skills.length) * 10);
       }
     }
@@ -444,9 +445,10 @@ export function useTailoringStudioController() {
       if (sections.skills && Array.isArray(sections.skills)) {
         const skills = sections.skills;
         if (skills.length > 0) {
-          const wellFormattedSkills = skills.filter(skill =>
-            skill && skill.trim().length > 0 && skill.trim().length < 50
-          ).length;
+          const wellFormattedSkills = skills.filter(skill => {
+            const s = typeof skill === 'string' ? skill : (skill?.name ?? String(skill ?? ''));
+            return s.trim().length > 0 && s.trim().length < 50;
+          }).length;
           breakdown.skillsFormatting.score = Math.min(10, (wellFormattedSkills / skills.length) * 10);
 
           if (wellFormattedSkills < skills.length) {
