@@ -25,6 +25,19 @@ const lightenColor = (baseColor, factor = 0.88) => {
   );
 };
 
+const toNumberInRange = (value, fallback, min, max) => {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed)) return fallback;
+  return Math.max(min, Math.min(max, parsed));
+};
+
+const normalizeAlign = (value, fallback = 'left') => {
+  const raw = String(value || '').trim().toLowerCase();
+  if (raw === 'left' || raw === 'center' || raw === 'right') return raw;
+  if (raw === 'justify') return 'left';
+  return fallback;
+};
+
 const normalizeHtmlToText = (value) => {
   if (value === null || value === undefined) return '';
 
@@ -82,9 +95,21 @@ export class BasicTemplate {
     let currentPage = pdfDoc.addPage();
     const { width, height } = currentPage.getSize();
 
+    const styleSettings = resume?.sections?.style || {};
+    const baseFontSize = toNumberInRange(styleSettings.fontSize, 11, 8, 16);
+    const lineHeightRatio = toNumberInRange(styleSettings.lineHeight, 1.5, 1.1, 2.2);
+    const bodyTextAlign = normalizeAlign(
+      styleSettings.textAlign || styleSettings.bodyAlign || styleSettings.textAlignment,
+      'left'
+    );
+
     const margin = 50; // Standard margins
-    const lineHeight = 14;
-    const fontSize = 12;
+    const lineHeight = baseFontSize * lineHeightRatio;
+    const fontSize = baseFontSize;
+    const sectionHeaderSize = Math.max(12, baseFontSize + 2);
+    const nameSize = Math.max(16, baseFontSize + 7);
+    const titleSize = Math.max(12, baseFontSize + 3);
+    const metaSize = Math.max(9, baseFontSize - 1);
     const accentColor = hexToRgb(resume?.sections?.style?.accentColor);
     const accentBackground = lightenColor(accentColor, 0.86);
 
@@ -185,6 +210,48 @@ export class BasicTemplate {
       return currentY - tagHeight - 2;
     };
 
+    const addTwoColumnRow = (leftText, rightText, y, options = {}) => {
+      const leftSafe = sanitizePdfText(leftText);
+      const rightSafe = sanitizePdfText(rightText);
+      if (!leftSafe && !rightSafe) return y;
+
+      const leftFont = options.leftFont || fontRegular;
+      const rightFont = options.rightFont || fontRegular;
+      const leftSize = options.leftSize || fontSize;
+      const rightSize = options.rightSize || fontSize;
+      const leftColor = options.leftColor || rgb(0, 0, 0);
+      const rightColor = options.rightColor || rgb(0, 0, 0);
+      const gap = options.gap || 12;
+
+      let leftMaxWidth = width - 2 * margin;
+
+      if (rightSafe) {
+        const rightWidth = rightFont.widthOfTextAtSize(rightSafe, rightSize);
+        const rightX = width - margin - rightWidth;
+        leftMaxWidth = Math.max(120, rightX - margin - gap);
+
+        currentPage.drawText(rightSafe, {
+          x: rightX,
+          y,
+          size: rightSize,
+          font: rightFont,
+          color: rightColor
+        });
+      }
+
+      if (!leftSafe) {
+        return y - lineHeight;
+      }
+
+      return addText(leftSafe, margin, y, {
+        font: leftFont,
+        size: leftSize,
+        color: leftColor,
+        maxWidth: leftMaxWidth,
+        align: 'left'
+      });
+    };
+
     // Helper: Check Page Break
     const checkPageBreak = (y) => {
       if (y < margin + 50) {
@@ -198,17 +265,17 @@ export class BasicTemplate {
 
     // --- HEADER ---
     if (model.header.fullName) {
-      y = addText(model.header.fullName, margin, y, { size: 18, font: fontBold, align: 'center' });
+      y = addText(model.header.fullName, margin, y, { size: nameSize, font: fontBold, align: 'center' });
       y -= 10;
     }
 
     if (model.header.title) {
-      y = addText(model.header.title, margin, y, { size: 14, font: fontBold, align: 'center' });
+      y = addText(model.header.title, margin, y, { size: titleSize, font: fontBold, align: 'center' });
       y -= 15;
     }
 
     if (model.header.contactLine) {
-      y = addText(model.header.contactLine, margin, y, { size: 10, align: 'center' });
+      y = addText(model.header.contactLine, margin, y, { size: metaSize, align: 'center' });
       y -= 20;
     }
 
@@ -216,7 +283,7 @@ export class BasicTemplate {
 
     const drawSectionHeader = (title) => {
       y = checkPageBreak(y);
-      y = addText(title.toUpperCase(), margin, y, { size: 14, font: fontBold });
+      y = addText(title.toUpperCase(), margin, y, { size: sectionHeaderSize, font: fontBold, align: 'left' });
       currentPage.drawLine({
         start: { x: margin, y: y + 4 },
         end: { x: width - margin, y: y + 4 },
@@ -229,7 +296,7 @@ export class BasicTemplate {
     // SUMMARY
     if (model.summary) {
       drawSectionHeader('Summary');
-      y = addText(model.summary, margin, y);
+      y = addText(model.summary, margin, y, { align: bodyTextAlign });
       y -= 15;
     }
 
@@ -240,33 +307,32 @@ export class BasicTemplate {
       for (const job of model.experience) {
         y = checkPageBreak(y);
 
-        if (job.company) {
-          y = addText(job.company, margin, y, { font: fontBold });
-        }
+        y = addTwoColumnRow(job.company, job.dateLine, y, {
+          leftFont: fontBold,
+          leftSize: fontSize,
+          rightFont: fontRegular,
+          rightSize: metaSize
+        });
 
         if (job.title) {
-          y = addText(job.title, margin, y);
-        }
-
-        if (job.dateLine) {
-          y = addText(job.dateLine, margin, y, { size: 10 });
+          y = addText(job.title, margin, y, { align: bodyTextAlign });
         }
 
         if (job.location) {
-          y = addText(job.location, margin, y, { size: 10 });
+          y = addText(job.location, margin, y, { size: metaSize, align: bodyTextAlign });
         }
 
         y -= 5;
 
         if (job.description) {
-          y = addText(job.description, margin, y);
+          y = addText(job.description, margin, y, { align: bodyTextAlign });
         }
 
         if (job.achievements?.length > 0) {
           y -= 5;
           for (const ach of job.achievements) {
             y = checkPageBreak(y);
-            y = addText(`- ${ach}`, margin + 15, y);
+            y = addText(`- ${ach}`, margin + 15, y, { align: bodyTextAlign });
           }
         }
         y -= 10;
@@ -278,15 +344,15 @@ export class BasicTemplate {
       drawSectionHeader('Education');
       for (const edu of model.education) {
         y = checkPageBreak(y);
-        const school = edu.school || '';
-        y = addText(school, margin, y, { font: fontBold });
+        y = addTwoColumnRow(edu.school, edu.dateLine, y, {
+          leftFont: fontBold,
+          leftSize: fontSize,
+          rightFont: fontRegular,
+          rightSize: metaSize
+        });
 
         if (edu.degreeLine) {
-          y = addText(edu.degreeLine, margin, y);
-        }
-
-        if (edu.dateLine) {
-          y = addText(edu.dateLine, margin, y, { size: 10 });
+          y = addText(edu.degreeLine, margin, y, { align: bodyTextAlign });
         }
         y -= 10;
       }
@@ -298,7 +364,7 @@ export class BasicTemplate {
       if (model.skills.tags.length > 0) {
         y = addSkillTags(model.skills.tags, margin, y);
       } else {
-        y = addText(model.skills.text, margin, y, { color: accentColor, font: fontBold });
+        y = addText(model.skills.text, margin, y, { color: accentColor, font: fontBold, align: bodyTextAlign });
       }
       y -= 15;
     }
@@ -308,12 +374,12 @@ export class BasicTemplate {
       drawSectionHeader('Projects');
       for (const proj of model.projects) {
         y = checkPageBreak(y);
-        y = addText(proj.name, margin, y, { font: fontBold });
+        y = addText(proj.name, margin, y, { font: fontBold, align: bodyTextAlign });
         if (proj.description) {
-          y = addText(proj.description, margin, y);
+          y = addText(proj.description, margin, y, { align: bodyTextAlign });
         }
         if (proj.url) {
-          y = addText(proj.url, margin, y, { size: 10 });
+          y = addText(proj.url, margin, y, { size: metaSize, align: bodyTextAlign });
         }
         y -= 10;
       }
@@ -324,7 +390,7 @@ export class BasicTemplate {
       drawSectionHeader('Certifications');
       for (const cert of model.certifications) {
         y = checkPageBreak(y);
-        y = addText(cert.textLine, margin, y);
+        y = addText(cert.textLine, margin, y, { align: bodyTextAlign });
         y -= 5;
       }
     }
