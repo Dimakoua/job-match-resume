@@ -1,7 +1,7 @@
 <template>
   <!-- Summary -->
   <div v-if="isSectionVisible('summary') && (!hideEmptySections || resume.summary)" :style="{ marginBottom: `${layout.sectionSpacing}px` }">
-    <h3 :class="classes.sectionHeaderClass" :style="classes.sectionHeaderStyle">Profile</h3>
+    <h3 :class="classes.sectionHeaderClass" :style="classes.sectionHeaderStyle">Professional Summary</h3>
     <div v-if="resume.summary">
       <p :style="{ ...bodyStyle, whiteSpace: 'pre-wrap' }" :class="classes.bodyTextClass" v-html="resume.summary"></p>
     </div>
@@ -84,18 +84,34 @@
   <div v-if="isSectionVisible('skills') && (!hideEmptySections || (resume.skills && resume.skills.length > 0))" :style="{ marginBottom: `${layout.sectionSpacing}px` }">
     <h3 :class="classes.sectionHeaderClass" :style="classes.sectionHeaderStyle">Technical Skills</h3>
     <div v-if="resume.skills && resume.skills.length > 0" :class="classes.skillsContainerClass">
-      <div>
-        <h3 class="text-[11px] font-bold text-slate-900 uppercase">Languages</h3>
-        <p class="text-sm mt-1">{{ resume.skills.slice(0, 4).map(s => s.name || s).join(', ') }}</p>
-      </div>
-      <div>
-        <h3 class="text-[11px] font-bold text-slate-900 uppercase">Frameworks</h3>
-        <p class="text-sm mt-1">{{ resume.skills.slice(4, 8).map(s => s.name || s).join(', ') }}</p>
-      </div>
-      <div>
-        <h3 class="text-[11px] font-bold text-slate-900 uppercase">Tools & Infra</h3>
-        <p class="text-sm mt-1">{{ resume.skills.slice(8, 12).map(s => s.name || s).join(', ') }}</p>
-      </div>
+      <template v-if="hasSkillCategories">
+        <div v-if="categorySkills('languages').length > 0">
+          <h3 class="text-[11px] font-bold text-slate-900 uppercase">{{ categoryTitle('languages', 'Languages') }}</h3>
+          <p class="text-sm mt-1">{{ categorySkills('languages').join(', ') }}</p>
+        </div>
+        <div v-if="categorySkills('frameworks').length > 0">
+          <h3 class="text-[11px] font-bold text-slate-900 uppercase">{{ categoryTitle('frameworks', 'Frameworks') }}</h3>
+          <p class="text-sm mt-1">{{ categorySkills('frameworks').join(', ') }}</p>
+        </div>
+        <div v-if="categorySkills('tools').length > 0">
+          <h3 class="text-[11px] font-bold text-slate-900 uppercase">{{ categoryTitle('tools', 'Tools & Infra') }}</h3>
+          <p class="text-sm mt-1">{{ categorySkills('tools').join(', ') }}</p>
+        </div>
+      </template>
+      <template v-else>
+        <div>
+          <h3 class="text-[11px] font-bold text-slate-900 uppercase">Languages</h3>
+          <p class="text-sm mt-1">{{ resume.skills.slice(0, 4).map(s => s.name || s).join(', ') }}</p>
+        </div>
+        <div>
+          <h3 class="text-[11px] font-bold text-slate-900 uppercase">Frameworks</h3>
+          <p class="text-sm mt-1">{{ resume.skills.slice(4, 8).map(s => s.name || s).join(', ') }}</p>
+        </div>
+        <div>
+          <h3 class="text-[11px] font-bold text-slate-900 uppercase">Tools & Infra</h3>
+          <p class="text-sm mt-1">{{ resume.skills.slice(8, 12).map(s => s.name || s).join(', ') }}</p>
+        </div>
+      </template>
     </div>
   </div>
 
@@ -195,6 +211,24 @@ const customSections = computed(() => {
   if (!props.sections || !Array.isArray(props.sections)) return []
   return props.sections.filter(s => s?.custom === true)
 })
+
+const hasSkillCategories = computed(() => {
+  const categories = props.resume?.skillCategories
+  return !!(categories && typeof categories === 'object')
+})
+
+const categorySkills = (key) => {
+  const category = props.resume?.skillCategories?.[key]
+  if (!Array.isArray(category?.skills)) return []
+  return category.skills
+    .map(skill => (typeof skill === 'object' ? skill?.name : skill))
+    .filter(Boolean)
+}
+
+const categoryTitle = (key, fallback) => {
+  const category = props.resume?.skillCategories?.[key]
+  return category?.title || fallback
+}
 
 const isEmpty = computed(() => {
   const r = props.resume

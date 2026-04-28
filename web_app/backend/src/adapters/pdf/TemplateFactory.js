@@ -5,6 +5,7 @@ import { AcademicTemplate } from './templates/AcademicTemplate.js';
 import { ClassicTemplate } from './templates/ClassicTemplate.js';
 import { CreativeTemplate } from './templates/CreativeTemplate.js';
 import { MinimalTemplate } from './templates/MinimalTemplate.js';
+import { TechnicalTemplate } from './templates/TechnicalTemplate.js';
 
 export class TemplateFactory {
   /**
@@ -32,6 +33,8 @@ export class TemplateFactory {
         return new CreativeTemplate();
       case 'minimal':
         return new MinimalTemplate();
+      case 'technical':
+        return new TechnicalTemplate();
       default:
         // For now, default to ModernTemplate for all until others are implemented
         return new ModernTemplate();
