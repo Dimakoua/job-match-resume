@@ -69,7 +69,7 @@ const sanitizePdfText = (value) => {
     .replace(/[\u2013\u2014]/g, '-')
     .replace(/\u2026/g, '...')
     .replace(/\u00A0/g, ' ')
-    .replace(/[^\x20-\x7E\xA0-\xFF]/g, '')
+    .replace(/[^\n\x20-\x7E\xA0-\xFF]/g, '')
     .replace(/[ ]{2,}/g, ' ')
     .replace(/\n{3,}/g, '\n\n')
     .trim();
@@ -132,7 +132,33 @@ export class BasicTemplate {
 
       const paragraphs = safeText.split('\n');
 
+      const ensureLineSpace = () => {
+        if (currentY < margin + lineHeight) {
+          currentPage = pdfDoc.addPage();
+          currentY = height - margin;
+        }
+      };
+
+      const breakLongWord = (word) => {
+        const parts = [];
+        let remaining = word;
+
+        while (remaining.length > 0) {
+          let end = remaining.length;
+          while (end > 1 && font.widthOfTextAtSize(remaining.slice(0, end), size) > maxWidth) {
+            end -= 1;
+          }
+
+          if (end === 0) end = 1;
+          parts.push(remaining.slice(0, end));
+          remaining = remaining.slice(end);
+        }
+
+        return parts;
+      };
+
       const drawLine = (lineText) => {
+        ensureLineSpace();
         const textWidth = font.widthOfTextAtSize(lineText, size);
         const drawX = align === 'center' ? x + (maxWidth - textWidth) / 2 : x;
         currentPage.drawText(lineText, { x: drawX, y: currentY, size, font, color: textColor });
@@ -148,15 +174,21 @@ export class BasicTemplate {
         let line = '';
 
         for (const word of words) {
-          const testLine = line + (line ? ' ' : '') + word;
-          const textWidth = font.widthOfTextAtSize(testLine, size);
+          const chunks = font.widthOfTextAtSize(word, size) > maxWidth
+            ? breakLongWord(word)
+            : [word];
 
-          if (textWidth > maxWidth && line) {
-            drawLine(line);
-            line = word;
-            currentY -= lineHeight;
-          } else {
-            line = testLine;
+          for (const chunk of chunks) {
+            const testLine = line + (line ? ' ' : '') + chunk;
+            const textWidth = font.widthOfTextAtSize(testLine, size);
+
+            if (textWidth > maxWidth && line) {
+              drawLine(line);
+              line = chunk;
+              currentY -= lineHeight;
+            } else {
+              line = testLine;
+            }
           }
         }
 
@@ -176,20 +208,42 @@ export class BasicTemplate {
       const horizontalGap = 6;
       const verticalGap = 6;
       const maxX = width - margin;
+      const maxTagWidth = maxX - x;
 
       let currentX = x;
       let currentY = y;
+
+      const ensureTagSpace = () => {
+        if (currentY - tagHeight < margin) {
+          currentPage = pdfDoc.addPage();
+          currentY = height - margin;
+          currentX = x;
+        }
+      };
 
       for (const tagValue of tags) {
         const label = sanitizePdfText(tagValue);
         if (!label) continue;
 
-        const textWidth = fontBold.widthOfTextAtSize(label, labelSize);
-        const tagWidth = textWidth + horizontalPadding * 2;
+        ensureTagSpace();
+
+        let drawLabel = label;
+        let textWidth = fontBold.widthOfTextAtSize(drawLabel, labelSize);
+        let tagWidth = textWidth + horizontalPadding * 2;
+
+        // Clamp very long single labels to fit available row width.
+        if (tagWidth > maxTagWidth) {
+          while (drawLabel.length > 1 && tagWidth > maxTagWidth) {
+            drawLabel = `${drawLabel.slice(0, -2)}...`;
+            textWidth = fontBold.widthOfTextAtSize(drawLabel, labelSize);
+            tagWidth = textWidth + horizontalPadding * 2;
+          }
+        }
 
         if (currentX + tagWidth > maxX) {
           currentX = x;
           currentY -= tagHeight + verticalGap;
+          ensureTagSpace();
         }
 
         currentPage.drawRectangle({
@@ -200,7 +254,7 @@ export class BasicTemplate {
           color: accentBackground
         });
 
-        currentPage.drawText(label, {
+        currentPage.drawText(drawLabel, {
           x: currentX + horizontalPadding,
           y: currentY - tagHeight + 6,
           size: labelSize,
