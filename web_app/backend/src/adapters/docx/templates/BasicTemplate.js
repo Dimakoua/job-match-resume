@@ -1,4 +1,5 @@
-import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType } from 'docx';
+import { BorderStyle, Document, Packer, Paragraph, TextRun, AlignmentType } from 'docx';
+import { buildBasicTemplateModel } from '../../../../../shared/templates/basicTemplateModel.js';
 
 export class BasicTemplate {
   /**
@@ -11,7 +12,7 @@ export class BasicTemplate {
     if (!resume || typeof resume !== 'object') {
       throw new Error('Resume data is required');
     }
-    const sections = resume.sections || {};
+    const model = buildBasicTemplateModel(resume);
 
     const fontFamily = 'Arial';
     const fontSize = 24; // 12pt in half-points
@@ -21,81 +22,97 @@ export class BasicTemplate {
     // Helper for Section Headers
     const createSectionHeader = (text) => {
       return new Paragraph({
-        text: text.toUpperCase(),
-        heading: HeadingLevel.HEADING_2,
-        spacing: { before: 200, after: 100 },
-        run: {
-          font: fontFamily,
-          size: fontSize,
-          bold: true
-        }
+        children: [
+          new TextRun({
+            text: text.toUpperCase(),
+            font: fontFamily,
+            size: fontSize,
+            bold: true,
+            color: '000000'
+          })
+        ],
+        spacing: { before: 200, after: 120 },
+        border: {
+          bottom: {
+            color: '000000',
+            space: 1,
+            style: BorderStyle.SINGLE,
+            size: 6
+          }
+        },
+        alignment: AlignmentType.LEFT,
       });
     };
 
     // Helper for regular text
     const createParagraph = (text, options = {}) => {
       return new Paragraph({
-        text: text,
+        children: [
+          new TextRun({
+            text,
+            font: fontFamily,
+            size: fontSize,
+            color: '000000',
+            ...options
+          })
+        ],
         spacing: { before: 0, after: 100 },
-        run: {
-          font: fontFamily,
-          size: fontSize,
-          ...options
-        }
+        alignment: AlignmentType.LEFT,
       });
     };
 
     // --- HEADER ---
     const headerParagraphs = [];
 
-    if (sections.firstName || sections.lastName) {
-      const fullName = `${sections.firstName || ''} ${sections.lastName || ''}`.trim();
+    if (model.header.fullName) {
       headerParagraphs.push(
         new Paragraph({
-          text: fullName,
+          children: [
+            new TextRun({
+              text: model.header.fullName,
+              font: fontFamily,
+              size: 36,
+              bold: true,
+              color: '000000'
+            })
+          ],
           alignment: AlignmentType.CENTER,
           spacing: { after: 100 },
-          run: {
-            font: fontFamily,
-            size: 36, // 18pt
-            bold: true
-          }
         })
       );
     }
 
-    if (sections.title) {
+    if (model.header.title) {
       headerParagraphs.push(
         new Paragraph({
-          text: sections.title,
+          children: [
+            new TextRun({
+              text: model.header.title,
+              font: fontFamily,
+              size: 28,
+              bold: true,
+              color: '000000'
+            })
+          ],
           alignment: AlignmentType.CENTER,
           spacing: { after: 200 },
-          run: {
-            font: fontFamily,
-            size: 28, // 14pt
-            bold: true
-          }
         })
       );
     }
 
-    // Contact Info
-    const contactParts = [
-      sections.email,
-      sections.phone,
-      sections.location
-    ].filter(Boolean);
-
-    if (contactParts.length > 0) {
+    if (model.header.contactLine) {
       headerParagraphs.push(
         new Paragraph({
-          text: contactParts.join(' | '),
+          children: [
+            new TextRun({
+              text: model.header.contactLine,
+              font: fontFamily,
+              size: 20,
+              color: '000000'
+            })
+          ],
           alignment: AlignmentType.CENTER,
           spacing: { after: 300 },
-          run: {
-            font: fontFamily,
-            size: 20 // 10pt
-          }
         })
       );
     }
@@ -105,25 +122,25 @@ export class BasicTemplate {
     // --- SECTIONS ---
 
     // SUMMARY
-    if (sections.summary) {
+    if (model.summary) {
       docSections.push(createSectionHeader('Summary'));
-      docSections.push(createParagraph(sections.summary));
+      docSections.push(createParagraph(model.summary));
     }
 
     // EXPERIENCE
-    if (sections.experience?.length > 0) {
+    if (model.experience.length > 0) {
       docSections.push(createSectionHeader('Experience'));
 
-      for (const job of sections.experience) {
-        const company = job.company || '';
-        const title = job.title || '';
-        const header = [title, company].filter(Boolean).join(' at ');
+      for (const job of model.experience) {
+        if (job.company) {
+          docSections.push(createParagraph(job.company, { bold: true }));
+        }
 
-        docSections.push(createParagraph(header, { bold: true }));
+        if (job.title) {
+          docSections.push(createParagraph(job.title));
+        }
 
-        const dateRange = [job.startDate, job.endDate].filter(Boolean).join(' - ') || job.date;
-        const location = job.location;
-        const meta = [dateRange, location].filter(Boolean).join(' | ');
+        const meta = [job.dateLine, job.location].filter(Boolean).join(' | ');
 
         if (meta) {
           docSections.push(createParagraph(meta, { size: 20 }));
@@ -142,48 +159,32 @@ export class BasicTemplate {
     }
 
     // EDUCATION
-    if (sections.education?.length > 0) {
+    if (model.education.length > 0) {
       docSections.push(createSectionHeader('Education'));
-      for (const edu of sections.education) {
+      for (const edu of model.education) {
         const school = edu.school || '';
         docSections.push(createParagraph(school, { bold: true }));
 
-        const degree = [edu.degree, edu.field].filter(Boolean).join(', ');
-        if (degree) {
-          docSections.push(createParagraph(degree));
+        if (edu.degreeLine) {
+          docSections.push(createParagraph(edu.degreeLine));
         }
 
-        const dateRange = [edu.startDate, edu.endDate].filter(Boolean).join(' - ') || edu.year;
-        if (dateRange) {
-          docSections.push(createParagraph(dateRange, { size: 20 }));
+        if (edu.dateLine) {
+          docSections.push(createParagraph(edu.dateLine, { size: 20 }));
         }
       }
     }
 
     // SKILLS
-    const skills = sections.skills;
-    if (skills) {
+    if (model.skills.text) {
       docSections.push(createSectionHeader('Skills'));
-      let skillText = '';
-      if (Array.isArray(skills)) {
-        skillText = skills.join(', ');
-      } else if (typeof skills === 'object') {
-        const parts = [];
-        if (skills.technical) parts.push(`Technical: ${Array.isArray(skills.technical) ? skills.technical.join(', ') : skills.technical}`);
-        if (skills.soft) parts.push(`Soft: ${Array.isArray(skills.soft) ? skills.soft.join(', ') : skills.soft}`);
-        if (skills.languages) parts.push(`Languages: ${Array.isArray(skills.languages) ? skills.languages.join(', ') : skills.languages}`);
-        skillText = parts.join('; ');
-      }
-
-      if (skillText) {
-        docSections.push(createParagraph(skillText));
-      }
+      docSections.push(createParagraph(model.skills.text));
     }
 
     // PROJECTS
-    if (sections.projects?.length > 0) {
+    if (model.projects.length > 0) {
       docSections.push(createSectionHeader('Projects'));
-      for (const proj of sections.projects) {
+      for (const proj of model.projects) {
         docSections.push(createParagraph(proj.name, { bold: true }));
         if (proj.description) {
           docSections.push(createParagraph(proj.description));
@@ -195,11 +196,10 @@ export class BasicTemplate {
     }
 
     // CERTIFICATIONS
-    if (sections.certifications?.length > 0) {
+    if (model.certifications.length > 0) {
       docSections.push(createSectionHeader('Certifications'));
-      for (const cert of sections.certifications) {
-        const text = cert.name + (cert.issuer ? ` - ${cert.issuer}` : '') + (cert.date ? ` (${cert.date})` : '');
-        docSections.push(createParagraph(text));
+      for (const cert of model.certifications) {
+        docSections.push(createParagraph(cert.textLine));
       }
     }
 

@@ -135,5 +135,75 @@ describe("ExportResumeService", () => {
       await expect(service.execute(validCommand))
         .rejects.toThrow("Access denied: resume does not belong to user");
     });
+
+    it("should not export hidden standard sections", async () => {
+      const resumeWithVisibility = {
+        ...mockResume,
+        sections: {
+          firstName: "John",
+          lastName: "Doe",
+          summary: "Hidden summary",
+          experience: [{ company: "ACME" }],
+          skills: ["JavaScript"],
+          layout: { template: "basic" },
+          visibleSections: [
+            { id: "personal", visible: true },
+            { id: "summary", visible: false },
+            { id: "experience", visible: true },
+            { id: "skills", visible: false }
+          ]
+        }
+      };
+
+      mockResumeRepository.findById.mockResolvedValue(resumeWithVisibility);
+      mockPdfAdapter.generateBuffer.mockResolvedValue(mockBuffer);
+
+      await service.execute(validCommand);
+
+      expect(mockPdfAdapter.generateBuffer).toHaveBeenCalledWith(
+        expect.objectContaining({
+          sections: expect.objectContaining({
+            firstName: "John",
+            experience: [{ company: "ACME" }]
+          })
+        })
+      );
+
+      const exportedResume = mockPdfAdapter.generateBuffer.mock.calls[0][0];
+      expect(exportedResume.sections.summary).toBeUndefined();
+      expect(exportedResume.sections.skills).toBeUndefined();
+    });
+
+    it("should not export hidden personal and custom sections", async () => {
+      const resumeWithVisibility = {
+        ...mockResume,
+        sections: {
+          firstName: "John",
+          lastName: "Doe",
+          email: "john@doe.com",
+          customSections: {
+            publications: "Book chapter",
+            volunteer: "Community mentor"
+          },
+          layout: { template: "basic" },
+          visibleSections: [
+            { id: "personal", visible: false },
+            { id: "publications", visible: false },
+            { id: "volunteer", visible: true }
+          ]
+        }
+      };
+
+      mockResumeRepository.findById.mockResolvedValue(resumeWithVisibility);
+      mockDocxAdapter.generateBuffer.mockResolvedValue(mockBuffer);
+
+      await service.execute({ ...validCommand, format: "docx" });
+
+      const exportedResume = mockDocxAdapter.generateBuffer.mock.calls[0][0];
+      expect(exportedResume.sections.firstName).toBeUndefined();
+      expect(exportedResume.sections.lastName).toBeUndefined();
+      expect(exportedResume.sections.email).toBeUndefined();
+      expect(exportedResume.sections.customSections).toEqual({ volunteer: "Community mentor" });
+    });
   });
 });

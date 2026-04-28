@@ -1,7 +1,7 @@
 <template>
   <!-- Summary -->
   <div v-if="isSectionVisible('summary') && (!hideEmptySections || resume.summary)" :style="{ marginBottom: `${layout.sectionSpacing}px` }">
-    <h3 :class="classes.sectionHeaderClass" :style="classes.sectionHeaderStyle">Profile</h3>
+    <h3 :class="classes.sectionHeaderClass" :style="classes.sectionHeaderStyle">Summary</h3>
     <div v-if="resume.summary">
       <p :style="{ ...bodyStyle, whiteSpace: 'pre-wrap' }" :class="classes.bodyTextClass" v-html="resume.summary"></p>
     </div>
@@ -18,12 +18,13 @@
       >
         <div :class="classes.experienceHeaderClass">
           <h4 :class="classes.companyNameClass">{{ exp.company }}</h4>
-          <span :class="classes.dateClass">
-            {{ exp.startDate }}{{ exp.startDate && exp.endDate ? ' — ' : '' }}{{ exp.endDate }}
-          </span>
+          <span v-if="exp.dateLine" :class="classes.dateClass">{{ exp.dateLine }}</span>
         </div>
         <p v-if="exp.title" :class="classes.jobTitleClass" v-html="exp.title"></p>
         <p v-if="exp.description" :style="bodyStyle" :class="classes.bodyTextClass" v-html="exp.description"></p>
+        <ul v-if="exp.achievements && exp.achievements.length > 0" class="list-disc ml-4 mt-1">
+          <li v-for="(achievement, achIndex) in exp.achievements" :key="`ach-${index}-${achIndex}`" :style="bodyStyle" :class="classes.bodyTextClass">{{ achievement }}</li>
+        </ul>
       </div>
     </div>
   </div>
@@ -35,11 +36,9 @@
       <div v-for="(edu, index) in resume.education" :key="index" :class="classes.educationItemClass">
         <div :class="classes.educationHeaderClass">
           <h4 :class="classes.schoolNameClass" v-html="edu.school"></h4>
-          <span :class="classes.dateClass">
-            {{ edu.startDate }}{{ edu.startDate && edu.endDate ? ' — ' : '' }}{{ edu.endDate }}
-          </span>
+          <span v-if="edu.dateLine" :class="classes.dateClass">{{ edu.dateLine }}</span>
         </div>
-        <p :class="classes.degreeClass" v-html="edu.degree + (edu.degree && edu.field ? ', ' : '') + edu.field"></p>
+        <p v-if="edu.degreeLine" :class="classes.degreeClass" v-html="edu.degreeLine"></p>
       </div>
     </div>
   </div>
@@ -63,17 +62,13 @@
     <h3 :class="classes.sectionHeaderClass" :style="classes.sectionHeaderStyle">Certifications</h3>
     <div v-if="resume.certifications && resume.certifications.length > 0">
       <div v-for="(cert, index) in resume.certifications" :key="index" :class="classes.certificationItemClass">
-        <div>
-          <span :class="classes.certificationNameClass">{{ cert.name }}</span>
-          <span v-if="cert.issuer" :class="classes.certificationIssuerClass"> • {{ cert.issuer }}</span>
-        </div>
-        <span :class="classes.dateClass">{{ cert.date }}</span>
+        <span :class="classes.certificationNameClass">{{ cert.textLine }}</span>
       </div>
     </div>
   </div>
 
   <!-- Skills -->
-  <div v-if="isSectionVisible('skills') && (!hideEmptySections || (resume.skills && resume.skills.length > 0))" :style="{ marginBottom: `${layout.sectionSpacing}px` }">
+  <div v-if="isSectionVisible('skills') && (!hideEmptySections || ((resume.skills && resume.skills.length > 0) || resume.skillsText))" :style="{ marginBottom: `${layout.sectionSpacing}px` }">
     <h3 :class="classes.sectionHeaderClass" :style="classes.sectionHeaderStyle">Skills</h3>
     <div v-if="resume.skills && resume.skills.length > 0">
       <div :class="classes.skillsContainerClass">
@@ -86,6 +81,7 @@
         ></span>
       </div>
     </div>
+    <p v-else-if="resume.skillsText" :style="bodyStyle" :class="classes.bodyTextClass" v-html="resume.skillsText"></p>
   </div>
 
   <!-- Custom Sections -->

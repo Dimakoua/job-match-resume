@@ -3,9 +3,9 @@
     class="bg-white shadow-2xl rounded-sm flex flex-col text-[#222] p-4"
     :style="previewStyle"
   >
-    <ResumeHeaderBasic :resume="resume" :style="style" />
+    <ResumeHeaderBasic :resume="normalizedResume" :style="style" />
     <BasicResumeSections
-      :resume="resume"
+      :resume="normalizedResume"
       :layout="layout"
       :style="style"
       :sections="sections"
@@ -19,6 +19,7 @@
 import { computed } from 'vue'
 import ResumeHeaderBasic from './ResumeHeaderBasic.vue'
 import BasicResumeSections from './BasicResumeSections.vue'
+import { buildBasicTemplateModel } from '../../../../../../shared/templates/basicTemplateModel.js'
 
 const props = defineProps({
   resume: {
@@ -69,10 +70,15 @@ const previewStyle = computed(() => ({
   padding: `${props.layout.margins}px`
 }))
 
+const normalizedResume = computed(() => {
+  const model = buildBasicTemplateModel(props.resume)
+  return model.webResume
+})
+
 const classes = computed(() => ({
   sectionHeaderClass: 'uppercase text-sm font-bold tracking-[0.1em] border-b border-black pb-1 mb-2',
   sectionHeaderStyle: { fontFamily: fontFamilies[props.style.headingFont] },
-  bodyTextClass: 'text-justify',
+  bodyTextClass: 'text-left',
   experienceItemClass: 'mb-4',
   experienceHeaderClass: 'flex justify-between items-baseline mb-0.5',
   companyNameClass: 'font-bold text-xs',

@@ -1,15 +1,8 @@
 <template>
   <header class="text-center mb-8">
-    <h1 class="text-3xl font-bold tracking-tight text-gray-900 uppercase mb-2" :style="{ fontFamily: fontFamilies[style.headingFont] }">
-      {{ resume.firstName || 'Your' }} {{ resume.lastName || 'Name' }}
-    </h1>
-    <p class="text-lg text-gray-700 mb-2" :style="{ fontFamily: fontFamilies[style.bodyFont] }" v-html="resume.title || 'Professional Title'"></p>
-    <div class="flex justify-center gap-4 text-gray-500" :style="contactStyle">
-      <span v-if="resume.location">{{ resume.location }}</span>
-      <span v-if="resume.phone">{{ resume.phone }}</span>
-      <span v-if="resume.email">{{ resume.email }}</span>
-      <span v-if="resume.linkedin">{{ resume.linkedin }}</span>
-    </div>
+    <h1 v-if="resume.fullName" class="text-3xl font-bold tracking-tight text-gray-900 uppercase mb-2" :style="{ fontFamily: fontFamilies[style.headingFont] }">{{ resume.fullName }}</h1>
+    <p v-if="resume.title" class="text-lg text-gray-700 mb-2" :style="{ fontFamily: fontFamilies[style.bodyFont] }" v-html="resume.title"></p>
+    <p v-if="resume.contactLine" class="text-gray-500" :style="contactStyle">{{ resume.contactLine }}</p>
   </header>
 </template>
 

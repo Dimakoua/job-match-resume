@@ -1,4 +1,23 @@
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
+import { buildBasicTemplateModel } from '../../../../../shared/templates/basicTemplateModel.js';
+
+const sanitizePdfText = (value) => {
+  if (value === null || value === undefined) return '';
+
+  return String(value)
+    .normalize('NFKC')
+    .replace(/[\r\n\t]+/g, ' ')
+    .replace(/[\u2190\u2192\u21D0\u21D2]/g, '->')
+    .replace(/[\u2191\u2193\u21D1\u21D3]/g, '^')
+    .replace(/[\u25A0-\u25FF]/g, '-')
+    .replace(/[\u2022\u2043]/g, '-')
+    .replace(/[\u2013\u2014]/g, '-')
+    .replace(/\u2026/g, '...')
+    .replace(/\u00A0/g, ' ')
+    .replace(/[^\x20-\x7E\xA0-\xFF]/g, '')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+};
 
 export class BasicTemplate {
   /**
@@ -11,7 +30,7 @@ export class BasicTemplate {
     if (!resume || typeof resume !== 'object') {
       throw new Error('Resume data is required');
     }
-    const sections = resume.sections || {};
+    const model = buildBasicTemplateModel(resume);
 
     // Create a new PDF document
     const pdfDoc = await PDFDocument.create();
@@ -31,20 +50,30 @@ export class BasicTemplate {
     // Helper: Add text with wrapping
     const addText = (text, x, y, options = {}) => {
       if (!text) return y;
+      const safeText = sanitizePdfText(text);
+      if (!safeText) return y;
+
       const size = options.size || fontSize;
       const font = options.font || fontRegular;
       const maxWidth = options.maxWidth || (width - 2 * margin);
+      const align = options.align || 'left';
 
-      const words = String(text).split(' ');
+      const words = safeText.split(' ');
       let line = '';
       let currentY = y;
+
+      const drawLine = (lineText) => {
+        const textWidth = font.widthOfTextAtSize(lineText, size);
+        const drawX = align === 'center' ? x + (maxWidth - textWidth) / 2 : x;
+        currentPage.drawText(lineText, { x: drawX, y: currentY, size, font });
+      };
 
       for (const word of words) {
         const testLine = line + (line ? ' ' : '') + word;
         const textWidth = font.widthOfTextAtSize(testLine, size);
 
         if (textWidth > maxWidth && line) {
-          currentPage.drawText(line, { x, y: currentY, size, font });
+          drawLine(line);
           line = word;
           currentY -= lineHeight;
         } else {
@@ -53,7 +82,7 @@ export class BasicTemplate {
       }
 
       if (line) {
-        currentPage.drawText(line, { x, y: currentY, size, font });
+        drawLine(line);
         currentY -= lineHeight;
       }
 
@@ -72,26 +101,18 @@ export class BasicTemplate {
     let y = height - margin;
 
     // --- HEADER ---
-    if (sections.firstName || sections.lastName) {
-      const fullName = `${sections.firstName || ''} ${sections.lastName || ''}`.trim();
-      y = addText(fullName, margin, y, { size: 18, font: fontBold });
+    if (model.header.fullName) {
+      y = addText(model.header.fullName, margin, y, { size: 18, font: fontBold, align: 'center' });
       y -= 10;
     }
 
-    if (sections.title) {
-      y = addText(sections.title, margin, y, { size: 14, font: fontBold });
+    if (model.header.title) {
+      y = addText(model.header.title, margin, y, { size: 14, font: fontBold, align: 'center' });
       y -= 15;
     }
 
-    // Contact Info
-    const contactParts = [
-      sections.email,
-      sections.phone,
-      sections.location
-    ].filter(Boolean);
-
-    if (contactParts.length > 0) {
-      y = addText(contactParts.join(' | '), margin, y, { size: 10 });
+    if (model.header.contactLine) {
+      y = addText(model.header.contactLine, margin, y, { size: 10, align: 'center' });
       y -= 20;
     }
 
@@ -100,31 +121,39 @@ export class BasicTemplate {
     const drawSectionHeader = (title) => {
       y = checkPageBreak(y);
       y = addText(title.toUpperCase(), margin, y, { size: 14, font: fontBold });
+      currentPage.drawLine({
+        start: { x: margin, y: y + 4 },
+        end: { x: width - margin, y: y + 4 },
+        thickness: 1,
+        color: rgb(0, 0, 0)
+      });
       y -= 10;
     };
 
     // SUMMARY
-    if (sections.summary) {
+    if (model.summary) {
       drawSectionHeader('Summary');
-      y = addText(sections.summary, margin, y);
+      y = addText(model.summary, margin, y);
       y -= 15;
     }
 
     // EXPERIENCE
-    if (sections.experience?.length > 0) {
+    if (model.experience.length > 0) {
       drawSectionHeader('Experience');
 
-      for (const job of sections.experience) {
+      for (const job of model.experience) {
         y = checkPageBreak(y);
 
-        const company = job.company || '';
-        const title = job.title || '';
-        const header = [title, company].filter(Boolean).join(' at ');
-        y = addText(header, margin, y, { font: fontBold });
+        if (job.company) {
+          y = addText(job.company, margin, y, { font: fontBold });
+        }
 
-        const dateRange = [job.startDate, job.endDate].filter(Boolean).join(' - ') || job.date;
-        if (dateRange) {
-          y = addText(dateRange, margin, y, { size: 10 });
+        if (job.title) {
+          y = addText(job.title, margin, y);
+        }
+
+        if (job.dateLine) {
+          y = addText(job.dateLine, margin, y, { size: 10 });
         }
 
         if (job.location) {
@@ -141,7 +170,7 @@ export class BasicTemplate {
           y -= 5;
           for (const ach of job.achievements) {
             y = checkPageBreak(y);
-            y = addText(`• ${ach}`, margin + 15, y);
+            y = addText(`- ${ach}`, margin + 15, y);
           }
         }
         y -= 10;
@@ -149,51 +178,35 @@ export class BasicTemplate {
     }
 
     // EDUCATION
-    if (sections.education?.length > 0) {
+    if (model.education.length > 0) {
       drawSectionHeader('Education');
-      for (const edu of sections.education) {
+      for (const edu of model.education) {
         y = checkPageBreak(y);
         const school = edu.school || '';
         y = addText(school, margin, y, { font: fontBold });
 
-        const degree = [edu.degree, edu.field].filter(Boolean).join(', ');
-        if (degree) {
-          y = addText(degree, margin, y);
+        if (edu.degreeLine) {
+          y = addText(edu.degreeLine, margin, y);
         }
 
-        const dateRange = [edu.startDate, edu.endDate].filter(Boolean).join(' - ') || edu.year;
-        if (dateRange) {
-          y = addText(dateRange, margin, y, { size: 10 });
+        if (edu.dateLine) {
+          y = addText(edu.dateLine, margin, y, { size: 10 });
         }
         y -= 10;
       }
     }
 
     // SKILLS
-    const skills = sections.skills;
-    if (skills) {
+    if (model.skills.text) {
       drawSectionHeader('Skills');
-      let skillText = '';
-      if (Array.isArray(skills)) {
-        skillText = skills.join(', ');
-      } else if (typeof skills === 'object') {
-        const parts = [];
-        if (skills.technical) parts.push(`Technical: ${Array.isArray(skills.technical) ? skills.technical.join(', ') : skills.technical}`);
-        if (skills.soft) parts.push(`Soft: ${Array.isArray(skills.soft) ? skills.soft.join(', ') : skills.soft}`);
-        if (skills.languages) parts.push(`Languages: ${Array.isArray(skills.languages) ? skills.languages.join(', ') : skills.languages}`);
-        skillText = parts.join('; ');
-      }
-
-      if (skillText) {
-        y = addText(skillText, margin, y);
-      }
+      y = addText(model.skills.text, margin, y);
       y -= 15;
     }
 
     // PROJECTS
-    if (sections.projects?.length > 0) {
+    if (model.projects.length > 0) {
       drawSectionHeader('Projects');
-      for (const proj of sections.projects) {
+      for (const proj of model.projects) {
         y = checkPageBreak(y);
         y = addText(proj.name, margin, y, { font: fontBold });
         if (proj.description) {
@@ -207,12 +220,11 @@ export class BasicTemplate {
     }
 
     // CERTIFICATIONS
-    if (sections.certifications?.length > 0) {
+    if (model.certifications.length > 0) {
       drawSectionHeader('Certifications');
-      for (const cert of sections.certifications) {
+      for (const cert of model.certifications) {
         y = checkPageBreak(y);
-        const text = cert.name + (cert.issuer ? ` - ${cert.issuer}` : '') + (cert.date ? ` (${cert.date})` : '');
-        y = addText(text, margin, y);
+        y = addText(cert.textLine, margin, y);
         y -= 5;
       }
     }
