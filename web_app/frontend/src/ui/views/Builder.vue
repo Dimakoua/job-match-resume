@@ -6,9 +6,11 @@
       :is-saved="isSaved"
       :is-saving="isSaving"
       :is-syncing="isSyncing"
+      :show-page-limits="showPageLimits"
       @save="handleSave"
       @download="(format) => handleDownload(format)"
       @upload-pdf="handleUploadPdf"
+      @toggle-page-limits="togglePageLimits"
     />
 
     <div class="flex flex-1 overflow-hidden">
@@ -90,6 +92,7 @@
             :layout="layoutSettings"
             :style="styleSettings"
             :sections="sections"
+            :show-page-limits="showPageLimits"
           />
         </div>
       </section>
@@ -212,6 +215,7 @@ import { useBuilderController } from '../composables/useBuilderController.js'
 const {
   activeTab,
   zoom,
+  showPageLimits,
   isSaved,
   isSaving,
   isSyncing,
@@ -229,6 +233,7 @@ const {
   handleUploadPdf,
   zoomIn,
   zoomOut,
+  togglePageLimits,
   history,
   restoreVersion,
   clearHistory

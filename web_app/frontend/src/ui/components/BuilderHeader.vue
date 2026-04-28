@@ -64,6 +64,17 @@
         >
           <span>Download PDF</span>
         </button>
+        <button
+          @click="$emit('togglePageLimits')"
+          :class="[
+            'flex min-w-[84px] cursor-pointer items-center justify-center rounded-lg h-10 px-4 text-sm font-bold transition-all',
+            showPageLimits
+              ? 'bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-300'
+              : 'bg-[#e7ebf3] dark:bg-gray-800 text-[#0e121b] dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700'
+          ]"
+        >
+          <span>{{ showPageLimits ? 'Hide Pages' : 'Show Pages' }}</span>
+        </button>
       </div>
       <!-- User Avatar -->
       <div class="relative">
@@ -112,10 +123,14 @@ const props = defineProps({
   isSyncing: {
     type: Boolean,
     default: false
+  },
+  showPageLimits: {
+    type: Boolean,
+    default: true
   }
 })
 
-const emit = defineEmits(['download', 'save', 'uploadPdf'])
+const emit = defineEmits(['download', 'save', 'uploadPdf', 'togglePageLimits'])
 
 const router = useRouter()
 const authStore = useAuthStore()

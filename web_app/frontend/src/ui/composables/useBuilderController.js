@@ -37,6 +37,7 @@ export function useBuilderController() {
   // ===== State =====
   const activeTab = ref('edit')
   const zoom = ref(1)
+  const showPageLimits = ref(true)
   const isSaved = ref(true)
   const isSaving = ref(false)
   const isSyncing = ref(false)
@@ -392,6 +393,10 @@ export function useBuilderController() {
     }
   }
 
+  const togglePageLimits = () => {
+    showPageLimits.value = !showPageLimits.value
+  }
+
   // ===== Lifecycle: Unsaved changes warning =====
   const handleBeforeUnload = (e) => {
     if (!isSaved.value) {
@@ -479,6 +484,7 @@ export function useBuilderController() {
     // State
     activeTab,
     zoom,
+    showPageLimits,
     isSaved,
     isSaving,
     resumeId,
@@ -497,6 +503,7 @@ export function useBuilderController() {
     handleUploadPdf,
     zoomIn,
     zoomOut,
+    togglePageLimits,
     // History
     history,
     restoreVersion,

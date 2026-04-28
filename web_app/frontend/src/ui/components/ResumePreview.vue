@@ -1,17 +1,36 @@
 <template>
-  <component
-    :is="currentTemplateComponent"
-    :resume="processedResume"
-    :layout="layout"
-    :style="style"
-    :sections="sections"
-    :keywordsToHighlight="keywordsToHighlight"
-    :hide-empty-sections="hideEmptySections"
-  />
+  <div ref="previewContainer" class="relative">
+    <component
+      :is="currentTemplateComponent"
+      :resume="processedResume"
+      :layout="layout"
+      :style="style"
+      :sections="sections"
+      :keywordsToHighlight="keywordsToHighlight"
+      :hide-empty-sections="hideEmptySections"
+    />
+
+    <div
+      v-if="showPageLimits && pageBreakPositions.length > 0"
+      class="absolute inset-0 pointer-events-none"
+      aria-hidden="true"
+    >
+      <div
+        v-for="(breakY, index) in pageBreakPositions"
+        :key="`page-break-${index}`"
+        class="absolute left-0 right-0 border-t border-dashed border-sky-400/80"
+        :style="{ top: `${breakY}px` }"
+      >
+        <span class="absolute -top-3 right-2 rounded bg-sky-500 px-1.5 py-0.5 text-[10px] font-semibold text-white">
+          Page {{ index + 1 }}
+        </span>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { getResumeTemplate } from './resume-templates/resumeTemplateFactory.js'
 
 const props = defineProps({
@@ -48,7 +67,40 @@ const props = defineProps({
   hideEmptySections: {
     type: Boolean,
     default: false
+  },
+  showPageLimits: {
+    type: Boolean,
+    default: false
   }
+})
+
+const previewContainer = ref(null)
+const previewSize = ref({ width: 0, height: 0 })
+let resizeObserver = null
+
+const A4_RATIO = 1.41421356
+
+const pageHeightPx = computed(() => {
+  if (!previewSize.value.width) return 0
+  return previewSize.value.width * A4_RATIO
+})
+
+const pageBreakPositions = computed(() => {
+  const pageHeight = pageHeightPx.value
+  const contentHeight = previewSize.value.height
+
+  if (!props.showPageLimits || pageHeight <= 0 || contentHeight <= pageHeight) {
+    return []
+  }
+
+  const pageCount = Math.ceil(contentHeight / pageHeight)
+  const breaks = []
+
+  for (let pageIndex = 1; pageIndex < pageCount; pageIndex += 1) {
+    breaks.push(pageIndex * pageHeight)
+  }
+
+  return breaks
 })
 
 const currentTemplateComponent = computed(() => {
@@ -87,5 +139,28 @@ const processedResume = computed(() => {
 
   highlightInObject(highlighted)
   return highlighted
+})
+
+onMounted(() => {
+  if (!previewContainer.value) return
+
+  resizeObserver = new ResizeObserver((entries) => {
+    const entry = entries[0]
+    if (!entry) return
+
+    previewSize.value = {
+      width: entry.contentRect.width,
+      height: entry.contentRect.height
+    }
+  })
+
+  resizeObserver.observe(previewContainer.value)
+})
+
+onUnmounted(() => {
+  if (resizeObserver) {
+    resizeObserver.disconnect()
+    resizeObserver = null
+  }
 })
 </script>
