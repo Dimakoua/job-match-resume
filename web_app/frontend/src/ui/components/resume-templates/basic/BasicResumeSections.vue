@@ -160,7 +160,8 @@ const fontFamilies = {
 const bodyStyle = computed(() => ({
   fontSize: `${props.style.fontSize}px`,
   lineHeight: props.style.lineHeight,
-  fontFamily: fontFamilies[props.style.bodyFont]
+  fontFamily: fontFamilies[props.style.bodyFont],
+  whiteSpace: 'pre-wrap'
 }))
 
 const filledExperiences = computed(() => {

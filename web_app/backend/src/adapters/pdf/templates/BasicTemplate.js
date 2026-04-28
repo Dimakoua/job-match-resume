@@ -43,8 +43,12 @@ const normalizeHtmlToText = (value) => {
 
   return String(value)
     .replace(/<br\s*\/?\s*>/gi, '\n')
+    .replace(/<\/div>/gi, '\n')
+    .replace(/<div[^>]*>/gi, '')
     .replace(/<\/p>/gi, '\n')
     .replace(/<p[^>]*>/gi, '')
+    .replace(/<\/h[1-6]>/gi, '\n')
+    .replace(/<h[1-6][^>]*>/gi, '')
     .replace(/<li[^>]*>/gi, '- ')
     .replace(/<\/li>/gi, '\n')
     .replace(/<[^>]+>/g, '');
