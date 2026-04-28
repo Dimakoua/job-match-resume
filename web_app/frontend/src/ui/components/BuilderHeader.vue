@@ -58,31 +58,12 @@
           </svg>
           <span>{{ isSaving ? 'Saving...' : (isSaved ? 'Saved' : 'Save') }}</span>
         </button>
-        <!-- Download dropdown -->
-        <div class="relative group">
-          <button 
-            class="flex min-w-[84px] cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold shadow-sm hover:bg-blue-700 transition-all"
-          >
-            <span>Download</span>
-            <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="6 9 12 15 18 9"></polyline>
-            </svg>
-          </button>
-          <div class="absolute right-0 mt-2 flex gap-2 bg-white dark:bg-[#1a202c] rounded-lg shadow-lg border border-[#e7ebf3] dark:border-[#2d364f] p-2 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
-            <button 
-              @click="$emit('download', 'pdf')"
-              class="flex-1 px-3 py-2 text-xs font-semibold text-white bg-primary rounded-md hover:bg-blue-700 transition-colors whitespace-nowrap"
-            >
-              PDF
-            </button>
-            <button 
-              @click="$emit('download', 'docx')"
-              class="flex-1 px-3 py-2 text-xs font-semibold text-[#4d6599] dark:text-white bg-gray-100 dark:bg-gray-800 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors whitespace-nowrap"
-            >
-              DOCX
-            </button>
-          </div>
-        </div>
+        <button
+          @click="$emit('download', 'pdf')"
+          class="flex min-w-[84px] cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold shadow-sm hover:bg-blue-700 transition-all"
+        >
+          <span>Download PDF</span>
+        </button>
       </div>
       <!-- User Avatar -->
       <div class="relative">

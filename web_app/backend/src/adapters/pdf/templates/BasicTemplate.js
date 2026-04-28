@@ -1,12 +1,50 @@
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import { buildBasicTemplateModel } from '../../../../../shared/templates/basicTemplateModel.js';
 
-const sanitizePdfText = (value) => {
+const hexToRgb = (hex, fallback = rgb(0.14, 0.39, 0.92)) => {
+  if (!hex || typeof hex !== 'string') return fallback;
+  const raw = hex.replace('#', '').trim();
+  const normalized = raw.length === 3
+    ? raw.split('').map((char) => char + char).join('')
+    : raw;
+
+  if (!/^[0-9a-fA-F]{6}$/.test(normalized)) return fallback;
+
+  const r = parseInt(normalized.slice(0, 2), 16) / 255;
+  const g = parseInt(normalized.slice(2, 4), 16) / 255;
+  const b = parseInt(normalized.slice(4, 6), 16) / 255;
+  return rgb(r, g, b);
+};
+
+const lightenColor = (baseColor, factor = 0.88) => {
+  const clamp = (value) => Math.max(0, Math.min(1, value));
+  return rgb(
+    clamp(baseColor.red + (1 - baseColor.red) * factor),
+    clamp(baseColor.green + (1 - baseColor.green) * factor),
+    clamp(baseColor.blue + (1 - baseColor.blue) * factor)
+  );
+};
+
+const normalizeHtmlToText = (value) => {
   if (value === null || value === undefined) return '';
 
   return String(value)
+    .replace(/<br\s*\/?\s*>/gi, '\n')
+    .replace(/<\/p>/gi, '\n')
+    .replace(/<p[^>]*>/gi, '')
+    .replace(/<li[^>]*>/gi, '- ')
+    .replace(/<\/li>/gi, '\n')
+    .replace(/<[^>]+>/g, '');
+};
+
+const sanitizePdfText = (value) => {
+  const normalizedInput = normalizeHtmlToText(value);
+  if (!normalizedInput) return '';
+
+  return normalizedInput
     .normalize('NFKC')
-    .replace(/[\r\n\t]+/g, ' ')
+    .replace(/\r\n/g, '\n')
+    .replace(/[\r\t]+/g, ' ')
     .replace(/[\u2190\u2192\u21D0\u21D2]/g, '->')
     .replace(/[\u2191\u2193\u21D1\u21D3]/g, '^')
     .replace(/[\u25A0-\u25FF]/g, '-')
@@ -15,7 +53,8 @@ const sanitizePdfText = (value) => {
     .replace(/\u2026/g, '...')
     .replace(/\u00A0/g, ' ')
     .replace(/[^\x20-\x7E\xA0-\xFF]/g, '')
-    .replace(/\s{2,}/g, ' ')
+    .replace(/[ ]{2,}/g, ' ')
+    .replace(/\n{3,}/g, '\n\n')
     .trim();
 };
 
@@ -46,6 +85,8 @@ export class BasicTemplate {
     const margin = 50; // Standard margins
     const lineHeight = 14;
     const fontSize = 12;
+    const accentColor = hexToRgb(resume?.sections?.style?.accentColor);
+    const accentBackground = lightenColor(accentColor, 0.86);
 
     // Helper: Add text with wrapping
     const addText = (text, x, y, options = {}) => {
@@ -57,36 +98,91 @@ export class BasicTemplate {
       const font = options.font || fontRegular;
       const maxWidth = options.maxWidth || (width - 2 * margin);
       const align = options.align || 'left';
-
-      const words = safeText.split(' ');
-      let line = '';
       let currentY = y;
+      const textColor = options.color || rgb(0, 0, 0);
+
+      const paragraphs = safeText.split('\n');
 
       const drawLine = (lineText) => {
         const textWidth = font.widthOfTextAtSize(lineText, size);
         const drawX = align === 'center' ? x + (maxWidth - textWidth) / 2 : x;
-        currentPage.drawText(lineText, { x: drawX, y: currentY, size, font });
+        currentPage.drawText(lineText, { x: drawX, y: currentY, size, font, color: textColor });
       };
 
-      for (const word of words) {
-        const testLine = line + (line ? ' ' : '') + word;
-        const textWidth = font.widthOfTextAtSize(testLine, size);
-
-        if (textWidth > maxWidth && line) {
-          drawLine(line);
-          line = word;
+      for (const paragraph of paragraphs) {
+        if (!paragraph.trim()) {
           currentY -= lineHeight;
-        } else {
-          line = testLine;
+          continue;
+        }
+
+        const words = paragraph.split(' ');
+        let line = '';
+
+        for (const word of words) {
+          const testLine = line + (line ? ' ' : '') + word;
+          const textWidth = font.widthOfTextAtSize(testLine, size);
+
+          if (textWidth > maxWidth && line) {
+            drawLine(line);
+            line = word;
+            currentY -= lineHeight;
+          } else {
+            line = testLine;
+          }
+        }
+
+        if (line) {
+          drawLine(line);
+          currentY -= lineHeight;
         }
       }
 
-      if (line) {
-        drawLine(line);
-        currentY -= lineHeight;
+      return currentY;
+    };
+
+    const addSkillTags = (tags, x, y) => {
+      const labelSize = 9;
+      const horizontalPadding = 6;
+      const tagHeight = 14;
+      const horizontalGap = 6;
+      const verticalGap = 6;
+      const maxX = width - margin;
+
+      let currentX = x;
+      let currentY = y;
+
+      for (const tagValue of tags) {
+        const label = sanitizePdfText(tagValue);
+        if (!label) continue;
+
+        const textWidth = fontBold.widthOfTextAtSize(label, labelSize);
+        const tagWidth = textWidth + horizontalPadding * 2;
+
+        if (currentX + tagWidth > maxX) {
+          currentX = x;
+          currentY -= tagHeight + verticalGap;
+        }
+
+        currentPage.drawRectangle({
+          x: currentX,
+          y: currentY - tagHeight + 2,
+          width: tagWidth,
+          height: tagHeight,
+          color: accentBackground
+        });
+
+        currentPage.drawText(label, {
+          x: currentX + horizontalPadding,
+          y: currentY - tagHeight + 6,
+          size: labelSize,
+          font: fontBold,
+          color: accentColor
+        });
+
+        currentX += tagWidth + horizontalGap;
       }
 
-      return currentY;
+      return currentY - tagHeight - 2;
     };
 
     // Helper: Check Page Break
@@ -199,7 +295,11 @@ export class BasicTemplate {
     // SKILLS
     if (model.skills.text) {
       drawSectionHeader('Skills');
-      y = addText(model.skills.text, margin, y);
+      if (model.skills.tags.length > 0) {
+        y = addSkillTags(model.skills.tags, margin, y);
+      } else {
+        y = addText(model.skills.text, margin, y, { color: accentColor, font: fontBold });
+      }
       y -= 15;
     }
 
