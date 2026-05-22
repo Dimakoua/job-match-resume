@@ -65,7 +65,7 @@ const PLATFORM_CONFIG = {
 /* ═══════════════════════════════════════════════════════════════
    STATE
 ════════════════════════════════════════════════════════════════ */
-let savedJobDescription = '';
+window.savedJobDescription = '';
 
 /* ═══════════════════════════════════════════════════════════════
    PLATFORM DETECTION
@@ -144,8 +144,8 @@ function findJobDescription() {
 
 function captureJobDescription() {
     const text = findJobDescription();
-    if (text && text !== savedJobDescription) {
-        savedJobDescription = text;
+    if (text && text !== window.savedJobDescription) {
+        window.savedJobDescription = text;
         console.log('[AI-CV] Job description captured, sending to background.');
         chrome.runtime.sendMessage({ action: 'saveJobDescription', jobDescription: text });
         const shadow = document.querySelector('#ai-cv-widget-host')?.shadowRoot;
@@ -158,7 +158,7 @@ function captureJobDescription() {
 ════════════════════════════════════════════════════════════════ */
 function tryInjectWidget() {
     captureJobDescription();
-    if (savedJobDescription) {
+    if (window.savedJobDescription) {
         injectFloatingDownloadWidget();
     }
 }
@@ -191,7 +191,7 @@ new MutationObserver(() => {
     if (location.href !== lastHref) {
         lastHref = location.href;
         floatingWidgetInjected = false;
-        savedJobDescription = '';
+        window.savedJobDescription = '';
         const old = document.getElementById('ai-cv-download-widget-host');
         if (old) old.remove();
         // Re-init after brief delay for SPA page to render
@@ -204,7 +204,7 @@ new MutationObserver(() => {
 ════════════════════════════════════════════════════════════════ */
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     if (message.action === 'getJobDescription') {
-        sendResponse({ jobDescription: savedJobDescription });
+        sendResponse({ jobDescription: window.savedJobDescription });
     }
     return true;
 });
