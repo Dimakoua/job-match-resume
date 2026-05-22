@@ -152,14 +152,24 @@ async function callGeminiWithFallback(prompt, apiToken) {
     for (const model of MODELS) {
         console.log(`[AI-CV] Attempting with model: ${model}`);
         try {
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiToken}`, {
+            // As of May 2026, v1 is stable for Gemini 3.5/3.1. v1beta is for previews/Gemma.
+            const isStable = model.startsWith('gemini-3.5') || model.startsWith('gemini-3.1') || model.startsWith('gemini-1.5');
+            const apiVersion = isStable ? 'v1' : 'v1beta';
+            
+            const response = await fetch(`https://generativelanguage.googleapis.com/${apiVersion}/models/${model}:generateContent?key=${apiToken}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     contents: [{ parts: [{ text: prompt }] }],
                     generationConfig: {
                         response_mime_type: "application/json"
-                    }
+                    },
+                    safetySettings: [
+                        { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
+                        { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
+                        { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
+                        { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }
+                    ]
                 }),
             });
 
