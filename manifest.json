@@ -32,11 +32,14 @@
         {
             "matches": [
                 "*://*.linkedin.com/jobs/*",
-                "*://*.indeed.com/viewjob*",
-                "*://*.indeed.com/vjk*",
-                "*://*.indeed.com/cmp/*/jobs/*",
+                "*://*.indeed.com/*",
+                "*://*.indeed.co.uk/*",
+                "*://*.indeed.ca/*",
+                "*://*.indeed.com.au/*",
                 "*://*.glassdoor.com/Job/*",
-                "*://*.glassdoor.com/job-listing/*"
+                "*://*.glassdoor.com/job-listing/*",
+                "*://*.glassdoor.co.uk/Job/*",
+                "*://*.glassdoor.ca/Job/*"
             ],
             "js": [
                 "libs/docx.min.js",
