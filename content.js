@@ -45,8 +45,20 @@ const PLATFORM_CONFIG = {
         ]
     },
     glassdoor: {
-        jdSelectors: ["[class*='JobDetails_jobDescription']", "[data-test='job-description']"],
-        applySelectors: ["[data-test='applyButton']", "button[class*='apply']"]
+        jdSelectors: [
+            "[class*='JobDetails_jobDescription']", 
+            "[data-test='job-description']",
+            ".JobDetails_jobDescription__uW_fK",
+            ".job-description",
+            ".jobsearch-JobComponent-description" // Glassdoor sometimes uses indeed-like classes
+        ],
+        applySelectors: [
+            "[data-test='easyApply']",
+            "[data-test='applyButton']",
+            "button[class*='apply']",
+            "button[class*='JobDetails_applyButton']",
+            ".JobDetails_applyButtonContainer__L36Bs button"
+        ]
     }
 };
 
@@ -81,6 +93,7 @@ function findJobDescription() {
     const platform = getPlatform();
     const isLinkedIn = platform === 'linkedin';
     const isIndeed = platform === 'indeed';
+    const isGlassdoor = platform === 'glassdoor';
 
     // Platform-specific scope optimization
     let root = document;
@@ -93,6 +106,12 @@ function findJobDescription() {
         root = document.querySelector('#vjs-container') || 
                document.querySelector('.jobsearch-RightPane') || 
                document.querySelector('.jobsearch-ViewJobLayout-content') ||
+               document.querySelector('main') ||
+               document;
+    } else if (isGlassdoor) {
+        root = document.querySelector('.TwoColumnLayout_jobDetailsContainer__qyvJZ') ||
+               document.querySelector('.JobDetails_jobDetailsContainer__y9P3L') ||
+               document.querySelector('[data-test="job-details-container"]') ||
                document.querySelector('main') ||
                document;
     }
@@ -133,16 +152,6 @@ function captureJobDescription() {
         if (shadow) updateWidgetScore(shadow);
     }
 }
-
-
-
-
-
-
-
-
-
-
 
 /* ═══════════════════════════════════════════════════════════════
    OBSERVER
