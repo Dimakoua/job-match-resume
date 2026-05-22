@@ -1,0 +1,11 @@
+{
+  "name": "job-match-resume",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "preproduction": "node scripts/preproduction.js"
+  },
+  "devDependencies": {
+    "terser": "^5.20.1"
+  }
+}
