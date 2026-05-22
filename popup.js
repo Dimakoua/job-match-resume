@@ -160,6 +160,7 @@ function loadJobDescription() {
    KEYWORD SCORE
 ════════════════════════════════════════════════════════════════ */
 function onInputChange() {
+    return; // Disable keyword score for now
     const cv = document.getElementById('resume-textarea').value.trim();
     const jd = document.getElementById('job-desc-textarea').value.trim();
     if (cv && jd) computeAndShowKeywordScore(cv, jd);
@@ -167,6 +168,7 @@ function onInputChange() {
 }
 
 async function computeAndShowKeywordScore(cv, jd) {
+    return; // Disable keyword score for now
     if (!window.atsScorer) return;
     const result = await window.atsScorer.execute({ resumeText: cv, jobDescription: jd });
     const { score, matchedKeywords: matched, missedKeywords: missing } = result;
