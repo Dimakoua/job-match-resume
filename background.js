@@ -127,54 +127,80 @@ function parseResponse(responseText) {
     };
 }
 
-async function optimizeResumeWithGemini(resumeText, jobDescription, APItoken) {
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${APItoken}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            "contents": [{
-                "parts": [{ "text": getPrompt(resumeText, jobDescription) }]
-            }]
-        })
-    });
+const MODELS = [
+    'gemini-3.5-flash',
+    'gemini-3.1-pro',
+    'gemini-3.1-flash-lite',
+    'gemini-3-flash',
+    'gemini-3-pro',
+    'gemini-3-deep-think',
+    'gemini-2.0-flash',
+    'gemini-2.0-flash-lite-preview-02-05',
+    'gemini-1.5-flash',
+    'gemini-1.5-flash-8b',
+    'gemini-1.5-pro',
+    'gemma-4-31b-it',
+    'gemma-4-26b-a4b-it',
+    'gemma-2-27b-it',
+    'gemma-2-9b-it',
+    'gemma-2-2b-it'
+];
 
-    if (!response.ok) {
-        const errData = await response.json().catch(() => ({}));
-        throw new Error(errData?.error?.message || `API error ${response.status}`);
+async function callGeminiWithFallback(prompt, apiToken) {
+    let lastError = null;
+
+    for (const model of MODELS) {
+        console.log(`[AI-CV] Attempting with model: ${model}`);
+        try {
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiToken}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text: prompt }] }],
+                    generationConfig: {
+                        response_mime_type: "application/json"
+                    }
+                }),
+            });
+
+            if (!response.ok) {
+                const errData = await response.json().catch(() => ({}));
+                const msg = errData?.error?.message || `HTTP ${response.status}`;
+                console.warn(`[AI-CV] Model ${model} failed: ${msg}`);
+                lastError = new Error(msg);
+                continue; // Try next model
+            }
+
+            const data = await response.json();
+            const rawText = data?.candidates?.[0]?.content?.parts[0]?.text;
+
+            if (!rawText) {
+                console.warn(`[AI-CV] Model ${model} returned empty response`);
+                lastError = new Error('Empty response');
+                continue;
+            }
+
+            return rawText;
+        } catch (err) {
+            console.error(`[AI-CV] Error with model ${model}:`, err.message);
+            lastError = err;
+        }
     }
 
-    const data = await response.json();
-    const rawResponseText = data?.candidates?.[0]?.content?.parts[0]?.text;
+    throw lastError || new Error('All fallback models failed');
+}
 
-    if (!rawResponseText) {
-        throw new Error('No response text received from Gemini.');
-    }
-
-    return parseResponse(rawResponseText);
+async function optimizeResumeWithGemini(resumeText, jobDescription, apiToken) {
+    const prompt = getPrompt(resumeText, jobDescription);
+    const rawResponse = await callGeminiWithFallback(prompt, apiToken);
+    return parseResponse(rawResponse);
 }
 
 async function generateCoverLetterWithGemini(resumeText, jobDescription, apiToken) {
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiToken}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            contents: [{ parts: [{ text: getCoverLetterPrompt(resumeText, jobDescription) }] }],
-        }),
-    });
-
-    if (!response.ok) {
-        const errData = await response.json().catch(() => ({}));
-        throw new Error(errData?.error?.message || `API error ${response.status}`);
-    }
-
-    const data = await response.json();
-    const rawText = data?.candidates?.[0]?.content?.parts[0]?.text;
-
-    if (!rawText) {
-        throw new Error('No response text received from Gemini.');
-    }
-
-    const cleaned = rawText.replace(/```json|```/g, '').trim();
+    const prompt = getCoverLetterPrompt(resumeText, jobDescription);
+    const rawResponse = await callGeminiWithFallback(prompt, apiToken);
+    
+    const cleaned = rawResponse.replace(/```json|```/g, '').trim();
     return JSON.parse(cleaned);
 }
 
