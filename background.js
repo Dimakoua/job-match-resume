@@ -152,11 +152,7 @@ async function callGeminiWithFallback(prompt, apiToken) {
     for (const model of MODELS) {
         console.log(`[AI-CV] 🚀 Attempting generation with model: ${model}`);
         try {
-            // As of May 2026, v1 is stable for Gemini 3.5/3.1. v1beta is for previews/Gemma.
-            const isStable = model.startsWith('gemini-3.5') || model.startsWith('gemini-3.1') || model.startsWith('gemini-1.5');
-            const apiVersion = isStable ? 'v1' : 'v1beta';
-            
-            const url = `https://generativelanguage.googleapis.com/${apiVersion}/models/${model}:generateContent?key=${apiToken}`;
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiToken}`;
             console.log(`[AI-CV] API URL: ${url.replace(apiToken, 'HIDDEN')}`);
 
             const response = await fetch(url, {
