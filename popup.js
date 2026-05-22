@@ -246,6 +246,7 @@ function updateCV(text) {
    TAILOR CV
 ════════════════════════════════════════════════════════════════ */
 async function tailorCV() {
+    const btn = document.getElementById('tailor-cv-btn');
     const data = await chrome.storage.local.get(['userToken']);
     const token = data.userToken;
     if (!token) { showMessage('error', 'Add your API key in settings first.'); return; }
@@ -256,7 +257,7 @@ async function tailorCV() {
     if (!resumeText) { showMessage('error', 'Upload or paste your resume first.'); return; }
     if (!jobDescription) { showMessage('error', 'Add a job description first.'); return; }
 
-    toggleLoader(true);
+    setButtonLoading(btn, true);
     try {
         const result = await chrome.runtime.sendMessage({
             action: 'optimizeResume',
@@ -267,10 +268,13 @@ async function tailorCV() {
         if (result.error) throw new Error(result.error);
         window._tailorResult = result;
         showCVResults(result);
+        showMessage('success', 'CV tailored! Auto-downloading...');
+        // Auto-download after showing results
+        setTimeout(() => downloadCV(result), 500);
     } catch (err) {
         showMessage('error', 'Failed to tailor CV: ' + (err.message || 'unknown error'));
     } finally {
-        toggleLoader(false);
+        setButtonLoading(btn, false);
     }
 }
 
@@ -298,12 +302,17 @@ function showCVResults(result) {
 
 async function downloadCV(result) {
     if (!result) return;
+    const btn = document.getElementById('download-cv-btn');
+    setButtonLoading(btn, true);
     try {
         const doc = generateResume(result.optimizedResume);
         const blob = await window.docx.Packer.toBlob(doc);
         triggerDownload(blob, result.recomendedFileName || 'tailored-resume.docx');
+        showMessage('success', 'CV downloaded!');
     } catch (err) {
         showMessage('error', 'Download failed.'); console.error(err);
+    } finally {
+        setButtonLoading(btn, false);
     }
 }
 
@@ -311,6 +320,7 @@ async function downloadCV(result) {
    COVER LETTER
 ════════════════════════════════════════════════════════════════ */
 async function generateCoverLetter() {
+    const btn = document.getElementById('cover-letter-btn');
     const data = await chrome.storage.local.get(['userToken']);
     const token = data.userToken;
     if (!token) { showMessage('error', 'Add your API key in settings first.'); return; }
@@ -321,7 +331,7 @@ async function generateCoverLetter() {
     if (!resumeText) { showMessage('error', 'Upload or paste your resume first.'); return; }
     if (!jobDescription) { showMessage('error', 'Add a job description first.'); return; }
 
-    toggleLoader(true);
+    setButtonLoading(btn, true);
     try {
         const result = await chrome.runtime.sendMessage({
             action: 'generateCoverLetter',
@@ -332,10 +342,13 @@ async function generateCoverLetter() {
         if (result.error) throw new Error(result.error);
         window._coverResult = result;
         showCoverLetterResults(result);
+        showMessage('success', 'Cover letter generated! Auto-downloading...');
+        // Auto-download after showing results
+        setTimeout(() => downloadCoverLetter(result), 500);
     } catch (err) {
         showMessage('error', 'Failed to generate cover letter: ' + (err.message || 'unknown error'));
     } finally {
-        toggleLoader(false);
+        setButtonLoading(btn, false);
     }
 }
 
@@ -349,12 +362,17 @@ function showCoverLetterResults(result) {
 
 async function downloadCoverLetter(result) {
     if (!result) return;
+    const btn = document.getElementById('download-cover-btn');
+    setButtonLoading(btn, true);
     try {
         const doc = generateCoverLetterDoc(result.coverLetter);
         const blob = await window.docx.Packer.toBlob(doc);
         triggerDownload(blob, result.recommendedFileName || 'cover-letter.docx');
+        showMessage('success', 'Cover letter downloaded!');
     } catch (err) {
         showMessage('error', 'Download failed.'); console.error(err);
+    } finally {
+        setButtonLoading(btn, false);
     }
 }
 
@@ -382,6 +400,16 @@ function toggleLoader(show) {
     document.getElementById('loader').classList.toggle('hidden', !show);
     document.getElementById('tailor-cv-btn').disabled = show;
     document.getElementById('cover-letter-btn').disabled = show;
+}
+
+function setButtonLoading(btn, isLoading) {
+    if (isLoading) {
+        btn.classList.add('loading');
+        btn.disabled = true;
+    } else {
+        btn.classList.remove('loading');
+        btn.disabled = false;
+    }
 }
 
 function triggerDownload(blob, filename) {
