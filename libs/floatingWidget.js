@@ -3,6 +3,7 @@
 ════════════════════════════════════════════════════════════════ */
 
 let floatingWidgetInjected = false;
+let floatingWidgetMinimized = false;
 
 function injectFloatingDownloadWidget() {
     if (floatingWidgetInjected) return;
@@ -30,8 +31,38 @@ function injectFloatingDownloadWidget() {
             display: flex;
             flex-direction: column;
             gap: 12px;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
+        .dl-widget.minimized {
+            width: 48px;
+            height: 48px;
+            padding: 0;
+            border-radius: 50%;
+            cursor: pointer;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            bottom: 24px;
+            right: 24px;
+        }
+        .dl-widget.minimized .dl-header, .dl-widget.minimized .dl-buttons {
+            display: none;
+        }
+        .dl-tail {
+            display: none;
+            width: 100%;
+            height: 100%;
+            align-items: center;
+            justify-content: center;
+            color: #4f46e5;
+            transition: transform 0.2s;
+        }
+        .dl-widget.minimized .dl-tail {
+            display: flex;
+        }
+        .dl-widget.minimized:hover { transform: scale(1.1); }
+
         @keyframes slideIn {
             from { transform: translateX(30px); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
@@ -39,13 +70,20 @@ function injectFloatingDownloadWidget() {
         .dl-header {
             display: flex;
             align-items: center;
-            gap: 8px;
+            justify-content: space-between;
             font-size: 13px;
             font-weight: 800;
             color: #111827;
             letter-spacing: -0.01em;
         }
+        .dl-title-group { display: flex; align-items: center; gap: 8px; }
         .dl-header svg { color: #4f46e5; }
+        .dl-hide-btn {
+            background: none; border: none; cursor: pointer; color: #94a3b8;
+            padding: 4px; border-radius: 4px; display: flex; transition: all 0.2s;
+        }
+        .dl-hide-btn:hover { background: #f3f4f6; color: #4f46e5; }
+        
         .dl-buttons {
             display: flex;
             flex-direction: column;
@@ -94,11 +132,17 @@ function injectFloatingDownloadWidget() {
     shadow.appendChild(style);
 
     const wrapper = document.createElement('div');
+    wrapper.id = 'dl-wrapper';
     wrapper.className = 'dl-widget';
     wrapper.innerHTML = `
         <div class="dl-header">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
-            AI Optimizer
+            <div class="dl-title-group">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+                AI Optimizer
+            </div>
+            <button class="dl-hide-btn" id="dl-hide-btn" title="Hide widget">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+            </button>
         </div>
         <div class="dl-buttons">
             <button class="dl-btn dl-btn-primary" id="dl-cv-btn">
@@ -110,15 +154,33 @@ function injectFloatingDownloadWidget() {
                 Cover Letter
             </button>
         </div>
+        <div class="dl-tail" id="dl-tail">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+        </div>
     `;
     shadow.appendChild(wrapper);
 
     // Wire events
     shadow.getElementById('dl-cv-btn').addEventListener('click', () => triggerCVDownload(shadow));
     shadow.getElementById('dl-cover-btn').addEventListener('click', () => triggerCoverDownload(shadow));
+    shadow.getElementById('dl-hide-btn').addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleFloatingWidget(shadow);
+    });
+    shadow.getElementById('dl-tail').addEventListener('click', () => {
+        if (floatingWidgetMinimized) toggleFloatingWidget(shadow);
+    });
 
     document.body.appendChild(host);
     console.log('[AI-CV] Floating premium widget injected.');
+}
+
+function toggleFloatingWidget(shadow) {
+    floatingWidgetMinimized = !floatingWidgetMinimized;
+    const wrapper = shadow.getElementById('dl-wrapper');
+    wrapper.classList.toggle('minimized', floatingWidgetMinimized);
+    const hideBtn = shadow.getElementById('dl-hide-btn');
+    hideBtn.style.display = floatingWidgetMinimized ? 'none' : 'flex';
 }
 
 async function triggerCVDownload(shadow) {
