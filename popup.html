@@ -180,16 +180,21 @@
                 <button class="btn btn-toggle full-width" id="toggle-bug-report-btn">💬 Feedback</button>
             </div>
 
-            <div class="bug-report-card hidden" id="bug-report-card">
+            <form class="bug-report-card hidden" id="bug-report-form">
+                <input type="hidden" name="access_key" value="48c0d957-b209-4654-8efd-8adfa87e3651">
+                <input type="hidden" name="subject" value="Job Match Resume extension feedback">
+                <input type="hidden" id="bug-report-page" name="page" value="popup">
+
                 <div class="input-field">
                     <label for="bug-report-text">Feedback & suggestions</label>
-                    <textarea id="bug-report-text" rows="3" placeholder="Describe a bug, issue, or improvement..."></textarea>
+                    <textarea id="bug-report-text" name="message" rows="3" placeholder="Describe a bug, issue, or improvement..." required></textarea>
                 </div>
                 <div class="action-row">
-                    <button class="btn btn-outline full-width" id="bug-report-btn">Send feedback</button>
+                    <button class="btn btn-outline full-width" id="bug-report-btn" type="submit">Send feedback</button>
                 </div>
-                <p class="bug-note">This will open a GitHub issue with your feedback pre-filled.</p>
-            </div>
+                <p class="bug-note">Your feedback is sent securely through Web3Forms.</p>
+                <div class="bug-error hidden" id="bug-report-error"></div>
+            </form>
 
             <div class="loader hidden" id="loader"></div>
 

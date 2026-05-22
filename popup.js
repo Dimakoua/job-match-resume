@@ -112,7 +112,7 @@ function initMainView() {
     document.getElementById('tailor-cv-btn').addEventListener('click', tailorCV);
     document.getElementById('cover-letter-btn').addEventListener('click', generateCoverLetter);
     document.getElementById('toggle-bug-report-btn').addEventListener('click', toggleBugReportForm);
-    document.getElementById('bug-report-btn').addEventListener('click', submitBugReport);
+    document.getElementById('bug-report-form').addEventListener('submit', submitBugReport);
 
     // Wire result buttons
     document.getElementById('download-cv-btn').addEventListener('click', () => downloadCV(window._tailorResult));
@@ -393,25 +393,65 @@ function copyCoverLetter() {
         .catch(() => showMessage('error', 'Copy failed.'));
 }
 
-function submitBugReport() {
-    const description = document.getElementById('bug-report-text').value.trim();
-    if (!description) {
-        showMessage('error', 'Please describe the issue or suggestion before submitting.');
-        return;
+async function submitBugReport(event) {
+    event.preventDefault();
+
+    const form = document.getElementById('bug-report-form');
+    const errorEl = document.getElementById('bug-report-error');
+    const submitBtn = document.getElementById('bug-report-btn');
+
+    if (errorEl) {
+        errorEl.hidden = true;
+        errorEl.textContent = '';
     }
 
-    const resumeText = document.getElementById('resume-textarea').value.trim();
-    const jobDescText = document.getElementById('job-desc-textarea').value.trim();
-    const body = `Feedback description:\n${description}\n\nResume length: ${resumeText.length}\nJob description length: ${jobDescText.length}\nUser agent: ${navigator.userAgent}`;
-    const issueUrl = `https://github.com/Dimakoua/job-match-resume/issues/new?title=${encodeURIComponent('Feedback from extension')}&body=${encodeURIComponent(body)}`;
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Sending…';
+    }
 
-    window.open(issueUrl, '_blank');
-    showMessage('success', 'Opening GitHub issue page with your feedback.');
+    const data = new FormData(form);
+    data.append('user_agent', navigator.userAgent);
+    data.append('resume_length', document.getElementById('resume-textarea').value.length);
+    data.append('job_description_length', document.getElementById('job-desc-textarea').value.length);
+
+    try {
+        const res = await fetch('https://api.web3forms.com/submit', {
+            method: 'POST',
+            body: data,
+        });
+
+        if (!res.ok) throw new Error('Network error');
+
+        const result = await res.json();
+        if (!result.success) throw new Error(result.message || 'Submission failed');
+
+        showMessage('success', 'Feedback sent — thank you!');
+        form.reset();
+        document.getElementById('bug-report-form')?.classList.add('hidden');
+    } catch (err) {
+        if (errorEl) {
+            errorEl.textContent = 'Could not send — please try again.';
+            errorEl.hidden = false;
+        }
+        console.error('[AI-CV] feedback submit failed:', err);
+    } finally {
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Send feedback';
+        }
+    }
 }
 
 function toggleBugReportForm() {
-    const form = document.getElementById('bug-report-card');
+    const form = document.getElementById('bug-report-form');
     const button = document.getElementById('toggle-bug-report-btn');
+    const pageInput = document.getElementById('bug-report-page');
+
+    if (pageInput) {
+        pageInput.value = window.location.pathname || 'popup';
+    }
+
     const isHidden = form.classList.toggle('hidden');
     button.textContent = isHidden ? '💬 Feedback' : '✖ Hide feedback';
 }
