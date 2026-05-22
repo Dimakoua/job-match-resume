@@ -9,9 +9,7 @@
         "scripting"
     ],
     "host_permissions": [
-        "https://generativelanguage.googleapis.com/*",
-        "https://api.openai.com/*",
-        "https://api.anthropic.com/*"
+        "https://generativelanguage.googleapis.com/*"
     ],
     "background": {
         "service_worker": "background.js"
@@ -34,11 +32,16 @@
         {
             "matches": [
                 "*://*.linkedin.com/jobs/*",
+                "*://*.indeed.com/viewjob*",
                 "*://*.indeed.com/vjk*",
                 "*://*.indeed.com/cmp/*/jobs/*",
-                "*://*.glassdoor.com/Job/*"
+                "*://*.glassdoor.com/Job/*",
+                "*://*.glassdoor.com/job-listing/*"
             ],
             "js": [
+                "libs/docx.min.js",
+                "libs/docGenerator.js",
+                "libs/keywordMatcher.js",
                 "content.js"
             ]
         }

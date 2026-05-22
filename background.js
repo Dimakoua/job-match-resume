@@ -1,4 +1,4 @@
-const prompt = `
+const RESUME_PROMPT = `
     Please optimize the following resume to align with the provided job description while preserving its original format, structure, and professional style. 
     Ensure that the revised resume is ATS-friendly and tailored for maximum compatibility with Applicant Tracking Systems (ATS) while maintaining readability and a natural flow.
     You may refer to the candidate's GitHub, LinkedIn profile, or personal website listed in the resume to gather additional information about their skills, projects, and professional background.
@@ -64,14 +64,45 @@ const prompt = `
             }
         },
         "ATSCompatibilityScore": 0-100,
-        "explanation": "string"
+        "explanation": "string",
         "recomendedFileName": "string.docx"
     }
     \`\`\`
 `;
 
+const COVER_LETTER_PROMPT = `
+Act as an expert career coach and professional writer.
+I will provide a candidate's resume and a job description.
+Write a compelling, personalized cover letter (~3 paragraphs, 250-350 words) that:
+1. Opens with a strong hook connecting the candidate's background to the specific role and company
+2. Highlights 2-3 key achievements from the resume that directly match the job requirements
+3. Closes with a confident call to action
+
+Rules:
+- Do NOT invent experience not present in the resume
+- Use a professional but warm and confident tone
+- Address the letter to "Hiring Manager" if no specific name is available
+- Do not add a subject line or date; start directly with the salutation
+
+Return ONLY valid JSON with no markdown fencing:
+{
+  "coverLetter": "Full cover letter text. Use \\n for paragraph breaks.",
+  "recommendedFileName": "Cover_Letter.docx"
+}
+
+### Candidate Resume:
+{{resumeText}}
+
+### Job Description:
+{{jobDescription}}
+`;
+
 function getPrompt(resumeText, jobDescription) {
-    return prompt.replace("{{resumeText}}", resumeText).replace("{{jobDescription}}", jobDescription);
+    return RESUME_PROMPT.replace("{{resumeText}}", resumeText).replace("{{jobDescription}}", jobDescription);
+}
+
+function getCoverLetterPrompt(resumeText, jobDescription) {
+    return COVER_LETTER_PROMPT.replace("{{resumeText}}", resumeText).replace("{{jobDescription}}", jobDescription);
 }
 
 // Generic function to parse AI response
@@ -102,150 +133,78 @@ async function optimizeResumeWithGemini(resumeText, jobDescription, APItoken) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
             "contents": [{
-                "parts": [{
-                    "text": getPrompt(resumeText, jobDescription)
-                }]
+                "parts": [{ "text": getPrompt(resumeText, jobDescription) }]
             }]
         })
     });
 
+    if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData?.error?.message || `API error ${response.status}`);
+    }
+
     const data = await response.json();
-    // Extracting the JSON text from the response
     const rawResponseText = data?.candidates?.[0]?.content?.parts[0]?.text;
 
-    if (rawResponseText) {
-        return parseResponse(rawResponseText);
+    if (!rawResponseText) {
+        throw new Error('No response text received from Gemini.');
     }
 
-    return {
-        optimizedResume: "Error: No response text found.",
-        ATSCompatibilityScore: "N/A",
-        explanation: "No explanation available."
-    };
-
+    return parseResponse(rawResponseText);
 }
 
-async function optimizeResumeWithGPT(resumeText, jobDescription, APItoken) {
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-        method: "POST",
-        headers: {
-            "Authorization": `Bearer ${APItoken}`,
-            "Content-Type": "application/json"
-        },
+async function generateCoverLetterWithGemini(resumeText, jobDescription, apiToken) {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiToken}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-            model: "gpt-4-turbo",
-            messages: [
-                { role: "system", content: "Optimize the resume for ATS compatibility based on the job description while retaining its original format." },
-                { role: "user", content: getPrompt(resumeText, jobDescription) }
-            ]
-        })
+            contents: [{ parts: [{ text: getCoverLetterPrompt(resumeText, jobDescription) }] }],
+        }),
     });
 
-    const data = await response.json();
-    // Extract the raw response text from the GPT API response
-    const rawResponseText = data?.choices?.[0]?.message?.content;
-
-    if (rawResponseText) {
-        return parseResponse(rawResponseText);
+    if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData?.error?.message || `API error ${response.status}`);
     }
-
-    return {
-        optimizedResume: "Error: No response text found.",
-        ATSCompatibilityScore: "N/A",
-        explanation: "No explanation available."
-    };
-}
-
-// Function to optimize resume with Claude
-async function optimizeResumeWithClaude(resumeText, jobDescription, APItoken) {
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: {
-            "x-api-key": APItoken,
-            "anthropic-version": "2023-06-01",
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            model: "claude-3",
-            max_tokens: 1024,
-            messages: [
-                { role: "system", content: "Optimize the resume for ATS compatibility while keeping its format intact." },
-                { role: "user", content: getPrompt(resumeText, jobDescription) }
-            ]
-        })
-    });
 
     const data = await response.json();
-    // Assuming the response structure is similar to other models, extract the raw response text
-    const rawResponseText = data?.completion;
+    const rawText = data?.candidates?.[0]?.content?.parts[0]?.text;
 
-    if (rawResponseText) {
-        // Parse the response using the generic parser
-        return parseResponse(rawResponseText);
+    if (!rawText) {
+        throw new Error('No response text received from Gemini.');
     }
-    return {
-        optimizedResume: "Error: No response text found.",
-        ATSCompatibilityScore: "N/A",
-        explanation: "No explanation available."
-    };
+
+    const cleaned = rawText.replace(/```json|```/g, '').trim();
+    return JSON.parse(cleaned);
 }
 
-
-async function optimizeResumeWithAI(resumeText, jobDescription, ai) {
-    try {
-        switch (ai.model) {
-            case "gpt":
-                return await optimizeResumeWithGPT(resumeText, jobDescription, ai.token);
-            case "gemini":
-                return await optimizeResumeWithGemini(resumeText, jobDescription, ai.token);
-            case "claud":
-                return await optimizeResumeWithClaude(resumeText, jobDescription, ai.token);
-            default:
-                throw new Error("Invalid AI model selected.");
-        }
-    } catch (error) {
-        console.error("Error during resume optimization:", error);
-        return "Error optimizing resume with the selected AI model.";
-    }
-}
-
-chrome.runtime.onInstalled.addListener(() => {
-});
+let savedJobDescription = '';
 
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
-    if (message.action === "optimizeResume") {
-        const resumeContent = message.resume;
-        const jobDescription = message.jobDescription;
-        const ai = message.ai;
-
-        // Call the function to optimize the resume with the selected AI model
-        optimizeResumeWithAI(resumeContent, jobDescription, ai)
-            .then((response) => {
-                sendResponse(response);
-            }).catch(_error => {
-                sendResponse(_error);
-            });
+    if (message.action === 'optimizeResume') {
+        const apiToken = message.apiToken || message.ai?.token || message.token;
+        optimizeResumeWithGemini(message.resume, message.jobDescription, apiToken)
+            .then(sendResponse)
+            .catch(err => sendResponse({ error: err.message }));
+        return true;
     }
 
-    if (message.action === "saveJobDescription") {
-        chrome.storage.session.set({ savedJobDescription: message.jobDescription });
+    if (message.action === 'generateCoverLetter') {
+        const apiToken = message.apiToken || message.ai?.token || message.token;
+        generateCoverLetterWithGemini(message.resume, message.jobDescription, apiToken)
+            .then(sendResponse)
+            .catch(err => sendResponse({ error: err.message }));
+        return true;
     }
 
-    if (message.action === "getJobDescription") {
-        chrome.storage.session.get(["savedJobDescription"], (result) => {
-            const savedJobDescription = result.savedJobDescription ?? "Job description not found.";
-            sendResponse({ jobDescription: savedJobDescription });
-        });
+    if (message.action === 'saveJobDescription') {
+        savedJobDescription = message.jobDescription;
+        sendResponse({ success: true });
+    }
+
+    if (message.action === 'getJobDescription') {
+        sendResponse({ jobDescription: savedJobDescription });
     }
 
     return true;
-});
-
-chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-    if (changeInfo.status === "complete" && tab.url) {
-        chrome.scripting.executeScript({
-            target: { tabId: tabId },
-            files: ["content.js"]
-        });
-    }
 });

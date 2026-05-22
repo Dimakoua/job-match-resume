@@ -296,3 +296,34 @@ function generateResume(jsonData) {
         ],
     });
 }
+
+/**
+ * Generates a simple DOCX document from a plain-text cover letter string.
+ * Each non-empty line in the text becomes its own paragraph.
+ * @param {string} coverLetterText
+ * @returns {Document}
+ */
+function generateCoverLetterDoc(coverLetterText) {
+    const paragraphs = (coverLetterText || '')
+        .split('\n')
+        .map(line => line.trim())
+        .map(line =>
+            new Paragraph({
+                children: [
+                    new TextRun({
+                        text: line,
+                        size: convertPtToHalfPt(12),
+                        font: 'Times',
+                    }),
+                ],
+                spacing: { after: line.length === 0 ? 100 : 200 },
+            })
+        );
+
+    return new Document({
+        sections: [{
+            properties: { page: pageConfiguration() },
+            children: paragraphs,
+        }],
+    });
+}
