@@ -41,7 +41,7 @@
             "js": [
                 "libs/docx.min.js",
                 "libs/docGenerator.js",
-                "libs/keywordMatcher.js",
+                "libs/calculate_ats_score/ats_scorer_bundle.js",
                 "content.js"
             ]
         }

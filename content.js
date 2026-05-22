@@ -390,9 +390,10 @@ async function updateWidgetScore(shadow) {
     const data = await chrome.storage.local.get(['parsedResume']);
     const cv = data.parsedResume;
     const jd = savedJobDescription;
-    if (!cv || !jd || !window.keywordMatcher) return;
+    if (!cv || !jd || !window.atsScorer) return;
 
-    const { score, matched, missing } = window.keywordMatcher.scoreMatch(cv, jd);
+    const result = await window.atsScorer.execute({ resumeText: cv, jobDescription: jd });
+    const { score, matchedKeywords: matched, missedKeywords: missing } = result;
 
     // Badge
     const badge = shadow.getElementById('score-badge');

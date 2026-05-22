@@ -166,9 +166,10 @@ function onInputChange() {
     else document.getElementById('kw-panel').classList.add('hidden');
 }
 
-function computeAndShowKeywordScore(cv, jd) {
-    if (!window.keywordMatcher) return;
-    const { score, matched, missing } = window.keywordMatcher.scoreMatch(cv, jd);
+async function computeAndShowKeywordScore(cv, jd) {
+    if (!window.atsScorer) return;
+    const result = await window.atsScorer.execute({ resumeText: cv, jobDescription: jd });
+    const { score, matchedKeywords: matched, missedKeywords: missing } = result;
 
     const panel = document.getElementById('kw-panel');
     const pctEl = document.getElementById('kw-pct');
