@@ -162,11 +162,18 @@ function loadJobDescription() {
    KEYWORD SCORE
 ════════════════════════════════════════════════════════════════ */
 function onInputChange() {
-    return; // Disable keyword score for now
-    const cv = document.getElementById('resume-textarea').value.trim();
+    const cv = document.getElementById('resume-textarea').value;
     const jd = document.getElementById('job-desc-textarea').value.trim();
-    if (cv && jd) computeAndShowKeywordScore(cv, jd);
-    else document.getElementById('kw-panel').classList.add('hidden');
+
+    // Persist manual resume text edits immediately.
+    chrome.storage.local.set({ parsedResume: cv });
+
+    const trimmedCv = cv.trim();
+    if (trimmedCv && jd) {
+        computeAndShowKeywordScore(trimmedCv, jd);
+    } else {
+        document.getElementById('kw-panel').classList.add('hidden');
+    }
 }
 
 async function computeAndShowKeywordScore(cv, jd) {
