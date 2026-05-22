@@ -27,8 +27,22 @@ const PLATFORM_CONFIG = {
         ]
     },
     indeed: {
-        jdSelectors: ['#jobDescriptionText', '.jobsearch-jobDescriptionText'],
-        applySelectors: ['#indeedApplyButton', 'button[data-indeed-apply]', '.jobsearch-ApplyButtonContainer button']
+        jdSelectors: [
+            '#jobDescriptionText', 
+            '.jobsearch-JobComponent-description',
+            '.jobsearch-jobDescriptionText',
+            '.jobsearch-JobComponent-embeddedBody',
+            '[class*="JobComponent-description"]',
+            '[class*="jobsearch-JobComponent-description"]'
+        ],
+        applySelectors: [
+            '#indeedApplyButton', 
+            'button[data-indeed-apply]', 
+            '.jobsearch-ApplyButtonContainer button',
+            '.vjs-highlight button',
+            '.icl-Button--primary',
+            '[class*="jobsearch-ActionButton"]'
+        ]
     },
     glassdoor: {
         jdSelectors: ["[class*='JobDetails_jobDescription']", "[data-test='job-description']"],
@@ -66,13 +80,20 @@ function findJobDescription() {
     if (!cfg) return null;
     const platform = getPlatform();
     const isLinkedIn = platform === 'linkedin';
+    const isIndeed = platform === 'indeed';
 
-    // LinkedIn-specific scope optimization
+    // Platform-specific scope optimization
     let root = document;
     if (isLinkedIn) {
         root = document.querySelector('.jobs-search-results-list__detail-pane') || 
                document.querySelector('.jobs-search__job-details--container') || 
                document.querySelector('main') || 
+               document;
+    } else if (isIndeed) {
+        root = document.querySelector('#vjs-container') || 
+               document.querySelector('.jobsearch-RightPane') || 
+               document.querySelector('.jobsearch-ViewJobLayout-content') ||
+               document.querySelector('main') ||
                document;
     }
 
