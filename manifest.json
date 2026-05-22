@@ -42,6 +42,7 @@
                 "libs/docx.min.js",
                 "libs/docGenerator.js",
                 "libs/calculate_ats_score/ats_scorer_bundle.js",
+                "libs/floatingWidget.js",
                 "content.js"
             ]
         }
