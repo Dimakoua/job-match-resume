@@ -175,6 +175,21 @@
                 <button class="btn btn-outline" id="cover-letter-btn">✍️ Cover Letter</button>
             </div>
 
+            <div class="action-row">
+                <button class="btn btn-toggle full-width" id="toggle-bug-report-btn">🐛 Report a bug</button>
+            </div>
+
+            <div class="bug-report-card hidden" id="bug-report-card">
+                <div class="input-field">
+                    <label for="bug-report-text">Found a bug?</label>
+                    <textarea id="bug-report-text" rows="3" placeholder="Describe the issue here..."></textarea>
+                </div>
+                <div class="action-row">
+                    <button class="btn btn-outline full-width" id="bug-report-btn">Report Bug</button>
+                </div>
+                <p class="bug-note">This will open a GitHub issue with your report pre-filled.</p>
+            </div>
+
             <div class="loader hidden" id="loader"></div>
 
         </section><!-- /#main-form -->

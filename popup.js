@@ -111,6 +111,8 @@ function initMainView() {
     // Wire action buttons
     document.getElementById('tailor-cv-btn').addEventListener('click', tailorCV);
     document.getElementById('cover-letter-btn').addEventListener('click', generateCoverLetter);
+    document.getElementById('toggle-bug-report-btn').addEventListener('click', toggleBugReportForm);
+    document.getElementById('bug-report-btn').addEventListener('click', submitBugReport);
 
     // Wire result buttons
     document.getElementById('download-cv-btn').addEventListener('click', () => downloadCV(window._tailorResult));
@@ -382,6 +384,29 @@ function copyCoverLetter() {
     navigator.clipboard.writeText(text)
         .then(() => showMessage('success', 'Copied to clipboard!'))
         .catch(() => showMessage('error', 'Copy failed.'));
+}
+
+function submitBugReport() {
+    const description = document.getElementById('bug-report-text').value.trim();
+    if (!description) {
+        showMessage('error', 'Please describe the bug before reporting.');
+        return;
+    }
+
+    const resumeText = document.getElementById('resume-textarea').value.trim();
+    const jobDescText = document.getElementById('job-desc-textarea').value.trim();
+    const body = `Bug description:\n${description}\n\nResume length: ${resumeText.length}\nJob description length: ${jobDescText.length}\nUser agent: ${navigator.userAgent}`;
+    const issueUrl = `https://github.com/Dimakoua/job-match-resume/issues/new?title=${encodeURIComponent('Bug report from extension')}&body=${encodeURIComponent(body)}`;
+
+    window.open(issueUrl, '_blank');
+    showMessage('success', 'Opening GitHub issue page with your report.');
+}
+
+function toggleBugReportForm() {
+    const form = document.getElementById('bug-report-card');
+    const button = document.getElementById('toggle-bug-report-btn');
+    const isHidden = form.classList.toggle('hidden');
+    button.textContent = isHidden ? '🐛 Report a bug' : '✖ Hide bug form';
 }
 
 /* ═══════════════════════════════════════════════════════════════

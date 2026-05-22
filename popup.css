@@ -120,12 +120,36 @@ body {
     transition: color 0.15s;
 }
 
-.btn-ghost:hover {
+..btn-ghost:hover {
     color: #444;
 }
 
 .btn-ghost.danger:hover {
     color: #e53935;
+}
+
+.btn-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: 1.5px solid #d1d8ff;
+    background: #eef0ff;
+    color: #283593;
+    font-weight: 700;
+    border-radius: 10px;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.btn-toggle:hover {
+    background: #e1e5ff;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 14px rgba(63, 81, 181, 0.12);
+}
+
+.btn-toggle:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 8px rgba(63, 81, 181, 0.12);
 }
 
 /* ─── Toast messages ─── */
@@ -140,6 +164,21 @@ body {
     align-items: center;
     gap: 6px;
     width: 340px;
+}
+
+.bug-report-card {
+    margin-top: 12px;
+    padding: 12px;
+    border: 1px solid #dfe1f4;
+    border-radius: 10px;
+    background: #ffffff;
+}
+
+.bug-note {
+    font-size: 12px;
+    color: #666;
+    margin-top: 8px;
+    line-height: 1.4;
 }
 
 .msg {
