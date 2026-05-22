@@ -246,28 +246,37 @@ function updateCV(text) {
    TAILOR CV
 ════════════════════════════════════════════════════════════════ */
 async function tailorCV() {
+    console.log('[AI-CV] 🛠️ tailorCV starting in popup');
     const data = await chrome.storage.local.get(['userToken']);
     const token = data.userToken;
+    console.log('[AI-CV] Token status:', !!token);
+
     if (!token) { showMessage('error', 'Add your API key in settings first.'); return; }
 
     const resumeText = document.getElementById('resume-textarea').value.trim();
     const jobDescription = document.getElementById('job-desc-textarea').value.trim();
+
+    console.log('[AI-CV] Input check - Resume length:', resumeText.length, '| JD length:', jobDescription.length);
 
     if (!resumeText) { showMessage('error', 'Upload or paste your resume first.'); return; }
     if (!jobDescription) { showMessage('error', 'Add a job description first.'); return; }
 
     toggleLoader(true);
     try {
+        console.log('[AI-CV] 📡 Sending optimizeResume message from popup...');
         const result = await chrome.runtime.sendMessage({
             action: 'optimizeResume',
             resume: resumeText,
             jobDescription,
             apiToken: token
         });
+        console.log('[AI-CV] 📥 Received response in popup:', result);
+
         if (result.error) throw new Error(result.error);
         window._tailorResult = result;
         showCVResults(result);
     } catch (err) {
+        console.error('[AI-CV] ❌ tailorCV in popup failed:', err.message);
         showMessage('error', 'Failed to tailor CV: ' + (err.message || 'unknown error'));
     } finally {
         toggleLoader(false);
@@ -299,11 +308,13 @@ function showCVResults(result) {
 async function downloadCV(result) {
     if (!result) return;
     try {
+        console.log('[AI-CV] Downloading CV from popup...');
         const doc = generateResume(result.optimizedResume);
         const blob = await window.docx.Packer.toBlob(doc);
         triggerDownload(blob, result.recomendedFileName || 'tailored-resume.docx');
     } catch (err) {
-        showMessage('error', 'Download failed.'); console.error(err);
+        console.error('[AI-CV] Download failed:', err);
+        showMessage('error', 'Download failed.');
     }
 }
 
@@ -311,8 +322,10 @@ async function downloadCV(result) {
    COVER LETTER
 ════════════════════════════════════════════════════════════════ */
 async function generateCoverLetter() {
+    console.log('[AI-CV] 🛠️ generateCoverLetter starting in popup');
     const data = await chrome.storage.local.get(['userToken']);
     const token = data.userToken;
+
     if (!token) { showMessage('error', 'Add your API key in settings first.'); return; }
 
     const resumeText = document.getElementById('resume-textarea').value.trim();
@@ -323,16 +336,20 @@ async function generateCoverLetter() {
 
     toggleLoader(true);
     try {
+        console.log('[AI-CV] 📡 Sending generateCoverLetter message from popup...');
         const result = await chrome.runtime.sendMessage({
             action: 'generateCoverLetter',
             resume: resumeText,
             jobDescription,
             apiToken: token
         });
+        console.log('[AI-CV] 📥 Received response in popup:', result);
+
         if (result.error) throw new Error(result.error);
         window._coverResult = result;
         showCoverLetterResults(result);
     } catch (err) {
+        console.error('[AI-CV] ❌ generateCoverLetter in popup failed:', err.message);
         showMessage('error', 'Failed to generate cover letter: ' + (err.message || 'unknown error'));
     } finally {
         toggleLoader(false);

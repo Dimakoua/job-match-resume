@@ -150,13 +150,16 @@ async function callGeminiWithFallback(prompt, apiToken) {
     let lastError = null;
 
     for (const model of MODELS) {
-        console.log(`[AI-CV] Attempting with model: ${model}`);
+        console.log(`[AI-CV] 🚀 Attempting generation with model: ${model}`);
         try {
             // As of May 2026, v1 is stable for Gemini 3.5/3.1. v1beta is for previews/Gemma.
             const isStable = model.startsWith('gemini-3.5') || model.startsWith('gemini-3.1') || model.startsWith('gemini-1.5');
             const apiVersion = isStable ? 'v1' : 'v1beta';
             
-            const response = await fetch(`https://generativelanguage.googleapis.com/${apiVersion}/models/${model}:generateContent?key=${apiToken}`, {
+            const url = `https://generativelanguage.googleapis.com/${apiVersion}/models/${model}:generateContent?key=${apiToken}`;
+            console.log(`[AI-CV] API URL: ${url.replace(apiToken, 'HIDDEN')}`);
+
+            const response = await fetch(url, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -173,10 +176,12 @@ async function callGeminiWithFallback(prompt, apiToken) {
                 }),
             });
 
+            console.log(`[AI-CV] Model ${model} HTTP status: ${response.status}`);
+
             if (!response.ok) {
                 const errData = await response.json().catch(() => ({}));
                 const msg = errData?.error?.message || `HTTP ${response.status}`;
-                console.warn(`[AI-CV] Model ${model} failed: ${msg}`);
+                console.warn(`[AI-CV] ❌ Model ${model} failed: ${msg}`, errData);
                 lastError = new Error(msg);
                 continue; // Try next model
             }
@@ -185,33 +190,52 @@ async function callGeminiWithFallback(prompt, apiToken) {
             const rawText = data?.candidates?.[0]?.content?.parts[0]?.text;
 
             if (!rawText) {
-                console.warn(`[AI-CV] Model ${model} returned empty response`);
-                lastError = new Error('Empty response');
+                console.warn(`[AI-CV] ⚠️ Model ${model} returned empty response or blocked by safety. Data:`, data);
+                lastError = new Error('Empty response or content blocked');
                 continue;
             }
 
+            console.log(`[AI-CV] ✅ Model ${model} successful raw response:`, rawText);
             return rawText;
         } catch (err) {
-            console.error(`[AI-CV] Error with model ${model}:`, err.message);
+            console.error(`[AI-CV] 🔥 Unexpected error with model ${model}:`, err.message, err);
             lastError = err;
         }
     }
 
+    console.error('[AI-CV] 💀 All fallback models failed.');
     throw lastError || new Error('All fallback models failed');
 }
 
 async function optimizeResumeWithGemini(resumeText, jobDescription, apiToken) {
+    console.log('[AI-CV] optimizeResumeWithGemini starting...');
     const prompt = getPrompt(resumeText, jobDescription);
     const rawResponse = await callGeminiWithFallback(prompt, apiToken);
-    return parseResponse(rawResponse);
+    
+    try {
+        const parsed = parseResponse(rawResponse);
+        console.log('[AI-CV] Resume optimization parsed successfully:', parsed);
+        return parsed;
+    } catch (err) {
+        console.error('[AI-CV] Failed to parse optimized resume JSON:', err, 'Raw response:', rawResponse);
+        throw new Error('Failed to parse AI response. Check logs.');
+    }
 }
 
 async function generateCoverLetterWithGemini(resumeText, jobDescription, apiToken) {
+    console.log('[AI-CV] generateCoverLetterWithGemini starting...');
     const prompt = getCoverLetterPrompt(resumeText, jobDescription);
     const rawResponse = await callGeminiWithFallback(prompt, apiToken);
     
-    const cleaned = rawResponse.replace(/```json|```/g, '').trim();
-    return JSON.parse(cleaned);
+    try {
+        const cleaned = rawResponse.replace(/```json|```/g, '').trim();
+        const parsed = JSON.parse(cleaned);
+        console.log('[AI-CV] Cover letter parsed successfully:', parsed);
+        return parsed;
+    } catch (err) {
+        console.error('[AI-CV] Failed to parse cover letter JSON:', err, 'Raw response:', rawResponse);
+        throw new Error('Failed to parse AI response. Check logs.');
+    }
 }
 
 let savedJobDescription = '';
