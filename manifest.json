@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "AI Resume Optimizer",
-    "version": "1.0",
+    "version": "1.1",
     "description": "Optimize your resume to match job descriptions for ATS.",
     "permissions": [
         "activeTab",
@@ -9,9 +9,7 @@
         "scripting"
     ],
     "host_permissions": [
-        "https://generativelanguage.googleapis.com/*",
-        "https://api.openai.com/*",
-        "https://api.anthropic.com/*"
+        "https://generativelanguage.googleapis.com/*"
     ],
     "background": {
         "service_worker": "background.js"
@@ -34,11 +32,20 @@
         {
             "matches": [
                 "*://*.linkedin.com/jobs/*",
-                "*://*.indeed.com/vjk*",
-                "*://*.indeed.com/cmp/*/jobs/*",
-                "*://*.glassdoor.com/Job/*"
+                "*://*.indeed.com/*",
+                "*://*.indeed.co.uk/*",
+                "*://*.indeed.ca/*",
+                "*://*.indeed.com.au/*",
+                "*://*.glassdoor.com/Job/*",
+                "*://*.glassdoor.com/job-listing/*",
+                "*://*.glassdoor.co.uk/Job/*",
+                "*://*.glassdoor.ca/Job/*"
             ],
             "js": [
+                "libs/docx.min.js",
+                "libs/docGenerator.js",
+                "libs/calculate_ats_score/ats_scorer_bundle.js",
+                "libs/floatingWidget.js",
                 "content.js"
             ]
         }

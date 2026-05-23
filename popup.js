@@ -1,311 +1,514 @@
-// Function to load saved settings from localStorage
-function loadSettings() {
-    const aiModelSelect = document.getElementById('aiModel');
-    const userTokenInput = document.getElementById('userToken');
+/* ═══════════════════════════════════════════════════════════════
+   CONSTANTS
+════════════════════════════════════════════════════════════════ */
+const CIRCUMFERENCE = 2 * Math.PI * 42; // r=42 → ≈264
 
-    const savedAiModel = localStorage.getItem('aiModel');
-    const savedUserToken = localStorage.getItem('userToken');
+/* ═══════════════════════════════════════════════════════════════
+   ONBOARDING
+════════════════════════════════════════════════════════════════ */
+let currentStep = 0;
 
-    if (savedAiModel) {
-        aiModelSelect.value = savedAiModel;
-    }
-    if (savedUserToken) {
-        userTokenInput.value = savedUserToken;
-    }
-
-    if (savedAiModel && savedUserToken) {
-        // Hide the form if both settings are saved
-        const AISettingsForm = document.getElementById('AISettingsForm');
-        AISettingsForm.classList.add('hidden');
-    }
-
-    return { aiModel: savedAiModel, userToken: savedUserToken };
+function initOnboarding() {
+    goToStep(0);
+    document.getElementById('ob-next').addEventListener('click', onNextStep);
+    document.getElementById('ob-back').addEventListener('click', onBackStep);
 }
 
-function setupView({ aiModel, userToken }) {
-    if(!aiModel || !userToken) {
-        toggleAISettings();
+function goToStep(n) {
+    currentStep = n;
+
+    document.querySelectorAll('.ob-step').forEach((el, i) => {
+        el.classList.toggle('active', i === n);
+    });
+    document.querySelectorAll('.ob-dot').forEach((el, i) => {
+        el.classList.toggle('active', i === n);
+    });
+
+    document.getElementById('ob-back').classList.toggle('hidden', n === 0);
+    document.getElementById('ob-next').textContent = n === 2 ? 'Save & Finish ✓' : 'Next →';
+}
+
+function onNextStep() {
+    if (currentStep < 2) {
+        goToStep(currentStep + 1);
+    } else {
+        finishOnboarding();
     }
 }
 
-function loadJobDescription() {
-    chrome.runtime.sendMessage({ action: "getJobDescription" }, function (response) {
-        const jobDescription = response.jobDescription;
-        document.getElementById('jobDescription').value = jobDescription;
+function onBackStep() {
+    if (currentStep > 0) goToStep(currentStep - 1);
+}
+
+function finishOnboarding() {
+    const key = document.getElementById('ob-api-key').value.trim();
+    if (!key) {
+        showMessage('error', 'Please enter your Google AI API key.');
+        return;
+    }
+    chrome.storage.local.set({ userToken: key, onboardingComplete: true }, () => {
+        showMainView();
     });
 }
 
-function loadCV() {
-    const parsedResume = localStorage.getItem('parsedResume');
-
-    if (parsedResume) {
-        document.getElementById('resume').value = parsedResume;
-    }
+/* ═══════════════════════════════════════════════════════════════
+   VIEW SWITCHING
+════════════════════════════════════════════════════════════════ */
+function showOnboardingView() {
+    document.getElementById('onboarding-view').classList.remove('hidden');
+    document.getElementById('main-view').classList.add('hidden');
 }
 
-function toggleAISettings() {
-    const AISettingsForm = document.getElementById('AISettingsForm');
-    const mainForm = document.getElementById('MainForm');
-    const atsScore = document.getElementById('atsScore');
-
-    AISettingsForm.classList.toggle('hidden');
-    mainForm.classList.toggle('hidden');
-    atsScore.classList.add('hidden');
+function showMainView() {
+    document.getElementById('onboarding-view').classList.add('hidden');
+    document.getElementById('main-view').classList.remove('hidden');
+    initMainView();
 }
 
-function toggleATSResul() {
-    const mainForm = document.getElementById('MainForm');
-    const atsScore = document.getElementById('atsScore');
-    const header = document.getElementById('header');
-    const history = document.getElementById('history');
+/* ═══════════════════════════════════════════════════════════════
+   MAIN VIEW INIT
+════════════════════════════════════════════════════════════════ */
+function initMainView() {
+    chrome.storage.local.get(['userToken', 'parsedResume'], (data) => {
+        const token = data.userToken;
+        const savedCV = data.parsedResume;
 
-    mainForm.classList.toggle('hidden');
-    atsScore.classList.toggle('hidden');
-    header.classList.toggle('hidden');
-    history.classList.toggle('hidden');
-}
+        // Status dot
+        const dot = document.getElementById('status-dot');
+        dot.className = 'status-dot ' + (token ? 'ready' : 'setup');
 
-// Function to save settings to localStorage
-function saveSettings() {
-    const aiModelSelect = document.getElementById('aiModel');
-    const userTokenInput = document.getElementById('userToken');
+        // Pre-fill settings input
+        if (token) document.getElementById('api-key-input').value = token;
 
-    const aiModel = aiModelSelect.value;
-    const userToken = userTokenInput.value;
-
-    if (!aiModel || !userToken) {
-        showMessage('error', 'Please fill in all fields.', 3000);
-        return;
-    }
-
-    // Store settings in localStorage
-    localStorage.setItem('aiModel', aiModel);
-    localStorage.setItem('userToken', userToken);
-
-    // Show success message and hide the form
-    showMessage('success', 'AI Settings Saved Successfully!', 3000);
-    toggleAISettings();
-}
-
-function showMessage(type, text, timeout = 3000) {
-    let messageDiv = document.getElementById('messageBox');
-
-    if (!messageBox) {
-        console.error("Message box container not found!");
-        return;
-    }
-
-    const randomId = 'msg-' + Math.random().toString(36).substr(2, 9);
-
-    // Create a new message div
-    messageDiv = document.createElement('div');
-    messageDiv.id = randomId;
-    messageDiv.className = type === 'success' ? 'success-message' : 'error-message';
-    messageDiv.textContent = text;
-
-    messageBox.appendChild(messageDiv);
-
-    // Remove the message after timeout
-    setTimeout(() => {
-        messageDiv.classList.add('fade-out'); // Optional: Add fade-out animation
-        setTimeout(() => messageDiv.remove(), 500); // Allow time for animation before removing
-    }, timeout);
-}
-
-async function optimizeResume() {
-    const settings = loadSettings();
-
-    const resumeInput = document.getElementById("resume");
-    const jobDescriptionInput = document.getElementById("jobDescription");
-
-    const resumeText = resumeInput.value.trim();
-    const jobDescriptionText = jobDescriptionInput.value.trim();
-
-    if (!resumeText || !jobDescriptionText) {
-        alert("Please enter both your resume and job description.");
-        return;
-    }
-
-    try {
-        toggleLoader(true);
-
-        // Send message to background.js
-        const result = await chrome.runtime.sendMessage(
-            {
-                action: "optimizeResume",
-                resume: resumeText,
-                jobDescription: jobDescriptionText,
-                ai: {
-                    model: settings.aiModel,
-                    token: settings.userToken,
+        // Pre-fill saved CV
+        if (savedCV) {
+            document.getElementById('resume-textarea').value = savedCV;
+            // Load job description from background and compute score
+            chrome.runtime.sendMessage({ action: 'getJobDescription' }, (response) => {
+                if (response && response.jobDescription) {
+                    document.getElementById('job-desc-textarea').value = response.jobDescription;
+                    computeAndShowKeywordScore(savedCV, response.jobDescription);
                 }
-            }
-        );
+            });
+        }
+    });
 
-        generateDocx(result);
-        displayATSScore(result.ATSCompatibilityScore,);
-    } catch (error) {
-        showMessage('error', 'An error occurred while optimizing the resume.', 3000);
+    // Wire settings toggle
+    document.getElementById('settings-toggle').addEventListener('click', toggleSettings);
+    document.getElementById('save-settings-btn').addEventListener('click', saveSettings);
+    document.getElementById('clear-data-btn').addEventListener('click', clearData);
+
+    // Wire back button
+    document.getElementById('back-btn').addEventListener('click', goBackToForm);
+
+    // Wire file upload
+    document.getElementById('resume-file').addEventListener('change', handleFileUpload);
+
+    // Wire textarea change → keyword score
+    document.getElementById('resume-textarea').addEventListener('input', onInputChange);
+    document.getElementById('job-desc-textarea').addEventListener('input', onInputChange);
+
+    // Wire action buttons
+    document.getElementById('tailor-cv-btn').addEventListener('click', tailorCV);
+    document.getElementById('cover-letter-btn').addEventListener('click', generateCoverLetter);
+    document.getElementById('toggle-bug-report-btn').addEventListener('click', toggleBugReportForm);
+    document.getElementById('bug-report-form').addEventListener('submit', submitBugReport);
+
+    // Wire result buttons
+    document.getElementById('download-cv-btn').addEventListener('click', () => downloadCV(window._tailorResult));
+    document.getElementById('download-cover-btn').addEventListener('click', () => downloadCoverLetter(window._coverResult));
+    document.getElementById('copy-cover-btn').addEventListener('click', copyCoverLetter);
+}
+
+/* ─── Settings ─── */
+function toggleSettings() {
+    document.getElementById('settings-panel').classList.toggle('hidden');
+}
+
+function saveSettings() {
+    const key = document.getElementById('api-key-input').value.trim();
+    if (!key) { showMessage('error', 'API key cannot be empty.'); return; }
+    chrome.storage.local.set({ userToken: key }, () => {
+        const dot = document.getElementById('status-dot');
+        dot.className = 'status-dot ready';
+        document.getElementById('settings-panel').classList.add('hidden');
+        showMessage('success', 'API key saved.');
+    });
+}
+
+function clearData() {
+    if (!confirm('Clear all stored data (CV, API key)?')) return;
+    chrome.storage.local.remove(['userToken', 'parsedResume', 'onboardingComplete'], () => {
+        document.getElementById('resume-textarea').value = '';
+        document.getElementById('api-key-input').value = '';
+        document.getElementById('status-dot').className = 'status-dot setup';
+        document.getElementById('settings-panel').classList.add('hidden');
+        document.getElementById('kw-panel').classList.add('hidden');
+        showMessage('success', 'Data cleared.');
+    });
+}
+
+/* ─── Job description ─── */
+function loadJobDescription() {
+    chrome.runtime.sendMessage({ action: 'getJobDescription' }, (response) => {
+        if (response && response.jobDescription) {
+            document.getElementById('job-desc-textarea').value = response.jobDescription;
+            onInputChange();
+        }
+    });
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   KEYWORD SCORE
+════════════════════════════════════════════════════════════════ */
+function onInputChange() {
+    const cv = document.getElementById('resume-textarea').value;
+    const jd = document.getElementById('job-desc-textarea').value.trim();
+
+    // Persist manual resume text edits immediately.
+    chrome.storage.local.set({ parsedResume: cv });
+
+    const trimmedCv = cv.trim();
+    if (trimmedCv && jd) {
+        computeAndShowKeywordScore(trimmedCv, jd);
+    } else {
+        document.getElementById('kw-panel').classList.add('hidden');
+    }
+}
+
+async function computeAndShowKeywordScore(cv, jd) {
+    return; // Disable keyword score for now
+    if (!window.atsScorer) return;
+    const result = await window.atsScorer.execute({ resumeText: cv, jobDescription: jd });
+    const { score, matchedKeywords: matched, missedKeywords: missing } = result;
+
+    const panel = document.getElementById('kw-panel');
+    const pctEl = document.getElementById('kw-pct');
+    const barEl = document.getElementById('kw-bar-fill');
+    const chipsEl = document.getElementById('kw-chips-row');
+
+    pctEl.textContent = score + '%';
+    pctEl.className = 'kw-pct ' + (score >= 70 ? 'high' : score >= 40 ? 'mid' : 'low');
+    barEl.style.width = score + '%';
+    barEl.style.background = score >= 70 ? '#43a047' : score >= 40 ? '#e65100' : '#c62828';
+
+    const topMatched = matched.slice(0, 6);
+    const topMissing = missing.slice(0, 6);
+    chipsEl.innerHTML =
+        topMatched.map(w => `<span class="kw-chip matched">✓ ${w}</span>`).join('') +
+        topMissing.map(w => `<span class="kw-chip missing">✗ ${w}</span>`).join('');
+
+    panel.classList.remove('hidden');
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FILE UPLOAD / PARSING
+════════════════════════════════════════════════════════════════ */
+function handleFileUpload(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (file.type === 'text/plain') {
+        const reader = new FileReader();
+        reader.onload = ev => updateCV(ev.target.result);
+        reader.readAsText(file);
+    } else if (file.type === 'application/pdf') {
+        const reader = new FileReader();
+        reader.onload = ev => parsePDF(new Uint8Array(ev.target.result));
+        reader.readAsArrayBuffer(file);
+    } else if (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+        const reader = new FileReader();
+        reader.onload = ev => parseDOCX(ev.target.result);
+        reader.readAsArrayBuffer(file);
+    } else {
+        showMessage('error', 'Unsupported file type. Use PDF, DOCX, or TXT.');
+    }
+}
+
+async function parsePDF(pdfData) {
+    try {
+        const pdf = await pdfjsLib.getDocument(pdfData).promise;
+        const pages = await Promise.all(
+            Array.from({ length: pdf.numPages }, (_, i) =>
+                pdf.getPage(i + 1).then(p => p.getTextContent()).then(tc => tc.items.map(x => x.str).join(' '))
+            )
+        );
+        updateCV(pages.join('\n'));
+    } catch (err) {
+        showMessage('error', 'Error reading PDF.');
+        console.error(err);
+    }
+}
+
+function parseDOCX(arrayBuffer) {
+    mammoth.extractRawText({ arrayBuffer })
+        .then(r => updateCV(r.value))
+        .catch(err => { showMessage('error', 'Error reading DOCX.'); console.error(err); });
+}
+
+function updateCV(text) {
+    document.getElementById('resume-textarea').value = text;
+    chrome.storage.local.set({ parsedResume: text }, () => {
+        onInputChange();
+    });
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TAILOR CV
+════════════════════════════════════════════════════════════════ */
+async function tailorCV() {
+    console.log('[AI-CV] 🛠️ tailorCV starting in popup');
+    const data = await chrome.storage.local.get(['userToken']);
+    const token = data.userToken;
+    console.log('[AI-CV] Token status:', !!token);
+
+    if (!token) { showMessage('error', 'Add your API key in settings first.'); return; }
+
+    const resumeText = document.getElementById('resume-textarea').value.trim();
+    const jobDescription = document.getElementById('job-desc-textarea').value.trim();
+
+    console.log('[AI-CV] Input check - Resume length:', resumeText.length, '| JD length:', jobDescription.length);
+
+    if (!resumeText) { showMessage('error', 'Upload or paste your resume first.'); return; }
+    if (!jobDescription) { showMessage('error', 'Add a job description first.'); return; }
+
+    toggleLoader(true);
+    try {
+        console.log('[AI-CV] 📡 Sending optimizeResume message from popup...');
+        const result = await chrome.runtime.sendMessage({
+            action: 'optimizeResume',
+            resume: resumeText,
+            jobDescription,
+            apiToken: token
+        });
+        console.log('[AI-CV] 📥 Received response in popup:', result);
+
+        if (result.error) throw new Error(result.error);
+        window._tailorResult = result;
+        showCVResults(result);
+    } catch (err) {
+        console.error('[AI-CV] ❌ tailorCV in popup failed:', err.message);
+        showMessage('error', 'Failed to tailor CV: ' + (err.message || 'unknown error'));
     } finally {
         toggleLoader(false);
     }
 }
 
-function handleFileUpload(event) {
-    const file = event.target.files[0];
+function showCVResults(result) {
+    document.getElementById('main-form').classList.add('hidden');
+    document.getElementById('cover-results').classList.add('hidden');
+    document.getElementById('back-btn').classList.remove('hidden');
 
-    if (!file) {
-        console.error("No file selected.");
-        return;
-    }
+    const score = Number(result.ATSCompatibilityScore) || 0;
+    const offset = CIRCUMFERENCE - (score / 100) * CIRCUMFERENCE;
+    const circle = document.querySelector('#cv-results .progress-circle');
+    const textEl = document.getElementById('ats-text');
 
-    const fileType = file.type;
+    circle.style.strokeDasharray = CIRCUMFERENCE;
+    circle.style.strokeDashoffset = CIRCUMFERENCE; // reset
+    requestAnimationFrame(() => { circle.style.strokeDashoffset = offset; });
 
-    // For Text files
-    if (fileType === "text/plain") {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            const fileContent = e.target.result;
-            parseResumeContent(fileContent);
-        };
-        reader.readAsText(file);
-    }
-    // For PDF files, use pdf.js to extract text
-    else if (fileType === "application/pdf") {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            const pdfData = new Uint8Array(e.target.result);
-            parsePDF(pdfData);
-        };
-        reader.readAsArrayBuffer(file);
-    }
-    // For DOCX files, use Mammoth.js to extract text
-    else if (fileType === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            const arrayBuffer = e.target.result;
-            parseDOCX(arrayBuffer);
-        };
-        reader.readAsArrayBuffer(file);
-    } else {
-        console.log("Unsupported file type");
-    }
+    // Colour by score
+    circle.style.stroke = score >= 70 ? '#43a047' : score >= 40 ? '#fb8c00' : '#e53935';
+    textEl.textContent = score;
+
+    document.getElementById('ats-explanation').textContent = result.explanation || '';
+    document.getElementById('cv-results').classList.remove('hidden');
 }
 
-// Parse Text file
-function parseResumeContent(content) {
-    updateResumeContent(content);
-}
-
-// Parse PDF using pdf.js
-async function parsePDF(pdfData) {
+async function downloadCV(result) {
+    if (!result) return;
     try {
-        const pdfDoc = await pdfjsLib.getDocument(pdfData).promise;
-        const totalPages = pdfDoc.numPages;
-
-        let textContent = "";
-
-        // Create an array of promises for each page
-        const pagePromises = [];
-
-        for (let i = 1; i <= totalPages; i++) {
-            pagePromises.push(pdfDoc.getPage(i).then(async page => {
-                const text = await page.getTextContent();
-                return text.items.map(item => item.str).join(" "); // Convert items to text
-            }));
-        }
-
-        // Wait for all pages to be processed
-        const allText = await Promise.all(pagePromises);
-
-        // Combine all pages' text
-        textContent = allText.join("\n");
-
-        updateResumeContent(textContent);
-    } catch (error) {
-        console.error("Error parsing PDF:", error);
+        console.log('[AI-CV] Downloading CV from popup...');
+        const doc = generateResume(result.optimizedResume);
+        const blob = await window.docx.Packer.toBlob(doc);
+        triggerDownload(blob, result.recomendedFileName || 'tailored-resume.docx');
+    } catch (err) {
+        console.error('[AI-CV] Download failed:', err);
+        showMessage('error', 'Download failed.');
     }
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   COVER LETTER
+════════════════════════════════════════════════════════════════ */
+async function generateCoverLetter() {
+    console.log('[AI-CV] 🛠️ generateCoverLetter starting in popup');
+    const data = await chrome.storage.local.get(['userToken']);
+    const token = data.userToken;
 
-// Parse DOCX using Mammoth.js
-function parseDOCX(arrayBuffer) {
-    mammoth.extractRawText({ arrayBuffer: arrayBuffer })
-        .then(result => {
-            updateResumeContent(result.value);
-        })
-        .catch(err => {
-            console.error("Error parsing DOCX file:", err);
+    if (!token) { showMessage('error', 'Add your API key in settings first.'); return; }
+
+    const resumeText = document.getElementById('resume-textarea').value.trim();
+    const jobDescription = document.getElementById('job-desc-textarea').value.trim();
+
+    if (!resumeText) { showMessage('error', 'Upload or paste your resume first.'); return; }
+    if (!jobDescription) { showMessage('error', 'Add a job description first.'); return; }
+
+    toggleLoader(true);
+    try {
+        console.log('[AI-CV] 📡 Sending generateCoverLetter message from popup...');
+        const result = await chrome.runtime.sendMessage({
+            action: 'generateCoverLetter',
+            resume: resumeText,
+            jobDescription,
+            apiToken: token
         });
-}
+        console.log('[AI-CV] 📥 Received response in popup:', result);
 
-function updateResumeContent(content) {
-    const resumeInput = document.getElementById('resume');
-    if (resumeInput) {
-        resumeInput.value = content;
-        localStorage.setItem('parsedResume', content);
+        if (result.error) throw new Error(result.error);
+        window._coverResult = result;
+        showCoverLetterResults(result);
+    } catch (err) {
+        console.error('[AI-CV] ❌ generateCoverLetter in popup failed:', err.message);
+        showMessage('error', 'Failed to generate cover letter: ' + (err.message || 'unknown error'));
+    } finally {
+        toggleLoader(false);
     }
 }
 
-function generateDocx(jsonData) {
-    const doc = generateResume(jsonData.optimizedResume)
+function showCoverLetterResults(result) {
+    document.getElementById('main-form').classList.add('hidden');
+    document.getElementById('cv-results').classList.add('hidden');
+    document.getElementById('back-btn').classList.remove('hidden');
+    document.getElementById('cover-letter-text').value = result.coverLetter || '';
+    document.getElementById('cover-results').classList.remove('hidden');
+}
 
-    // Convert the document to a blob
-    Packer.toBlob(doc).then((blob) => {
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = jsonData.recomendedFileName;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+async function downloadCoverLetter(result) {
+    if (!result) return;
+    try {
+        const doc = generateCoverLetterDoc(result.coverLetter);
+        const blob = await window.docx.Packer.toBlob(doc);
+        triggerDownload(blob, result.recommendedFileName || 'cover-letter.docx');
+    } catch (err) {
+        showMessage('error', 'Download failed.'); console.error(err);
+    }
+}
+
+function copyCoverLetter() {
+    const text = document.getElementById('cover-letter-text').value;
+    navigator.clipboard.writeText(text)
+        .then(() => showMessage('success', 'Copied to clipboard!'))
+        .catch(() => showMessage('error', 'Copy failed.'));
+}
+
+async function submitBugReport(event) {
+    event.preventDefault();
+
+    const form = document.getElementById('bug-report-form');
+    const errorEl = document.getElementById('bug-report-error');
+    const submitBtn = document.getElementById('bug-report-btn');
+
+    if (errorEl) {
+        errorEl.hidden = true;
+        errorEl.textContent = '';
+    }
+
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Sending…';
+    }
+
+    const data = new FormData(form);
+    data.append('user_agent', navigator.userAgent);
+    data.append('resume_length', document.getElementById('resume-textarea').value.length);
+    data.append('job_description_length', document.getElementById('job-desc-textarea').value.length);
+
+    try {
+        const res = await fetch('https://api.web3forms.com/submit', {
+            method: 'POST',
+            body: data,
+        });
+
+        if (!res.ok) throw new Error('Network error');
+
+        const result = await res.json();
+        if (!result.success) throw new Error(result.message || 'Submission failed');
+
+        showMessage('success', 'Feedback sent — thank you!');
+        form.reset();
+        document.getElementById('bug-report-form')?.classList.add('hidden');
+    } catch (err) {
+        if (errorEl) {
+            errorEl.textContent = 'Could not send — please try again.';
+            errorEl.hidden = false;
+        }
+        console.error('[AI-CV] feedback submit failed:', err);
+    } finally {
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Send feedback';
+        }
+    }
+}
+
+function toggleBugReportForm() {
+    const form = document.getElementById('bug-report-form');
+    const button = document.getElementById('toggle-bug-report-btn');
+    const pageInput = document.getElementById('bug-report-page');
+
+    if (pageInput) {
+        pageInput.value = window.location.pathname || 'popup';
+    }
+
+    const isHidden = form.classList.toggle('hidden');
+    button.textContent = isHidden ? '💬 Feedback' : '✖ Hide feedback';
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   NAVIGATION
+════════════════════════════════════════════════════════════════ */
+function goBackToForm() {
+    document.getElementById('cv-results').classList.add('hidden');
+    document.getElementById('cover-results').classList.add('hidden');
+    document.getElementById('back-btn').classList.add('hidden');
+    document.getElementById('main-form').classList.remove('hidden');
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   UTILITY
+════════════════════════════════════════════════════════════════ */
+function toggleLoader(show) {
+    document.getElementById('loader').classList.toggle('hidden', !show);
+    document.getElementById('tailor-cv-btn').disabled = show;
+    document.getElementById('cover-letter-btn').disabled = show;
+}
+
+function triggerDownload(blob, filename) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+function showMessage(type, text) {
+    const box = document.getElementById('message-box');
+    const div = document.createElement('div');
+    div.className = 'msg ' + type;
+    div.textContent = text;
+    box.appendChild(div);
+    setTimeout(() => {
+        div.classList.add('fade-out');
+        setTimeout(() => div.remove(), 350);
+    }, 3200);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ENTRY POINT
+════════════════════════════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', () => {
+    initOnboarding();
+
+    chrome.storage.local.get(['onboardingComplete'], (data) => {
+        if (data.onboardingComplete) {
+            showMainView();
+        } else {
+            showOnboardingView();
+        }
     });
-}
-
-function setATSScore(percent) {
-    const circle = document.querySelector(".progress-circle");
-    const text = document.querySelector(".progress-text");
-    const radius = 50;
-    const circumference = 2 * Math.PI * radius;
-    const offset = circumference - (percent / 100) * circumference;
-
-    circle.style.strokeDashoffset = offset;
-    text.textContent = `${percent}/100`;
-}
-
-function displayATSScore(atsScore) {
-    toggleATSResul();
-    // Set the ATS score text
-    setATSScore(atsScore);
-}
-
-function toggleLoader() {
-    const loader = document.getElementById("loader");
-    const optimizeResumeBtn = document.getElementById("optimizeResume");
-
-    loader.classList.toggle("hidden");
-    optimizeResumeBtn.classList.toggle("hidden");
-}
-
-// Event listener for Save button
-document.addEventListener('DOMContentLoaded', function () {
-    // Load saved settings on page load
-    const settings = loadSettings();
-    setupView(settings);
-    loadCV();
-
-    const saveAISettingsBtn = document.getElementById('saveAISettings');
-    const showAISettingsForm = document.getElementById('showAISettingsForm');
-    const optimizeResumeBtn = document.getElementById('optimizeResume');
-    const resumeFileInput = document.getElementById('resumeFile');
-    const history = document.getElementById('history');
-
-    optimizeResumeBtn.addEventListener('click', optimizeResume);
-    saveAISettingsBtn.addEventListener('click', saveSettings);
-    resumeFileInput.addEventListener('change', handleFileUpload);
-    showAISettingsForm.addEventListener('click', toggleAISettings);
-    history.addEventListener('click', toggleATSResul);
 });
-
-loadJobDescription();
